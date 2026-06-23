@@ -7,9 +7,9 @@
 <p align="center"><strong>The autonomous engineering loop that can't arm itself, can't review its own work, and can't pass your tests by weakening them.</strong></p>
 
 <p align="center">
-Drop it beside any codebase. It learns your rules, runs in dry-run, and turns engineering
-debt into small reviewable pull requests. Maker, checker, and merge authority stay separate.
-An anti-gaming ratchet means it cannot pass your gates by weakening them. Off by default.
+It finds tech debt your team keeps deferring, writes bounded pull requests, and cannot pass
+your tests by removing them. Maker, checker, and merge authority are structurally separate.
+Off by default. No central service.
 </p>
 
 <p align="center">
@@ -95,6 +95,14 @@ deterministic gate when one fits. The queue stays capped, dated, and owner-contr
 engine never rewrites its own rules without a human in the loop. A market-researcher role
 watches for standards and dependency shifts and routes sourced findings for owner review.
 
+## Why is this different from prompting an agent directly?
+
+You can tell an agent to add tests. The agent can also remove assertions to make the tests
+pass faster. The difference with Modonome is structural: the ratchet that blocks assertion
+removal runs in CI, in a file the agent cannot edit. The arming levers are environment
+variables the agent cannot read. A prompt can be overridden by a cleverer prompt. A CI gate
+running outside the agent's write scope cannot be.
+
 ## Why it is safe to run
 
 The controls are code, not promises. The anti-gaming ratchet, the config and packet
@@ -137,20 +145,18 @@ Other examples:
 
 ## Alpha limitations (v0.1-alpha)
 
-Modonome is in public alpha. The governance loop is stable and machine-verified. The following
-capabilities are on the roadmap but not yet implemented:
+Modonome is in public alpha. The governance loop, ratchet, CLI, MCP server, and report command
+are stable and machine-verified. The following capabilities are on the roadmap but not yet shipped:
 
 | Capability | Status | Planned |
 |-----------|--------|---------|
-| Cryptographically signed work items | Not yet | v0.3 |
+| Cryptographically signed work items (Ed25519) | Not yet | v0.2 |
 | OpenTelemetry span emission for governance events | Not yet | v0.3 |
-| MCP server for harness integration | Not yet | v0.3 |
-| `modonome report`: value summary from metrics log | Not yet | v0.2 |
 | Before/after tech debt measurement | Not yet | v0.2 |
 | Multi-team estate metrics aggregation | Not yet | v0.3 |
 
 State is stored as flat files in `.modonome/`. This is right for single-repo, owner-supervised
-runs. It is not ready for compliance audit trails or multi-team estates without the v0.3
+runs. It is not ready for compliance audit trails or multi-team estates without the v0.2
 additions. See [ROADMAP.md](ROADMAP.md).
 
 ## Local development
@@ -158,6 +164,10 @@ additions. See [ROADMAP.md](ROADMAP.md).
 ```bash
 npm run verify   # drift guard, style check, and tests. No network or secrets required.
 ```
+
+`.modonome/` in this repo is a demo state directory showing what governance activity looks like.
+Adopters should delete it and run `npx modonome scaffold . --write` to start fresh with their
+own config and empty state.
 
 ## License
 

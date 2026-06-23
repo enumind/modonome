@@ -1,12 +1,14 @@
-# Modonome in action: first week on a real Node.js app
+# Modonome in action: what one week looks like on a Node.js app
 
-This is a concrete record of what happened when Modonome ran on this demo app
-for one week in dry-run mode. No humans wrote any of the code that merged.
-Every gate ran in CI. The ratchet caught one bad attempt.
+This is an illustrative scenario showing what Modonome does in practice.
+The technical details are accurate: the dry-run output, ratchet error messages,
+and governance report all reflect real command output. The sequence of events
+is representative of how the governance loop runs on a repo with the tech debt
+shown in this demo app.
 
 ---
 
-## Minute 0: dry-run finds three targets
+## Step 1: the dry-run finds three targets
 
 ```
 $ npx modonome dry-run .
@@ -45,7 +47,7 @@ It changed nothing. It proved it understood the codebase.
 
 ---
 
-## Day 1: refund test coverage merged
+## Step 2: refund test coverage merges
 
 Modonome opened a PR with 4 new assertions covering the refund path : the
 not-found case, the already-refunded case, the wrong-status case, and the
@@ -66,7 +68,7 @@ proposed a bounded fix, and proved the fix added coverage without removing anyth
 
 ---
 
-## Day 2: dead code removed cleanly
+## Step 3: dead code is removed cleanly
 
 The `ENABLE_LEGACY_CHECKOUT` flag removal PR landed: 83 lines deleted,
 all tests still passed, assertion count unchanged.
@@ -84,7 +86,7 @@ deletions as suspicious : only the ones that weaken gates.
 
 ---
 
-## Day 3: the ratchet caught a bad attempt
+## Step 4: the ratchet blocks a bad attempt
 
 Modonome attempted to wrap the payment service with retry logic. The first
 implementation simplified a test by removing two assertions to avoid flakiness.
@@ -112,7 +114,7 @@ actual work.
 
 ---
 
-## End of week: governance report
+## Step 5: the governance report
 
 ```
 $ npx modonome report .
