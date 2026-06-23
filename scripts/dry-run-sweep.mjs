@@ -19,8 +19,11 @@ function detectStack() {
   if (has("pyproject.toml") || has("requirements.txt")) {
     return { name: "Python", pm: "pip", gates: ["ruff check .", "pytest"] };
   }
-  if (has("pom.xml")) return { name: "Java (Maven)", pm: "maven", gates: ["./mvnw verify"] };
+  if (has("pom.xml")) return { name: "Java (Maven)", pm: "maven", gates: ["./mvnw verify", "./mvnw jacoco:check"] };
+  if (has("build.gradle") || has("build.gradle.kts")) return { name: "Java (Gradle)", pm: "gradle", gates: ["./gradlew check", "./gradlew jacocoTestCoverageVerification"] };
   if (has("go.mod")) return { name: "Go", pm: "go", gates: ["go vet ./...", "go test ./..."] };
+  const csprojFiles = (() => { try { return readdirSync(target).some((f) => f.endsWith(".csproj") || f.endsWith(".sln")); } catch { return false; } })();
+  if (csprojFiles) return { name: "C# (.NET)", pm: "dotnet", gates: ["dotnet build", "dotnet test --collect:"XPlat Code Coverage""] };
   if (has("main.tf") || has("terraform")) return { name: "Infrastructure (Terraform)", pm: "terraform", gates: ["terraform fmt -check", "terraform validate"] };
   return { name: "Unknown", pm: "unknown", gates: ["adopt the repo's existing checks"] };
 }
@@ -45,6 +48,8 @@ function proposeWork(stack) {
   ];
   if (stack.name.startsWith("Node")) generic.unshift("Add tests around a brittle path, then remove a dead feature-flag branch after owner approval.");
   if (stack.name === "Python") generic.unshift("Isolate a flaky external call behind a local seam with a regression test.");
+  if (stack.name.startsWith("Java")) generic.unshift("Add a JUnit 5 test for an untested service boundary and wire JaCoCo threshold to 80% line coverage.");
+  if (stack.name === "C# (.NET)") generic.unshift("Add an xUnit test for an untested controller action and configure Coverlet threshold at 80% line coverage.");
   return generic.slice(0, 3);
 }
 

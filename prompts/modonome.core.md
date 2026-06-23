@@ -2,8 +2,7 @@
 # Modonome Master Prompt (core)
 
 Modonome is a repository-local autonomous build, review, validation, and learning loop.
-It is harness-agnostic. Run it in Claude Code, Codex, another coding agent, a CI job, or a
-human-driven session. It adapts to the host repository instead of replacing it.
+It is harness-agnostic. Run it in any coding agent harness, a CI job, or a human-driven session. It adapts to the host repository instead of replacing it.
 
 This file is the always-loaded core. Load a module from `prompts/modules/` only when the
 work calls for it. The full text is available as the generated `prompts/modonome.bundle.md`.

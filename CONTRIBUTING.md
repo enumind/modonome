@@ -22,8 +22,9 @@ This runs the drift guard, the style check, and the tests. It needs no network o
 ## House style
 
 - Plain, positive, confident voice. Short sentences. Concrete nouns.
-- No em dashes. No AI authorship signatures in any file.
-- The style check runs in CI and will flag these.
+- No em dashes. No AI authorship signatures in any file or commit message.
+- The style check runs in CI and will flag signatures in files. Commit messages must not
+  include AI attribution trailers or generated-by banners.
 
 ## Pull requests
 

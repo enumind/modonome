@@ -1,0 +1,73 @@
+$ npx modonome dry-run .
+
+Modonome dry-run sweep
+Mode: dry-run. This run changed nothing.
+
+Target: .
+State directory: .modonome
+Stack: Node or TypeScript (npm)
+
+Harness instructions found:
+  AGENTS.md
+  README.md
+  CONTRIBUTING.md
+
+Protected paths detected:
+  .github
+  CODEOWNERS
+  package-lock.json
+
+Proposed work (3 bounded items)
+================================
+
+[1] Add focused tests around the most-changed module from recent history.
+
+    Rationale: git log shows OrderService has had 14 changes in 90 days with
+    no corresponding test additions. The highest-risk untested path is the
+    refund flow (three conditional branches, zero assertions).
+
+    Scope:
+      - Add 3-5 assertions to tests/OrderService.test.ts covering the refund path
+      - No production code changes in this packet
+      - Gate: npm test must pass with no assertion count decrease (ratchet enforced)
+
+    Risk tier: Tier 1 (mechanical, test-only, no public API surface)
+    Estimated size: ~40 lines
+
+[2] Remove dead feature flag branch: ENABLE_LEGACY_CHECKOUT.
+
+    Rationale: ENABLE_LEGACY_CHECKOUT has been false in all environments for
+    62 days (confirmed via .env.production and CI secrets audit). The flag
+    adds ~180 lines of unreachable code and two outdated test branches.
+
+    Scope:
+      - Remove the flag check and the false branch in CheckoutService.ts
+      - Remove corresponding dead test stubs
+      - Gate: all existing tests pass, no assertion count decreases (ratchet enforced)
+
+    Risk tier: Tier 1 (removal of unreachable code, no interface change)
+    Estimated size: ~180 lines removed
+
+[3] Enforce TypeScript strict mode in tsconfig.json.
+
+    Rationale: tsconfig.json has "strict": false. Running tsc --strict reveals
+    7 implicit-any errors in services/PaymentProcessor.ts. Fixing these makes
+    the type system's guarantees meaningful.
+
+    Scope:
+      - Set "strict": true in tsconfig.json
+      - Fix the 7 implicit-any errors in PaymentProcessor.ts (explicit type annotations)
+      - Gate: tsc --noEmit must pass with strict mode enabled
+
+    Risk tier: Tier 2 (bounded only affects type checker output, not runtime)
+    Estimated size: ~25 lines changed
+
+Next steps
+==========
+
+  To start: arm Modonome in dry-run mode and load the prompt in your agent harness.
+  To see governance posture: npx modonome report .
+  To scaffold state files: npx modonome scaffold . --write
+
+  None of the proposed changes have been applied.
+  Every gate will be verified before any merge is attempted.

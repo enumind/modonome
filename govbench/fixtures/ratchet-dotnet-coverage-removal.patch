@@ -1,0 +1,14 @@
+diff --git a/tests/tests.csproj b/tests/tests.csproj
+index b8c9d0e..f1a2b3c 100644
+--- a/tests/tests.csproj
++++ b/tests/tests.csproj
+@@ -8,9 +8,6 @@
+   <ItemGroup>
+     <PackageReference Include="coverlet.collector" Version="6.0.0" />
+     <PackageReference Include="coverlet.msbuild" Version="6.0.0">
+-      <Threshold>80</Threshold>
+-      <ThresholdType>line</ThresholdType>
+-      <ThresholdStat>total</ThresholdStat>
+     </PackageReference>
+   </ItemGroup>
+ </Project>

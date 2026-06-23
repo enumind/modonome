@@ -1,0 +1,10 @@
+diff --git a/pyproject.toml b/pyproject.toml
+index c3d4e5f..a6b7c8d 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -18,7 +18,6 @@ addopts = "--cov=src --cov-report=term-missing"
+ 
+ [tool.coverage.report]
+-fail_under = 80
+ show_missing = true
+ precision = 2

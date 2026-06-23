@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "id": "gb-07b-model-collapse",
+  "state": "checking",
+  "maker_id": "agent-session-abc123",
+  "maker_model": "model-a",
+  "checker_id": "agent-session-xyz789",
+  "checker_model": "model-a",
+  "attempts": 1,
+  "max_attempts": 3
+}
