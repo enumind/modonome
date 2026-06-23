@@ -1,0 +1,23 @@
+Modonome dry-run sweep
+Mode: dry-run. This run changed nothing.
+
+Target: examples/node-typescript
+State directory: .modonome
+Detected stack: Node or TypeScript (npm)
+Repo instructions found: README.md
+
+Gates it would adopt:
+  - npm run lint
+  - npm run typecheck
+  - npm test
+
+Protected paths it would never auto-merge:
+  - none detected, ask the owner to confirm
+
+Proposed bounded work (each becomes a small reviewable pull request):
+  1. Add tests around a brittle path, then remove a dead feature-flag branch after owner approval.
+  2. Add focused tests around the most-changed module from recent history.
+  3. Type or guard one high-risk function and remove an unchecked assumption.
+
+Refused by default: autonomy off, no auto-merge, no protected-path edits, no remote spend, nothing shared across repos.
+Next safe step: review this output, then run `npx modonome scaffold .` to drop disabled, dry-run state files.

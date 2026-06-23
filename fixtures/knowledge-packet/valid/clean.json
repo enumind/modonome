@@ -1,0 +1,6 @@
+{ "schema_version": 1, "id": "kp-001", "signal": "review", "classification": "public",
+  "redaction_status": "redacted", "modernization_axis": "test_coverage",
+  "topic": "contract tests around checkout", "application_capability": "checkout",
+  "problem_pattern": "provider regressions escaped focused tests",
+  "pattern": "add provider contract tests for approved and declined flows",
+  "local_validation_required": true, "owner_decision_required": true, "expires_at": "2026-12-31" }

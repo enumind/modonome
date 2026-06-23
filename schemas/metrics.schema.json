@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://modonome.com/schemas/metrics.schema.json",
+  "title": "Modonome metrics line",
+  "description": "One JSON object per line in metrics.jsonl.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["schema_version", "ts", "event"],
+  "properties": {
+    "schema_version": { "type": "integer", "minimum": 1 },
+    "ts": { "type": "string", "minLength": 1 },
+    "event": { "type": "string", "minLength": 1 },
+    "mode": { "type": "string", "enum": ["disabled", "dry-run", "shadow", "armed"] },
+    "item": { "type": "string" },
+    "value": { "type": "number" }
+  }
+}

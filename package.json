@@ -1,0 +1,23 @@
+{
+  "name": "modonome",
+  "version": "0.1.0",
+  "description": "Governed autonomy for any repo. An off-by-default autonomous engineer that adopts your repo's rules, proposes small reviewable changes, and proves it cannot merge low-quality work.",
+  "type": "module",
+  "bin": { "modonome": "bin/modonome.mjs" },
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build:prompt": "node scripts/build-prompt.mjs --write",
+    "check:prompt": "node scripts/build-prompt.mjs --check",
+    "check:drift": "node scripts/check-drift.mjs",
+    "check:style": "node scripts/check-style.mjs .",
+    "test": "node --test tests/*.test.mjs",
+    "verify": "npm run check:drift && npm run check:style && npm test",
+    "dry-run": "node scripts/dry-run-sweep.mjs",
+    "scaffold": "node scripts/scaffold.mjs"
+  },
+  "files": ["bin", "prompts", "templates", "schemas", "scripts", "docs"],
+  "license": "MIT",
+  "repository": { "type": "git", "url": "https://github.com/techseek4vr/modonome.git" },
+  "homepage": "https://modonome.com",
+  "keywords": ["autonomous", "agent", "ci", "governance", "code-review", "modernization"]
+}

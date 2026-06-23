@@ -1,0 +1,2 @@
+{ "schema_version": "one", "autonomy_enabled": false, "dry_run": true, "auto_merge": false,
+  "state_dir": ".modonome", "totally_unknown_lever": true }

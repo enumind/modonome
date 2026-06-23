@@ -1,0 +1,3 @@
+{ "schema_version": 1, "autonomy_enabled": false, "dry_run": false, "auto_merge": true,
+  "max_merges_per_day": 0, "require_distinct_maker_checker": false, "require_branch_protection": false,
+  "state_dir": ".modonome" }

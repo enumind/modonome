@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://modonome.com/schemas/knowledge-packet.schema.json",
+  "title": "Modonome knowledge packet",
+  "description": "Spec of record: prompts/modules/network.md. Off by default.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "id", "classification", "redaction_status", "modernization_axis", "signal", "local_validation_required", "owner_decision_required"],
+  "properties": {
+    "schema_version": { "type": "integer", "minimum": 1 },
+    "id": { "type": "string", "minLength": 1 },
+    "source_repo_alias": { "type": "string" },
+    "source_stack_fingerprint": { "type": "string" },
+    "published_at": { "type": "string" },
+    "signal": { "type": "string", "enum": ["gate", "review", "incident", "rework", "modernization", "security", "cost", "market"] },
+    "classification": { "type": "string", "enum": ["public", "internal", "confidential", "restricted"] },
+    "redaction_status": { "type": "string", "enum": ["redacted", "synthetic", "aggregate", "blocked"] },
+    "topic": { "type": "string" },
+    "application_capability": { "type": "string" },
+    "modernization_axis": {
+      "type": "string",
+      "enum": ["test_coverage", "dependency_upgrade", "api_contract", "data_model", "runtime", "security", "observability", "ux", "release_flow", "decommissioning"]
+    },
+    "problem_pattern": { "type": "string" },
+    "pattern": { "type": "string" },
+    "evidence": { "type": "array", "items": { "type": "object" } },
+    "validation": { "type": "object" },
+    "lineage": { "type": "object" },
+    "affected_capabilities": { "type": "array", "items": { "type": "string" } },
+    "risks": { "type": "array", "items": { "type": "string" } },
+    "measured_impact": { "type": "object" },
+    "local_validation_required": { "type": "boolean" },
+    "owner_decision_required": { "type": "boolean" },
+    "expires_at": { "type": "string" }
+  }
+}

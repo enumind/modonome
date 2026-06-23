@@ -1,0 +1,8 @@
+{ "schema_version": 1, "autonomy_enabled": false, "dry_run": true, "auto_merge": false,
+  "max_attempts_per_item": 3, "max_open_prs": 3, "max_diff_lines": 400, "lease_minutes": 60,
+  "max_merges_per_day": 0, "remote_model_budget_usd_per_day": 0, "local_model_only_by_default": true,
+  "require_branch_protection": true, "require_codeowner_review": true, "require_distinct_maker_checker": true,
+  "require_distinct_maker_checker_model": true, "trusted_author_allowlist": [], "protected_paths_extra": [],
+  "state_dir": ".modonome", "market_scan_enabled": false, "owner_approval_required_for_new_claims": true,
+  "repo_network_enabled": false, "repo_network_dry_run": true, "share_raw_code_across_repos": false,
+  "share_repo_identifiers_by_default": false }

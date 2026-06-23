@@ -1,0 +1,2 @@
+{ "schema_version": 1, "id": "wi-001", "state": "queued", "attempts": 0, "max_attempts": 3,
+  "touches_protected_path": false, "allowed_edit_set": ["src/a.ts"], "gates": ["npm test"] }

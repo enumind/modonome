@@ -1,0 +1,9 @@
+[project]
+name = "orders-service"
+version = "1.0.0"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100

@@ -1,0 +1,4 @@
+{ "schema_version": 1, "autonomy_enabled": true, "dry_run": false, "auto_merge": true,
+  "max_merges_per_day": 2, "require_branch_protection": true, "require_distinct_maker_checker": true,
+  "require_distinct_maker_checker_model": true, "trusted_author_allowlist": ["@owner"],
+  "state_dir": ".modonome", "repo_network_enabled": false, "share_raw_code_across_repos": false }

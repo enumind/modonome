@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://modonome.com/schemas/work-item.schema.json",
+  "title": "Modonome work item",
+  "description": "Spec of record: prompts/modules/state-machine.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "id", "state"],
+  "properties": {
+    "schema_version": { "type": "integer", "minimum": 1 },
+    "id": { "type": "string", "minLength": 1 },
+    "state": {
+      "type": "string",
+      "enum": ["queued", "claimed", "making", "checking", "rework", "merge_ready", "merging", "done", "escalated"]
+    },
+    "owner": { "type": "string" },
+    "lease_expires_at": { "type": "string" },
+    "branch": { "type": "string" },
+    "pr": { "type": "string" },
+    "attempts": { "type": "integer", "minimum": 0 },
+    "max_attempts": { "type": "integer", "minimum": 1 },
+    "touches_protected_path": { "type": "boolean" },
+    "maker_id": { "type": "string" },
+    "maker_model": { "type": "string" },
+    "checker_id": { "type": "string" },
+    "checker_model": { "type": "string" },
+    "allowed_edit_set": { "type": "array", "items": { "type": "string" } },
+    "gates": { "type": "array", "items": { "type": "string" } },
+    "escalation_reason": { "type": "string" }
+  }
+}

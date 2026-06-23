@@ -1,0 +1,8 @@
+# The engine contract and its enforcing code require owner review. These are the
+# parts an autonomous loop must never edit on its own.
+*                       @techseek4vr
+/prompts/               @techseek4vr
+/schemas/               @techseek4vr
+/scripts/               @techseek4vr
+/templates/             @techseek4vr
+/.github/               @techseek4vr

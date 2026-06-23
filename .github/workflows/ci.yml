@@ -1,0 +1,33 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Drift guard
+        run: node scripts/check-drift.mjs
+      - name: Style check
+        run: node scripts/check-style.mjs .
+      - name: Tests
+        run: node --test tests/*.test.mjs
+
+  ratchet:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Anti-gaming ratchet
+        run: node scripts/guard-ratchet.mjs origin/${{ github.base_ref }}

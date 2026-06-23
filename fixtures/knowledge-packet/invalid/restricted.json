@@ -1,0 +1,3 @@
+{ "schema_version": 1, "id": "kp-002", "signal": "incident", "classification": "restricted",
+  "redaction_status": "redacted", "modernization_axis": "security",
+  "local_validation_required": true, "owner_decision_required": true }

@@ -1,0 +1,6 @@
+diff --git a/src/pay.ts b/src/pay.ts
+--- a/src/pay.ts
++++ b/src/pay.ts
+@@
+-  const provider = resolveProvider(id);
++  const provider = resolveProvider(id) as any;
