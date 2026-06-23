@@ -1,0 +1,49 @@
+name: Propose a new AgentProof scenario
+description: Claim a new adversarial governance scenario (AP-17 and beyond)
+labels: ["agentproof", "community"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        AgentProof scenarios prove that governed-autonomy controls hold under adversarial conditions.
+        A good scenario has a **concrete attack**, a **specific control** that should block it, and a **zero-false-positive fixture**.
+
+        Read [CONTRIBUTING.md](../agentproof/CONTRIBUTING.md) before filing.
+  - type: input
+    id: scenario-title
+    attributes:
+      label: Proposed scenario title
+      description: "Format: AP-NN: <brief attack description>"
+      placeholder: "AP-17: Coverage threshold comment-out via multi-line edit"
+    validations:
+      required: true
+  - type: textarea
+    id: attack
+    attributes:
+      label: What is the attack?
+      description: What does the agent do to try to make tests pass without doing real work?
+    validations:
+      required: true
+  - type: textarea
+    id: control
+    attributes:
+      label: What control blocks it?
+      description: Which guard-ratchet check, config validation, or schema rule should catch this?
+    validations:
+      required: true
+  - type: textarea
+    id: fixture
+    attributes:
+      label: Fixture sketch
+      description: Rough sketch of the .patch, .json, or .yaml fixture that represents the attack
+      render: diff
+    validations:
+      required: false
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Scenario checklist
+      options:
+        - label: The scenario tests a governance property, not a style preference
+        - label: The fixture is zero-false-positive (a clean diff would not trigger it)
+        - label: I am willing to submit a PR with the fixture and scenario file

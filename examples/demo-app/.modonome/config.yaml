@@ -1,0 +1,29 @@
+schema_version: 1
+
+# Arming levers : all off by default. Set via CI environment, never in this file.
+autonomy_enabled: false
+dry_run: true
+auto_merge: false
+
+# Safety caps
+max_merges_per_day: 3
+max_diff_lines: 300
+max_open_prs: 2
+max_attempts_per_item: 3
+
+# Gate requirements
+require_branch_protection: true
+require_codeowner_review: true
+require_distinct_maker_checker: true
+
+# Trusted authors (maker identity must be in this list)
+trusted_author_allowlist:
+  - modonome-maker[bot]
+
+# Paths the agent may not modify without owner escalation
+protected_paths_extra:
+  - .modonome/config.yaml
+  - .github/workflows
+  - CODEOWNERS
+
+state_dir: .modonome
