@@ -122,12 +122,18 @@ Read [SECURITY.md](SECURITY.md), [GOVERNANCE.md](GOVERNANCE.md), and
 Upgrades preserve your config. New levers always arrive with safe defaults, so an update can
 never arm an engine. See [docs/VERSIONING.md](docs/VERSIONING.md).
 
-## Examples
+## See it in action
+
+**[5-minute walkthrough](examples/demo-app/WALKTHROUGH.md)** : a real Node.js app,
+one week of governed runs: what the dry-run proposed, what merged, what the ratchet
+blocked, and what the end-of-week report showed. No setup required to read it.
+
+Other examples:
 
 - [examples/node-typescript](examples/node-typescript): Node and TypeScript service.
-  [See the dry-run transcript](examples/node-typescript/dry-run-transcript.txt).
+  [Dry-run transcript](examples/node-typescript/dry-run-transcript.txt).
 - [examples/python-service](examples/python-service): Python service.
-  [See the dry-run transcript](examples/python-service/dry-run-transcript.txt).
+  [Dry-run transcript](examples/python-service/dry-run-transcript.txt).
 
 ## Alpha limitations (v0.1-alpha)
 

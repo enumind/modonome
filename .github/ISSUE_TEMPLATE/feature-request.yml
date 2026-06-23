@@ -1,0 +1,41 @@
+name: Feature request
+description: Propose a new capability or improvement
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the specific friction or gap you are hitting.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What would you add, change, or remove?
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Ratchet (guard-ratchet.mjs)
+        - CLI commands (bin/modonome.mjs)
+        - Config schema
+        - AgentProof benchmark
+        - MCP server
+        - Prompt / governance model
+        - Docs
+        - CI integration
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: What else did you consider and why did you rule it out?
+    validations:
+      required: false
