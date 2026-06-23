@@ -41,6 +41,77 @@ flowchart LR
   queue --> panel[Control panel]
 ```
 
+## How Modonome sits beside any repo
+
+Modonome needs no central service. It reads and writes only through the surfaces the host
+repo already has: files, CI, issues, and pull requests. The diagram below shows the
+integration points regardless of language or platform.
+
+```mermaid
+flowchart TB
+  subgraph host ["Host repo (any stack or runtime)"]
+    src["Source files\n(any language)"]
+    ci["CI pipeline\n(Actions, Jenkins, GitLab, …)"]
+    bp["Branch protection\n+ code owners"]
+    sd[".modonome/\nconfig · queue · decisions · learnings"]
+  end
+
+  subgraph harness ["Harness (loads the prompt)"]
+    h1["Coding agent"]
+    h2["CI job"]
+    h3["Human session"]
+  end
+
+  subgraph engine ["Modonome engine (prompt + scripts)"]
+    adopt["Adopt\nread instructions, CI, code owners"]
+    sweep["Dry-run sweep\npropose bounded work"]
+    maker["Maker\none packet, test-fenced"]
+    checker["Checker\nindependent, runs gates"]
+    ratchet["Anti-gaming ratchet\nguard-ratchet.mjs in CI"]
+    merge["Merge authority\nlands only when every gate is green"]
+  end
+
+  harness -->|loads prompt| engine
+  host -->|instructions, gates, code owners| adopt
+  adopt --> sweep
+  sweep --> maker
+  maker --> checker
+  checker --> ratchet
+  ratchet --> merge
+  merge -->|pull request| host
+  sd <-->|durable state| engine
+  ci -->|runs ratchet and validators| ratchet
+  bp -->|enforces protection| merge
+```
+
+The engine is stack-independent. It normalizes work by intent, evidence, and interface
+contract rather than by language or framework. The `ENTERPRISE.md` adoption table lists ten
+estate types: product app repos, monorepos, microservice estates, mainframe, SAP, Oracle,
+Salesforce, ServiceNow, low-code or RPA, and data or BI.
+
+## Learning and self-improvement pipeline
+
+The engine has a defined self-improvement loop that tightens quality over time without
+bypassing owner control.
+
+```mermaid
+flowchart LR
+  signal["Correction signal\ngate failure · review fix · incident · rework"]
+  capture["Follower captures\none generalized, evidence-backed lesson"]
+  stage["Stage in LEARNINGS.md\nfingerprinted · dated · capped at 20"]
+  promote["Owner promotes\ninto canonical rules, config, or tests"]
+  gate["Add deterministic gate\nwhen one fits"]
+
+  signal --> capture --> stage --> promote --> gate
+  gate -->|raises the floor| signal
+```
+
+Market and standards scans are handled by a dedicated market-researcher role and are off by
+default. When enabled, sourced findings flow to the steward role, which scores and routes
+proposals. Net-new claims need owner approval before any roadmap change. The proposal
+priority score (`safety + user_value + repo_fit + reuse + evidence - effort - blast_radius -
+uncertainty`) surfaces the highest-value, lowest-risk improvements first.
+
 ## Why this factoring
 
 - One source of truth. The config schema defines the levers. The prompt and templates follow

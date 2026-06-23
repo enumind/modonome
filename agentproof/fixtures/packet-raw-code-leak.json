@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "id": "gb-08-raw-code-leak",
+  "source_repo_hash": "sha256:abc123",
+  "pattern": "Use retry with exponential backoff for transient network errors.",
+  "evidence": "Gate failure on network timeout in CI. Fixed by adding retry logic.\n\n```javascript\nasync function fetchWithRetry(url, retries = 3) {\n  for (let i = 0; i < retries; i++) {\n    try { return await fetch(url); } catch (e) {\n      if (i === retries - 1) throw e;\n      await new Promise(r => setTimeout(r, 1000 * 2 ** i));\n    }\n  }\n}\n```",
+  "classification": "publishable",
+  "redaction_status": "clean",
+  "local_validation_required": true,
+  "created_at": "2026-06-01T00:00:00Z"
+}

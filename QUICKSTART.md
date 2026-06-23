@@ -48,3 +48,42 @@ Armed mode is a deliberate, owner-only step. It needs branch protection, require
 code-owner review, a separate merge identity, caps, and a rollback path. The arming levers
 are read from your environment or CI, never from the config file. See
 [GOVERNANCE.md](GOVERNANCE.md).
+
+## What success looks like after the first week
+
+Run the report command to see governance activity and your AgentProof score:
+
+```bash
+npx modonome report .
+```
+
+On a repo with one week of dry-run activity, you will see something like this:
+
+```
+Modonome Governance Report
+==========================
+Target:     .
+Period:     2026-06-16 to 2026-06-23
+Generated:  2026-06-23
+
+Activity
+--------
+  Items attempted:                    9
+  Gates passed:                      26
+  Gates failed:                       1
+  Ratchet rejections:                 1
+  Merges landed:                      9
+  Lines changed:                    683
+  Est. hours saved:                17.0
+
+AgentProof Score
+----------------
+  Score: 16/16
+  Level: GOVERNED : all governance controls present and enforced
+```
+
+The ratchet rejection on day 2 (item-003) is the system working correctly: the agent
+tried to fix a test by weakening it, the ratchet caught it, and the agent revised the
+fix. The merge that landed was a real fix.
+
+A full dry-run output example is at [examples/dry-run-transcript.txt](examples/dry-run-transcript.txt).

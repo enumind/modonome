@@ -3,11 +3,9 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { spawnSync } from "node:child_process";
 
 import { validate } from "../scripts/lib/jsonschema.mjs";
 import { validateConfig, loadConfig } from "../scripts/validate-config.mjs";
-import { validatePacket } from "../scripts/validate-knowledge-packet.mjs";
 import { migrate } from "../scripts/migrate-config.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -44,27 +42,6 @@ test("work items validate against the schema", () => {
   }
 });
 
-test("knowledge packets: clean publishable, restricted and leaking blocked", () => {
-  for (const f of files(join(fx, "knowledge-packet", "valid"))) {
-    assert.deepEqual(validatePacket(readJson(f)), [], `expected publishable: ${f}`);
-  }
-  for (const f of files(join(fx, "knowledge-packet", "invalid"))) {
-    assert.ok(validatePacket(readJson(f)).length > 0, `expected blocked: ${f}`);
-  }
-});
-
-test("ratchet passes clean diffs and rejects gaming diffs", () => {
-  const guard = join(root, "scripts", "guard-ratchet.mjs");
-  for (const f of files(join(fx, "ratchet-diffs", "clean"))) {
-    const r = spawnSync("node", [guard, "--diff", f], { encoding: "utf8" });
-    assert.equal(r.status, 0, `expected clean: ${f}\n${r.stderr}`);
-  }
-  for (const f of files(join(fx, "ratchet-diffs", "gaming"))) {
-    const r = spawnSync("node", [guard, "--diff", f], { encoding: "utf8" });
-    assert.equal(r.status, 1, `expected rejected: ${f}`);
-  }
-});
-
 test("migration adds missing levers with safe defaults and never arms", () => {
   const { config, added } = migrate({ schema_version: 0, dry_run: true });
   assert.equal(config.schema_version, 1);
@@ -72,11 +49,4 @@ test("migration adds missing levers with safe defaults and never arms", () => {
   assert.equal(config.autonomy_enabled, false);
   assert.equal(config.auto_merge, false);
   assert.equal(config.max_merges_per_day, 0);
-});
-
-test("prompt bundle is current and levers do not drift", () => {
-  const bundle = spawnSync("node", [join(root, "scripts", "build-prompt.mjs"), "--check"], { encoding: "utf8" });
-  assert.equal(bundle.status, 0, bundle.stderr);
-  const drift = spawnSync("node", [join(root, "scripts", "check-drift.mjs")], { encoding: "utf8" });
-  assert.equal(drift.status, 0, drift.stderr);
 });

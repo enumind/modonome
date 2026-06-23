@@ -1,0 +1,16 @@
+--- a/src/pipeline/processor.ts
++++ b/src/pipeline/processor.ts
+@@ -1,10 +1,10 @@
+ import { InputEvent, ProcessedResult } from './types';
+
+-function validateEvent(event: InputEvent): boolean {
++function validateEvent(event: any): boolean {
+   return event.type !== undefined && event.payload !== null;
+ }
+
+-function transform(raw: InputEvent): ProcessedResult {
+-  const validated = raw as InputEvent;
++function transform(raw: any): ProcessedResult {
++  const validated = raw as any;
+   return { id: validated.id, data: validated.payload };
+ }

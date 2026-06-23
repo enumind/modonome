@@ -48,5 +48,5 @@ stripped unless an owner approves otherwise. A central catalog is out of scope f
 
 ## Reporting
 
-Email the maintainer through the address listed on the GitHub profile, or open a private
-advisory. Please do not file public issues for vulnerabilities.
+Open a [private security advisory](https://github.com/nateshpp/modonome/security/advisories/new)
+on the GitHub repository. Please do not file public issues for vulnerabilities.

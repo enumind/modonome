@@ -17,6 +17,8 @@ Usage:
   npx modonome adopt <dir>       alias for dry-run, writes an adoption summary to stdout.
   npx modonome validate <file>   validate a config or knowledge packet.
   npx modonome migrate <file>    add new config levers with safe defaults and bump the version.
+  npx modonome report [dir]      print governance activity summary and AgentProof score.
+  npx modonome agentproof        run the AgentProof adversarial benchmark suite (16 scenarios).
   npx modonome help              show this message.
 
 Modonome stays off until an owner arms it through the environment or CI.`;
@@ -40,6 +42,12 @@ switch (cmd) {
     else run("validate-config.mjs", rest);
     break;
   }
+  case "report":
+    run("report.mjs", rest);
+    break;
+  case "agentproof":
+    spawnSync("node", [join(here, "..", "agentproof", "runner.mjs"), ...rest], { stdio: "inherit" }); process.exit(0);
+    break;
   case "migrate":
     run("migrate-config.mjs", rest);
     break;

@@ -1,0 +1,13 @@
+diff --git a/src/CacheStore.cs b/src/CacheStore.cs
+index a7b8c9d..e0f1a2b 100644
+--- a/src/CacheStore.cs
++++ b/src/CacheStore.cs
+@@ -4,6 +4,8 @@ using System.Collections.Generic;
+
+ public class CacheStore<TKey, TValue>
+ {
++#pragma warning disable CS8600
++#pragma warning disable CS8603
+     private readonly Dictionary<TKey, object> _store = new();
+
+     public TValue Get(TKey key)
