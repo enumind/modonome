@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Print a governance activity summary from .modonome/metrics.jsonl.
 // Usage: node scripts/report.mjs [targetDir]
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, mkdirSync, writeFileSync, readdirSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
@@ -11,6 +11,20 @@ const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
 const target = process.argv[2] || ".";
 const metricsPath = join(target, ".modonome", "metrics.jsonl");
+const startMs = Date.now();
+
+function writeRunLog(runsDir, command, payload) {
+  try {
+    mkdirSync(runsDir, { recursive: true });
+    const ts = new Date().toISOString();
+    const safe = ts.replace(/[:.]/g, "-");
+    writeFileSync(join(runsDir, `${safe}-${command}.json`), JSON.stringify({ ts, command, ...payload }, null, 2));
+    const all = readdirSync(runsDir).filter((f) => f.endsWith(".json")).sort();
+    for (const old of all.slice(0, Math.max(0, all.length - 30))) {
+      try { unlinkSync(join(runsDir, old)); } catch { /* ignore */ }
+    }
+  } catch { /* log writes must never crash the command */ }
+}
 
 function pad(s, n) { return String(s).padEnd(n); }
 function rpad(s, n) { return String(s).padStart(n); }
@@ -129,3 +143,12 @@ if (gb) {
 }
 
 console.log("");
+
+writeRunLog(join(target, ".modonome", "runs"), "report", {
+  argv: process.argv.slice(2),
+  target,
+  summary: counts,
+  agentproof_score: gb ? gb.score : null,
+  exit_code: 0,
+  duration_ms: Date.now() - startMs,
+});
