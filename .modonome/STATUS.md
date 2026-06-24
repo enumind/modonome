@@ -24,7 +24,9 @@ Last updated: 2026-06-24
 - Fixed SECURITY.md: removed false MCP adversarial scenarios claim
 - Filed 5 ADRs in docs/adr/ covering: self-governance, shadow mode, AgentProof portability,
   arming isolation enforcement, run observability
-- .github/CODEOWNERS already exists with `*` catch-all (@nateshpp on all files) plus explicit entries for prompts/, schemas/, scripts/, templates/, .github/ — WI-011 closed as already done
+- .github/CODEOWNERS already exists with `*` catch-all (@nateshpp on all files) plus explicit entries for prompts/, schemas/, scripts/, templates/, .github/. WI-011 closed as already done.
+- Added AGENTS.md: no AI attribution in commits, governed autonomy operating spec (AI-agnostic)
+- Owner resolved 3 decisions: shadow-mode=v0.2, agentproof-conformance=community standard, dry-run-git-integration=pending
 
 ## In progress
 
@@ -45,7 +47,7 @@ Last updated: 2026-06-24
 | WI-009 | Add ratchet vacuous-matcher detection | 2 | Yes |
 | WI-010 | Add Python bare-assert detection to ratchet | 2 | Yes |
 | WI-011 | ~~Add .github/CODEOWNERS file~~ | done | Already existed |
-| WI-012 | Create docs/mcp-server.md | 1 | No |
+| WI-012 | Create agentproof/CONFORMANCE-INTERFACE.md (community standard) | 1 | No |
 | WI-013 | Reconcile Ed25519 version target across three docs | 1 | No |
 | WI-014 | Fix CHANGELOG.md AgentProof scenario count | 1 | No |
 | WI-015 | Improve dry-run specificity (shallow repo analysis) | 2 | Yes |
