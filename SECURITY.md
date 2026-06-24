@@ -52,7 +52,7 @@ stripped unless an owner approves otherwise. A central catalog is out of scope f
 |-------|-----------|-------------|
 | Malicious issue poster | Inject instructions into issue body to redirect engine behavior | External text is treated as data. Trusted authorship is verified from platform metadata, not from issue content. Outbound calls blocked after a turn that read untrusted text. |
 | Compromised dependency | Introduce malicious code through a supply-chain update | Dependency changes require human review. Engine will not auto-merge dependency PRs. Package names from advisories checked against allowlist before any install is proposed. |
-| Rogue MCP client | Call MCP tools to weaken ratchet, bypass config, or exfiltrate diffs | MCP tools run validators and the ratchet externally; they cannot modify them. Temp files are removed after each call. The AgentProof suite includes MCP-path adversarial scenarios. |
+| Rogue MCP client | Call MCP tools to weaken ratchet, bypass config, or exfiltrate diffs | MCP tools run validators and the ratchet externally; they cannot modify them. Temp files are removed after each call. diff_path inputs are validated against an extension allowlist and must be regular files. |
 | Agent self-modification | Edit ratchet, validators, or drift guard to weaken its own controls | CODEOWNERS gates these files. The ratchet, validators, and drift guard run in CI where the agent has no write access to the result. |
 | Prompt injection via PR body or file content | Override engine behavior through crafted content in reviewed files | Trusted authorship verified from platform metadata. Instructions in PR bodies or file content are not executed as commands. |
 

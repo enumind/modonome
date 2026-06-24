@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "id": "WI-013-reconcile-ed25519-version-target",
+  "state": "queued",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": false,
+  "allowed_edit_set": [
+    "README.md",
+    "GOVERNED-AUTONOMY-SPEC.md",
+    "CHANGELOG.md",
+    "ROADMAP.md"
+  ],
+  "gates": [
+    "node scripts/check-style.mjs ."
+  ]
+}

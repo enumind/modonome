@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "id": "WI-008-implement-lease-expiry-tick",
+  "state": "queued",
+  "attempts": 0,
+  "max_attempts": 2,
+  "touches_protected_path": true,
+  "allowed_edit_set": [
+    "scripts/tick.mjs",
+    "bin/modonome.mjs",
+    "tests/"
+  ],
+  "gates": [
+    "node --test tests/*.test.mjs",
+    "node scripts/check-style.mjs ."
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "id": "WI-003-remove-shadow-mode-references",
+  "state": "queued",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": false,
+  "allowed_edit_set": [
+    "README.md",
+    "QUICKSTART.md",
+    "ADOPTION-GUIDE.md",
+    "GOVERNED-AUTONOMY-SPEC.md",
+    "SECURITY.md"
+  ],
+  "gates": [
+    "node scripts/check-style.mjs .",
+    "node --test tests/*.test.mjs"
+  ]
+}

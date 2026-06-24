@@ -41,7 +41,7 @@ switch (cmd) {
   case "validate": {
     const typeIdx = rest.indexOf("--type");
     const explicitType = typeIdx !== -1 ? rest[typeIdx + 1] : null;
-    const passthroughArgs = rest.filter((a, i) => a !== "--type" && i !== typeIdx + 1);
+    const passthroughArgs = rest.filter((a, i) => a !== "--type" && (typeIdx === -1 || i !== typeIdx + 1));
     const file = passthroughArgs.find((a) => !a.startsWith("-")) || "";
     const isPacket = explicitType === "packet" || (!explicitType && file.includes("packet"));
     if (isPacket) run("validate-knowledge-packet.mjs", passthroughArgs);
@@ -52,7 +52,7 @@ switch (cmd) {
     run("report.mjs", rest);
     break;
   case "agentproof":
-    spawnSync("node", [join(here, "..", "agentproof", "runner.mjs"), ...rest], { stdio: "inherit" }); process.exit(0);
+    process.exit(spawnSync("node", [join(here, "..", "agentproof", "runner.mjs"), ...rest], { stdio: "inherit" }).status ?? 1);
     break;
   case "migrate":
     run("migrate-config.mjs", rest);

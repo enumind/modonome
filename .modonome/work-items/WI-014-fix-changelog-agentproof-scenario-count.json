@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "id": "WI-014-fix-changelog-agentproof-scenario-count",
+  "state": "queued",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": false,
+  "allowed_edit_set": [
+    "CHANGELOG.md"
+  ],
+  "gates": [
+    "node scripts/check-style.mjs ."
+  ]
+}

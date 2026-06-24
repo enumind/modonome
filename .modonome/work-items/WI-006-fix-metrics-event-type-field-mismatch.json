@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "id": "WI-006-fix-metrics-event-type-field-mismatch",
+  "state": "queued",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": true,
+  "allowed_edit_set": [
+    "schemas/metrics.schema.json",
+    "scripts/report.mjs",
+    "tests/"
+  ],
+  "gates": [
+    "node --test tests/*.test.mjs",
+    "node scripts/check-drift.mjs"
+  ]
+}

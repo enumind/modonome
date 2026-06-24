@@ -17,9 +17,9 @@
  * and writes responses to stdout. All log output goes to stderr.
  */
 import { createInterface } from "node:readline";
-import { writeFileSync, readFileSync, existsSync, rmSync } from "node:fs";
+import { writeFileSync, readFileSync, existsSync, rmSync, statSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join, dirname } from "node:path";
+import { join, dirname, resolve, extname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 
@@ -114,7 +114,19 @@ async function toolRatchet(args) {
   let tempFile = null;
 
   if (args.diff_path) {
-    diffPath = args.diff_path;
+    const resolved = resolve(String(args.diff_path));
+    let st;
+    try { st = statSync(resolved); } catch {
+      return { passed: false, violations: ["diff_path does not exist or is not accessible."] };
+    }
+    if (!st.isFile()) {
+      return { passed: false, violations: ["diff_path must be a regular file."] };
+    }
+    const ext = extname(resolved).toLowerCase();
+    if (![".patch", ".diff", ".txt", ""].includes(ext)) {
+      return { passed: false, violations: [`diff_path extension not allowed: ${ext}`] };
+    }
+    diffPath = resolved;
   } else if (args.diff) {
     tempFile = join(tmpdir(), `modonome-ratchet-${process.pid}-${Math.floor(Math.random() * 1e9)}.patch`);
     writeFileSync(tempFile, args.diff, "utf8");
@@ -137,7 +149,6 @@ async function toolRatchet(args) {
     return {
       passed: result.status === 0,
       violations,
-      raw: (result.stdout + result.stderr).trim(),
     };
   } finally {
     if (tempFile) try { rmSync(tempFile); } catch { /* best-effort */ }
