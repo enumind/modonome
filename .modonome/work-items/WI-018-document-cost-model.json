@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "id": "WI-018-document-cost-model",
+  "state": "queued",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": false,
+  "allowed_edit_set": [
+    "README.md",
+    "QUICKSTART.md",
+    "ADOPTION-GUIDE.md"
+  ],
+  "gates": [
+    "node scripts/check-style.mjs ."
+  ]
+}

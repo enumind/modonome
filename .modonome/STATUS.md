@@ -27,6 +27,8 @@ Last updated: 2026-06-24
 - .github/CODEOWNERS already exists with `*` catch-all (@nateshpp on all files) plus explicit entries for prompts/, schemas/, scripts/, templates/, .github/. WI-011 closed as already done.
 - Added AGENTS.md: no AI attribution in commits, governed autonomy operating spec (AI-agnostic)
 - Owner resolved 3 decisions: shadow-mode=v0.2, agentproof-conformance=community standard, dry-run-git-integration=pending
+- Added .github/workflows/modonome-auto.yml: GitHub Actions autonomous run harness (weekdays 2am UTC + manual trigger)
+- Filed 4 friction-reduction work items: WI-016 through WI-019
 
 ## In progress
 
@@ -51,6 +53,10 @@ Last updated: 2026-06-24
 | WI-013 | Reconcile Ed25519 version target across three docs | 1 | No |
 | WI-014 | Fix CHANGELOG.md AgentProof scenario count | 1 | No |
 | WI-015 | Improve dry-run specificity (shallow repo analysis) | 2 | Yes |
+| WI-016 | Add arming checklist to QUICKSTART.md | 1 | No |
+| WI-017 | Scaffold command includes CI workflow template | 2 | Yes |
+| WI-018 | Document cost model (API tokens per run) | 1 | No |
+| WI-019 | Document VS Code manual trigger workflow | 1 | No |
 
 ## Blocked
 

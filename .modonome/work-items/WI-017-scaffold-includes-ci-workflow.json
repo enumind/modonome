@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "id": "WI-017-scaffold-includes-ci-workflow",
+  "state": "queued",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": true,
+  "allowed_edit_set": [
+    "scripts/scaffold.mjs",
+    "templates/.github/workflows/modonome-auto.yml"
+  ],
+  "gates": [
+    "node --test tests/*.test.mjs",
+    "node scripts/check-style.mjs ."
+  ]
+}
