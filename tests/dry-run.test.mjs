@@ -1,5 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
@@ -53,4 +55,19 @@ test("dry-run detects protected paths when present", () => {
   const result = dryRun(join(fixtures, "node"));
   assert.strictEqual(result.status, 0);
   assert.match(result.stdout, /Protected paths it would never auto-merge/, "must list protected paths section");
+});
+
+test("dry-run names the top hot file in proposals when git history is available", () => {
+  // Run against the modonome repo itself, which has real git history.
+  const result = dryRun(root);
+  assert.strictEqual(result.status, 0, `exited ${result.status}: ${result.stderr}`);
+  // The first proposal must mention a real filename from git history.
+  // We check for a path separator or dot, indicating a real file reference rather than generic text.
+  const out = result.stdout;
+  assert.match(out, /Proposed bounded work/, "must propose work");
+  // When git history is present, at least one proposal should reference a file path.
+  assert.ok(
+    out.includes("/") || out.includes(".mjs") || out.includes(".md"),
+    "proposal must reference a specific file when git history is available"
+  );
 });

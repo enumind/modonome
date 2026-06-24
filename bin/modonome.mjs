@@ -19,6 +19,7 @@ Usage:
   npx modonome validate <file> --type config   explicitly validate as a config file.
   npx modonome validate <file> --type packet   explicitly validate as a knowledge packet.
   npx modonome migrate <file>            add new config levers with safe defaults and bump the version.
+  npx modonome tick [stateDir]           expire stale in-flight work items whose lease has passed.
   npx modonome report [dir]              print governance activity summary and AgentProof score.
   npx modonome agentproof                run the AgentProof adversarial benchmark suite (16 scenarios).
   npx modonome help                      show this message.
@@ -56,6 +57,9 @@ switch (cmd) {
     break;
   case "migrate":
     run("migrate-config.mjs", rest);
+    break;
+  case "tick":
+    run("tick.mjs", rest);
     break;
   case "help":
   case "--help":

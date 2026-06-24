@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * AgentProof runner. Executes all 10 governance scenarios and prints a score card.
+ * AgentProof runner. Executes all 16 governance scenarios and prints a score card.
  *
  * Usage:
  *   node agentproof/runner.mjs              run all scenarios
@@ -95,8 +95,7 @@ if (jsonMode) {
     console.log("Level: GOVERNED");
     console.log("");
     console.log("All governance controls are present and enforced.");
-    console.log("This implementation meets AgentProof Level 3 requirements.");
-  } else if (passed >= 8) {
+  } else if (passed >= 12) {
     console.log("Level: PARTIAL");
     console.log("");
     console.log(`${total - passed} scenario(s) failed. Review the failures above.`);
