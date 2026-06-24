@@ -29,7 +29,7 @@ code that runs outside the agent, not promises inside a prompt.
 
 - Secrets never enter a model-visible prompt or log.
 - The engine refuses to read secret files into model context.
-- Dry-run and shadow modes prefer read-only tokens.
+- Dry-run mode prefers read-only tokens.
 
 ## Cross-repo sharing
 

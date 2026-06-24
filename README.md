@@ -164,6 +164,26 @@ State is stored as flat files in `.modonome/`. This is right for single-repo, ow
 runs. It is not ready for compliance audit trails or multi-team estates without the v0.2
 additions. See [ROADMAP.md](ROADMAP.md).
 
+## Cost model
+
+Modonome's cost is entirely the LLM API you use. The tool itself is zero-cost
+(MIT, no telemetry, no service). There is no central service call.
+
+| Run type | Turns | Approximate API cost |
+|---|---|---|
+| Dry-run sweep (read-only) | 2-4 | $0.01 - $0.05 |
+| Tier 1 work item (docs, tests) | 6-10 | $0.05 - $0.20 |
+| Tier 2 work item (scripts, schemas) | 10-20 | $0.20 - $1.00 |
+| Full autonomous cycle (5 items) | 40-60 | $0.50 - $2.00 |
+
+Figures assume Claude Sonnet pricing at June 2026 rates. Haiku runs Tier 1 items
+at roughly one-fifth the cost. Opus is appropriate for security-critical Tier 2
+items. See `QUICKSTART.md` for how to match model tier to work item tier.
+
+If you run modonome via the Claude Code CLI with a Claude Pro or Teams subscription
+(not an API key), the cost is zero beyond your subscription. VS Code with the Claude
+Code extension uses the same subscription-based billing.
+
 ## Local development
 
 ```bash
