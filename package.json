@@ -29,7 +29,10 @@
     "schemas",
     "scripts",
     "docs",
-    "agentproof"
+    "agentproof",
+    "LICENSE",
+    "README.md",
+    "CONTRIBUTING.md"
   ],
   "license": "MIT",
   "author": "nateshpp",
