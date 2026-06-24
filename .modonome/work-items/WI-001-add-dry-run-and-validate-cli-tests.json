@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "id": "WI-001-add-dry-run-and-validate-cli-tests",
+  "state": "queued",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": false,
+  "allowed_edit_set": [
+    "tests/dry-run.test.mjs",
+    "tests/cli-dispatch.test.mjs",
+    "fixtures/dry-run/"
+  ],
+  "gates": [
+    "node --test tests/*.test.mjs",
+    "node scripts/check-style.mjs ."
+  ]
+}

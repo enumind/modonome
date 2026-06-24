@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "id": "WI-002-fix-walkthrough-accuracy",
+  "state": "queued",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": false,
+  "allowed_edit_set": [
+    "examples/demo-app/WALKTHROUGH.md",
+    "examples/dry-run-transcript.txt",
+    "README.md",
+    "QUICKSTART.md"
+  ],
+  "gates": [
+    "node scripts/check-style.mjs ."
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "id": "WI-005-enforce-arming-isolation-at-runtime",
+  "state": "queued",
+  "attempts": 0,
+  "max_attempts": 2,
+  "touches_protected_path": true,
+  "allowed_edit_set": [
+    "bin/modonome.mjs",
+    "scripts/validate-config.mjs",
+    "tests/",
+    "README.md",
+    "SECURITY.md",
+    "GOVERNED-AUTONOMY-SPEC.md",
+    "COMPLIANCE.md"
+  ],
+  "gates": [
+    "node --test tests/*.test.mjs",
+    "node scripts/check-drift.mjs",
+    "node scripts/check-style.mjs ."
+  ]
+}

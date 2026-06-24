@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "id": "WI-012-create-conformance-interface-spec",
+  "state": "queued",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": false,
+  "allowed_edit_set": [
+    "agentproof/CONFORMANCE-INTERFACE.md",
+    "README.md"
+  ],
+  "gates": [
+    "node scripts/check-style.mjs ."
+  ]
+}

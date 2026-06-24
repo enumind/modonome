@@ -23,7 +23,7 @@ function detectStack() {
   if (has("build.gradle") || has("build.gradle.kts")) return { name: "Java (Gradle)", pm: "gradle", gates: ["./gradlew check", "./gradlew jacocoTestCoverageVerification"] };
   if (has("go.mod")) return { name: "Go", pm: "go", gates: ["go vet ./...", "go test ./..."] };
   const csprojFiles = (() => { try { return readdirSync(target).some((f) => f.endsWith(".csproj") || f.endsWith(".sln")); } catch { return false; } })();
-  if (csprojFiles) return { name: "C# (.NET)", pm: "dotnet", gates: ["dotnet build", "dotnet test --collect:"XPlat Code Coverage""] };
+  if (csprojFiles) return { name: "C# (.NET)", pm: "dotnet", gates: ["dotnet build", 'dotnet test --collect:"XPlat Code Coverage"'] };
   if (has("main.tf") || has("terraform")) return { name: "Infrastructure (Terraform)", pm: "terraform", gates: ["terraform fmt -check", "terraform validate"] };
   return { name: "Unknown", pm: "unknown", gates: ["adopt the repo's existing checks"] };
 }

@@ -48,9 +48,10 @@ version bump.
 
 ### MCP server
 
-- `scripts/mcp-server.mjs` exposes four JSON-RPC 2.0 tools over stdio: `queue`,
-  `validate`, `ratchet`, and `status`. Any MCP-compatible harness can integrate
-  without running shell scripts.
+- `scripts/mcp-server.mjs` exposes four JSON-RPC 2.0 tools over stdio:
+  `modonome_ratchet`, `modonome_validate_config`, `modonome_validate_work_item`,
+  and `modonome_status`. Any MCP-compatible harness can integrate without running
+  shell scripts.
 
 ### Demo app and walkthrough
 
@@ -83,6 +84,6 @@ version bump.
 | Version | Target | Key deliverable |
 |---|---|---|
 | v0.2 | Hardened alpha | Signed work items (Ed25519), `modonome report` dashboard |
-| v0.3 | Beta | MCP server GA, OpenTelemetry span emission |
+| v0.3 | Beta | OpenTelemetry span emission, signed work items |
 | v0.4 | RC | Multi-repo estate management, compliance audit trail |
 | v1.0 | GA | Stable API, SLA-backed ratchet, OpenSSF conformance |
