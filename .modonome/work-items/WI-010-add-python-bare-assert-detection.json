@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "id": "WI-010-add-python-bare-assert-detection",
+  "state": "queued",
+  "attempts": 0,
+  "max_attempts": 2,
+  "touches_protected_path": true,
+  "allowed_edit_set": [
+    "scripts/guard-ratchet.mjs",
+    "agentproof/fixtures/",
+    "agentproof/scenarios/",
+    "tests/ratchet.test.mjs",
+    "RATCHET-SPEC.md"
+  ],
+  "gates": [
+    "node agentproof/runner.mjs",
+    "node --test tests/*.test.mjs"
+  ]
+}

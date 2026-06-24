@@ -25,8 +25,8 @@ export function redactionErrors(packet) {
   const errs = [];
   const text = JSON.stringify(packet);
   for (const p of SECRET_PATTERNS) {
-    if (p.re.test(text) && packet.redaction_status !== "blocked") {
-      errs.push(`packet may contain ${p.name}; set redaction_status to blocked and remove it before publish.`);
+    if (p.re.test(text)) {
+      errs.push(`packet may contain ${p.name}; remove it before publish.`);
     }
   }
   if (packet.classification === "restricted" || packet.classification === "confidential") {

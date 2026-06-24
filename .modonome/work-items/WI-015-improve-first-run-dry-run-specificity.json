@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "id": "WI-015-improve-first-run-dry-run-specificity",
+  "state": "queued",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": true,
+  "allowed_edit_set": [
+    "scripts/dry-run-sweep.mjs",
+    "tests/dry-run.test.mjs"
+  ],
+  "gates": [
+    "node --test tests/*.test.mjs",
+    "node scripts/check-style.mjs ."
+  ]
+}

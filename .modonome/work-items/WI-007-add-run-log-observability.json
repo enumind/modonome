@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "id": "WI-007-add-run-log-observability",
+  "state": "queued",
+  "attempts": 0,
+  "max_attempts": 2,
+  "touches_protected_path": true,
+  "allowed_edit_set": [
+    "scripts/dry-run-sweep.mjs",
+    "scripts/scaffold.mjs",
+    "scripts/report.mjs",
+    "tests/"
+  ],
+  "gates": [
+    "node --test tests/*.test.mjs",
+    "node scripts/check-style.mjs ."
+  ]
+}

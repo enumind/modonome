@@ -2,16 +2,32 @@
 
 Every decision defaults to hold when unanswered.
 
-## Open
+## Resolved
 
 - id: self-maintenance-scope
-  question: Which surfaces should Modonome maintain on its own repo autonomously (vs. owner-only)?
+  question: Which surfaces should Modonome maintain on its own repo autonomously?
+  decision: Tier 1 (docs, examples, tests, fixtures) autonomous. Tier 2 (scripts, schemas,
+    prompts, templates, .github) owner-reviewed. See docs/adr/ADR-001.
+  resolved: 2026-06-24
+
+- id: shadow-mode-implementation-timing
+  question: Implement shadow mode in v0.2 or keep as a later milestone?
+  decision: v0.2. Implement --shadow flag on dry-run-sweep as a queued work item.
+  resolved: 2026-06-24
+
+- id: agentproof-conformance-interface
+  question: Publish a standalone conformance interface spec for third-party runners?
+  decision: Yes. Publish agentproof/CONFORMANCE-INTERFACE.md as a community-evolving
+    standard with an open stdio runner protocol. See ADR-003 and WI-012.
+  resolved: 2026-06-24
+
+## Open
+
+- id: dry-run-git-integration
+  question: Should dry-run read git history for repo-specific proposals (WI-015)?
   options:
-    - docs-and-examples: ADOPTION-GUIDE, ENTERPRISE, QUICKSTART, examples, dry-run transcripts.
-    - tests-and-fixtures: test coverage gaps, new fixture cases.
-    - owner-only: prompts, schemas, scripts, templates, .github (protected paths, always human).
-  recommendation: docs-and-examples and tests-and-fixtures are safe for Tier 1 autonomous work.
-    Protected paths require owner review per CODEOWNERS.
+    - shallow-git: Run 'git log --oneline -20' and find most-changed files with no test neighbors.
+    - static-only: Keep static proposals; improve specificity through better stack heuristics only.
+  recommendation: shallow-git. This is the "Vagrant moment" for the tool; generic proposals
+    do not differentiate modonome from a documentation page.
   default_on_timeout: hold
-  context: This repo adopts its own engine. The question is how far Tier 1 autonomy should reach
-    on the project's own docs and test surfaces before an owner arms it.

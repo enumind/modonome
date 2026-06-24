@@ -35,9 +35,17 @@ export function parseFlatYaml(text) {
     if (idx === -1) continue;
     const key = line.slice(0, idx).trim();
     let value = line.slice(idx + 1);
-    // strip an inline comment when the value is not a quoted string
-    const hashAt = value.indexOf(" #");
-    if (hashAt !== -1 && !/["']/.test(value)) value = value.slice(0, hashAt);
+    const trimmedVal = value.trimStart();
+    if (trimmedVal.startsWith('"') || trimmedVal.startsWith("'")) {
+      // Quoted value: find the matching closing quote and drop anything after it.
+      const q = trimmedVal[0];
+      const closeIdx = trimmedVal.indexOf(q, 1);
+      if (closeIdx !== -1) value = " " + trimmedVal.slice(0, closeIdx + 1);
+    } else {
+      // Unquoted value: strip an inline comment (space-hash).
+      const hashAt = value.indexOf(" #");
+      if (hashAt !== -1) value = value.slice(0, hashAt);
+    }
     out[key] = parseScalar(value);
   }
   return out;
