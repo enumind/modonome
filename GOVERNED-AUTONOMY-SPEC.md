@@ -222,8 +222,7 @@ skipped.
 ```mermaid
 flowchart LR
   Disabled -->|"clean adoption map\nno unsafe defaults found"| DryRun["Dry-run"]
-  DryRun -->|"projected behavior acceptable\nowner review of first sweep"| Shadow
-  Shadow -->|"decision quality matches\nhuman outcomes over N runs"| Armed
+  DryRun -->|"projected behavior acceptable\nowner review of first sweep"| Armed
   Armed -->|"any gate fails\nor owner intervention"| DryRun
 ```
 
@@ -232,9 +231,6 @@ writes nothing except a requested scaffold.
 
 **Dry-run:** The agent reads issues, pull requests, and CI, projects what it would do, records
 metrics, and takes no write action.
-
-**Shadow:** The agent runs against live state in read-only mode and compares its projected
-decisions against human outcomes to calibrate accuracy.
 
 **Armed:** The agent may write pull requests and, if all merge gates pass, land changes. Armed
 mode requires every gate in Section 6.1 to pass.
@@ -506,7 +502,7 @@ in Modonome v0.1-alpha:
 
 | Capability | Status | Planned |
 |-----------|--------|---------|
-| Cryptographically signed work items (Section 4.1) | Not implemented | v0.3 (ADR-003) |
+| Cryptographically signed work items (Section 4.1) | Not implemented | v0.2 (ADR-003) |
 | OTel span emission (Section 13.5) | Not implemented | v0.3 (ADR-007) |
 | MCP server exposure (Section 13.3) | Shipped in v0.1.0-alpha | - |
 | Cross-repo metrics aggregation | Not implemented | v0.3 |

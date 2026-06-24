@@ -44,10 +44,38 @@ When a review correction or a gate failure teaches something general, add one li
 
 ## Arming later
 
-Armed mode is a deliberate, owner-only step. It needs branch protection, required checks,
-code-owner review, a separate merge identity, caps, and a rollback path. The arming levers
-are read from your environment or CI, never from the config file. See
-[GOVERNANCE.md](GOVERNANCE.md).
+Armed mode is a deliberate, owner-only step. Work through this checklist before setting
+`MODONOME_ARMED=true` in your CI or harness environment.
+
+**Platform gates**
+
+- [ ] Branch protection is active on the target branch (no direct push to main)
+- [ ] At least one required CI check is enforced before merge
+- [ ] `.github/CODEOWNERS` (or platform equivalent) lists at least one human reviewer
+      on every Tier 2 path (`scripts/`, `bin/`, `schemas/`, `templates/`, `prompts/`, `.github/`)
+
+**Identity and secrets**
+
+- [ ] Your git identity for agent commits uses the GitHub noreply address:
+      `<id>+<username>@users.noreply.github.com`
+- [ ] `ANTHROPIC_API_KEY` (or equivalent) is stored as a CI secret, not in a tracked file
+- [ ] `MODONOME_ARMED` is set to `"true"` only in the CI environment, not locally
+
+**Config review**
+
+- [ ] `auto_merge` in `.modonome/config.yaml` is `false` (keep it off until merge quality
+      is confirmed over several cycles)
+- [ ] `max_rework_cycles` and `lease_minutes` caps are set to reasonable values
+- [ ] Run `npx modonome validate .modonome/config.yaml` and confirm it exits 0
+
+**Rollback**
+
+- [ ] You have a documented rollback path: closing or reverting any agent-opened PR is
+      sufficient; no data is written outside the repo
+
+Once all boxes are checked, set `MODONOME_ARMED=true` in your CI secrets or harness
+environment and trigger a dry run to confirm the gate activates correctly. The arming
+variable is never read from the config file the agent can edit.
 
 ## What success looks like after the first week
 
@@ -87,3 +115,9 @@ tried to fix a test by weakening it, the ratchet caught it, and the agent revise
 fix. The merge that landed was a real fix.
 
 A full dry-run output example is at [examples/dry-run-transcript.txt](examples/dry-run-transcript.txt).
+
+## Running from VS Code
+
+To trigger a single work item from VS Code without a scheduled harness, see
+[docs/vscode-workflow.md](docs/vscode-workflow.md). It covers model selection,
+turn caps, and how to review and merge the resulting PR.

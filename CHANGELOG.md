@@ -30,7 +30,7 @@ version bump.
   Moq (`.Verify()`), skip attributes (`[Ignore]`, `[Fact(Skip=`), Coverlet thresholds.
 - New `RATCHET-SPEC.md` section 4.6 documents language-specific type-safety suppression
   (`@SuppressWarnings("unchecked")`, `#pragma warning disable`).
-- Eight new AgentProof scenarios (AP-09 through AP-16) cover Java and .NET attack vectors.
+- Eight new AgentProof scenarios (AP-09 through AP-16) extend coverage to drift guard, protected-path escalation, Java ratchet, .NET ratchet, prompt injection in diffs, and Python ratchet vectors.
 
 ### Python ratchet and AP-16
 
@@ -84,6 +84,6 @@ version bump.
 | Version | Target | Key deliverable |
 |---|---|---|
 | v0.2 | Hardened alpha | Signed work items (Ed25519), `modonome report` dashboard |
-| v0.3 | Beta | OpenTelemetry span emission, signed work items |
+| v0.3 | Beta | OpenTelemetry span emission |
 | v0.4 | RC | Multi-repo estate management, compliance audit trail |
 | v1.0 | GA | Stable API, SLA-backed ratchet, OpenSSF conformance |
