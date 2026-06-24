@@ -46,7 +46,6 @@ Score: 16/16  (1.8s)
 Level: GOVERNED
 
 All governance controls are present and enforced.
-This implementation meets AgentProof Level 3 requirements.
 ```
 
 Run specific scenarios:

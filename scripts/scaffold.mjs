@@ -8,6 +8,7 @@ import { dirname, join } from "node:path";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const templateDir = join(here, "..", "templates", ".modonome");
+const ciTemplateDir = join(here, "..", "templates", ".github", "workflows");
 
 function listTemplate(dir, base = "") {
   const out = [];
@@ -23,18 +24,34 @@ function listTemplate(dir, base = "") {
 export function scaffold(target, write) {
   const stateDir = join(target, ".modonome");
   const planned = [];
+
   for (const rel of listTemplate(templateDir)) {
     const dest = join(stateDir, rel);
     if (existsSync(dest)) {
-      planned.push({ rel, action: "keep" });
+      planned.push({ rel: join(".modonome", rel), action: "keep" });
       continue;
     }
-    planned.push({ rel, action: "create" });
+    planned.push({ rel: join(".modonome", rel), action: "create" });
     if (write) {
       mkdirSync(dirname(dest), { recursive: true });
       writeFileSync(dest, readFileSync(join(templateDir, rel), "utf8"));
     }
   }
+
+  for (const rel of listTemplate(ciTemplateDir)) {
+    const dest = join(target, ".github", "workflows", rel);
+    const destRel = join(".github", "workflows", rel);
+    if (existsSync(dest)) {
+      planned.push({ rel: destRel, action: "keep" });
+      continue;
+    }
+    planned.push({ rel: destRel, action: "create" });
+    if (write) {
+      mkdirSync(dirname(dest), { recursive: true });
+      writeFileSync(dest, readFileSync(join(ciTemplateDir, rel), "utf8"));
+    }
+  }
+
   return planned;
 }
 
@@ -56,8 +73,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const target = process.argv[2] || ".";
   const write = process.argv.includes("--write");
   const planned = scaffold(target, write);
-  console.log(write ? "Scaffold applied to .modonome/" : "Scaffold preview (no files written). Pass --write to apply.");
-  for (const p of planned) console.log(`  ${p.action === "create" ? (write ? "created" : "would create") : "kept"}: .modonome/${p.rel}`);
+  console.log(write ? "Scaffold applied." : "Scaffold preview (no files written). Pass --write to apply.");
+  for (const p of planned) console.log(`  ${p.action === "create" ? (write ? "created" : "would create") : "kept"}: ${p.rel}`);
   console.log("\nThe engine stays disabled and dry-run until an owner arms it.");
   writeRunLog(join(target, ".modonome", "runs"), "scaffold", {
     argv: process.argv.slice(2),

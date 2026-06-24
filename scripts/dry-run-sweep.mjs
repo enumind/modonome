@@ -4,6 +4,7 @@
 // Usage: node scripts/dry-run-sweep.mjs <targetDir>
 import { existsSync, readFileSync, readdirSync, mkdirSync, writeFileSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
+import { spawnSync } from "node:child_process";
 
 const target = process.argv[2] || ".";
 const has = (p) => existsSync(join(target, p));
@@ -54,14 +55,48 @@ function detectInstructions() {
   return ["AGENTS.md", "CLAUDE.md", "CODEX.md", "CONTRIBUTING.md", "README.md"].filter(has);
 }
 
-function proposeWork(stack) {
+function detectHotFiles() {
+  const result = spawnSync(
+    "git",
+    ["log", "--no-merges", "--name-only", "--pretty=format:", "-n", "200"],
+    { encoding: "utf8", cwd: target, timeout: 10000 }
+  );
+  if (result.status !== 0 || !result.stdout.trim()) return [];
+  const counts = {};
+  for (const line of result.stdout.split("\n")) {
+    const f = line.trim();
+    if (!f) continue;
+    counts[f] = (counts[f] || 0) + 1;
+  }
+  return Object.entries(counts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([file, changes]) => ({ file, changes }));
+}
+
+function proposeWork(stack, hotFiles) {
+  const top = hotFiles && hotFiles.length > 0 ? hotFiles[0] : null;
+  const topLabel = top ? `${top.file} (${top.changes} changes in recent history)` : null;
+
+  const testProposal = topLabel
+    ? `Add focused tests around the most-changed file: ${topLabel}.`
+    : "Add focused tests around the most-changed module from recent history.";
+
   const generic = [
-    "Add focused tests around the most-changed module from recent history.",
+    testProposal,
     "Type or guard one high-risk function and remove an unchecked assumption.",
     "Document and gate one manual release or verification step.",
   ];
-  if (stack.name.startsWith("Node")) generic.unshift("Add tests around a brittle path, then remove a dead feature-flag branch after owner approval.");
-  if (stack.name === "Python") generic.unshift("Isolate a flaky external call behind a local seam with a regression test.");
+  if (stack.name.startsWith("Node")) generic.unshift(
+    top
+      ? `Add tests for the high-churn path in ${top.file}, then remove any dead feature-flag branches after owner approval.`
+      : "Add tests around a brittle path, then remove a dead feature-flag branch after owner approval."
+  );
+  if (stack.name === "Python") generic.unshift(
+    top
+      ? `Isolate the flaky external call in ${top.file} behind a local seam with a regression test.`
+      : "Isolate a flaky external call behind a local seam with a regression test."
+  );
   if (stack.name.startsWith("Java")) generic.unshift("Add a JUnit 5 test for an untested service boundary and wire JaCoCo threshold to 80% line coverage.");
   if (stack.name === "C# (.NET)") generic.unshift("Add an xUnit test for an untested controller action and configure Coverlet threshold at 80% line coverage.");
   return generic.slice(0, 3);
@@ -70,6 +105,7 @@ function proposeWork(stack) {
 const stack = detectStack();
 const protectedPaths = detectProtected();
 const instructions = detectInstructions();
+const hotFiles = detectHotFiles();
 const adopted = has(".autonomy") ? ".autonomy (adopted)" : ".modonome";
 
 const lines = [];
@@ -84,7 +120,7 @@ for (const g of stack.gates) lines.push(`  - ${g}`);
 lines.push("\nProtected paths it would never auto-merge:");
 for (const p of (protectedPaths.length ? protectedPaths : ["none detected, ask the owner to confirm"])) lines.push(`  - ${p}`);
 lines.push("\nProposed bounded work (each becomes a small reviewable pull request):");
-proposeWork(stack).forEach((w, i) => lines.push(`  ${i + 1}. ${w}`));
+proposeWork(stack, hotFiles).forEach((w, i) => lines.push(`  ${i + 1}. ${w}`));
 lines.push("\nRefused by default: autonomy off, no auto-merge, no protected-path edits, no remote spend, nothing shared across repos.");
 lines.push("Next safe step: review this output, then run `npx modonome scaffold .` to drop disabled, dry-run state files.");
 
@@ -95,7 +131,8 @@ writeRunLog(join(target, ".modonome", "runs"), "dry-run", {
   target,
   detected_stack: { name: stack.name, pm: stack.pm },
   protected_paths: protectedPaths,
-  proposals: proposeWork(stack),
+  proposals: proposeWork(stack, hotFiles),
+  hot_files: hotFiles,
   exit_code: 0,
   duration_ms: Date.now() - startMs,
 });
