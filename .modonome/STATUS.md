@@ -24,7 +24,7 @@ Last updated: 2026-06-24
 - Fixed SECURITY.md: removed false MCP adversarial scenarios claim
 - Filed 5 ADRs in docs/adr/ covering: self-governance, shadow mode, AgentProof portability,
   arming isolation enforcement, run observability
-- Filed 15 work items in .modonome/work-items/ (see queue below)
+- .github/CODEOWNERS already exists with `*` catch-all (@nateshpp on all files) plus explicit entries for prompts/, schemas/, scripts/, templates/, .github/ — WI-011 closed as already done
 
 ## In progress
 
@@ -44,7 +44,7 @@ Last updated: 2026-06-24
 | WI-008 | Implement lease-expiry tick script | 2 | Yes |
 | WI-009 | Add ratchet vacuous-matcher detection | 2 | Yes |
 | WI-010 | Add Python bare-assert detection to ratchet | 2 | Yes |
-| WI-011 | Add .github/CODEOWNERS file | 2 | Yes |
+| WI-011 | ~~Add .github/CODEOWNERS file~~ | done | Already existed |
 | WI-012 | Create docs/mcp-server.md | 1 | No |
 | WI-013 | Reconcile Ed25519 version target across three docs | 1 | No |
 | WI-014 | Fix CHANGELOG.md AgentProof scenario count | 1 | No |
