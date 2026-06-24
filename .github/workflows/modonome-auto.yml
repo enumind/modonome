@@ -1,0 +1,45 @@
+name: Modonome autonomous run
+
+on:
+  schedule:
+    - cron: '0 2 * * 1-5'   # weekdays at 2am UTC; remove schedule to go manual-only
+  workflow_dispatch:          # also triggerable by hand from the Actions tab
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  autonomous-run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683   # v4.2.2
+
+      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af   # v4.1.0
+        with:
+          node-version: '20'
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Run modonome autonomous cycle
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          MODONOME_ARMED: ${{ secrets.MODONOME_ARMED }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          claude --dangerously-skip-permissions \
+            --max-turns 40 \
+            -p "You are running a modonome autonomous cycle on this repo. Follow AGENTS.md exactly.
+
+          Steps:
+          1. Read .modonome/STATUS.md to find the first queued item.
+          2. Read .modonome/DECISIONS.md and skip any item whose decision is marked hold.
+          3. Pick the first Tier 1 item (touches_protected_path: false) in queued state.
+          4. If none exists, print 'No Tier 1 items queued. Stopping.' and exit 0.
+          5. Execute the item: make only the changes listed in allowed_edit_set.
+          6. Run every gate listed in the work item. If any gate fails, revert your changes and exit 1.
+          7. Create a branch named modonome/wi-NNN-short-slug and open a pull request.
+          8. Do not merge the pull request. The owner merges after review.
+          9. Update the work item state to claimed and update STATUS.md.
+          10. Print a one-paragraph summary of what changed and why."
