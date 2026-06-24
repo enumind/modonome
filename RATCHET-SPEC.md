@@ -260,6 +260,68 @@ underlying type unsafety. This is the Java and C# equivalent of injecting `as an
 **Test file exclusion:** This check MUST NOT apply to test files. Test code legitimately
 uses unchecked casts in fixture construction.
 
+### 4.7 Vacuous Assertion Injection
+
+**Condition:** The diff adds any line in a test file containing an assertion that compares a
+constant against itself and therefore can never fail.
+
+**Rationale:** Once an agent learns the assertion count is checked (Section 4.1), the next
+evasion is to keep the count up with assertions that test nothing: `expect(true).toBe(true)`,
+`assertTrue(true)`, `Assert.IsTrue(true)`, or an equality matcher with two identical literals
+such as `expect(1).toBe(1)`. The net assertion count does not drop, so the removal check
+passes, but the suite verifies less than before. This check closes that gap.
+
+**Patterns a conformant ratchet MUST detect in added lines (test files only):**
+
+- Truthiness tautologies: `expect(true).toBeTruthy()`, `expect(false).toBeFalsy()`,
+  `expect(null).toBeNull()`, `expect(undefined).toBeUndefined()`
+- Boolean constant assertions: `assertTrue(true)`, `assertFalse(false)` (Node assert, Python
+  unittest, JUnit), `assert(true)`, `assert.ok(true)` (Node), `Assert.IsTrue(true)`,
+  `Assert.True(true)`, `Assert.IsFalse(false)`, `Assert.False(false)` (C#)
+- Equality matchers with two identical literals: `expect(LIT).toBe(LIT)`,
+  `expect(LIT).toEqual(LIT)`, `assertEquals(LIT, LIT)`, `Assert.AreEqual(LIT, LIT)`, where
+  both operands are the same boolean, number, string, `null`, or `undefined` literal
+
+**Zero-false-positive boundary:** The equality check fires only when both operands are the
+same literal token. An assertion comparing a real value to a literal (`expect(sum(2, 2)).toBe(4)`)
+is never flagged, because one operand is not a literal. Comment stripping is applied before
+matching.
+
+**Test file exclusion does not apply:** Unlike type-escape checks, this check applies to test
+files specifically, because that is where vacuous assertions are used to game the count.
+
+### 4.8 Python Bare Assertion Integrity
+
+**Condition (two parts):**
+
+1. For Python test files, the ratchet MUST count bare `assert` statements (the pytest idiom
+   `assert expr`, with no parentheses) toward the assertion total used by the removal check in
+   Section 4.1, in addition to call-site assertions such as `self.assertEqual(...)`.
+2. The diff adds any line in a Python test file that is a vacuous bare assertion which can
+   never fail: `assert True` or `assert <non-zero integer literal>` (optionally followed by a
+   message).
+
+**Rationale:** pytest's dominant assertion form is the bare `assert` statement, which has no
+call parentheses and is therefore invisible to a call-site-only assertion counter. Without
+part 1, an agent could delete `assert response.status == 200` lines from a pytest suite and
+the removal check would not notice. Part 2 is the Python analogue of Section 4.7: `assert True`
+keeps a test "passing" while asserting nothing.
+
+**Patterns a conformant ratchet MUST detect:**
+
+- Bare assertion statement (counted, not blocked): a line matching `assert` followed by
+  whitespace and a non-parenthesis token, after comment stripping
+- Vacuous bare assertion (blocked when added in a test file): `assert True`,
+  `assert <non-zero integer literal>`
+
+**Zero-false-positive boundary:** Counting bare asserts toward the removal total is symmetric
+across added and removed lines, so reformatting does not trigger a false positive. The vacuous
+check fires only on `assert True` and non-zero integer literals, never on `assert <expression>`
+where the expression references real values. `assert(expr)` and `assert (expr)` (parenthesized
+forms) are counted by the existing call-site patterns, not double-counted.
+
+**Scope:** Both parts apply to Python test files only (`*_test.py`, `test_*.py`).
+
 ---
 
 ## 5. Advisory Signals (Non-Normative)

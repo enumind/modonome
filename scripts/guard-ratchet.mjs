@@ -35,6 +35,11 @@ const TEST_FILE = new RegExp([
   String.raw`Tests?\.cs$`, String.raw`Spec\.cs$`, String.raw`Should\.cs$`, String.raw`Fixture\.cs$`,
 ].join("|"));
 
+// Python test files: pytest uses the bare `assert` statement (no call parens),
+// which a call-site-only assertion counter cannot see. These need language-aware
+// handling for the removal check and a vacuous-assertion check of their own.
+const PYTHON_TEST = /(?:^|\/)(?:test_[^/]*|[^/]*_test)\.py$/;
+
 // Source files by language (for non-test type-escape checks).
 const JAVA_SRC  = /\.java$/;
 const DOTNET_SRC = /\.cs$/;
@@ -79,6 +84,48 @@ const SKIP = new RegExp([
   String.raw`\[Fact\s*\(\s*Skip`,
   String.raw`\[Theory\s*\(\s*Skip`,
 ].join("|"));
+
+// Vacuous (tautological) assertions: any framework. A vacuous assertion compares a
+// constant against itself, so it can never fail. Agents use it to keep the assertion
+// count up (dodging the removal check) while testing nothing. Matching is restricted
+// to provably constant tautologies to preserve the zero-false-positive requirement:
+// a real value compared to a literal is never flagged, only literal-against-itself.
+const LITERAL = String.raw`(true|false|null|undefined|-?\d+(?:\.\d+)?|"[^"]*"|'[^']*')`;
+
+const VACUOUS_FIXED = [
+  // JS / TS truthiness tautologies (Jest, Vitest, Jasmine).
+  /\bexpect\(\s*true\s*\)\s*\.\s*toBeTruthy\s*\(\s*\)/,
+  /\bexpect\(\s*false\s*\)\s*\.\s*toBeFalsy\s*\(\s*\)/,
+  /\bexpect\(\s*null\s*\)\s*\.\s*toBeNull\s*\(\s*\)/,
+  /\bexpect\(\s*undefined\s*\)\s*\.\s*toBeUndefined\s*\(\s*\)/,
+  // assertTrue(true) / assertFalse(false): Node assert, Python unittest, JUnit.
+  /\bassertTrue\s*\(\s*(?:true|True)\s*[,)]/,
+  /\bassertFalse\s*\(\s*(?:false|False)\s*[,)]/,
+  // Node assert: assert(true), assert.ok(true).
+  /\bassert\s*\(\s*true\s*[,)]/,
+  /\bassert\.ok\s*\(\s*true\s*[,)]/,
+  // C#: Assert.IsTrue(true) / Assert.True(true) and the false variants.
+  /\bAssert\s*\.\s*(?:IsTrue|True)\s*\(\s*true\s*[,)]/,
+  /\bAssert\s*\.\s*(?:IsFalse|False)\s*\(\s*false\s*[,)]/,
+];
+
+// Equality matchers comparing two identical literals, e.g. expect(1).toBe(1).
+const VACUOUS_EQUALITY = [
+  new RegExp(String.raw`\bexpect\(\s*${LITERAL}\s*\)\s*\.\s*(?:toBe|toEqual|toStrictEqual)\(\s*${LITERAL}\s*\)`),
+  new RegExp(String.raw`\b(?:assertEquals|assertEqual)\s*\(\s*${LITERAL}\s*,\s*${LITERAL}\s*[,)]`),
+  new RegExp(String.raw`\bAssert\s*\.\s*(?:AreEqual|Equal)\s*\(\s*${LITERAL}\s*,\s*${LITERAL}\s*[,)]`),
+];
+
+// Python bare assertion statement (pytest idiom): `assert <expr>` with no call
+// parens. Parenthesized forms (`assert(x)`, `assert (x)`) are left to the call-site
+// ASSERT counter so they are not double-counted.
+const PY_BARE_ASSERT = /^\s*assert\b\s+[^(]/;
+
+// Vacuous Python bare assertions that can never fail.
+const PY_VACUOUS_ASSERT = [
+  /^\s*assert\s+True\b\s*(?:,.*)?$/,
+  /^\s*assert\s+[1-9]\d*\b\s*(?:,.*)?$/,
+];
 
 // Type escape injection: language-specific, non-test files only.
 // TS / JS: broad any
@@ -145,6 +192,29 @@ function stripInlineComment(line) {
   return line.replace(/\/\/.*$/, "").replace(/#.*$/, "");
 }
 
+function isVacuousAssertion(line) {
+  const clean = stripInlineComment(line);
+  if (VACUOUS_FIXED.some((re) => re.test(clean))) return true;
+  for (const re of VACUOUS_EQUALITY) {
+    const m = clean.match(re);
+    if (m && m[1] === m[2]) return true;
+  }
+  return false;
+}
+
+function countBareAsserts(lines) {
+  let n = 0;
+  for (const l of lines) {
+    if (PY_BARE_ASSERT.test(stripInlineComment(l))) n++;
+  }
+  return n;
+}
+
+function isVacuousPyAssert(line) {
+  const clean = stripInlineComment(line);
+  return PY_VACUOUS_ASSERT.some((re) => re.test(clean));
+}
+
 // ---------------------------------------------------------------------------
 // Checks
 // ---------------------------------------------------------------------------
@@ -152,6 +222,7 @@ function stripInlineComment(line) {
 for (const [file, { added, removed }] of Object.entries(files)) {
   const fname = file.split("/").pop();
   const isTest    = TEST_FILE.test(file);
+  const isPyTest  = PYTHON_TEST.test(file);
   const isJavaSrc = JAVA_SRC.test(file) && !isTest;
   const isDotnetSrc = DOTNET_SRC.test(file) && !isTest;
   const isTsSrc   = TS_SRC.test(file) && !isTest;
@@ -160,10 +231,15 @@ for (const [file, { added, removed }] of Object.entries(files)) {
   const isDotnetBuild = DOTNET_BUILD.test(fname);
   const isCoverageConfig = COVERAGE_CONFIG.test(fname);
 
-  // 1. Assertion removal in test files (all languages).
+  // 1. Assertion removal in test files (all languages). Python test files also
+  //    count bare `assert` statements, which have no call parentheses.
   if (isTest) {
-    const addedAsserts   = count(added,   ASSERT);
-    const removedAsserts = count(removed, ASSERT);
+    let addedAsserts   = count(added,   ASSERT);
+    let removedAsserts = count(removed, ASSERT);
+    if (isPyTest) {
+      addedAsserts   += countBareAsserts(added);
+      removedAsserts += countBareAsserts(removed);
+    }
     if (removedAsserts > addedAsserts) {
       problems.push(`${file}: removes more test assertions than it adds (+${addedAsserts} / -${removedAsserts}).`);
     }
@@ -174,6 +250,25 @@ for (const [file, { added, removed }] of Object.entries(files)) {
     for (const l of added) {
       if (SKIP.test(l)) {
         problems.push(`${file}: adds a skipped or focused test: ${l.trim()}`);
+      }
+    }
+  }
+
+  // 2b. Vacuous (tautological) assertion injection in test files (all languages).
+  // Catches keeping the assertion count up with assertions that can never fail.
+  if (isTest) {
+    for (const l of added) {
+      if (isVacuousAssertion(l)) {
+        problems.push(`${file}: adds a vacuous assertion that can never fail: ${l.trim()}`);
+      }
+    }
+  }
+
+  // 2c. Vacuous Python bare assertions (assert True, assert 1) in test files.
+  if (isPyTest) {
+    for (const l of added) {
+      if (isVacuousPyAssert(l)) {
+        problems.push(`${file}: adds a vacuous Python assertion that can never fail: ${l.trim()}`);
       }
     }
   }
