@@ -2,12 +2,26 @@
 // Read a target repo, build an adoption summary, and print the work it would
 // propose. This mutates nothing. It is the safe first command.
 // Usage: node scripts/dry-run-sweep.mjs <targetDir>
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, mkdirSync, writeFileSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
 
 const target = process.argv[2] || ".";
 const has = (p) => existsSync(join(target, p));
 const read = (p) => { try { return readFileSync(join(target, p), "utf8"); } catch { return ""; } };
+const startMs = Date.now();
+
+function writeRunLog(runsDir, command, payload) {
+  try {
+    mkdirSync(runsDir, { recursive: true });
+    const ts = new Date().toISOString();
+    const safe = ts.replace(/[:.]/g, "-");
+    writeFileSync(join(runsDir, `${safe}-${command}.json`), JSON.stringify({ ts, command, ...payload }, null, 2));
+    const all = readdirSync(runsDir).filter((f) => f.endsWith(".json")).sort();
+    for (const old of all.slice(0, Math.max(0, all.length - 30))) {
+      try { unlinkSync(join(runsDir, old)); } catch { /* ignore */ }
+    }
+  } catch { /* log writes must never crash the command */ }
+}
 
 function detectStack() {
   if (has("package.json")) {
@@ -75,3 +89,13 @@ lines.push("\nRefused by default: autonomy off, no auto-merge, no protected-path
 lines.push("Next safe step: review this output, then run `npx modonome scaffold .` to drop disabled, dry-run state files.");
 
 console.log(lines.join("\n"));
+
+writeRunLog(join(target, ".modonome", "runs"), "dry-run", {
+  argv: process.argv.slice(2),
+  target,
+  detected_stack: { name: stack.name, pm: stack.pm },
+  protected_paths: protectedPaths,
+  proposals: proposeWork(stack),
+  exit_code: 0,
+  duration_ms: Date.now() - startMs,
+});
