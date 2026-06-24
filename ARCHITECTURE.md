@@ -19,41 +19,53 @@ surfaces: files, issues, pull requests, CI checks, code owners, and status docs.
   a dry-run sweep, run the anti-gaming ratchet, validate config and packets, migrate config,
   check house style, and guard against drift.
 
-## The loop
+## The agent loop
+
+The core cycle runs inside the agent on each turn. The ratchet is intentionally outside
+this scope: it runs in CI on every pull request and cannot be modified by the agent.
 
 ```mermaid
 flowchart LR
-  prompt[Master prompt] -->|defines| engine[Repo-local engine]
-  repo[Host repo] -->|instructions, code, tests, CI| adopt[Adopt]
-  adopt -->|adoption map| mode[Mode and config]
-  mode -->|safe defaults| queue[Durable work queue]
-  queue -->|claim and lease| packet[Work packet]
-  packet --> maker[Maker]
-  maker -->|diff and rationale| checker[Checker]
+  queue[["Durable work queue\n(.modonome/work-items/)"]]
+  packet["Work packet\n(claimed, leased)"]
+  maker["Maker\none packet, test-fenced"]
+  checker["Checker\nindependent pass"]
+  gates["Gates\nall must pass"]
+  owner["Owner review\n(CODEOWNERS)"]
+  merge["Merge authority\nlands only when all gates pass"]
+  repo[("Host repo")]
+  learn["Staged learnings\n(LEARNINGS.md)"]
+
+  queue -->|claim and lease| packet
+  packet --> maker
+  maker -->|diff and rationale| checker
   checker -->|rework below cap| maker
-  checker --> gates[Gates and ratchet]
-  gates -->|protected or risky| owner[Owner review]
-  gates -->|eligible| merge[Single merge authority]
+  checker -->|approved| gates
+  gates -->|Tier 2: protected path| owner
+  gates -->|Tier 1: eligible| merge
   owner -->|approved| merge
-  merge -->|lands| repo
-  gates -->|evidence| learn[Staged learning]
+  merge -->|pull request| repo
+  gates -->|evidence| learn
   learn -->|owner promotes| repo
-  queue --> panel[Control panel]
 ```
 
-## How Modonome sits beside any repo
+The ratchet (`guard-ratchet.mjs`) runs as a separate CI step, outside agent scope, and
+blocks merge if any quality threshold regresses. See the integration diagram below for
+where it sits.
 
-Modonome needs no central service. It reads and writes only through the surfaces the host
-repo already has: files, CI, issues, and pull requests. The diagram below shows the
-integration points regardless of language or platform.
+## Integration points
+
+Modonome needs no central service. It reads and writes only through surfaces the host repo
+already has: files, CI, issues, and pull requests. The trust boundary between agent scope
+and CI scope is a security invariant: the ratchet and validators run in CI where the agent
+cannot modify them.
 
 ```mermaid
 flowchart TB
   subgraph host ["Host repo (any stack or runtime)"]
-    src["Source files\n(any language)"]
-    ci["CI pipeline\n(Actions, Jenkins, GitLab, …)"]
+    ci["CI pipeline\n(Actions, Jenkins, GitLab, ...)"]
     bp["Branch protection\n+ code owners"]
-    sd[".modonome/\nconfig · queue · decisions · learnings"]
+    sd[".modonome/\nconfig  queue  decisions  learnings"]
   end
 
   subgraph harness ["Harness (loads the prompt)"]
@@ -62,32 +74,52 @@ flowchart TB
     h3["Human session"]
   end
 
-  subgraph engine ["Modonome engine (prompt + scripts)"]
+  subgraph engine ["Modonome engine  [AGENT SCOPE]"]
     adopt["Adopt\nread instructions, CI, code owners"]
     sweep["Dry-run sweep\npropose bounded work"]
     maker["Maker\none packet, test-fenced"]
-    checker["Checker\nindependent, runs gates"]
-    ratchet["Anti-gaming ratchet\nguard-ratchet.mjs in CI"]
-    merge["Merge authority\nlands only when every gate is green"]
+    checker["Checker\nindependent pass"]
+    gates["Gates\nall must pass before PR"]
+    merge["Merge authority"]
   end
 
+  ratchet["Anti-gaming ratchet\nguard-ratchet.mjs\n[CI SCOPE -- outside agent]"]
+
   harness -->|loads prompt| engine
+  sd <-->|durable state| engine
   host -->|instructions, gates, code owners| adopt
   adopt --> sweep
   sweep --> maker
   maker --> checker
-  checker --> ratchet
-  ratchet --> merge
-  merge -->|pull request| host
-  sd <-->|durable state| engine
-  ci -->|runs ratchet and validators| ratchet
-  bp -->|enforces protection| merge
+  checker --> gates
+  gates --> merge
+  merge -->|opens pull request| host
+  ci -->|runs on every PR| ratchet
+  ratchet -->|blocks merge on regression| bp
+  bp -->|enforces protection rules| merge
 ```
 
 The engine is stack-independent. It normalizes work by intent, evidence, and interface
-contract rather than by language or framework. The `ENTERPRISE.md` adoption table lists ten
-estate types: product app repos, monorepos, microservice estates, mainframe, SAP, Oracle,
-Salesforce, ServiceNow, low-code or RPA, and data or BI.
+contract rather than by language or framework. The `ENTERPRISE.md` adoption table lists
+ten estate types: product app repos, monorepos, microservice estates, mainframe, SAP,
+Oracle, Salesforce, ServiceNow, low-code or RPA, and data or BI.
+
+## Adoption (runs once, not per cycle)
+
+Adoption is a one-time initialization pass, not a step in the ongoing agent loop. Once
+the adoption map exists and `state` transitions past `adopting`, this pass is skipped.
+
+```mermaid
+stateDiagram-v2
+  [*] --> pre_adoption : repo has no .modonome/
+  pre_adoption --> adopting : scaffold run
+  adopting --> dry_run : adoption map written
+  dry_run --> armed : owner sets autonomy_enabled true
+  armed --> governed : first cycle completes
+  governed --> governed : steady-state cycles
+  governed --> suspended : owner disables
+  suspended --> governed : owner re-enables
+```
 
 ## Learning and self-improvement pipeline
 
@@ -96,9 +128,9 @@ bypassing owner control.
 
 ```mermaid
 flowchart LR
-  signal["Correction signal\ngate failure · review fix · incident · rework"]
+  signal["Correction signal\ngate failure  review fix  rework"]
   capture["Follower captures\none generalized, evidence-backed lesson"]
-  stage["Stage in LEARNINGS.md\nfingerprinted · dated · capped at 20"]
+  stage["Stage in LEARNINGS.md\nfingerprinted  dated  capped at 20"]
   promote["Owner promotes\ninto canonical rules, config, or tests"]
   gate["Add deterministic gate\nwhen one fits"]
 
@@ -106,29 +138,40 @@ flowchart LR
   gate -->|raises the floor| signal
 ```
 
-Market and standards scans are handled by a dedicated market-researcher role and are off by
-default. When enabled, sourced findings flow to the steward role, which scores and routes
-proposals. Net-new claims need owner approval before any roadmap change. The proposal
-priority score (`safety + user_value + repo_fit + reuse + evidence - effort - blast_radius -
-uncertainty`) surfaces the highest-value, lowest-risk improvements first.
+Market and standards scans are handled by a dedicated market-researcher role and are off
+by default. When enabled, sourced findings flow to the steward role, which scores and
+routes proposals. Net-new claims need owner approval before any roadmap change. The
+proposal priority score (`safety + user_value + repo_fit + reuse + evidence - effort -
+blast_radius - uncertainty`) surfaces the highest-value, lowest-risk improvements first.
+
+## Trust boundaries and security invariants
+
+Two boundaries are enforced structurally, not by convention:
+
+**CI boundary.** The ratchet and validators (`check-style.mjs`, `check-drift.mjs`) run in
+CI on every PR. The agent can never modify them mid-flight because the CI job runs from
+the base branch, not the PR head for these scripts. Regressions block merge automatically.
+
+**CODEOWNERS boundary.** Any file in `scripts/`, `bin/`, `schemas/`, `templates/`,
+`prompts/`, or `.github/` requires a human CODEOWNER approval before merge. The
+`touches_protected_path: true` field in a work-item JSON is the signal; the agent checks
+it before claiming the item and escalates rather than merging autonomously.
 
 ## Why this factoring
 
-- One source of truth. The config schema defines the levers. The prompt and templates follow
-  it. `check-drift.mjs` fails the build if they disagree, so the four representations cannot
-  drift apart. This is a first-class design invariant: a tool that enforces consistency between
-  its own schema, prompt, template, and migration in CI is self-governing in the same way it
-  governs host repos. The drift guard is proof, not a footnote:
-  the project practices what it specifies.
-- Code over prose for anything load-bearing. The ratchet, the validators, and the drift guard
+- **One source of truth.** The config schema defines the levers. The prompt and templates
+  follow it. `check-drift.mjs` fails the build if they disagree, so the four
+  representations cannot drift apart.
+- **Code over prose for anything load-bearing.** The ratchet, validators, and drift guard
   run in CI, outside the agent, so the guarantees hold even under prompt injection.
-- Small context per turn. A harness loads the core plus only the module it needs. The bundle
-  stays available for portability.
+- **Small context per turn.** A harness loads the core plus only the module it needs. The
+  bundle stays available for portability.
 
 ## Calibration
 
 The design favors verified adoption over publication count, independent validation over
-self-reported scores, local repo gates over central claims, and lineage records over hidden
-memory. These choices come from practical experience with autonomous coding loops and from
-the research on self-evolving agent systems, which repeatedly shows that unvalidated, volume-
-driven sharing degrades quality. Modonome keeps every concrete change behind a local gate.
+self-reported scores, local repo gates over central claims, and lineage records over
+hidden memory. These choices come from practical experience with autonomous coding loops
+and from research on self-evolving agent systems, which repeatedly shows that unvalidated,
+volume-driven sharing degrades quality. Modonome keeps every concrete change behind a
+local gate.
