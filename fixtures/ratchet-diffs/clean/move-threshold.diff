@@ -1,0 +1,11 @@
+diff --git a/jest.config.js b/jest.config.js
+--- a/jest.config.js
++++ b/jest.config.js
+@@
+-coverageThreshold: { global: { lines: 80 } }
++coverageThreshold: {
++  global: {
++    lines: 80,
++    branches: 75
++  }
++}

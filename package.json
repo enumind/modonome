@@ -43,6 +43,12 @@
     "ci",
     "governance",
     "code-review",
-    "modernization"
+    "modernization",
+    "tech-debt",
+    "ai-safety",
+    "agentic",
+    "autonomy",
+    "ratchet",
+    "agentproof"
   ]
 }

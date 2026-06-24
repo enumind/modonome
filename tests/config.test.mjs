@@ -7,6 +7,7 @@ import { dirname, join } from "node:path";
 import { validate } from "../scripts/lib/jsonschema.mjs";
 import { validateConfig, loadConfig } from "../scripts/validate-config.mjs";
 import { migrate } from "../scripts/migrate-config.mjs";
+import { parseFlatYaml } from "../scripts/lib/yaml-lite.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
@@ -40,6 +41,31 @@ test("work items validate against the schema", () => {
   for (const f of files(join(fx, "work-item", "invalid"))) {
     assert.ok(validate(schema, readJson(f)).length > 0, `expected invalid: ${f}`);
   }
+});
+
+test("yaml-lite parser handles edge cases correctly", () => {
+  // boolean values
+  assert.equal(parseFlatYaml("autonomy_enabled: false").autonomy_enabled, false);
+  assert.equal(parseFlatYaml("autonomy_enabled: true").autonomy_enabled, true);
+  // quoted string that looks like a boolean must remain a string
+  assert.equal(parseFlatYaml('label: "false"').label, "false");
+  assert.equal(parseFlatYaml("label: 'true'").label, "true");
+  // integers and floats
+  assert.equal(parseFlatYaml("max_merges_per_day: 3").max_merges_per_day, 3);
+  assert.equal(parseFlatYaml("threshold: 0.8").threshold, 0.8);
+  // values containing colons (e.g. URLs) must not be truncated
+  assert.equal(parseFlatYaml("homepage: https://example.com").homepage, "https://example.com");
+  // inline comments must be stripped
+  assert.equal(parseFlatYaml("dry_run: true # default").dry_run, true);
+  // empty value
+  assert.equal(parseFlatYaml("notes:").notes, "");
+  // inline arrays
+  assert.deepEqual(parseFlatYaml("trusted_author_allowlist: [bot, ci]").trusted_author_allowlist, ["bot", "ci"]);
+  assert.deepEqual(parseFlatYaml("trusted_author_allowlist: []").trusted_author_allowlist, []);
+  // comment lines must be ignored
+  const parsed = parseFlatYaml("# this is a comment\nkey: value");
+  assert.equal(parsed.key, "value");
+  assert.equal(parsed["# this is a comment"], undefined);
 });
 
 test("migration adds missing levers with safe defaults and never arms", () => {

@@ -17,7 +17,7 @@
  * and writes responses to stdout. All log output goes to stderr.
  */
 import { createInterface } from "node:readline";
-import { writeFileSync, readFileSync, existsSync } from "node:fs";
+import { writeFileSync, readFileSync, existsSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -25,6 +25,11 @@ import { spawnSync } from "node:child_process";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
+
+// Cache AgentProof results for 5 minutes to avoid re-running the full 16-scenario
+// suite on every modonome_status poll (each run takes ~2s and consumes CI quota).
+const apCache = new Map(); // key: repoPath -> { result, expiresAt }
+const AP_CACHE_TTL_MS = 5 * 60 * 1000;
 
 // ---------------------------------------------------------------------------
 // Tool definitions
@@ -111,67 +116,79 @@ async function toolRatchet(args) {
   if (args.diff_path) {
     diffPath = args.diff_path;
   } else if (args.diff) {
-    tempFile = join(tmpdir(), `modonome-ratchet-${Date.now()}.patch`);
+    tempFile = join(tmpdir(), `modonome-ratchet-${process.pid}-${Math.floor(Math.random() * 1e9)}.patch`);
     writeFileSync(tempFile, args.diff, "utf8");
     diffPath = tempFile;
   } else {
     return { passed: false, violations: ["Either diff or diff_path is required."] };
   }
 
-  const result = spawnSync(
-    "node",
-    [join(here, "guard-ratchet.mjs"), "--diff", diffPath],
-    { encoding: "utf8", timeout: 30000 }
-  );
+  try {
+    const result = spawnSync(
+      "node",
+      [join(here, "guard-ratchet.mjs"), "--diff", diffPath],
+      { encoding: "utf8", timeout: 30000 }
+    );
 
-  const violations = result.status !== 0
-    ? (result.stderr || "").split("\n").filter((l) => l.trim().startsWith("-")).map((l) => l.trim().slice(2))
-    : [];
+    const violations = result.status !== 0
+      ? (result.stderr || "").split("\n").filter((l) => l.trim().startsWith("-")).map((l) => l.trim().slice(2))
+      : [];
 
-  return {
-    passed: result.status === 0,
-    violations,
-    raw: (result.stdout + result.stderr).trim(),
-  };
+    return {
+      passed: result.status === 0,
+      violations,
+      raw: (result.stdout + result.stderr).trim(),
+    };
+  } finally {
+    if (tempFile) try { rmSync(tempFile); } catch { /* best-effort */ }
+  }
 }
 
 async function toolValidateConfig(args) {
   const ext = (args.format || "yaml") === "json" ? ".json" : ".yaml";
-  const tempFile = join(tmpdir(), `modonome-config-${Date.now()}${ext}`);
+  const tempFile = join(tmpdir(), `modonome-config-${process.pid}-${Math.floor(Math.random() * 1e9)}${ext}`);
   writeFileSync(tempFile, args.content, "utf8");
 
-  const result = spawnSync(
-    "node",
-    [join(here, "validate-config.mjs"), tempFile],
-    { encoding: "utf8", timeout: 10000 }
-  );
+  try {
+    const result = spawnSync(
+      "node",
+      [join(here, "validate-config.mjs"), tempFile],
+      { encoding: "utf8", timeout: 10000 }
+    );
 
-  const errors = result.status !== 0
-    ? (result.stderr + result.stdout).split("\n")
-        .filter((l) => l.trim().startsWith("-"))
-        .map((l) => l.trim().slice(2))
-    : [];
+    const errors = result.status !== 0
+      ? (result.stderr + result.stdout).split("\n")
+          .filter((l) => l.trim().startsWith("-"))
+          .map((l) => l.trim().slice(2))
+      : [];
 
-  return { valid: result.status === 0, errors };
+    return { valid: result.status === 0, errors };
+  } finally {
+    try { rmSync(tempFile); } catch { /* best-effort */ }
+  }
 }
 
 async function toolValidateWorkItem(args) {
-  const tempFile = join(tmpdir(), `modonome-item-${Date.now()}.json`);
+  const tempFile = join(tmpdir(), `modonome-item-${process.pid}-${Math.floor(Math.random() * 1e9)}.json`);
   writeFileSync(tempFile, JSON.stringify(args.item, null, 2), "utf8");
 
-  const result = spawnSync(
-    "node",
-    [join(here, "validate-work-item.mjs"), tempFile],
-    { encoding: "utf8", timeout: 10000 }
-  );
+  try {
+    const result = spawnSync(
+      "node",
+      [join(here, "validate-work-item.mjs"), tempFile],
+      { encoding: "utf8", timeout: 10000 }
+    );
 
-  const errors = result.status !== 0
-    ? (result.stderr + result.stdout).split("\n")
-        .filter((l) => l.trim().startsWith("-"))
-        .map((l) => l.trim().slice(2))
-    : [];
+    const errors = result.status !== 0
+      ? (result.stderr + result.stdout).split("\n")
+          .filter((l) => l.trim().startsWith("-"))
+          .map((l) => l.trim().slice(2))
+      : [];
 
-  return { valid: result.status === 0, errors };
+    return { valid: result.status === 0, errors };
+  } finally {
+    try { rmSync(tempFile); } catch { /* best-effort */ }
+  }
 }
 
 async function toolStatus(args) {
@@ -190,17 +207,23 @@ async function toolStatus(args) {
   const cfg = parseFlatYaml(readFileSync(configPath, "utf8"));
   const errors = validateConfig(cfg);
 
-  const apResult = spawnSync(
-    "node",
-    [join(root, "agentproof/runner.mjs"), "--json"],
-    { encoding: "utf8", timeout: 60000, cwd: repoPath }
-  );
-
+  const now = Date.now();
   let agentproof = null;
-  try {
-    agentproof = JSON.parse(apResult.stdout);
-  } catch {
-    agentproof = { score: "error", error: apResult.stderr };
+  const cached = apCache.get(repoPath);
+  if (cached && cached.expiresAt > now) {
+    agentproof = cached.result;
+  } else {
+    const apResult = spawnSync(
+      "node",
+      [join(root, "agentproof/runner.mjs"), "--json"],
+      { encoding: "utf8", timeout: 60000, cwd: repoPath }
+    );
+    try {
+      agentproof = JSON.parse(apResult.stdout);
+    } catch {
+      agentproof = { score: "error", error: apResult.stderr };
+    }
+    apCache.set(repoPath, { result: agentproof, expiresAt: now + AP_CACHE_TTL_MS });
   }
 
   return {

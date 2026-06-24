@@ -116,7 +116,10 @@ uncertainty`) surfaces the highest-value, lowest-risk improvements first.
 
 - One source of truth. The config schema defines the levers. The prompt and templates follow
   it. `check-drift.mjs` fails the build if they disagree, so the four representations cannot
-  drift apart.
+  drift apart. This is a first-class design invariant: a tool that enforces consistency between
+  its own schema, prompt, template, and migration in CI is self-governing in the same way it
+  governs host repos. The drift guard is proof, not a footnote:
+  the project practices what it specifies.
 - Code over prose for anything load-bearing. The ratchet, the validators, and the drift guard
   run in CI, outside the agent, so the guarantees hold even under prompt injection.
 - Small context per turn. A harness loads the core plus only the module it needs. The bundle

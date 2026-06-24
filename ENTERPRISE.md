@@ -37,3 +37,10 @@ network is advisory and off by default. A pattern learned in one repo is a candi
 elsewhere until the local repo validates it through its own gates and owners. There is no
 central authority that can merge, arm, or override a repo. See the network module in the
 prompt and `schemas/knowledge-packet.schema.json`.
+
+## Support
+
+Modonome is MIT-licensed and free to use. For enterprise deployment questions, integration
+help, or to discuss support arrangements, open an issue or start a discussion on the
+[GitHub repository](https://github.com/nateshpp/modonome). Commercial support options are
+on the roadmap for v0.2.

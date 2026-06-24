@@ -28,9 +28,12 @@ Off by default. No central service.
   <a href="https://github.com/nateshpp/modonome/actions/workflows/ci.yml"><img src="https://github.com/nateshpp/modonome/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
   <a href="https://www.npmjs.com/package/modonome"><img src="https://img.shields.io/npm/v/modonome" alt="npm" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License" /></a>
+  <a href="agentproof/README.md"><img src="https://img.shields.io/badge/AgentProof-16%2F16-brightgreen" alt="AgentProof 16/16" /></a>
 </p>
 
 ---
+
+Autonomous coding agents have a predictable failure mode: they weaken gates to go green (removing test assertions, adding skips, loosening type checks). Modonome is the first tool to make that structurally impossible. The ratchet that blocks it runs in CI, in code the agent cannot edit. [We wrote the spec](GOVERNED-AUTONOMY-SPEC.md) and Modonome is the reference implementation, scoring **[16/16 on AgentProof](agentproof/README.md)**.
 
 ## Why businesses adopt Modonome
 
@@ -57,6 +60,14 @@ disabled and dry-run):
 ```bash
 npx modonome scaffold .
 ```
+
+This prints a preview. Add `--write` to apply the files:
+
+```bash
+npx modonome scaffold . --write
+```
+
+**[See the walkthrough](examples/demo-app/WALKTHROUGH.md)**: one week on a real Node.js app. What the dry-run proposed, what the ratchet blocked, and what the end-of-week report showed. No setup required to read it.
 
 ## What it refuses to do by default
 
@@ -109,9 +120,10 @@ The controls are code, not promises. The anti-gaming ratchet, the config and pac
 validators, and the drift guard all run in CI where the agent cannot edit them. The arming
 levers are read from your environment or CI, never from a file the engine can rewrite.
 
-[AgentProof](agentproof/README.md) proves this with ten adversarial scenarios: assertion removal,
+[AgentProof](agentproof/README.md) proves this with 16 adversarial scenarios: assertion removal,
 skip injection, type escape, coverage removal, unsafe config combinations, identity collapse,
-raw code leakage, drift, and protected-path bypass. Modonome scores 10/10. Run it yourself:
+raw code leakage, drift, protected-path bypass, Java and .NET ratchet coverage, and prompt
+injection inertness. Modonome scores **16/16**. Run it yourself:
 
 ```bash
 node agentproof/runner.mjs
@@ -130,18 +142,11 @@ Read [SECURITY.md](SECURITY.md), [GOVERNANCE.md](GOVERNANCE.md), and
 Upgrades preserve your config. New levers always arrive with safe defaults, so an update can
 never arm an engine. See [docs/VERSIONING.md](docs/VERSIONING.md).
 
-## See it in action
+## Examples
 
-**[5-minute walkthrough](examples/demo-app/WALKTHROUGH.md)** : a real Node.js app,
-one week of governed runs: what the dry-run proposed, what merged, what the ratchet
-blocked, and what the end-of-week report showed. No setup required to read it.
-
-Other examples:
-
-- [examples/node-typescript](examples/node-typescript): Node and TypeScript service.
-  [Dry-run transcript](examples/node-typescript/dry-run-transcript.txt).
-- [examples/python-service](examples/python-service): Python service.
-  [Dry-run transcript](examples/python-service/dry-run-transcript.txt).
+- **[Demo app walkthrough](examples/demo-app/WALKTHROUGH.md)**: one week on a Node.js app. Dry-run, ratchet blocks, merges, and governance report. No setup required to read it.
+- [examples/node-typescript](examples/node-typescript): Node and TypeScript service with [dry-run transcript](examples/node-typescript/dry-run-transcript.txt).
+- [examples/python-service](examples/python-service): Python service with [dry-run transcript](examples/python-service/dry-run-transcript.txt).
 
 ## Alpha limitations (v0.1-alpha)
 

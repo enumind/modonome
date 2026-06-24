@@ -12,14 +12,16 @@ const [cmd, ...rest] = process.argv.slice(2);
 const HELP = `Modonome, governed autonomy for any repo.
 
 Usage:
-  npx modonome dry-run <dir>     read the repo and print proposed work. Changes nothing.
-  npx modonome scaffold <dir>    drop .modonome state files. Disabled and dry-run. Add --write to apply.
-  npx modonome adopt <dir>       alias for dry-run, writes an adoption summary to stdout.
-  npx modonome validate <file>   validate a config or knowledge packet.
-  npx modonome migrate <file>    add new config levers with safe defaults and bump the version.
-  npx modonome report [dir]      print governance activity summary and AgentProof score.
-  npx modonome agentproof        run the AgentProof adversarial benchmark suite (16 scenarios).
-  npx modonome help              show this message.
+  npx modonome dry-run <dir>              read the repo and print proposed work. Changes nothing.
+  npx modonome scaffold <dir>             drop .modonome state files. Disabled and dry-run. Add --write to apply.
+  npx modonome adopt <dir>               alias for dry-run, writes an adoption summary to stdout.
+  npx modonome validate <file>           validate a config or knowledge packet (type inferred from filename).
+  npx modonome validate <file> --type config   explicitly validate as a config file.
+  npx modonome validate <file> --type packet   explicitly validate as a knowledge packet.
+  npx modonome migrate <file>            add new config levers with safe defaults and bump the version.
+  npx modonome report [dir]              print governance activity summary and AgentProof score.
+  npx modonome agentproof                run the AgentProof adversarial benchmark suite (16 scenarios).
+  npx modonome help                      show this message.
 
 Modonome stays off until an owner arms it through the environment or CI.`;
 
@@ -37,9 +39,13 @@ switch (cmd) {
     run("scaffold.mjs", rest);
     break;
   case "validate": {
-    const file = rest[0] || "";
-    if (file.includes("packet")) run("validate-knowledge-packet.mjs", rest);
-    else run("validate-config.mjs", rest);
+    const typeIdx = rest.indexOf("--type");
+    const explicitType = typeIdx !== -1 ? rest[typeIdx + 1] : null;
+    const passthroughArgs = rest.filter((a, i) => a !== "--type" && i !== typeIdx + 1);
+    const file = passthroughArgs.find((a) => !a.startsWith("-")) || "";
+    const isPacket = explicitType === "packet" || (!explicitType && file.includes("packet"));
+    if (isPacket) run("validate-knowledge-packet.mjs", passthroughArgs);
+    else run("validate-config.mjs", passthroughArgs);
     break;
   }
   case "report":

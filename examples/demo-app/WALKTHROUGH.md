@@ -1,10 +1,13 @@
 # Modonome in action: what one week looks like on a Node.js app
 
-This is an illustrative scenario showing what Modonome does in practice.
-The technical details are accurate: the dry-run output, ratchet error messages,
-and governance report all reflect real command output. The sequence of events
-is representative of how the governance loop runs on a repo with the tech debt
-shown in this demo app.
+> **Representative run.** Commands, output formats, ratchet messages, and governance
+> report structure are accurate: this is exactly what you would see. The specific tech
+> debt items and sequence of events are illustrative of a typical week. Simulated examples
+> are clearer than partial real-world runs with redacted details.
+
+This walkthrough shows what Modonome does in practice on a Node.js app with three
+real-world tech debt targets: missing test assertions, a stale dependency, and a
+type safety gap.
 
 ---
 
