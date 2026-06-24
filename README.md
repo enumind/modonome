@@ -118,7 +118,9 @@ running outside the agent's write scope cannot be.
 
 The controls are code, not promises. The anti-gaming ratchet, the config and packet
 validators, and the drift guard all run in CI where the agent cannot edit them. The arming
-levers are read from your environment or CI, never from a file the engine can rewrite.
+levers are gated by the `MODONOME_ARMED` environment variable, enforced at runtime: with it
+unset, `autonomy_enabled` is forced to false no matter what the config file says. The levers
+are read from your environment or CI, never from a file the engine can rewrite.
 
 [AgentProof](agentproof/README.md) proves this with 16 adversarial scenarios: assertion removal,
 skip injection, type escape, coverage removal, unsafe config combinations, identity collapse,

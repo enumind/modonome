@@ -1,0 +1,13 @@
+diff --git a/tests/test_checkout.py b/tests/test_checkout.py
+index a1b2c3d..e4f5a6b 100644
+--- a/tests/test_checkout.py
++++ b/tests/test_checkout.py
+@@ -20,3 +20,9 @@ def test_checkout_rejects_empty_cart():
+     with pytest.raises(EmptyCartError):
+         checkout(Cart(items=[]))
++
++
++def test_checkout_applies_percentage_discount():
++    cart = Cart(items=[item("sku-1", 1000)])
++    receipt = checkout(cart, discount=10)
++    assert receipt.total == 900

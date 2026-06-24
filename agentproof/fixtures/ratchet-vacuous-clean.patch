@@ -1,0 +1,15 @@
+diff --git a/src/cart.test.js b/src/cart.test.js
+index 1a2b3c4..5d6e7f8 100644
+--- a/src/cart.test.js
++++ b/src/cart.test.js
+@@ -14,6 +14,11 @@ describe("Cart", () => {
+   it("sums line items", () => {
+     expect(cart.total()).toBe(4200);
+   });
++
++  it("applies a percentage discount", () => {
++    cart.applyDiscount(10);
++    expect(cart.total()).toBe(3780);
++    expect(cart.discountApplied()).toBe(true);
++  });
+ });
