@@ -15,13 +15,8 @@ Off by default. No central service.
 <p align="center">
   <a href="https://modonome.com">Website</a> ·
   <a href="QUICKSTART.md">Quickstart</a> ·
-  <a href="ADOPTION-GUIDE.md">Adoption guide</a> ·
-  <a href="ENTERPRISE.md">Enterprise</a> ·
-  <a href="SECURITY.md">Security</a> ·
-  <a href="GOVERNANCE.md">Governance</a> ·
-  <a href="COMPLIANCE.md">Compliance</a> ·
   <a href="GOVERNED-AUTONOMY-SPEC.md">Specification</a> ·
-  <a href="agentproof/README.md">AgentProof</a>
+  <a href="SECURITY.md">Security</a>
 </p>
 
 <p align="center">
@@ -33,19 +28,7 @@ Off by default. No central service.
 
 ---
 
-Autonomous coding agents have a predictable failure mode: they weaken gates to go green (removing test assertions, adding skips, loosening type checks). Modonome is the first tool to make that structurally impossible. The ratchet that blocks it runs in CI, in code the agent cannot edit. [We wrote the spec](GOVERNED-AUTONOMY-SPEC.md) and Modonome is the reference implementation, scoring **[16/16 on AgentProof](agentproof/README.md)**.
-
-## Why businesses adopt Modonome
-
-Engineering teams spend 30 to 40 percent of capacity on tech debt work: test gaps, stale
-dependencies, dead branches, type safety holes, observability gaps. Modonome handles the
-bounded, provable portion of that backlog autonomously, so engineers stay focused on product
-delivery. Every change is small, test-fenced, independently checked, and gated before it
-touches production. No central service. No new process. It adopts your existing CI, code
-owners, and branch rules on day one.
-
-For mainframe, SAP, Oracle, Salesforce, ServiceNow, low-code, and data estate setups, see
-[ENTERPRISE.md](ENTERPRISE.md).
+Autonomous coding agents have a predictable failure mode: they weaken gates to go green (removing test assertions, adding skips, loosening type checks). Modonome is the first tool to make that structurally impossible. The ratchet that blocks it runs in CI, in code the agent cannot edit. [We published the specification](GOVERNED-AUTONOMY-SPEC.md) and Modonome is the reference implementation, scoring **[16/16 on AgentProof](agentproof/README.md)**.
 
 ## Try it in 60 seconds (changes nothing)
 
@@ -68,6 +51,10 @@ npx modonome scaffold . --write
 ```
 
 **[See the walkthrough](examples/demo-app/WALKTHROUGH.md)**: one week on a real Node.js app. What the dry-run proposed, what the ratchet blocked, and what the end-of-week report showed. No setup required to read it.
+
+## Why businesses adopt Modonome
+
+Modonome handles the bounded, provable portion of your tech debt backlog autonomously, so engineers stay focused on product delivery. Every change is small, test-fenced, independently checked, and gated before it touches production. For mainframe, SAP, Oracle, Salesforce, ServiceNow, low-code, and data estate setups, see [ENTERPRISE.md](ENTERPRISE.md).
 
 ## What it refuses to do by default
 
@@ -92,7 +79,7 @@ npx modonome scaffold . --write
 8. Learn. Real corrections become staged lessons that an owner promotes into durable rules.
 
 Modonome is a prompt and a set of scripts. Running autonomously requires a harness: a coding
-agent, a CI job, or a human session that loads the prompt.
+agent, a CI job, or a human session that loads the prompt. The `npx modonome` CLI scaffolds and validates your state; the prompt is the engine that runs inside your coding agent or CI harness.
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for the full picture and
 [prompts/modonome.bundle.md](prompts/modonome.bundle.md) for the engine definition.

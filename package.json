@@ -32,6 +32,7 @@
     "agentproof"
   ],
   "license": "MIT",
+  "author": "nateshpp",
   "repository": {
     "type": "git",
     "url": "https://github.com/nateshpp/modonome.git"
