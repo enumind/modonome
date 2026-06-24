@@ -6,8 +6,8 @@
 > are clearer than partial real-world runs with redacted details.
 
 This walkthrough shows what Modonome does in practice on a Node.js app with three
-real-world tech debt targets: missing test assertions, a stale dependency, and a
-type safety gap.
+real-world tech debt targets: missing test coverage on a high-churn path, dead feature
+flag code, and a type safety gap.
 
 ---
 
@@ -37,10 +37,11 @@ Proposed work (3 bounded items)
     Scope: remove flag check and dead branch in CheckoutService.js
     Risk tier: Tier 1 (unreachable code removal). Estimated: ~180 lines removed.
 
-[3] Enable TypeScript strict mode.
-    tsconfig.json has "strict": false. tsc --strict reveals 7 implicit-any errors.
-    Scope: set strict: true, fix 7 type annotations in PaymentProcessor.js
-    Risk tier: Tier 2 (type-checker only, no runtime impact). Estimated: ~25 lines.
+[3] Add null guards to PaymentProcessor charge path.
+    charge() and refund() accept amount with no pre-validation. A null amount passes
+    Math.round() silently and charges zero. Seven call sites pass these values unguarded.
+    Scope: add parameter guards to PaymentProcessor.js, 2 new assertions in tests/
+    Risk tier: Tier 2 (changes validated public method behaviour). Estimated: ~20 lines.
 
 None of the proposed changes have been applied.
 ```
@@ -120,7 +121,7 @@ actual work.
 ## Step 5: the governance report
 
 ```
-$ npx modonome report .
+$ npx modonome report examples/demo-app
 
 Modonome governance report
 Period: 2026-06-16 to 2026-06-23
