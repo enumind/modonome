@@ -7,8 +7,9 @@ code that runs outside the agent, not promises inside a prompt.
 ## The trust boundary is external
 
 - The arming levers (`autonomy_enabled`, `auto_merge`, `max_merges_per_day`,
-  `repo_network_enabled`) are read from the environment or CI in armed mode. A file the
-  engine can write cannot arm it.
+  `repo_network_enabled`) are gated by the `MODONOME_ARMED` environment variable, enforced
+  at runtime in `bin/modonome.mjs`. With the variable unset, `autonomy_enabled` is forced to
+  false regardless of what the config file says. A file the engine can write cannot arm it.
 - `prompts/`, `schemas/`, `scripts/`, `templates/`, and `.github/` are owner-reviewed through
   CODEOWNERS. The engine cannot widen its own caps, add itself to the trusted-author list, or
   weaken the ratchet without a human.

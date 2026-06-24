@@ -17,6 +17,13 @@ export function loadConfig(path) {
 
 // Safety rules beyond structural validation. These keep a config from claiming
 // an armed posture without the controls that make arming safe.
+//
+// Note on arming levers: config values such as autonomy_enabled and auto_merge are
+// advisory. They describe the posture an operator intends, but they cannot arm the
+// engine on their own. The authoritative gate is the MODONOME_ARMED environment
+// variable, enforced at runtime in bin/modonome.mjs (see ADR-004). A config file the
+// agent can write therefore cannot self-arm; these rules only check that a claimed
+// armed posture is internally consistent.
 export function safetyErrors(cfg) {
   const errs = [];
   if (cfg.auto_merge === true) {
