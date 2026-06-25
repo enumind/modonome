@@ -88,7 +88,7 @@ so I have more confidence in A's packet."
 ## Consequences
 
 - Repos benefit from each other's validation work
-- Trust networks propagate signal, not just packets
+- Trust networks propagate signal, not packets alone
 - Bad packets are identified faster (consensus emerges naturally)
 - Good packets gain confidence through use
 - No central authority needed to aggregate feedback; it's emergent

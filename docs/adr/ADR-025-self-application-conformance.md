@@ -59,7 +59,7 @@ without evidence that Modonome itself meets them.
 ## Consequences
 
 - Users can inspect Modonome's own governance and see the same patterns they're adopting.
-- The engine's actual behavior is auditable, not just the rules it claims to follow.
+- The engine's actual behavior is auditable, beyond the rules it claims to follow.
 - The tool cannot hide failures; they become learning opportunities and evidence.
 - Dogfooding becomes a release requirement: if the tool doesn't work for itself, it
   doesn't ship.

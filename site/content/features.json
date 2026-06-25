@@ -1,0 +1,44 @@
+{
+  "$comment": "Structured mirror of the features in site/repo-data.js. When a feature changes, update repo-data.js (the page's content source) and this file in the same PR. The automated sync workflow (sync-site-data.yml) updates version and AgentProof score automatically; feature copy is updated by hand since it involves editorial decisions.",
+  "version": "v0.1.0-alpha",
+  "agentproofScore": "16/16",
+  "agentproofLevel": "GOVERNED",
+  "features": [
+    {
+      "key": "test-backed-changes",
+      "icon": "square",
+      "title": "Small, test-backed changes",
+      "summary": "Every pull request is tightly scoped and arrives with a test that proves the fix. Reviews stay quick and the intent is easy to read."
+    },
+    {
+      "key": "separate-roles",
+      "icon": "grid",
+      "title": "Separate roles for trust",
+      "summary": "The maker, the checker, and the merge authority are always different roles, so each change gets a genuine second look before it lands."
+    },
+    {
+      "key": "ratchet",
+      "icon": "shield",
+      "title": "Anti-gaming ratchet in CI",
+      "summary": "A check running in your pipeline keeps tests, types, and coverage honest across JavaScript, Python, Java, and .NET."
+    },
+    {
+      "key": "adopts-setup",
+      "icon": "arrows",
+      "title": "Adopts your setup on day one",
+      "summary": "It follows your existing CI, code owners, and branch rules. There is no new process for the team to learn."
+    },
+    {
+      "key": "learning",
+      "icon": "refresh",
+      "title": "Improves as it goes",
+      "summary": "Real corrections become staged lessons, and an owner promotes the durable ones into lasting rules and gates."
+    },
+    {
+      "key": "estate",
+      "icon": "minus-square",
+      "title": "Works across your estate",
+      "summary": "The engine reasons by intent and evidence rather than language, so it fits product apps, services, and large enterprise platforms."
+    }
+  ]
+}
