@@ -1,5 +1,5 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$schema": "https://json-schema.org/draft-07/schema#",
   "$id": "https://modonome.com/schemas/config.schema.json",
   "title": "Modonome config",
   "description": "Spec of record: prompts/modonome.core.md Configuration. Defaults are safe.",

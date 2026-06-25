@@ -29,7 +29,12 @@
     "schemas",
     "scripts",
     "docs",
-    "agentproof"
+    "agentproof",
+    "LICENSE",
+    "README.md",
+    "CHANGELOG.md",
+    "SECURITY.md",
+    "CONTRIBUTING.md"
   ],
   "license": "MIT",
   "repository": {

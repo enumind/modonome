@@ -1,5 +1,5 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$schema": "https://json-schema.org/draft-07/schema#",
   "$id": "https://modonome.com/schemas/adoption-map.schema.json",
   "title": "Modonome adoption map",
   "description": "Spec of record: prompts/modules/adoption.md.",

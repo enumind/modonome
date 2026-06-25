@@ -1,5 +1,5 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$schema": "https://json-schema.org/draft-07/schema#",
   "$id": "https://modonome.com/schemas/knowledge-packet.schema.json",
   "title": "Modonome knowledge packet",
   "description": "Spec of record: prompts/modules/network.md. Off by default.",
