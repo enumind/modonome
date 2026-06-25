@@ -1,54 +1,44 @@
 {
-  "$comment": "Single source of truth for the landing page feature list. Keep in sync with README.md. When a feature in the engine changes, update it here in the same PR so the page never drifts from the product. The page currently embeds this copy inline in index.html; a future build step can render directly from this file.",
-  "tagline": "Governed autonomy for any repo.",
-  "agentproof": "16/16",
-  "license": "MIT",
-  "version": "0.1.0-alpha",
+  "$comment": "Structured mirror of the features in site/repo-data.js. When a feature changes, update repo-data.js (the page's content source) and this file in the same PR. The automated sync workflow (sync-site-data.yml) updates version and AgentProof score automatically; feature copy is updated by hand since it involves editorial decisions.",
+  "version": "v0.1.0-alpha",
+  "agentproofScore": "16/16",
+  "agentproofLevel": "GOVERNED",
   "features": [
     {
+      "key": "test-backed-changes",
+      "icon": "square",
+      "title": "Small, test-backed changes",
+      "summary": "Every pull request is tightly scoped and arrives with a test that proves the fix. Reviews stay quick and the intent is easy to read."
+    },
+    {
+      "key": "separate-roles",
+      "icon": "grid",
+      "title": "Separate roles for trust",
+      "summary": "The maker, the checker, and the merge authority are always different roles, so each change gets a genuine second look before it lands."
+    },
+    {
       "key": "ratchet",
-      "title": "Anti-gaming ratchet",
-      "summary": "Rejects diffs that remove assertions, drop coverage, add skips, or loosen type safety. Runs from a trusted base-branch copy the agent's run does not control."
+      "icon": "shield",
+      "title": "Anti-gaming ratchet in CI",
+      "summary": "A check running in your pipeline keeps tests, types, and coverage honest across JavaScript, Python, Java, and .NET."
     },
     {
-      "key": "checker",
-      "title": "Independent checker",
-      "summary": "The role that verifies a change is structurally separate from the role that wrote it, and from the one that merges it."
-    },
-    {
-      "key": "off-by-default",
-      "title": "Off by default",
-      "summary": "Autonomy and auto-merge stay off until an owner arms them through CI or environment, never through a file the engine can rewrite."
-    },
-    {
-      "key": "bounded-work",
-      "title": "Bounded work items",
-      "summary": "Tier 1 tests and docs, Tier 2 scripts and schemas. Small, dated, capped, and test-fenced."
-    },
-    {
-      "key": "protected-paths",
-      "title": "Protected paths",
-      "summary": "CI, secrets, schemas, migrations, lockfiles, and auth wait for owner review through your existing CODEOWNERS."
+      "key": "adopts-setup",
+      "icon": "arrows",
+      "title": "Adopts your setup on day one",
+      "summary": "It follows your existing CI, code owners, and branch rules. There is no new process for the team to learn."
     },
     {
       "key": "learning",
-      "title": "Learns with a human in the loop",
-      "summary": "Gate failures and reversions become staged lessons. An owner promotes durable ones into canonical rules and new gates."
+      "icon": "refresh",
+      "title": "Improves as it goes",
+      "summary": "Real corrections become staged lessons, and an owner promotes the durable ones into lasting rules and gates."
     },
     {
-      "key": "stack-detection",
-      "title": "Stack detection",
-      "summary": "Detects Node, Python, Java, and .NET and their gates on adoption. Enterprise mirror mode is on the roadmap for non-Git estates."
-    },
-    {
-      "key": "adopts-repo",
-      "title": "Adopts your repo",
-      "summary": "Uses your CI, code owners, and branch rules on day one. It adds no new platform and no new service."
-    },
-    {
-      "key": "zero-cost",
-      "title": "Zero tool cost",
-      "summary": "MIT, no telemetry, no service call. Your only cost is the LLM API you choose, and local or already-paid models come first."
+      "key": "estate",
+      "icon": "minus-square",
+      "title": "Works across your estate",
+      "summary": "The engine reasons by intent and evidence rather than language, so it fits product apps, services, and large enterprise platforms."
     }
   ]
 }
