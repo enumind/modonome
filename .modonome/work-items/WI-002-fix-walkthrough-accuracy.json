@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "id": "WI-002-fix-walkthrough-accuracy",
-  "state": "queued",
+  "state": "completed",
   "attempts": 0,
   "max_attempts": 3,
   "touches_protected_path": false,

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "id": "WI-009-add-ratchet-vacuous-matcher-detection",
-  "state": "queued",
+  "state": "completed",
   "attempts": 0,
   "max_attempts": 2,
   "touches_protected_path": true,
