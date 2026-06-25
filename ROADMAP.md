@@ -72,3 +72,35 @@ expand the engine's authority and attack surface.
 - Learning promotion audit trail (ADR-026). Every promoted learning links to its
   originating correction signal and the deterministic gate it produced, so the
   rule set cannot accumulate unprovenanced entries through silent creep.
+
+---
+
+## Research Direction: Agentic Governance Mesh (Milestones 7+)
+
+**Status:** Exploratory research, not a committed roadmap. See `docs/research/agentic-governance-mesh/`
+for full details and research plan.
+
+**Hypothesis:** If we define an open standard for governance packets and validate it on
+Modonome's own repo, repositories worldwide could safely share governance knowledge without
+a central authority.
+
+**Key research phases (subject to proof-of-concept results):**
+
+- **Phase 1 (Q4 2026):** Governance Packet Protocol (ADR-027) — Define an open,
+  implementation-agnostic format for governance packets. Validate that a third-party tool
+  can read and verify packets without Modonome code.
+
+- **Phase 2 (Q1-Q2 2027):** Proof-of-concept on Modonome's own repo. Import learnings
+  as GPP packets and validate import/export fidelity.
+
+- **Phase 3 (if Phase 1-2 succeed):** Trust networks and decentralized discovery
+  (ADR-028), packet lifecycle management (ADR-029), and cross-repo feedback loops (ADR-030).
+
+- **Phase 4 (future):** Network-level safety mechanisms (ADR-031, ADR-032).
+
+**Decision gate:** Q2 2027. If the v0.1 experiment succeeds and user feedback supports the
+direction, commit to a full mesh roadmap. If it fails, the research informs future strategy
+or is deprioritized.
+
+**Why separate from committed roadmap:** Milestones 1-6 ship regardless. Research happens
+in parallel and informs 2027+ direction. No dependency; no blocking.
