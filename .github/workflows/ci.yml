@@ -16,6 +16,8 @@ jobs:
           node-version: 20
       - name: Drift guard
         run: node scripts/check-drift.mjs
+      - name: Repo hygiene check
+        run: node scripts/check-repo-hygiene.mjs
       # On a pull request, run the house-style linter from the trusted base-branch
       # copy so a pull request cannot weaken the gate that judges it. The working
       # tree stays the pull request version, so the linter still inspects the change.
