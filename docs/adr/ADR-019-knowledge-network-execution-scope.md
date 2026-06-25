@@ -1,0 +1,39 @@
+# ADR-019: Knowledge Network Scripts Run in Base-Branch CI Scope
+
+**Status:** Accepted
+**Date:** 2026-06-25
+
+## Context
+
+The `ARCHITECTURE.md` "Trust boundaries and security invariants" section establishes the core CI-boundary invariant: the ratchet and validators (`guard-ratchet.mjs`, `check-style.mjs`, `check-drift.mjs`) are trustworthy only because the CI job that runs them checks out the **base branch**, not the PR head. An agent turn cannot modify those scripts mid-flight. CODEOWNERS protects merge; the base-branch checkout protects execution.
+
+The v0.2 network proposal introduced a new set of load-bearing scripts: `scripts/poll-network.mjs`, `scripts/verify-packet.mjs`, edits to `scripts/validate-knowledge-packet.mjs`, and the shared library modules `scripts/lib/canonical-json.mjs`, `scripts/lib/packet-id.mjs`, `scripts/lib/redaction-patterns.mjs`, and `scripts/lib/net-guard.mjs`. Together these perform every security-critical check in the import path: content-addressed id recomputation, Ed25519 signature verification, per-leaf redaction scan, SSRF defence, anti-replay, and atomic inbox staging.
+
+The red-team pass (finding H1, must-fix) discovered that these scripts were specified to run as a daemon or cron from the receiving repo's working tree with no execution scope pinned. An agent turn, or any workflow that checks out a feature branch and invokes `poll-network.mjs` from that branch, would execute the branch's copy of the verifier. A single edit to `scripts/lib/canonical-json.mjs` or `scripts/verify-packet.mjs` on a feature branch, whether by an agent or a poisoned dependency, turns every signature check, id assertion, and redaction scan into an attacker-controlled no-op. CODEOWNERS blocks that edit from merging; it does not block the branch copy from running.
+
+Without pinning execution scope, the signing contract (ADR-017), content-address identity (ADR-016), redaction enforcement (`scripts/validate-knowledge-packet.mjs`), and the SSRF guard (ADR-014 §4) are all theater: the code that enforces them can be subverted before any check fires.
+
+This ADR encodes the resolution: the entire network poll/verify/validate path joins the same base-branch CI-execution trust class as `guard-ratchet.mjs`. It is orthogonal to and does not replace CODEOWNERS protection. Both are required.
+
+## Decision
+
+**1. The network *import* path runs exclusively from the protected base branch in CI scope.** `scripts/poll-network.mjs`, `scripts/verify-packet.mjs`, the import-side invocation of `scripts/validate-knowledge-packet.mjs`, and every `scripts/lib/*` module they load execute from a CI checkout of the protected/default branch. The scheduled CI job `.github/workflows/modonome-network.yml` specifies the base branch explicitly in its `ref:` checkout step, using the same mechanism the `ARCHITECTURE.md` CI-boundary invariant relies on for `guard-ratchet.mjs`. On the import path these scripts are never invoked from a PR head and never as an in-agent-turn call. There is no agent-scope entry point that stages network bytes. The import side is CI-only. (`validate-knowledge-packet.mjs` is also called agent-side at *publish* time as an outbound gate; that single allowed agent-scope entry point is carved out in decision point 5 and does not stage any inbound bytes.)
+
+**2. A self-hash guard aborts execution on any branch-local modification.** At job startup, `.github/workflows/modonome-network.yml` computes the on-disk SHA-256 of each network script (`scripts/poll-network.mjs`, `scripts/verify-packet.mjs`, `scripts/validate-knowledge-packet.mjs`) and each `scripts/lib/*` dependency they load, then compares against the hashes committed to the base branch. If any file diverges, or if `GITHUB_REF` is not the protected branch, the job aborts before fetching or verifying anything. A branch-local edit to the verifier cannot be self-triggered: the guard fires before a single packet is touched.
+
+**3. Inbox status, audit log, and all ledgers are CI-write-only; the agent has read access only.** The `pending-local-validation` label on a staged inbox entry, `.modonome/network/audit.jsonl`, `.modonome/network/ledger.jsonl`, and `.modonome/network/pending-ids.json` are written exclusively by the base-branch CI job in `.github/workflows/modonome-network.yml`. The agent may read these files for display and reporting but cannot write, amend, or forge them. This makes ADR-016 H6 (anti-replay ledger integrity) and ADR-018 H2 (SSRF-guard audit integrity) structurally hold: the ledger entries that drive dedup, rejection, and retry state are CI-provenance records, not agent-asserted labels. The owner's promotion view always shows a CI-run provenance, never an agent-asserted status.
+
+**4. Network scripts are both Tier 3 CODEOWNERS-protected paths AND base-branch-executed.** All new and edited scripts under `scripts/` and `schemas/` are protected paths (>= Tier 3) per the CODEOWNERS boundary defined in the `ARCHITECTURE.md` "Trust boundaries and security invariants" section. Owner approval is required before any such change merges. This ADR adds the orthogonal execution-scope guarantee: being on a protected path governs what lands on the base branch; this ADR governs what runs when the CI job fires. Both invariants are required and neither subsumes the other. Tier 4 applies to enabling network behavior, adding a catalog origin, or enrolling a peer key (`.modonome/peer-keys.json`); those require an explicit owner decision independent of the CODEOWNERS merge gate.
+
+**5. The agent never invokes the poll.** Unlike `scripts/validate-knowledge-packet.mjs` at publish time, which the agent-side checker may call as a gate (ADR-010 decision point 2), the import-side poll has no agent-scope entry point. `scripts/poll-network.mjs` is invoked only by `.github/workflows/modonome-network.yml` running on the base branch. This closes the path by which an agent turn could feed attacker-controlled bytes through the network pipeline.
+
+**6. `ARCHITECTURE.md` is extended in prose to name the network scripts.** The base-branch-execution invariant in the "Trust boundaries and security invariants" section is updated to explicitly include `scripts/poll-network.mjs`, `scripts/verify-packet.mjs`, `scripts/validate-knowledge-packet.mjs`, and `scripts/lib/*` as members of the same CI-scope trust class as `guard-ratchet.mjs`. This keeps the prose invariant and the enforced reality in sync, consistent with `check-drift.mjs`'s purpose.
+
+## Consequences
+
+- The signing, content-addressing, redaction, and SSRF checks performed by `scripts/verify-packet.mjs` and `scripts/lib/*` are executed by code the agent provably cannot alter mid-flight; a branch-local subversion of the verifier cannot be self-triggered.
+- ADR-017 (signing/key management), and the content-identity, redaction, and SSRF mitigations from the red-team pass, are only meaningful because this ADR pins the execution scope; without it those mitigations are theater.
+- The anti-replay and quarantine state in `.modonome/network/ledger.jsonl` and `pending-ids.json` carry CI provenance and cannot be forged by an agent turn; this is what makes the dedup and rejection contracts binding.
+- The promotion flow re-runs `scripts/verify-packet.mjs` (ADR-017 decision point 4) under the same base-branch CI scope; a staged packet whose key has since been revoked or whose receiver-side max-staleness has elapsed auto-quarantines and cannot be promoted, because the re-verify runs code the agent did not touch.
+- Any weakening of the self-hash guard or the base-branch checkout step in `.github/workflows/modonome-network.yml` is a Tier 3 CODEOWNERS-gated change, visible to the owner before it lands.
+- The network feature inherits the exact structural invariant `ARCHITECTURE.md` already depends on for the ratchet; no new trust mechanism is introduced, only the scope of an existing one extended.
