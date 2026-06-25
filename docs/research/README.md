@@ -16,9 +16,9 @@ Explores how Modonome could evolve from a single-repo governance tool into a glo
 where repositories share governance knowledge without central authority.
 
 **Start here:**
-1. `00-RESEARCH-PLAN.md` — Research hypothesis, scope, and v0.1 experiment plan
-2. `governance-mesh-vision.md` — Strategic vision and architectural layers (for reference)
-3. `ADR-027` through `ADR-032` — Detailed design proposals for each architectural layer
+1. `00-RESEARCH-PLAN.md`: Research hypothesis, scope, and v0.1 experiment plan
+2. `governance-mesh-vision.md`: Strategic vision and architectural layers (for reference)
+3. `ADR-027` through `ADR-032`: Detailed design proposals for each architectural layer
 
 **Key questions this research answers:**
 - Can we define an open protocol for governance packets?

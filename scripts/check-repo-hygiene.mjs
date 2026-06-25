@@ -13,6 +13,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { execSync as nodeExecSync } from 'node:child_process';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.join(__dirname, '..');
@@ -109,6 +110,5 @@ if (issues.length === 0) {
 
 // Helper
 function execSync(cmd, opts) {
-  const { execSync: es } = require('child_process');
-  return es(cmd, { cwd: repoRoot, ...opts });
+  return nodeExecSync(cmd, { cwd: repoRoot, ...opts });
 }

@@ -1,0 +1,41 @@
+# Keeps site/repo-data.js in sync with the source docs (README, AgentProof, ROADMAP,
+# package.json). Runs on push to main when any of those files change, updates
+# the fallback values in site/repo-data.js, and commits the result if anything
+# changed. The pages.yml deploy then triggers automatically on the commit.
+name: sync-site-data
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "README.md"
+      - "ROADMAP.md"
+      - "agentproof/README.md"
+      - "package.json"
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 20
+      - name: Sync site/repo-data.js from source docs
+        run: node scripts/sync-site-data.mjs
+      - name: Commit if changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet site/repo-data.js; then
+            echo "No changes to commit."
+          else
+            git add site/repo-data.js
+            git commit -m "chore: sync site/repo-data.js from source docs"
+            git push
+          fi

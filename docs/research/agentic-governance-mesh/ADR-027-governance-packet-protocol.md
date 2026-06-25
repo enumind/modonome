@@ -7,7 +7,7 @@
 ## Context
 
 Modonome's knowledge packets today are understood by Modonome's code. To enable a global
-governance mesh—where any system can participate—we need an open, implementation-agnostic
+governance mesh, where any system can participate, we need an open, implementation-agnostic
 protocol for governance packets.
 
 ## Decision

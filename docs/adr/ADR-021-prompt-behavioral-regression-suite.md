@@ -42,7 +42,7 @@ canonical scenarios. Without this, behavioral drift is silent.
 
 ## Consequences
 
-- Prompt changes are validated against behavior, not just textual consistency.
+- Prompt changes are validated against behavior, beyond textual consistency.
 - Behavioral drift becomes visible immediately, not discovered months later in audit.
 - The test suite is the documentation of what the prompt *actually does* vs. what it claims.
 - Intentional behavioral changes are explicit and ADR-gated.

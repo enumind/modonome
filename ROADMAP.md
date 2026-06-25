@@ -41,9 +41,9 @@ shift. Each item lands only when its own gates are green.
 ## Milestone 6 · Self-governance hardening
 
 Modonome must govern its own evolution under the same controls it asks a host repo to
-adopt. These items turn the soft risks in the current design — prompt drift, prompt
+adopt. These items turn the soft risks in the current design: prompt drift, prompt
 complexity creep, checker rubber-stamping, schema churn, and uncontrolled capability
-rollout — into deterministic gates the project runs on itself. The capability promotion
+rollout, into deterministic gates the project runs on itself. The capability promotion
 gate (ADR-024) is a prerequisite for shipping Milestone 2 and Milestone 5, since both
 expand the engine's authority and attack surface.
 
@@ -53,7 +53,7 @@ expand the engine's authority and attack surface.
 - Prompt behavioral regression suite (ADR-021). Frozen golden fixtures pin the engine's
   expected decision on a set of canonical scenarios (tier classification, arming refusal,
   untrusted-input handling). CI replays them on every `prompts/` change to catch silent
-  behavioral drift, not just textual drift that `check-drift.mjs` already covers.
+  behavioral drift, beyond the textual drift that `check-drift.mjs` already covers.
 - Anti-rubber-stamp checker telemetry (ADR-022). Metrics capture the checker's
   change-request and diff-modification rate. A ratchet flags a checker that approves a run
   of changes with no findings, closing the checker-gaming gap the maker-checker contract
@@ -86,7 +86,7 @@ a central authority.
 
 **Key research phases (subject to proof-of-concept results):**
 
-- **Phase 1 (Q4 2026):** Governance Packet Protocol (ADR-027) — Define an open,
+- **Phase 1 (Q4 2026):** Governance Packet Protocol (ADR-027): Define an open,
   implementation-agnostic format for governance packets. Validate that a third-party tool
   can read and verify packets without Modonome code.
 

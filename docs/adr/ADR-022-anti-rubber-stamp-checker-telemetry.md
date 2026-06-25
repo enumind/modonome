@@ -12,7 +12,7 @@ The maker-checker-merger contract (GOVERNANCE.md) requires:
 - A distinct merge authority
 
 The checker's role is to run deterministic gates first, then review the diff and the
-rationale. A "persuasive rationale is evidence, not a verdict" — the checker must actively
+rationale. A "persuasive rationale is evidence, not a verdict": the checker must actively
 engage, not passively approve.
 
 Today, there is no metric for checker engagement. A checker that approves every run with no

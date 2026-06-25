@@ -1,0 +1,61 @@
+# Builds and publishes the modonome.com landing page (site/) to GitHub Pages.
+# A pull request that touches site/ runs the build only. A push to main that
+# touches site/ builds and deploys. Deploy uses the built-in GITHUB_TOKEN, so
+# there is no long-lived deploy credential to leak or rotate.
+name: pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "site/**"
+      - ".github/workflows/pages.yml"
+  pull_request:
+    paths:
+      - "site/**"
+      - ".github/workflows/pages.yml"
+
+# Default to read-only. The deploy job below elevates only what it needs.
+permissions:
+  contents: read
+
+# Never run two publishes at once. Do not cancel an in-flight deploy.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  # Build runs on pull requests and pushes. It only packages the static site as a
+  # Pages artifact, so it needs no Pages API access and passes before Pages is even
+  # enabled. This is the pull-request build check.
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Upload site artifact
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    # Publish only from main after merge. Pull requests build but never deploy.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      # enablement: true turns on GitHub Pages (source = GitHub Actions) on the
+      # first run, so no manual settings toggle is needed. This step has pages:write,
+      # which is required to enable Pages. It is idempotent on later runs.
+      - name: Configure Pages
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
+        with:
+          enablement: true
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
