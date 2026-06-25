@@ -1,6 +1,6 @@
 # ADR-021: Prompt Behavioral Regression Suite
 
-**Status:** Proposed  
+**Status:** Accepted  
 **Date:** 2026-06-25  
 **Milestone:** 6 (Self-governance hardening)
 
