@@ -9,7 +9,7 @@ npx modonome dry-run .
 ```
 
 This reads your repo, detects the stack and gates, lists protected paths, and proposes a few
-bounded pieces of work. It writes nothing.
+bounded pieces of work. It is read-only.
 
 ## 2. Add local state
 
@@ -17,8 +17,8 @@ bounded pieces of work. It writes nothing.
 npx modonome scaffold .
 ```
 
-This creates `.modonome/` with a config and state files, all disabled and dry-run. It never
-overwrites an existing file. Add `--write` to apply, or run without it to preview.
+This creates `.modonome/` with a config and state files, all disabled and dry-run. It
+leaves existing files untouched. Add `--write` to apply, or run without it to preview.
 
 If your repo already uses `.autonomy/`, Modonome adopts it instead.
 
@@ -75,7 +75,7 @@ Armed mode is a deliberate, owner-only step. Work through this checklist before 
 
 Once all boxes are checked, set `MODONOME_ARMED=true` in your CI secrets or harness
 environment and trigger a dry run to confirm the gate activates correctly. The arming
-variable is never read from the config file the agent can edit.
+variable is read from your environment, separate from the config file the agent can edit.
 
 ## What success looks like after the first week
 

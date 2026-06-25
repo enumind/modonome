@@ -23,10 +23,14 @@ the change waits for human review.
 - Tier 4: new product claims, architecture, policy, legal, market positioning, autonomous
   merge enablement, cross-repo changes. Owner decision only.
 
+Tier 3 and Tier 4 changes route to the same human review and security processes a team
+already runs, through CODEOWNERS and owner decision. Modonome extends those controls and
+works within them, rather than adding a parallel approval path.
+
 ## The activation ladder
 
-1. Disabled. Read state, produce plans, change nothing.
-2. Dry-run. Project actions, record metrics, take no write action.
+1. Disabled. Read state and produce plans, read-only.
+2. Dry-run. Project actions and record metrics, read-only.
 3. Shadow. Run against live state read-only, compare decisions against human outcomes.
 4. Armed. Allowed only when every gate below passes.
 

@@ -1,13 +1,13 @@
 # Adoption guide
 
 This guide shows how to embed Modonome into an existing app, service, platform, or
-infrastructure repo without changing the repo's stack or governance.
+infrastructure repo while keeping the repo's stack and governance as they are.
 
 ## Principles
 
 1. Start read-only.
 2. Adopt the host repo's instructions, CI, code owners, branch rules, package manager,
-   release process, and design system.
+   release process, design system, scanners, secrets management, and compliance checks.
 3. Scaffold only missing state files.
 4. Keep every work item bounded by an edit set, a test fence, and a rollback note.
 5. Keep maker, checker, and merge authority separate.
@@ -16,7 +16,7 @@ infrastructure repo without changing the repo's stack or governance.
 ## Install
 
 ```bash
-# preview what it would do (changes nothing)
+# preview what it would do (read-only)
 npx modonome dry-run .
 
 # drop disabled, dry-run state files
@@ -26,7 +26,8 @@ npx modonome scaffold . --write
 npx modonome validate .modonome/config.yaml
 ```
 
-An adopting repo keeps state locally. Modonome needs no central service to begin.
+An adopting repo keeps state locally. Modonome begins with local state and runs without a
+central service.
 
 ## The adoption pass
 
@@ -41,8 +42,8 @@ Three levers matter on day one. The rest have safe defaults.
 
 ```yaml
 autonomy_enabled: false   # stays off until you arm through CI or env
-dry_run: true             # project actions, take none
-protected_paths_extra: [] # add anything the engine must never touch
+dry_run: true             # project actions, read-only
+protected_paths_extra: [] # add any path the engine should leave untouched
 ```
 
 The full lever reference is `schemas/config.schema.json` and `templates/.modonome/config.yaml`.
@@ -84,7 +85,7 @@ correction promoted into a convention, or a manual release step turned into a ga
 
 ## Strengthening Modonome
 
-Modonome improves through evidence, not hidden memory. It captures lessons only from real
+Modonome improves through recorded evidence that an owner promotes. It captures lessons only from real
 correction signals, stages them in `.modonome/LEARNINGS.md`, and an owner promotes the durable
 ones into docs, config, tests, or templates. Quality is measured by adoption and reduced
 repeat failure.
