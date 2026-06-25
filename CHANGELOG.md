@@ -6,6 +6,31 @@ version bump.
 
 ---
 
+## Unreleased
+
+### Cross-repo knowledge network: architecture and ADRs (design)
+
+- Added `docs/knowledge-network-architecture.md`: the practically grounded v0.2 (Milestone 2)
+  architecture for the cross-repo knowledge network. Covers the publish, sign, catalog, poll,
+  verify, local re-validation, and owner-promotion flow; the transport and freshness model;
+  the trust and threat model; and what is explicitly deferred. The feature stays off by
+  default, pull-only, and sovereignty-preserving.
+- Filed `ADR-014` through `ADR-019` for the knowledge network: transport and sync model
+  (pull-only polling, optional later webhooks), catalog design (opt-in, hash-only identity,
+  signed monotonic index, no ranking), packet identity and dedup (content-addressed ids,
+  RFC 8785 canonical JSON), packet signing and key management (Ed25519, committed
+  CODEOWNERS-gated peer-key allowlist with out-of-band enrollment, no TOFU), the import
+  pipeline and local re-validation ratchet (ADR-010 applied to imported candidates, with
+  re-verification at promotion), and base-branch CI execution scope for all network scripts.
+- Extended the `ARCHITECTURE.md` CI-boundary invariant to name `guard-ratchet.mjs` and the
+  network import scripts as members of the base-branch execution trust class.
+- No runtime, schema, or default-lever changes in this entry. Scripts and schemas named in
+  the ADRs (`poll-network.mjs`, `verify-packet.mjs`, `sign-packet.mjs`, `catalog-index.schema.json`,
+  `peer-keys.schema.json`, and the `scripts/lib/*` helpers) are specified here and built in a
+  later milestone.
+
+---
+
 ## 0.1.0-alpha : 2026-06-23
 
 ### AgentProof benchmark (16/16 GOVERNED)
