@@ -1,6 +1,6 @@
 # ADR-020: Prompt Complexity Budget
 
-**Status:** Proposed  
+**Status:** Accepted  
 **Date:** 2026-06-25  
 **Milestone:** 6 (Self-governance hardening)
 
