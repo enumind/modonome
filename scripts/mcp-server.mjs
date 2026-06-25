@@ -123,8 +123,8 @@ async function toolRatchet(args) {
       return { passed: false, violations: ["diff_path must be a regular file."] };
     }
     const ext = extname(resolved).toLowerCase();
-    if (![".patch", ".diff", ".txt", ""].includes(ext)) {
-      return { passed: false, violations: [`diff_path extension not allowed: ${ext}`] };
+    if (![".patch", ".diff", ".txt"].includes(ext)) {
+      return { passed: false, violations: [`diff_path extension not allowed: ${ext || "(none)"}`] };
     }
     diffPath = resolved;
   } else if (args.diff) {

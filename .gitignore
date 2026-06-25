@@ -4,3 +4,7 @@ dist/
 .DS_Store
 fixtures/**/.modonome/
 .modonome/runs/
+.env
+.env.*
+*.pem
+*.key
