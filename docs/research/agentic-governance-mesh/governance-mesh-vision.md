@@ -6,7 +6,7 @@
 ## The Idea
 
 Modonome began as "autonomous governance for your repository." The next evolution is to
-become infrastructure for **global, decentralized, autonomous governance**—a World Wide
+become infrastructure for **global, decentralized, autonomous governance**, a World Wide
 Web for governance packets, where repositories worldwide can publish, discover, and learn
 from each other's patterns, without a central authority.
 
@@ -52,7 +52,7 @@ Think of it as:
 - Ed25519 signing for authenticity
 - Packet types: gate, learning, pattern, role, integration
 - Multiple maturity states: stable, advisory, experimental
-- Transport-agnostic (HTTP, Git, IPFS, email—all valid)
+- Transport-agnostic (HTTP, Git, IPFS, email, all valid)
 
 **Benefit:** Any system can implement GPP; interoperability across governance frameworks.
 
@@ -196,7 +196,7 @@ Enterprise Bank follows both Google and Kubernetes
 
 **Old vision:** "Modonome helps *your* repo govern autonomously."
 
-**New vision:** "Modonome enables *autonomous governance as a network property*—repos learn
+**New vision:** "Modonome enables *autonomous governance as a network property*, repos learn
 from each other's mistakes and improvements, globally, without a central authority."
 
 The second is more valuable, more aligned with open source, and scales indefinitely.
@@ -207,12 +207,12 @@ The second is more valuable, more aligned with open source, and scales indefinit
 
 Start here for the big picture, then dive into specifics:
 
-1. **ADR-027: Governance Packet Protocol** — understand the format
-2. **ADR-028: Trust Network & Discovery** — understand how packets spread
-3. **ADR-029: Packet Lifecycle & Versioning** — understand how packets evolve
-4. **ADR-030: Cross-Repo Governance Feedback** — understand trust propagation
-5. **ADR-031: Semantic Compatibility & Conflicts** — understand safety
-6. **ADR-032: Network-Level Ratchet** — understand network-level enforcement
+1. **ADR-027: Governance Packet Protocol**: understand the format
+2. **ADR-028: Trust Network & Discovery**: understand how packets spread
+3. **ADR-029: Packet Lifecycle & Versioning**: understand how packets evolve
+4. **ADR-030: Cross-Repo Governance Feedback**: understand trust propagation
+5. **ADR-031: Semantic Compatibility & Conflicts**: understand safety
+6. **ADR-032: Network-Level Ratchet**: understand network-level enforcement
 
 Then relate them back to the existing architecture:
 - **ADR-024 (Capability Promotion Gate)**: governs local adoption

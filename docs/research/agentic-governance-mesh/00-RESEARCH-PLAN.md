@@ -26,7 +26,7 @@ This is not a business requirement for v0.2. It's a strategic direction for 2027
 
 **Vision statement (aspirational):**
 > A decentralized network where repositories share, discover, and validate governance
-> patterns across organizational boundaries—enabling emergent governance practices without
+> patterns across organizational boundaries, enabling emergent governance practices without
 > central authority.
 
 **Hypothesis (testable):**
@@ -100,7 +100,7 @@ is proven.
 
 ---
 
-## Why Not Just Use a Central Catalog?
+## Why Not Use a Central Catalog?
 
 **Central catalog (Milestone 2) trade-offs:**
 - ✓ Simpler to implement and maintain
