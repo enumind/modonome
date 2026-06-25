@@ -1,6 +1,7 @@
-# The engine contract and its enforcing code require owner review. These are the
-# parts an autonomous loop must never edit on its own.
+# The engine contract and its enforcing code require owner review. A human owner
+# approves every change to these paths before it merges.
 *                       @nateshpp
+/bin/                   @nateshpp
 /prompts/               @nateshpp
 /schemas/               @nateshpp
 /scripts/               @nateshpp

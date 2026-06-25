@@ -86,4 +86,4 @@ version bump.
 | v0.2 | Hardened alpha | Signed work items (Ed25519), `modonome report` dashboard |
 | v0.3 | Beta | OpenTelemetry span emission |
 | v0.4 | RC | Multi-repo estate management, compliance audit trail |
-| v1.0 | GA | Stable API, SLA-backed ratchet, OpenSSF conformance |
+| v1.0 | GA | Stable API, ratchet stability guarantees, OpenSSF conformance |

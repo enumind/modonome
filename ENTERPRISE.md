@@ -40,7 +40,5 @@ prompt and `schemas/knowledge-packet.schema.json`.
 
 ## Support
 
-Modonome is MIT-licensed and free to use. For enterprise deployment questions, integration
-help, or to discuss support arrangements, open an issue or start a discussion on the
-[GitHub repository](https://github.com/nateshpp/modonome). Commercial support options are
-on the roadmap for v0.2.
+Modonome is MIT-licensed and free to use. For deployment questions, open an issue or start
+a discussion on the [GitHub repository](https://github.com/nateshpp/modonome).

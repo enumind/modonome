@@ -45,6 +45,12 @@ test("ratchet does not flag real assertions that compare a value to a literal", 
   assert.equal(r.status, 0, `real assertions must pass:\n${r.stderr}`);
 });
 
+test("ratchet catches assertion removal in .mjs and .cjs test files", () => {
+  const r = ratchet(join(apFixtures, "ratchet-mjs-assertion-removal.patch"));
+  assert.equal(r.status, 1, `mjs assertion removal must be rejected:\n${r.stdout}`);
+  assert.match(r.stderr, /removes more test assertions/, "must report the net assertion drop");
+});
+
 test("ratchet counts removed Python bare assert statements", () => {
   const r = ratchet(join(apFixtures, "ratchet-python-bare-assert-removal.patch"));
   assert.equal(r.status, 1, `bare assert removal must be rejected:\n${r.stdout}`);

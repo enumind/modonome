@@ -1,10 +1,10 @@
 # Roadmap
 
 Modonome is in public alpha. The core loop (adopt, dry-run, make, check, gate, merge, learn)
-is stable. The items below are planned for future milestones. Dates are targets, not
-commitments. Each item lands only when its own gates are green.
+is stable. The items below are planned for future milestones. Dates are targets and may
+shift. Each item lands only when its own gates are green.
 
-## Milestone 1 · Hardened alpha (current)
+## Milestone 1 · Public alpha (current)
 
 - Core prompt, schemas, scripts, and templates at schema version 1.
 - Anti-gaming ratchet, config and packet validators, drift guard.

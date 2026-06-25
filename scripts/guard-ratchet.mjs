@@ -25,8 +25,8 @@ function getDiff() {
 
 // Test files: any language.
 const TEST_FILE = new RegExp([
-  // JS / TS
-  String.raw`\.(test|spec)\.(t|j)sx?$`,
+  // JS / TS, including ESM (.mjs/.mts) and CommonJS (.cjs/.cts) extensions
+  String.raw`\.(test|spec)\.(c|m)?[jt]sx?$`,
   // Python
   String.raw`_test\.py$`, String.raw`test_.*\.py$`,
   // Java (JUnit 4, JUnit 5, integration tests, Spock)
@@ -43,7 +43,7 @@ const PYTHON_TEST = /(?:^|\/)(?:test_[^/]*|[^/]*_test)\.py$/;
 // Source files by language (for non-test type-escape checks).
 const JAVA_SRC  = /\.java$/;
 const DOTNET_SRC = /\.cs$/;
-const TS_SRC    = /\.(t|j)sx?$/;
+const TS_SRC    = /\.(c|m)?[jt]sx?$/;
 
 // JaCoCo / Gradle / Coverlet config files.
 const JAVA_BUILD   = /^(pom\.xml|build\.gradle(\.kts)?)$/;

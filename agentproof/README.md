@@ -2,7 +2,7 @@
 
 **The adversarial benchmark for autonomous agent governance.**
 
-[![AgentProof](https://img.shields.io/badge/AgentProof-16%2F16%20GOVERNED-brightgreen)](agentproof/SPEC.md)
+[![AgentProof](https://img.shields.io/badge/AgentProof-16%2F16%20GOVERNED-brightgreen)](SPEC.md)
 
 AgentProof proves through executable scenarios that a governed autonomy
 implementation holds its safety properties under attack. Each scenario

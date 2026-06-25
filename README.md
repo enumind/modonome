@@ -4,12 +4,12 @@
 
 <h1 align="center">Modonome</h1>
 
-<p align="center"><strong>The autonomous engineering loop that can't arm itself, can't review its own work, and can't pass your tests by weakening them.</strong></p>
+<p align="center"><strong>The autonomous engineering loop that arms only on your command, sends every change through an independent checker, and keeps your tests at full strength.</strong></p>
 
 <p align="center">
-It finds tech debt your team keeps deferring, writes bounded pull requests, and cannot pass
-your tests by removing them. Maker, checker, and merge authority are structurally separate.
-Off by default. No central service.
+It finds tech debt your team keeps deferring and writes bounded pull requests, with a CI
+gate that keeps every test assertion intact. Maker, checker, and merge authority are
+structurally separate. Off by default, and it runs without a central service.
 </p>
 
 <p align="center">
@@ -33,21 +33,21 @@ Off by default. No central service.
 
 ---
 
-Autonomous coding agents have a predictable failure mode: they weaken gates to go green (removing test assertions, adding skips, loosening type checks). Modonome is the first tool to make that structurally impossible. The ratchet that blocks it runs in CI, in code the agent cannot edit. [We wrote the spec](GOVERNED-AUTONOMY-SPEC.md) and Modonome is the reference implementation, scoring **[16/16 on AgentProof](agentproof/README.md)**.
+Autonomous coding agents have a predictable failure mode: they weaken gates to go green (removing test assertions, adding skips, loosening type checks). Modonome blocks that in CI: the anti-gaming ratchet runs from a base-branch copy the agent's run does not control, and it rejects diffs that weaken a gate. We published the [governed-autonomy spec](GOVERNED-AUTONOMY-SPEC.md), and Modonome is its reference implementation, scoring **[16/16 on AgentProof](agentproof/README.md)**.
 
 ## Why businesses adopt Modonome
 
-Engineering teams spend 30 to 40 percent of capacity on tech debt work: test gaps, stale
-dependencies, dead branches, type safety holes, observability gaps. Modonome handles the
-bounded, provable portion of that backlog autonomously, so engineers stay focused on product
-delivery. Every change is small, test-fenced, independently checked, and gated before it
-touches production. No central service. No new process. It adopts your existing CI, code
-owners, and branch rules on day one.
+Engineering teams commonly report a large share of capacity going to tech debt work: test
+gaps, stale dependencies, dead branches, type safety holes, observability gaps. Modonome
+handles the bounded, provable portion of that backlog (Tier 1 and Tier 2 work) autonomously,
+so engineers stay focused on product delivery. Every change is small, test-fenced,
+independently checked, and gated before it reaches production. It adopts your existing CI,
+code owners, and branch rules on day one, and adds no new platform or service.
 
 For mainframe, SAP, Oracle, Salesforce, ServiceNow, low-code, and data estate setups, see
 [ENTERPRISE.md](ENTERPRISE.md).
 
-## Try it in 60 seconds (changes nothing)
+## Try it in 60 seconds (read-only)
 
 ```bash
 npx modonome dry-run .
@@ -69,26 +69,25 @@ npx modonome scaffold . --write
 
 **[See the walkthrough](examples/demo-app/WALKTHROUGH.md)**: one week on a real Node.js app. What the dry-run proposed, what the ratchet blocked, and what the end-of-week report showed. No setup required to read it.
 
-## What it refuses to do by default
+## Defaults that stay in your control
 
-- It will not enable autonomy. Arming is a separate, owner-only step through your CI or
-  environment.
-- It will not auto-merge anything.
-- It will not touch protected paths (CI, secrets, schemas, migrations, lockfiles, auth).
-- It will not spend on remote models. Local or already-paid models come first.
-- It will not share anything across repos.
+- Autonomy stays off until you arm it, through an owner-only step in your CI or environment.
+- Auto-merge stays off; a separate merge authority lands changes only when every gate is green.
+- Protected paths (CI, secrets, schemas, migrations, lockfiles, auth) wait for owner review.
+- Model spend stays opt-in; local or already-paid models come first.
+- Cross-repo sharing stays off until you enable it.
 
 ## How it works
 
 1. Adopt. Read the host repo's instructions, CI, code owners, gates, and conventions, then
    defer to them.
-2. Dry-run. Propose bounded work as a queue. Change nothing.
+2. Dry-run. Propose bounded work as a queue, read-only.
 3. Make. A maker implements one tightly scoped packet with a failing test as the fence.
-4. Check. An independent checker, never the maker, runs the gates and reviews the diff.
+4. Check. An independent checker, separate from the maker, runs the gates and reviews the diff.
 5. Gate. Deterministic gates and the anti-gaming ratchet run in CI, outside the agent.
 6. Owner. Protected paths and new claims wait for a human decision.
-7. Merge. One merge authority lands the change, never the author, only when every gate is
-   green.
+7. Merge. A separate merge authority, distinct from the author, lands the change only when
+   every gate is green.
 8. Learn. Real corrections become staged lessons that an owner promotes into durable rules.
 
 Modonome is a prompt and a set of scripts. Running autonomously requires a harness: a coding
@@ -103,21 +102,22 @@ When a gate fails, a reviewer corrects the engine, or a change gets reverted, a 
 captures one generalized, evidence-backed lesson and stages it in `.modonome/LEARNINGS.md`.
 An owner promotes durable lessons into canonical rules, config, or tests, then adds a
 deterministic gate when one fits. The queue stays capped, dated, and owner-controlled. The
-engine never rewrites its own rules without a human in the loop. A market-researcher role
+engine rewrites its own rules only with a human in the loop. A market-researcher role
 watches for standards and dependency shifts and routes sourced findings for owner review.
 
 ## Why is this different from prompting an agent directly?
 
 You can tell an agent to add tests. The agent can also remove assertions to make the tests
-pass faster. The difference with Modonome is structural: the ratchet that blocks assertion
-removal runs in CI, in a file the agent cannot edit. The arming levers are environment
-variables the agent cannot read. A prompt can be overridden by a cleverer prompt. A CI gate
-running outside the agent's write scope cannot be.
+pass faster. Modonome handles this structurally: the ratchet that catches assertion removal
+runs in CI from a base-branch copy the agent's run does not control. The arming levers live
+in environment variables, outside the agent's read scope. A prompt can be overridden by a
+cleverer prompt; a CI gate that runs outside the agent's write scope holds.
 
 ## Why it is safe to run
 
-The controls are code, not promises. The anti-gaming ratchet, the config and packet
-validators, and the drift guard all run in CI where the agent cannot edit them. The arming
+The controls live in code that runs in CI. The anti-gaming ratchet and the house-style
+linter run from a trusted base-branch copy; the config and packet validators and the drift
+guard run in CI and are protected by CODEOWNERS review. The arming
 levers are gated by the `MODONOME_ARMED` environment variable, enforced at runtime: with it
 unset, `autonomy_enabled` is forced to false no matter what the config file says. The levers
 are read from your environment or CI, never from a file the engine can rewrite.
@@ -141,8 +141,8 @@ Read [SECURITY.md](SECURITY.md), [GOVERNANCE.md](GOVERNANCE.md), and
   release tag.
 - Package: import the schemas and scripts, keep config and state local.
 
-Upgrades preserve your config. New levers always arrive with safe defaults, so an update can
-never arm an engine. See [docs/VERSIONING.md](docs/VERSIONING.md).
+Upgrades preserve your config. New levers always arrive with safe defaults, so an update
+leaves an engine disarmed unless an owner arms it. See [docs/VERSIONING.md](docs/VERSIONING.md).
 
 ## Examples
 
@@ -162,9 +162,9 @@ are stable and machine-verified. The following capabilities are on the roadmap b
 | Before/after tech debt measurement | Not yet | v0.2 |
 | Multi-team estate metrics aggregation | Not yet | v0.3 |
 
-State is stored as flat files in `.modonome/`. This is right for single-repo, owner-supervised
-runs. It is not ready for compliance audit trails or multi-team estates without the v0.2
-additions. See [ROADMAP.md](ROADMAP.md).
+State is stored as flat files in `.modonome/`. This suits single-repo, owner-supervised
+runs today; compliance audit trails and multi-team estates arrive with the v0.2 additions.
+See [ROADMAP.md](ROADMAP.md).
 
 ## Cost model
 
