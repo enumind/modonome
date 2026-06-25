@@ -7,8 +7,13 @@
 // Usage:
 //   node scripts/guard-ratchet.mjs <baseRef>     compare working tree to a git ref
 //   node scripts/guard-ratchet.mjs --diff <file> check a saved unified diff (for fixtures)
-import { execSync } from "node:child_process";
+import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
+
+// A git ref this tool will diff against. Refname rules already forbid spaces and
+// most shell metacharacters; this keeps the value to the safe subset and to the
+// `..`/`...` range syntax the ratchet uses.
+const SAFE_REF = /^[A-Za-z0-9._/-]+$/;
 
 function getDiff() {
   const arg = process.argv[2];
@@ -16,7 +21,20 @@ function getDiff() {
     return readFileSync(process.argv[3], "utf8");
   }
   const base = arg || "origin/main";
-  return execSync(`git diff ${base}...HEAD`, { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
+  if (!SAFE_REF.test(base)) {
+    throw new Error(`refusing to diff against unsafe ref: ${base}`);
+  }
+  // Pass git its arguments as an array, never a shell string, so the ref can
+  // never be interpreted as a command.
+  const result = spawnSync("git", ["diff", `${base}...HEAD`], {
+    encoding: "utf8",
+    maxBuffer: 64 * 1024 * 1024,
+  });
+  if (result.error) throw result.error;
+  if (result.status !== 0) {
+    throw new Error(result.stderr || `git diff ${base}...HEAD failed`);
+  }
+  return result.stdout;
 }
 
 // ---------------------------------------------------------------------------
