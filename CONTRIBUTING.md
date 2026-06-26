@@ -31,9 +31,12 @@ where they stand. Security reports follow the faster timeline in [SECURITY.md](S
 ## House style
 
 - Plain, positive, confident voice. Short sentences. Concrete nouns.
-- No em dashes. No AI authorship signatures in any file or commit message.
+- No em dashes. No AI authorship signatures in any file, commit message, or branch name.
 - The style check runs in CI and will flag signatures in files. Commit messages must not
-  include AI attribution trailers or generated-by banners.
+  include AI attribution trailers or generated-by banners. Branch names must not use
+  patterns like `claude/*`, `gpt/*`, `ai/*` or other model identifiers.
+- Branch names should be descriptive: `feature/ws-g-agentproof`, `fix/config-schema`,
+  `docs/embedding-guide`. Avoid auto-generated hashes unless necessary for uniqueness.
 
 ## Pull requests
 
