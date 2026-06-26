@@ -1,5 +1,8 @@
-// OrderService : 14 commits in 90 days, 0 tests on the refund path.
-// Modonome dry-run flagged this as the highest-risk untested boundary.
+// OrderService: creates and manages orders.
+// createOrder does not validate its input; passing null or undefined items
+// will throw a raw TypeError (input validation is missing).
+// refund has four conditional branches; test coverage is incomplete -
+// only the "order not found" branch is currently covered by tests.
 
 export class OrderService {
   constructor(db, paymentClient) {
@@ -8,13 +11,15 @@ export class OrderService {
   }
 
   async createOrder(userId, items) {
+    // No input validation here. Null/undefined items will throw a TypeError.
     const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const order = await this.db.orders.create({ userId, items, total, status: "pending" });
     return order;
   }
 
-  // Three conditional branches, zero assertions in any test file.
-  // Modonome proposed adding 4 assertions covering each branch.
+  // Four conditional branches: order not found, already refunded,
+  // wrong status, and success path.
+  // Refund branch coverage is incomplete - see tests/OrderService.test.js.
   async refund(orderId, reason) {
     const order = await this.db.orders.findById(orderId);
     if (!order) {

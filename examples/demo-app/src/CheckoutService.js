@@ -1,8 +1,8 @@
-// CheckoutService : ENABLE_LEGACY_CHECKOUT has been false in all environments
-// for 62 days. Modonome proposed removing ~180 lines of dead code.
-// (Dead branch shown here for illustration; Modonome's PR removed it.)
+// CheckoutService: drives the checkout flow from cart to order.
+// ENABLE_LEGACY_CHECKOUT is set to false; the legacy path below is
+// unreachable and has never executed in this codebase.
 
-const ENABLE_LEGACY_CHECKOUT = false; // set in all envs since 2026-04-22
+const ENABLE_LEGACY_CHECKOUT = false;
 
 export class CheckoutService {
   constructor(cartService, orderService) {
@@ -17,14 +17,16 @@ export class CheckoutService {
     }
 
     if (ENABLE_LEGACY_CHECKOUT) {
-      // Legacy path : never executes. 180 lines of dead code removed by Modonome.
+      // This branch is disabled and unreachable. ENABLE_LEGACY_CHECKOUT is
+      // a const false, so the runtime never enters this block.
       return this._legacyCheckout(userId, cart);
     }
 
     return this.orderService.createOrder(userId, cart.items);
   }
 
-  // Dead method : Modonome removed this in item-002.
+  // This method is dead code: the only call site is behind ENABLE_LEGACY_CHECKOUT
+  // which is const false. The method is retained here but never invoked.
   async _legacyCheckout(userId, cart) {
     throw new Error("Legacy checkout is disabled");
   }
