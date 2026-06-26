@@ -30,6 +30,69 @@
     "repo_network_enabled": { "type": "boolean" },
     "repo_network_dry_run": { "type": "boolean" },
     "share_raw_code_across_repos": { "type": "boolean" },
-    "share_repo_identifiers_by_default": { "type": "boolean" }
+    "share_repo_identifiers_by_default": { "type": "boolean" },
+    "roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "maker": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "runner": { "type": "string", "enum": ["local", "container"] },
+            "model": { "type": "string", "minLength": 1 }
+          }
+        },
+        "checker": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "runner": { "type": "string", "enum": ["local", "container"] },
+            "model": { "type": "string", "minLength": 1 }
+          }
+        },
+        "dogfood": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "runner": { "type": "string", "enum": ["local", "container"] },
+            "model": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    },
+    "runners": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "local": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "labels": { "type": "array", "items": { "type": "string" } },
+            "cli_path": { "type": "string", "minLength": 1 }
+          }
+        },
+        "container": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "labels": { "type": "array", "items": { "type": "string" } },
+            "cli_path": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    },
+    "models": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "provider": { "type": "string", "minLength": 1 },
+          "base_url": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
   }
 }

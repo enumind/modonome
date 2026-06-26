@@ -35,6 +35,23 @@ export const SAFE_DEFAULTS = {
   repo_network_dry_run: true,
   share_raw_code_across_repos: false,
   share_repo_identifiers_by_default: false,
+  // WS-H: runner and model assignment for cost-bearing agent roles.
+  // Defaults preserve existing container/hosted-Claude posture.
+  roles: {
+    maker: { runner: "container", model: "claude-sonnet-4-6" },
+    checker: { runner: "container", model: "claude-opus-4-8" },
+    dogfood: { runner: "container", model: "claude-haiku-4-5" },
+  },
+  runners: {
+    local: { labels: ["self-hosted", "mac-mini"], cli_path: "claude" },
+    container: { labels: ["ubuntu-latest"], cli_path: "claude" },
+  },
+  models: {
+    "claude-sonnet-4-6": { provider: "anthropic" },
+    "claude-opus-4-8": { provider: "anthropic" },
+    "claude-haiku-4-5": { provider: "anthropic" },
+    "local-default": { provider: "local", base_url: "http://mac-mini.local:11434" },
+  },
 };
 
 export function migrate(cfg) {
