@@ -58,17 +58,11 @@ jobs:
           MAKER_ID: maker:${{ github.run_id }}:${{ env.MAKER_MODEL }}
           GH_TOKEN: ${{ github.token }}
         run: |
+          # The maker instructions live in prompts/roles/maker.txt (one CODEOWNER-protected
+          # source shared with scripts/agent/run-cycle.mjs). render-prompt substitutes the
+          # MAKER_ID, MAKER_MODEL, and RUN_BRANCH placeholders from the environment.
           claude --dangerously-skip-permissions --model "$MAKER_MODEL" --max-turns 40 \
-            -p "You are the MAKER in a modonome cycle. Follow AGENTS.md exactly.
-          1. Read .modonome/STATUS.md and .modonome/DECISIONS.md. Skip any item marked hold.
-          2. Pick the first Tier 1 item (touches_protected_path: false) in queued state.
-          3. If none exists, print 'No Tier 1 items queued. Stopping.' and exit 0.
-          4. Make only the changes in allowed_edit_set. Run every gate listed in the item.
-             If any gate fails, revert and exit 1.
-          5. In the work item JSON set state to checking and set maker_id to '$MAKER_ID' and
-             maker_model to '$MAKER_MODEL'. Do NOT set checker_id.
-          6. Create branch '$RUN_BRANCH', commit, push, and open a pull request.
-          7. Do not merge. Print a one-paragraph summary."
+            -p "$(node scripts/agent/render-prompt.mjs maker)"
       - name: Detect whether the maker pushed a run branch
         id: detect
         # Ground truth: did the maker actually push RUN_BRANCH? On an empty queue the
@@ -106,18 +100,10 @@ jobs:
           CHECKER_ID: checker:${{ github.run_id }}:${{ env.CHECKER_MODEL }}
           GH_TOKEN: ${{ github.token }}
         run: |
+          # The checker instructions live in prompts/roles/checker.txt (the same shared
+          # source). render-prompt substitutes CHECKER_ID, CHECKER_MODEL, and RUN_BRANCH.
           claude --dangerously-skip-permissions --model "$CHECKER_MODEL" --max-turns 40 \
-            -p "You are the CHECKER in a modonome cycle. You did NOT author this diff.
-          1. The deterministic gates already passed in the previous step. Review the diff and
-             the rationale on the merge_ready work item. A persuasive rationale is evidence,
-             not a verdict.
-          2. In the work item JSON set checker_id to '$CHECKER_ID' and checker_model to
-             '$CHECKER_MODEL'. checker_id MUST differ from maker_id.
-          3. Append one metrics line to .modonome/metrics.jsonl with event 'checker_review' and
-             fields checker_id, checker_requested_changes (bool), checker_questions_raised (int).
-          4. If you request changes, push them to '$RUN_BRANCH' and set state back to rework.
-             Otherwise set state to merge_ready.
-          5. Do not merge. The owner merges after review. Print a one-paragraph review."
+            -p "$(node scripts/agent/render-prompt.mjs checker)"
       - name: Assert checker wrote metrics
         run: |
           if [ ! -s .modonome/metrics.jsonl ]; then

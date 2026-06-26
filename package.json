@@ -23,7 +23,8 @@
     "dry-run": "node scripts/dry-run-sweep.mjs",
     "scaffold": "node scripts/scaffold.mjs",
     "agentproof": "node agentproof/runner.mjs",
-    "report": "node scripts/report.mjs"
+    "report": "node scripts/report.mjs",
+    "demo:agent": "node scripts/agent/run-cycle.mjs"
   },
   "files": [
     "bin",

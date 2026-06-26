@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "id": "demo-refund-coverage",
+  "state": "done",
+  "touches_protected_path": false,
+  "maker_id": "maker:demo-app:2026-06-26T11-46-00Z:claude-haiku-4-5",
+  "maker_model": "claude-haiku-4-5",
+  "checker_id": "checker:demo-app:2026-06-26T11-46-00Z:claude-sonnet-4-6",
+  "checker_model": "claude-sonnet-4-6",
+  "allowed_edit_set": ["tests/"],
+  "gates": ["test"]
+}

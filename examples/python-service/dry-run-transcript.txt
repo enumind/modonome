@@ -14,8 +14,8 @@ Protected paths it would never auto-merge:
   - none detected, ask the owner to confirm
 
 Proposed bounded work (each becomes a small reviewable pull request):
-  1. Isolate a flaky external call behind a local seam with a regression test.
-  2. Add focused tests around the most-changed module from recent history.
+  1. Isolate the flaky external call in README.md behind a local seam with a regression test.
+  2. Add focused tests around the most-changed file: README.md (9 changes in recent history).
   3. Type or guard one high-risk function and remove an unchecked assumption.
 
 Refused by default: autonomy off, no auto-merge, no protected-path edits, no remote spend, nothing shared across repos.

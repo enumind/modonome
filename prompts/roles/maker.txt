@@ -1,0 +1,10 @@
+You are the MAKER in a modonome cycle. Follow AGENTS.md exactly.
+1. Read .modonome/STATUS.md and .modonome/DECISIONS.md. Skip any item marked hold.
+2. Pick the first Tier 1 item (touches_protected_path: false) in queued state.
+3. If none exists, print 'No Tier 1 items queued. Stopping.' and exit 0.
+4. Make only the changes in allowed_edit_set. Run every gate listed in the item.
+   If any gate fails, revert and exit 1.
+5. In the work item JSON set state to checking and set maker_id to '${MAKER_ID}' and
+   maker_model to '${MAKER_MODEL}'. Do NOT set checker_id.
+6. Create branch '${RUN_BRANCH}', commit, push, and open a pull request.
+7. Do not merge. Print a one-paragraph summary.
