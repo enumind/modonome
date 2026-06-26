@@ -15,8 +15,14 @@ export function governanceErrors(item, config = {}) {
 
   // Presence guards: identity fields are required once work is in flight.
   // Scoped to active states only so legacy "done" items (no identity fields) stay valid.
+  //
+  // The maker advances an item to "checking" and opens its pull request before any
+  // checker has engaged, so a "checking" item legitimately has no checker_id yet.
+  // Requiring it there would fail the maker's own pull request in CI before the
+  // checker can act. checker_id is therefore required only at "merge_ready", the
+  // gate where a missing checker would mean the maker could merge unreviewed work.
   const makerRequiredStates = ["making", "checking", "rework", "merge_ready"];
-  const checkerRequiredStates = ["checking", "merge_ready"];
+  const checkerRequiredStates = ["merge_ready"];
   if (makerRequiredStates.includes(item.state) && !item.maker_id) {
     errs.push(`maker_id is required when state is ${item.state}. Set maker_id before advancing the item.`);
   }
