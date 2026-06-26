@@ -9,7 +9,7 @@
 // Usage:
 //   node scripts/check-edit-set-compliance.mjs [--work-item <path>]
 import { spawnSync } from "node:child_process";
-import { readFileSync, existsSync, readdirSync } from "node:fs";
+import { readFileSync, existsSync, readdirSync, statSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
@@ -59,7 +59,7 @@ function loadCurrentWorkItem() {
   let latestMtime = 0;
   for (const f of files) {
     const path = join(wiDir, f);
-    const stat = require("node:fs").statSync(path);
+    const stat = statSync(path);
     if (stat.mtimeMs > latestMtime) {
       latestMtime = stat.mtimeMs;
       try {
