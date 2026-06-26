@@ -34,7 +34,13 @@ jobs:
           languages: javascript-typescript
           queries: security-and-quality
 
+      # The analysis runs and surfaces results in the Security tab once a maintainer
+      # enables code scanning (Settings -> Security -> Code scanning; free on public
+      # repos). Until then the SARIF upload returns a configuration error, so this
+      # step is non-blocking. After enabling code scanning, remove continue-on-error
+      # to make CodeQL an enforcing gate.
       - name: Perform CodeQL analysis
         uses: github/codeql-action/analyze@v3
+        continue-on-error: true
         with:
           category: "/language:javascript-typescript"
