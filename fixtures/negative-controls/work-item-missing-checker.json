@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "id": "wi-missing-checker-001",
+  "state": "merge_ready",
+  "maker_id": "agent-alice",
+  "maker_model": "claude-opus-4-5",
+  "attempts": 1,
+  "max_attempts": 3
+}

@@ -1,0 +1,9 @@
+{
+  "id": "ps-discount-thin-coverage",
+  "stack": "python-service",
+  "title": "apply_discount function has thin test coverage",
+  "detect_pattern": "apply_discount calculates and applies a percentage discount; test suite covers only the zero-percent case; missing coverage for non-zero discount scenarios (10%, 50%, 100%) that verify correct discount calculation",
+  "agent_task": "Add test cases to test_orders.py for apply_discount with non-zero percentages: (1) 10% discount on 100 returns 90, (2) 50% discount on 100 returns 50, (3) 100% discount on 100 returns 0. Remove or update the existing test comment noting thin coverage.",
+  "gates": ["pytest"],
+  "expected_outcome": "Test file gains three new test cases covering 10%, 50%, and 100% discounts; coverage report shows apply_discount reaches 100% branch coverage; all tests pass"
+}
