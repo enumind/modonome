@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://modonome.com/modonome-logo.svg" alt="Modonome" width="280" />
+  <img src="https://modonome.com/modonome-logo.svg](https://www.modonome.com/assets/modonome-logo.webp" alt="Modonome" width="280" />
 </p>
 
 <h1 align="center">Modonome</h1>
