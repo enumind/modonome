@@ -16,6 +16,11 @@ jobs:
           node-version: 20
       - name: Drift guard
         run: node scripts/check-drift.mjs
+      - name: Governance-relevant change assertion
+        if: github.event_name == 'pull_request'
+        run: node scripts/assert-governed-change.mjs origin/${{ github.base_ref }}
+      # Edit-set compliance check disabled for wave PRs; enabled only for autonomous PRs
+      # (Waves are deliberate governance work that may span multiple files beyond work-item scope)
       - name: Repo hygiene check
         run: node scripts/check-repo-hygiene.mjs
       - name: Self-application conformance
@@ -30,6 +35,9 @@ jobs:
         run: node scripts/check-checker-engagement.mjs
       - name: Release evidence is current
         run: node scripts/build-release-evidence.mjs --check
+      - name: Site data sync (on push to main only)
+        if: github.event_name == 'push'
+        run: node scripts/sync-site-data.mjs --verify
       # On a pull request, run the house-style linter from the trusted base-branch
       # copy so a pull request cannot weaken the gate that judges it. The working
       # tree stays the pull request version, so the linter still inspects the change.

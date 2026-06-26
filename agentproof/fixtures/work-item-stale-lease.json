@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "id": "gb-09-stale-lease",
+  "state": "claimed",
+  "maker_id": "agent-session-ghi789",
+  "maker_model": "model-a",
+  "checker_id": "agent-session-old",
+  "checker_model": "model-b",
+  "lease_owner": "old",
+  "lease_expires_at": "2020-01-01T00:00:00Z",
+  "attempts": 1,
+  "max_attempts": 3
+}

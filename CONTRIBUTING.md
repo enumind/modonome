@@ -17,7 +17,16 @@ Thank you for helping. A few rules keep the project safe and consistent.
 npm run verify
 ```
 
-This runs the drift guard, the style check, and the tests. It needs no network or secrets.
+This runs the full governance gate suite: the drift guard, the house-style check,
+repo-hygiene, self-application conformance, learning-traceability, promotion-readiness,
+work-item validation, checker-engagement, the test suite, and the AgentProof benchmark. It
+needs no network or secrets.
+
+## How we respond
+
+We triage new issues and pull requests within 5 business days, and label them so you know
+where they stand. Security reports follow the faster timeline in [SECURITY.md](SECURITY.md)
+(acknowledged within 7 days). If a thread goes quiet, a polite nudge is welcome.
 
 ## House style
 
@@ -68,8 +77,8 @@ AgentProof (`agentproof/`) is the fastest path to a first merged contribution. T
 benchmark suite proves that every governance control holds against adversarial inputs.
 Adding a new scenario means:
 
-1. Write a fixture diff in `fixtures/ratchet-diffs/gaming/` or an attack config in
-   `fixtures/config/` that represents the attack.
+1. Write a fixture (a unified-diff, JSON, or YAML attack payload) in `agentproof/fixtures/`
+   that represents the attack.
 2. Add a scenario to `agentproof/scenarios/` that loads the fixture and asserts the
    expected outcome (blocked, not blocked).
 3. Run `node agentproof/runner.mjs` and confirm it passes.

@@ -1,7 +1,7 @@
 {
   "$comment": "Structured mirror of the features in site/repo-data.js. When a feature changes, update repo-data.js (the page's content source) and this file in the same PR. The automated sync workflow (sync-site-data.yml) updates version and AgentProof score automatically; feature copy is updated by hand since it involves editorial decisions.",
   "version": "v0.1.0-alpha",
-  "agentproofScore": "16/16",
+  "agentproofScore": "25/25",
   "agentproofLevel": "HARDENED",
   "features": [
     {

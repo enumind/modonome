@@ -302,9 +302,10 @@ flowchart LR
   class gate floor
 ```
 
-Market and standards scans are handled by a dedicated market-researcher role and are off
-by default. When enabled, sourced findings flow to the steward role, which scores and
-routes proposals. Net-new claims need owner approval before any roadmap change. The
+Market and standards scans are planned for a dedicated market-researcher role (roadmap,
+not shipped). When implemented and enabled, sourced findings would flow to the steward
+role, which scores and routes proposals, and would default off. Net-new claims would need
+owner approval before any roadmap change. The
 proposal priority score (`safety + user_value + repo_fit + reuse + evidence - effort -
 blast_radius - uncertainty`) surfaces the highest-value, lowest-risk improvements first.
 

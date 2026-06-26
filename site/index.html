@@ -9,7 +9,7 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://modonome.com/">
 <meta property="og:title" content="Modonome - Governed autonomy for any repo">
-<meta property="og:description" content="An off-by-default autonomy loop that adopts your repo rules, proposes small reviewable PRs, and gates them in CI so weakened tests cannot merge. AgentProof 16/16 for gate integrity.">
+<meta property="og:description" content="An off-by-default autonomy loop that adopts your repo rules, proposes small reviewable PRs, and gates them in CI so weakened tests cannot merge. AgentProof 25/25 for gate integrity.">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b1220'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%235dd4ab' stroke-width='2'/%3E%3Cpath d='M13 16l2 2 4-4' fill='none' stroke='%235dd4ab' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -235,9 +235,9 @@
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:30px;flex-wrap:wrap;margin-bottom:40px">
         <div style="max-width:660px">
           <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#5dd4ab;margin-bottom:14px">AgentProof benchmark</div>
-          <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(28px,3.6vw,40px);line-height:1.1;letter-spacing:-.02em;margin:0 0 14px;color:#f6f4ee">Sixteen adversarial scenarios. Machine-verified, every one.</h2>
-          <p style="font-size:16px;line-height:1.6;color:#aeb9c8;margin:0 0 12px">AgentProof is a standalone, language-agnostic benchmark. Each of the sixteen scenarios runs a real adversarial attempt against the controls and confirms it is caught, so a passing score is verifiable evidence rather than a claim. Any agentic system can run it, which makes it a practical conformance test for the wider field, and beyond Modonome.</p>
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#7c8aa0">Conformance: HARDENED = 16/16 gate-integrity scenarios · PARTIAL = 12–15 · UNHARDENED ≤ 11</div>
+          <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(28px,3.6vw,40px);line-height:1.1;letter-spacing:-.02em;margin:0 0 14px;color:#f6f4ee">Twenty-five governance scenarios. Machine-verified, every one.</h2>
+          <p style="font-size:16px;line-height:1.6;color:#aeb9c8;margin:0 0 12px">AgentProof is a standalone, language-agnostic benchmark. Each of the twenty-five scenarios runs a real adversarial attempt against the controls and confirms it is caught, so a passing score is verifiable evidence rather than a claim. Any agentic system can run it, which makes it a practical conformance test for the wider field, and beyond Modonome.</p>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#7c8aa0">Conformance: HARDENED = 25/25 gate-integrity scenarios · PARTIAL = 20–24 · UNHARDENED ≤ 19</div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:center;gap:6px;background:rgba(93,212,171,.08);border:1px solid rgba(93,212,171,.32);border-radius:16px;padding:22px 34px">
           <div style="font-family:'Space Grotesk';font-weight:700;font-size:44px;line-height:1;color:#5dd4ab">{{ apScore }}</div>
@@ -245,7 +245,7 @@
         </div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
-        <sc-for list="{{ proofs }}" as="p" hint-placeholder-count="16">
+        <sc-for list="{{ proofs }}" as="p" hint-placeholder-count="25">
           <div style="display:flex;align-items:flex-start;gap:11px;background:rgba(159,201,180,.04);border:1px solid rgba(159,201,180,.1);border-radius:11px;padding:14px 15px;transition:border-color .2s" style-hover="border-color:rgba(93,212,171,.35)">
             <span style="flex:none;display:flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:rgba(93,212,171,.16);color:#5dd4ab;font-size:11px;font-weight:700;margin-top:1px">✓</span>
             <div>
@@ -610,7 +610,7 @@ class Component extends DCLogic {
       netGeo: null, netActive: -1, netPhase: 'idle', netSeq: 0, netShared: 128, activeSection: 'top',
       live: null, syncStatus: 'cached' };
     this.repoBase = { tests: 248, coverage: '81%', deps: 3, debt: 12 };
-    this.engineBase = { lessons: 4, rules: 9, gates: 7, queue: 5, version: 'v0.1.0', armed: false };
+    this.engineBase = { lessons: 2, rules: 0, gates: 8, queue: 0, version: '1', armed: false };
     this.STAGES = [
       {title:'Maker', sub:'builds one small change', scope:'AGENT'},
       {title:'Checker', sub:'reviews it independently', scope:'AGENT'},
@@ -905,7 +905,7 @@ class Component extends DCLogic {
     const R = this.R || {};
     const meta = R.meta || {};
     const live = this.state.live || {};
-    const apScore = live.agentproofScore || meta.agentproofScore || '16/16';
+    const apScore = live.agentproofScore || meta.agentproofScore || '25/25';
     const apLevel = live.agentproofLevel || meta.agentproofLevel || 'HARDENED';
     const proofs = live.proofs || R.proofs || [];
     const version = live.version || meta.version || 'v0.1-alpha';

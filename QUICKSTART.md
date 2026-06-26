@@ -100,8 +100,8 @@ No metrics recorded yet. Run a dry-run sweep to generate activity:
 
 AgentProof Score
 ----------------
-  Score: 16/16
-  Level: HARDENED : all 16 gate-integrity scenarios pass (not full autonomy governance)
+  Score: 25/25
+  Level: HARDENED : all 25 gate-integrity scenarios pass (not full autonomy governance)
 ```
 
 Once you arm the engine, the metrics file the engine writes at runtime begins to populate, and
