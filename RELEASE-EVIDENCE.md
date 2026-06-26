@@ -32,6 +32,14 @@ be added here once the owner arms the loop on this repo.
 - done: 18
 - merge_ready: 1
 
+## Sample-app captures
+
+Real maker and checker runs recorded on the sample apps. Each is captured output,
+read from the committed metrics, not hand-authored. The maker and checker use distinct
+models, and the run directory holds the verbatim logs.
+
+- examples/demo-app/runs/2026-06-26T11-46-00Z: maker claude-haiku-4-5, checker claude-sonnet-4-6; checker approved and raised 1 question(s).
+
 ## Promoted learnings (traceable)
 
 - L-001: Shipped sample telemetry must conform to its schema and must never be presented as real measured data. (gate: scripts/check-self-application.mjs; signal: docs/CLAIMS-AUDIT-2026-06-25.md)

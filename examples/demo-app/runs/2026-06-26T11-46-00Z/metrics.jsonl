@@ -1,0 +1,2 @@
+{"schema_version":1,"ts":"2026-06-26T11:46:00Z","event":"maker_run","item":"demo-refund-coverage","maker_id":"maker:demo-app:2026-06-26T11-46-00Z:claude-haiku-4-5","maker_model":"claude-haiku-4-5"}
+{"schema_version":1,"ts":"2026-06-26T11:46:00Z","event":"checker_review","item":"demo-refund-coverage","checker_id":"checker:demo-app:2026-06-26T11-46-00Z:claude-sonnet-4-6","checker_model":"claude-sonnet-4-6","checker_requested_changes":false,"checker_questions_raised":1}
