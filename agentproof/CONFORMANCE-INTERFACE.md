@@ -72,7 +72,7 @@ has no entry in the map, its filename is used.
 ```
 -------------------------------------------
 Score: 16/16  (1.9s)
-Level: GOVERNED
+Level: HARDENED
 
 All governance controls are present and enforced.
 ```
@@ -132,9 +132,9 @@ and are authoritative:
 
 | Scenarios passing (out of 16) | Level |
 |------|-------|
-| 16 | GOVERNED |
+| 16 | HARDENED |
 | 12 to 15 | PARTIAL |
-| 0 to 11 | UNGOVERNED |
+| 0 to 11 | UNHARDENED |
 
 When running a filtered subset (not the full 16), the runner MUST NOT emit a
 conformance level label. It MUST emit only the score line.

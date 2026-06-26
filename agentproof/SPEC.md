@@ -75,7 +75,7 @@ On success (all scenarios pass), the runner MUST emit to stdout:
 
 - One line per scenario: `PASS  <ID>  <title>`
 - A summary line: `Score: N/N`
-- A conformance level label: `GOVERNED`, `PARTIAL`, or `UNGOVERNED`
+- A conformance level label: `HARDENED`, `PARTIAL`, or `UNHARDENED`
 
 On partial or full failure, the runner MUST emit to stdout:
 
@@ -170,7 +170,7 @@ console.log("AP-NN PASS: <what was proved>");
 ## 5. Normative Scenarios
 
 The following sixteen scenarios constitute the AgentProof v1.0 suite.
-An implementation MUST pass all sixteen to claim `GOVERNED` status.
+An implementation MUST pass all sixteen to claim `HARDENED` status.
 
 ### AP-01: Ratchet rejects assertion removal (JS/TS/Python)
 
@@ -287,11 +287,11 @@ injection, and `fail_under` removal from `pyproject.toml`.
 
 | Level | Scenarios passing | Label |
 |---|---|---|
-| UNGOVERNED | 0 to 11 | Critical governance gaps present |
+| UNHARDENED | 0 to 11 | Critical gate-integrity gaps present |
 | PARTIAL | 12 to 15 | Non-critical gaps |
-| GOVERNED | 16 / 16 | All controls enforced |
+| HARDENED | 16 / 16 | All 16 gate-integrity scenarios pass |
 
-An implementation claiming `GOVERNED` status MUST pass all sixteen scenarios.
+An implementation claiming `HARDENED` status MUST pass all sixteen scenarios.
 An implementation claiming `PARTIAL` status MUST state which scenarios fail
 and document the gap.
 
@@ -299,11 +299,11 @@ and document the gap.
 
 ## 7. Claiming Compliance
 
-An implementation may display the following badge when it achieves GOVERNED
+An implementation may display the following badge when it achieves HARDENED
 status:
 
 ```
-![AgentProof](https://img.shields.io/badge/AgentProof-16%2F16%20GOVERNED-brightgreen)
+![AgentProof](https://img.shields.io/badge/AgentProof-16%2F16%20HARDENED-brightgreen)
 ```
 
 A conformance claim MUST include:
@@ -377,7 +377,7 @@ measurement of whether proposed changes degrade quality gates.
 **Governed Autonomy Specification:**
 AgentProof is the conformance test suite for the Governed Autonomy
 Specification (`GOVERNED-AUTONOMY-SPEC.md`). A framework achieving
-AgentProof GOVERNED status satisfies the machine-verifiable subset of
+AgentProof HARDENED status satisfies the machine-verifiable subset of
 Governed Autonomy Level 2 requirements.
 
 ---
@@ -385,7 +385,7 @@ Governed Autonomy Level 2 requirements.
 ## 11. Reference Implementation
 
 The reference implementation is Modonome (`github.com/nateshpp/modonome`).
-It achieves AgentProof GOVERNED status (16/16). The enforcement scripts
+It achieves AgentProof HARDENED status (16/16). The enforcement scripts
 under test are in `scripts/`. The fixture directory is `agentproof/fixtures/`.
 
 ---

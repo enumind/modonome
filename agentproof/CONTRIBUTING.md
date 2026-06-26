@@ -145,7 +145,7 @@ governance property statement.
 If your check has a non-zero false-positive rate (for example, it uses
 heuristics or requires context the ratchet does not have), it cannot be
 a normative scenario. You may still submit it as an advisory scenario.
-Advisory scenarios are documented but do not affect the GOVERNED score.
+Advisory scenarios are documented but do not affect the HARDENED score.
 Label the PR `advisory` and note in the scenario's JSDoc that it is
 non-normative.
 

@@ -7,9 +7,9 @@
 <p align="center"><strong>The autonomous engineering loop that arms only on your command, sends every change through an independent checker, and keeps your tests at full strength.</strong></p>
 
 <p align="center">
-It finds tech debt your team keeps deferring and writes bounded pull requests, with a CI
+It finds tech debt your team keeps deferring and proposes bounded pull requests, with a CI
 gate that keeps every test assertion intact. Maker, checker, and merge authority are
-structurally separate. Off by default, and it runs without a central service.
+structurally separate, enforced in CI. Off by default, and it runs without a central service.
 </p>
 
 <p align="center">
@@ -33,19 +33,20 @@ structurally separate. Off by default, and it runs without a central service.
 
 ---
 
-Autonomous coding agents have a predictable failure mode: they weaken gates to go green (removing test assertions, adding skips, loosening type checks). Modonome blocks that in CI: the anti-gaming ratchet runs from a base-branch copy the agent's run does not control, and it rejects diffs that weaken a gate. We published the [governed-autonomy spec](GOVERNED-AUTONOMY-SPEC.md), and Modonome is its reference implementation, scoring **[16/16 on AgentProof](agentproof/README.md)**.
+Autonomous coding agents have a predictable failure mode: they weaken gates to go green (removing test assertions, adding skips, loosening type checks). Modonome blocks that in CI: the anti-gaming ratchet runs from a base-branch copy the agent's run does not control, and it rejects diffs that weaken a gate. We published the [governed-autonomy spec](GOVERNED-AUTONOMY-SPEC.md), and Modonome is its reference implementation, scoring **[16/16 on AgentProof](agentproof/README.md)** for gate integrity (hardening against known gaming patterns, not a certificate of full autonomy governance).
 
 ## Why businesses adopt Modonome
 
 Engineering teams commonly report a large share of capacity going to tech debt work: test
 gaps, stale dependencies, dead branches, type safety holes, observability gaps. Modonome
-handles the bounded, provable portion of that backlog (Tier 1 and Tier 2 work) autonomously,
-so engineers stay focused on product delivery. Every change is small, test-fenced,
-independently checked, and gated before it reaches production. It adopts your existing CI,
-code owners, and branch rules on day one, and adds no new platform or service.
+targets the bounded, provable portion of that backlog (Tier 1 and Tier 2 work). It is off by
+default and dry-run first. Once an owner arms it, every change is small, test-fenced,
+independently checked by a separate role, and gated before it can merge. It adopts your
+existing CI, code owners, and branch rules on day one, and adds no new platform or service.
 
-For mainframe, SAP, Oracle, Salesforce, ServiceNow, low-code, and data estate setups, see
-[ENTERPRISE.md](ENTERPRISE.md).
+Support for mainframe, SAP, Oracle, Salesforce, ServiceNow, low-code, and data estates is on
+the roadmap, not shipped today. See [ENTERPRISE.md](ENTERPRISE.md) for the design and
+[docs/CLAIMS-AUDIT-2026-06-25.md](docs/CLAIMS-AUDIT-2026-06-25.md) for what is enforced now.
 
 ## Try it in 60 seconds (read-only)
 
@@ -102,8 +103,10 @@ When a gate fails, a reviewer corrects the engine, or a change gets reverted, a 
 captures one generalized, evidence-backed lesson and stages it in `.modonome/LEARNINGS.md`.
 An owner promotes durable lessons into canonical rules, config, or tests, then adds a
 deterministic gate when one fits. The queue stays capped, dated, and owner-controlled. The
-engine rewrites its own rules only with a human in the loop. A market-researcher role
-watches for standards and dependency shifts and routes sourced findings for owner review.
+engine rewrites its own rules only with a human in the loop. Promoted lessons are validated in
+CI for full traceability (`scripts/check-learning-traceability.mjs`) and are queryable with
+`npm run audit:learnings`. A market-researcher role that watches for standards and dependency
+shifts is on the roadmap, not yet implemented.
 
 ## Why is this different from prompting an agent directly?
 
@@ -116,11 +119,12 @@ cleverer prompt; a CI gate that runs outside the agent's write scope holds.
 ## Why it is safe to run
 
 The controls live in code that runs in CI. The anti-gaming ratchet and the house-style
-linter run from a trusted base-branch copy; the config and packet validators and the drift
-guard run in CI and are protected by CODEOWNERS review. The arming
-levers are gated by the `MODONOME_ARMED` environment variable, enforced at runtime: with it
-unset, `autonomy_enabled` is forced to false no matter what the config file says. The levers
-are read from your environment or CI, never from a file the engine can rewrite.
+linter run from a trusted base-branch copy; the drift guard, self-application conformance,
+work-item validation, learning-traceability, promotion-readiness, and checker-engagement
+checks also run in CI, and every enforcing script is protected by CODEOWNERS review. The
+arming levers are gated by the `MODONOME_ARMED` environment variable, enforced at runtime:
+with it unset, `autonomy_enabled` is forced to false no matter what the config file says. The
+levers are read from your environment or CI, never from a file the engine can rewrite.
 
 [AgentProof](agentproof/README.md) proves this with 16 adversarial scenarios: assertion removal,
 skip injection, type escape, coverage removal, unsafe config combinations, identity collapse,
@@ -152,11 +156,18 @@ leaves an engine disarmed unless an owner arms it. See [docs/VERSIONING.md](docs
 
 ## Alpha limitations (v0.1-alpha)
 
-Modonome is in public alpha. The governance loop, ratchet, CLI, MCP server, and report command
-are stable and machine-verified. The following capabilities are on the roadmap but not yet shipped:
+Modonome is in public alpha. The ratchet, CLI, MCP server, report command, and the CI
+governance gates (drift, self-application, work-item validation, learning traceability,
+promotion readiness, checker engagement) are stable and machine-verified. The two-phase
+maker/checker loop is structurally defined and CI-enforced, but has not yet run in armed mode
+on a live repository. The following capabilities are on the roadmap but not yet shipped:
 
 | Capability | Status | Planned |
 |-----------|--------|---------|
+| Live armed autonomy run (engine authors and a separate checker reviews on a real repo) | Not yet | v0.2 |
+| Cross-repo knowledge network (transport, signing, import) | Design only (ADRs 014-019) | v0.2 |
+| Multi-stack support beyond JS/TS, Python, Java, .NET (mainframe, SAP, Oracle, and so on) | Not yet | roadmap |
+| Market-researcher role | Not yet | roadmap |
 | Cryptographically signed work items (Ed25519) | Not yet | v0.2 |
 | OpenTelemetry span emission for governance events | Not yet | v0.3 |
 | Before/after tech debt measurement | Not yet | v0.2 |
@@ -189,12 +200,14 @@ Code extension uses the same subscription-based billing.
 ## Local development
 
 ```bash
-npm run verify   # drift guard, style check, and tests. No network or secrets required.
+npm run verify   # drift, style, hygiene, self-application, learning, promotion, work-item,
+                 # and checker-engagement gates, plus tests and AgentProof. No network or secrets.
 ```
 
-`.modonome/` in this repo is a demo state directory showing what governance activity looks like.
-Adopters should delete it and run `npx modonome scaffold . --write` to start fresh with their
-own config and empty state.
+`.modonome/` in this repo is Modonome's own governance state: its work queue, its promoted
+learnings, and a `metrics.example.jsonl` sample (the live `metrics.jsonl` is written by the
+engine at runtime and is not committed). Adopters should run `npx modonome scaffold . --write`
+to start fresh with their own config and empty state.
 
 ## License
 
