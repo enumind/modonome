@@ -30,6 +30,7 @@ be added here once the owner arms the loop on this repo.
 ## Work queue
 
 - done: 18
+- merge_ready: 1
 
 ## Promoted learnings (traceable)
 
