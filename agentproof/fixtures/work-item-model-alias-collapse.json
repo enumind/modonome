@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "id": "ap-24-model-alias-collapse",
+  "state": "checking",
+  "maker_id": "agent-session-abc123",
+  "maker_model": "gpt-4",
+  "checker_id": "agent-session-xyz789",
+  "checker_model": "gpt-4-turbo",
+  "attempts": 1,
+  "max_attempts": 3
+}

@@ -1,0 +1,12 @@
+diff --git a/src/test/java/com/example/BillingTest.java b/src/test/java/com/example/BillingTest.java
+index 5555555..6666666 100644
+--- a/src/test/java/com/example/BillingTest.java
++++ b/src/test/java/com/example/BillingTest.java
+@@ -20,6 +20,12 @@ public class BillingTest {
+
++    @Test(enabled = true)
++    public void testRefundReversesCharge() {
++        Refund r = billing.refund(charge);
++        assertEquals(charge.getAmount(), r.getAmount());
++    }
+ }

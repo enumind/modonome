@@ -25,7 +25,7 @@ be added here once the owner arms the loop on this repo.
 | Capability promotion readiness | pass |
 | Work item validation | pass |
 | Checker engagement | pass |
-| AgentProof | 25/25 HARDENED |
+| AgentProof | 34/34 HARDENED |
 
 ## Work queue
 

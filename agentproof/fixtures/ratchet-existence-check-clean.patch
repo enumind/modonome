@@ -1,0 +1,12 @@
+diff --git a/src/session.test.js b/src/session.test.js
+index abcabc1..defdef2 100644
+--- a/src/session.test.js
++++ b/src/session.test.js
+@@ -3,5 +3,9 @@ describe("session", () => {
+   it("creates a session", () => {
+     const s = createSession();
+     expect(s.id).toBeDefined();
++    expect(s.token).toBeDefined();
++    expect(s.expiresAt).toBe(3600);
+   });
+ });

@@ -1,0 +1,13 @@
+diff --git a/src/totals.test.js b/src/totals.test.js
+index bbb1111..ccc2222 100644
+--- a/src/totals.test.js
++++ b/src/totals.test.js
+@@ -4,8 +4,7 @@ describe("totals", () => {
+   it("computes line totals", () => {
+     const t = totals(order);
+-    expect(t.a).toBe(1);
+-    expect(t.b).toBe(2);
+-    expect(t.c).toBe(3);
++    expect([t.a, t.b, t.c]).toEqual([1, 2, 3]);
+   });
+ });
