@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "id": "gb-08-concurrent-base",
+  "state": "queued",
+  "maker_id": "agent-session-def456",
+  "maker_model": "model-a",
+  "checker_id": null,
+  "checker_model": null,
+  "attempts": 0,
+  "max_attempts": 3
+}

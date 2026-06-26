@@ -1,0 +1,5 @@
+{"schema_version":"1.0","ts":"2026-06-26T10:15:30Z","event":"metric_record","item":"api_request","maker_id":"maker_001","maker_model":"v2.1","duration_ms":245,"status_code":200}
+{"schema_version":"1.0","ts":"2026-06-26T10:16:00Z","event":"metric_record","item":"database_query","maker_id":"maker_002","maker_model":"v2.1","duration_ms":1250,"rows_affected":42}
+{"schema_version":"1.0","ts":"2026-06-26T10:16:30Z","event":"metric_record","item":"auth_attempt","maker_id":"maker_003","maker_model":"v2.0","duration_ms":185,"success":true}
+{"schema_version":"1.0","ts":"2026-06-26T10:17:00Z","event":"metric_record","item":"email_send","maker_id":"maker_001","maker_model":"v2.1","duration_ms":320,"message_id":"msg_abc123def456","status":"sent"}
+{"schema_version":"1.0","ts":"2026-06-26T10:17:30Z","event":"metric_record","item":"cache_hit","maker_id":"maker_004","maker_model":"v1.9","duration_ms":12,"hit_ratio":0.87}

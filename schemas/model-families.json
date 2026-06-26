@@ -1,0 +1,17 @@
+{
+  "$comment": "Maps model-name prefixes to model families (architectures). Used by governance to enforce that maker and checker draw from different families, not just different version strings. Longest matching prefix wins. Models with no matching prefix have an unknown family and are treated as distinct.",
+  "families": {
+    "claude-opus": "opus",
+    "claude-sonnet": "sonnet",
+    "claude-haiku": "haiku",
+    "claude-fable": "fable",
+    "gpt": "openai",
+    "o1": "gpt",
+    "o3": "gpt",
+    "gemini": "gemini",
+    "llama": "llama",
+    "mistral": "mistral",
+    "qwen": "qwen",
+    "deepseek": "deepseek"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "states": ["queued", "claimed", "making", "checking", "merge_ready", "merging", "done", "escalated"],
+  "terminal": ["done", "escalated"],
+  "transitions": [
+    {"from": "queued", "to": "claimed"},
+    {"from": "claimed", "to": "making"},
+    {"from": "making", "to": "checking"},
+    {"from": "checking", "to": "merge_ready"},
+    {"from": "merge_ready", "to": "merging"},
+    {"from": "merging", "to": "done"},
+    {"from": "rework", "to": "escalated", "cap_guard": true}
+  ]
+}
