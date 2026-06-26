@@ -76,7 +76,7 @@ The following are required for high-risk deployments and not yet fully implement
 
 | Requirement | Gap | Planned |
 |------------|-----|---------|
-| Cryptographically verifiable audit trail | Work items are plain files, not signed | ADR-003 (Ed25519), v0.3 |
+| Cryptographically verifiable audit trail | Work items are plain files, not signed | ADR-017 (Ed25519), v0.2 |
 | Conformity assessment documentation | Not yet prepared | Owner responsibility |
 | EU AI Act registration (Annex III) | Not yet registered | Owner responsibility before deployment in regulated context |
 

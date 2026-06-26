@@ -1,6 +1,6 @@
 # AgentProof Conformance Interface
 
-**Version:** 1.0-draft
+**Version:** 1.1-draft
 **Status:** Draft for community review
 **Audience:** Framework authors implementing AgentProof against their own enforcement code
 
@@ -71,7 +71,7 @@ has no entry in the map, its filename is used.
 
 ```
 -------------------------------------------
-Score: 16/16  (1.9s)
+Score: 25/25  (1.9s)
 Level: HARDENED
 
 All governance controls are present and enforced.
@@ -127,16 +127,16 @@ execution order. Skipped scenarios (filtered by prefix) MUST NOT appear.
 ### 1.6 Conformance level labels
 
 The runner derives a conformance level from the number of scenarios passing out of
-the normative 16-scenario suite. The thresholds are defined in SPEC.md Section 6
+the normative 25-scenario suite. The thresholds are defined in SPEC.md Section 6
 and are authoritative:
 
-| Scenarios passing (out of 16) | Level |
+| Scenarios passing (out of 25) | Level |
 |------|-------|
-| 16 | HARDENED |
-| 12 to 15 | PARTIAL |
-| 0 to 11 | UNHARDENED |
+| 25 | HARDENED |
+| 20 to 24 | PARTIAL |
+| 0 to 19 | UNHARDENED |
 
-When running a filtered subset (not the full 16), the runner MUST NOT emit a
+When running a filtered subset (not the full 25), the runner MUST NOT emit a
 conformance level label. It MUST emit only the score line.
 
 ---
@@ -355,7 +355,7 @@ and document the change in your conformance claim.
 
 ## 6. Versioning
 
-This document and the scenario suite version together. The current version is `1.0-draft`.
+This document and the scenario suite version together. The current version is `1.1-draft`.
 
 When the normative scenario set changes (scenarios added, removed, or fixtures
 updated), the version increments. A conformance claim MUST state the AgentProof

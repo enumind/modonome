@@ -33,7 +33,7 @@ shift. Each item lands only when its own gates are green.
 
 ## Milestone 5 · Market researcher and envisioner roles (stable)
 
-- Market scan enabled by default (opt-out) with sourced, paraphrased findings only.
+- Market scan available behind a flag (default off; opt-in) with sourced, paraphrased findings only.
 - Envisioner produces scoped issue proposals from owner-approved direction.
 - Proposal priority score surfaces the highest-value, lowest-risk improvements per week.
 - Owner-controlled promotion of proposals into the work queue.

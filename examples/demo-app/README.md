@@ -24,7 +24,7 @@ Proposed work (3 bounded items)
 [2] Remove dead feature flag ENABLE_LEGACY_CHECKOUT (false in all envs for 62 days).
     Risk tier: Tier 1 (unreachable code removal). Estimated size: ~180 lines removed.
 
-[3] Enable TypeScript strict mode : 7 implicit-any errors in PaymentProcessor.ts.
+[3] Enable strict type checking (jsconfig checkJs) : 7 implicit-any errors in PaymentProcessor.js.
     Risk tier: Tier 2 (type-checker only, no runtime impact). Estimated size: ~25 lines.
 
 None of the proposed changes have been applied.
@@ -40,9 +40,9 @@ the first week.
 ## Try it yourself
 
 ```bash
-# 1. Clone this demo app
-git clone https://github.com/nateshpp/modonome-demo
-cd modonome-demo
+# 1. Clone the repo and enter the demo app
+git clone https://github.com/nateshpp/modonome
+cd modonome/examples/demo-app
 
 # 2. Install dependencies
 npm install
@@ -53,7 +53,7 @@ npx modonome dry-run .
 # 4. See the governance report
 npx modonome report .
 
-# 5. Run AgentProof (16/16 HARDENED required to merge anything)
+# 5. Run AgentProof (25/25 HARDENED required to merge anything)
 npx modonome agentproof
 ```
 

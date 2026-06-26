@@ -245,7 +245,7 @@
         </div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
-        <sc-for list="{{ proofs }}" as="p" hint-placeholder-count="16">
+        <sc-for list="{{ proofs }}" as="p" hint-placeholder-count="25">
           <div style="display:flex;align-items:flex-start;gap:11px;background:rgba(159,201,180,.04);border:1px solid rgba(159,201,180,.1);border-radius:11px;padding:14px 15px;transition:border-color .2s" style-hover="border-color:rgba(93,212,171,.35)">
             <span style="flex:none;display:flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:rgba(93,212,171,.16);color:#5dd4ab;font-size:11px;font-weight:700;margin-top:1px">✓</span>
             <div>
@@ -905,7 +905,7 @@ class Component extends DCLogic {
     const R = this.R || {};
     const meta = R.meta || {};
     const live = this.state.live || {};
-    const apScore = live.agentproofScore || meta.agentproofScore || '16/16';
+    const apScore = live.agentproofScore || meta.agentproofScore || '25/25';
     const apLevel = live.agentproofLevel || meta.agentproofLevel || 'HARDENED';
     const proofs = live.proofs || R.proofs || [];
     const version = live.version || meta.version || 'v0.1-alpha';

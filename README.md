@@ -126,10 +126,13 @@ arming levers are gated by the `MODONOME_ARMED` environment variable, enforced a
 with it unset, `autonomy_enabled` is forced to false no matter what the config file says. The
 levers are read from your environment or CI, never from a file the engine can rewrite.
 
-[AgentProof](agentproof/README.md) proves this with 16 adversarial scenarios: assertion removal,
+[AgentProof](agentproof/README.md) proves this with 25 adversarial scenarios: assertion removal,
 skip injection, type escape, coverage removal, unsafe config combinations, identity collapse,
-raw code leakage, drift, protected-path bypass, Java and .NET ratchet coverage, and prompt
-injection inertness. Modonome scores **16/16**. Run it yourself:
+raw code leakage, drift, protected-path bypass, Java and .NET ratchet coverage, prompt
+injection inertness, state-machine acyclicity, deterministic gate ordering, trust-boundary code
+loading, audit-trail integrity, model-family distinctness, concurrency safety, gate-dependency
+DAG validation, evidence secret screening, and resource-exhaustion caps. Modonome scores
+**25/25**. Run it yourself:
 
 ```bash
 node agentproof/runner.mjs
