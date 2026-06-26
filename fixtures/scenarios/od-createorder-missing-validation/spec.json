@@ -1,0 +1,9 @@
+{
+  "id": "od-createorder-missing-validation",
+  "stack": "demo-app",
+  "title": "OrderService.createOrder lacks input validation",
+  "detect_pattern": "createOrder does not validate items parameter before calling reduce; passing null, undefined, or non-array items will throw a raw TypeError rather than a controlled validation error",
+  "agent_task": "Add input validation to OrderService.createOrder to check that items is a non-empty array before processing. Throw a descriptive Error (not TypeError) when items is null, undefined, not an array, or empty. Add test cases verifying the validation rejects these invalid inputs.",
+  "gates": ["npm test"],
+  "expected_outcome": "createOrder validates items parameter; four new test cases cover null, undefined, non-array, and empty-array inputs; all tests pass; type checking or linting does not flag the function signature"
+}
