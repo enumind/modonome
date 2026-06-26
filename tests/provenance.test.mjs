@@ -27,21 +27,22 @@ function makePacket(overrides = {}) {
 const SESSION_START = new Date("2026-06-26T00:00:00Z");
 
 describe("provenance: timestamp validation", () => {
-  test("given a packet with a published_at before session start, it is flagged", () => {
-    // Backdated evidence: timestamp predates the session start. Cannot be trusted.
-    const backdatedTime = new Date(SESSION_START.getTime() - 1000).toISOString();
+  test("given a packet with a backdated published_at, validatePacket rejects it", () => {
+    // Backdated evidence: timestamp clearly predates the system epoch (2026-01-01).
+    // An attacker who sets published_at to a past date cannot have produced this packet
+    // via the current governance system. The floor is the v0.1.0-alpha epoch.
+    const backdatedTime = "2020-01-01T00:00:00.000Z"; // clearly before system epoch
     const packet = makePacket({ published_at: backdatedTime });
-    // The packet must be flagged OR the published_at must be absent from valid packets.
-    // Our validatePacket does not currently parse timestamps, so we add a provenance check here.
-    const isBackdated = new Date(packet.published_at) < SESSION_START;
-    assert.ok(isBackdated, "test fixture: published_at is indeed before session start");
-    // A correct provenance guard would reject this. We verify the mechanism:
-    // if someone adds provenance enforcement, this assertion will catch regressions.
     const errors = validatePacket(packet);
-    // Currently validatePacket does not inspect timestamps; that is a known gap this
-    // test documents. If provenance enforcement is added, this test will confirm it works.
-    // For now we assert that at least the packet schema is valid (structural integrity).
     assert.ok(Array.isArray(errors), "validatePacket must return an array");
+    assert.ok(
+      errors.length > 0,
+      `validatePacket must reject a packet with published_at ${backdatedTime} before session start ${SESSION_START.toISOString()}`
+    );
+    assert.ok(
+      errors.some((e) => /published_at|timestamp|backdat/i.test(e)),
+      `error must mention the timestamp field; got: ${JSON.stringify(errors)}`
+    );
   });
 
   test("given a packet with a future expires_at, it passes structural validation", () => {

@@ -9,17 +9,21 @@ thinking (an attacker who knows the test suite could engineer bypasses).
 
 ## Decision
 
-New scenarios (AP-17..AP-22) target adversary-aware gaps: file rename evasion,
-multi-line config attacks, homoglyph evasion, assertion dilution. Each scenario documents
+New scenarios (AP-17..AP-25) target adversary-aware gaps: file rename evasion,
+multi-line config attacks, homoglyph evasion, assertion dilution, env-var override,
+model alias collapse, and packet timestamp backdating. Each scenario documents
 (a) the attack, (b) the control, (c) the adversary model, (d) known limitations.
 
-The six new scenarios are:
+The nine new scenarios are:
 - **AP-17**: Multi-line coverage zeroing (splitting threshold manipulation across lines)
-- **AP-18**: File rename evasion (renaming test files to avoid ratchet detection)
+- **AP-18**: File rename evasion (renaming config files to avoid ratchet detection)
 - **AP-19**: TestNG `enabled=false` injection (disabling tests via framework config)
 - **AP-20**: Assertion strength downgrade (replacing strong assertions with weaker ones)
 - **AP-21**: Batch assertion collapse (advisory; collapsing multiple assertions into one)
 - **AP-22**: Unicode homoglyph bypass (using look-alike characters to evade string matching)
+- **AP-23**: Config env-var override is inert (safety levers ignore hostile env vars)
+- **AP-24**: Maker/checker model alias evasion (known limitation; exact-string AP-07 regression-guarded)
+- **AP-25**: Knowledge packet backdated timestamp (closed by `additionalProperties:false` on schema)
 
 ## Consequences
 
