@@ -53,7 +53,7 @@ jobs:
       # first run, so no manual settings toggle is needed. This step has pages:write,
       # which is required to enable Pages. It is idempotent on later runs.
       - name: Configure Pages
-        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
         with:
           enablement: true
       - name: Deploy to GitHub Pages
