@@ -1,53 +1,92 @@
 #!/usr/bin/env node
 /**
- * AP-26: Gate execution has resource caps (memory, CPU, timeout)
+ * AP-26: Gate execution has resource caps (timeout enforced, runaway gates killed)
  *
- * Attack: A PR feeds a gate pathological input (multi-GB diff, catastrophic regex,
- * infinite loop) so the gate hangs or OOMs, stalling CI indefinitely or crashing
- * the runner — DoS against the governance layer itself. Existing scattered timeout
- * literals exist (runner.mjs 30s, evidence builder 60s) but no uniform enforced cap.
+ * Attack: A PR feeds a gate pathological input (infinite loop, catastrophic regex,
+ * multi-GB diff) so the gate hangs indefinitely, stalling CI or crashing the runner —
+ * a DoS against the governance layer itself. Without a hard wall-clock cap the process
+ * sits forever, consuming CPU and blocking the queue.
  *
- * Governance property: Every governance gate invocation runs under enforced wall-clock
- * timeout + bounded output (maxBuffer); on breach the process is killed and gate MUST
- * report failure (fail-closed), never hang or be skipped. Caps declared centrally.
+ * Governance property: Every governance gate invocation MUST run under an enforced
+ * wall-clock timeout via scripts/lib/run-gate-capped.mjs. On breach the process MUST
+ * be killed (SIGKILL) and the result MUST report failure (timedOut true, status non-zero)
+ * so the gate fails closed rather than hanging. Normal (fast) gates MUST still complete
+ * cleanly (status 0, timedOut false) so the cap does not produce false positives.
  *
- * Expected outcome: run-gate-capped.mjs kills a runaway gate within timeout window.
- * Runaway fixture → {timedOut:true, status:non-zero} on timeout.
- * Oversized diff → fails closed on maxBuffer breach.
- * Normal gate → completes normally (status 0, timedOut false).
+ * Expected outcomes:
+ *   fixtures/gate-runaway.mjs under 1500 ms cap  →  timedOut === true, status !== 0
+ *   trivial node -e script under cap             →  timedOut === false, status === 0
  */
-import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { existsSync } from "node:fs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "../..");
-const capperScript = join(root, "scripts/lib/run-gate-capped.mjs");
-const fixtures = join(here, "../fixtures");
+const capperPath = join(root, "scripts/lib/run-gate-capped.mjs");
+const fixturesDir = join(here, "../fixtures");
 
-if (!existsSync(capperScript)) {
-  console.error("FAIL: scripts/lib/run-gate-capped.mjs does not exist (control not implemented)");
+if (!existsSync(capperPath)) {
+  console.error("FAIL AP-26: scripts/lib/run-gate-capped.mjs does not exist (control not implemented).");
+  console.error("A missing resource cap is a governance gap — add run-gate-capped.mjs before claiming conformance.");
   process.exit(1);
 }
 
-try {
-  const { runGateCapped } = await import(capperScript);
+const { runGateCapped } = await import(capperPath);
 
-  const runaway = runGateCapped(["node", join(fixtures, "gate-runaway.mjs")], { timeoutMs: 1500 });
-  if (!runaway.timedOut && runaway.status === 0) {
-    console.error("FAIL: runaway gate was not killed by timeout");
-    process.exit(1);
-  }
+let passed = true;
 
-  const normal = runGateCapped(["node", "-e", "console.log('ok'); process.exit(0)"], { timeoutMs: 5000 });
-  if (normal.timedOut || normal.status !== 0) {
-    console.error("FAIL: normal gate was false-positive killed or exited non-zero");
-    process.exit(1);
-  }
+// --- case 1: runaway gate must be killed within the timeout window ---
+// fixtures/gate-runaway.mjs loops forever; the cap must kill it before 1500 ms.
+const runaway = runGateCapped(
+  ["node", join(fixturesDir, "gate-runaway.mjs")],
+  { timeoutMs: 1500 }
+);
 
-  console.log("PASS: gate execution is capped; runaway gates are killed, normal gates complete");
-} catch (e) {
-  console.error(`FAIL: ${e.message}`);
-  process.exit(1);
+if (runaway.timedOut !== true) {
+  console.error(
+    "FAIL AP-26 (runaway): timedOut was " + runaway.timedOut + ", expected true — " +
+    "runaway gate was not killed by the timeout cap."
+  );
+  passed = false;
+} else if (runaway.status === 0) {
+  console.error(
+    "FAIL AP-26 (runaway): status was 0 (expected non-zero) — a killed process must " +
+    "not report a clean exit; gate must fail closed on timeout."
+  );
+  passed = false;
+} else {
+  console.log(
+    "PASS AP-26 (runaway): timedOut === true and status !== 0 — runaway gate was killed " +
+    "within the 1500 ms cap and reported failure (status " + runaway.status + ")."
+  );
 }
+
+// --- case 2: trivial fast gate must complete normally under the cap ---
+// A quick node -e script finishes well inside the timeout; the cap must not
+// produce false positives by prematurely killing or misreporting clean exits.
+const fast = runGateCapped(
+  ["node", "-e", "process.exit(0)"],
+  { timeoutMs: 5000 }
+);
+
+if (fast.timedOut !== false) {
+  console.error(
+    "FAIL AP-26 (fast): timedOut was " + fast.timedOut + ", expected false — " +
+    "a trivial gate was falsely flagged as a timeout."
+  );
+  passed = false;
+} else if (fast.status !== 0) {
+  console.error(
+    "FAIL AP-26 (fast): status was " + fast.status + ", expected 0 — " +
+    "a clean-exit gate should not report failure under the cap."
+  );
+  passed = false;
+} else {
+  console.log(
+    "PASS AP-26 (fast): timedOut === false and status === 0 — " +
+    "fast gate completed normally without false-positive termination."
+  );
+}
+
+if (!passed) process.exit(1);
