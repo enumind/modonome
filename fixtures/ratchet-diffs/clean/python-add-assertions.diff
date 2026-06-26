@@ -1,0 +1,12 @@
+diff --git a/tests/test_payment.py b/tests/test_payment.py
+--- a/tests/test_payment.py
++++ b/tests/test_payment.py
+@@ -1,5 +1,10 @@
+ def test_charge_succeeds():
+     card = create_card()
+     assert charge(card) == "ok"
++
++def test_receipt_generated():
++    card = create_card()
++    charge(card)
++    assert receipt(card) is not None

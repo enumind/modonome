@@ -1,12 +1,12 @@
-// PaymentProcessor : strict mode was off. Running tsc --strict revealed
-// 7 implicit-any errors here. Modonome fixed all 7 with explicit annotations.
+// PaymentProcessor: wraps a payment gateway with amount conversion.
+// Parameters are plain JS (no static types); callers are responsible
+// for passing numeric amounts.
 
 export class PaymentProcessor {
   constructor(gateway) {
     this.gateway = gateway;
   }
 
-  // Before Modonome: amount was implicit any; currency defaulted to any.
   async charge(amount, currency, paymentMethod) {
     const response = await this.gateway.charge({
       amount: Math.round(amount * 100),

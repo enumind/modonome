@@ -1,0 +1,9 @@
+{
+  "id": "nt-refund-thin-coverage",
+  "stack": "node-typescript",
+  "title": "checkout.refund function has incomplete test coverage",
+  "detect_pattern": "refund function handles four cases: negative amount, expired card, and two success/failure branches; current test suite covers only the success case for a valid card; missing coverage for negative amount and expired card scenarios",
+  "agent_task": "Add two test cases to checkout.test.ts: (1) refund with negative amount should return status 'failed', (2) refund with expired card should return status 'failed'. Verify test coverage report shows all branches in the refund function are reached.",
+  "gates": ["npm test", "npm run coverage"],
+  "expected_outcome": "Test file gains two new test cases for negative amount and expired card; coverage report shows refund reaches 100% branch coverage; all tests pass"
+}

@@ -37,6 +37,16 @@ export function safetyErrors(cfg) {
   if (cfg.repo_network_enabled === true && cfg.share_raw_code_across_repos === true) {
     errs.push("repo_network_enabled with share_raw_code_across_repos is unsafe by default.");
   }
+  // WS-H: enforce distinct models for maker and checker when the flag is on.
+  if (cfg.require_distinct_maker_checker_model !== false) {
+    const makerModel = cfg.roles?.maker?.model;
+    const checkerModel = cfg.roles?.checker?.model;
+    if (makerModel && checkerModel && makerModel === checkerModel) {
+      errs.push(
+        `require_distinct_maker_checker_model is on but roles.maker.model and roles.checker.model are both "${makerModel}".`
+      );
+    }
+  }
   return errs;
 }
 

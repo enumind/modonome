@@ -9,3 +9,8 @@ fixtures/**/.modonome/
 .env.*
 *.pem
 *.key
+
+# Python build and cache artifacts
+__pycache__/
+*.pyc
+*.egg-info/
