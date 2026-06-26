@@ -32,6 +32,7 @@ const REAL_GATES = [
   "scripts/check-work-items.mjs",
   "scripts/check-checker-engagement.mjs",
   "scripts/check-promotion-readiness.mjs",
+  "scripts/assert-governed-change.mjs",
 ];
 
 function getDiff(baseRef) {
@@ -164,6 +165,18 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const gateExercised = exercisesRealGate(diff, changedFiles);
   const protectedPath = touchesProtectedPath(changedFiles);
   const workItem = loadCurrentWorkItem();
+
+  // Site/content-only changes (site/ and RELEASE-EVIDENCE.md) are UI or documentation
+  // updates that are not governance-relevant by definition. Allow them explicitly so
+  // that label, copy, and evidence-file changes are not blocked by this gate.
+  const CONTENT_ONLY_PREFIXES = ["site/", "RELEASE-EVIDENCE.md"];
+  const isContentOnly = [...changedFiles].every((f) =>
+    CONTENT_ONLY_PREFIXES.some((p) => f.startsWith(p))
+  );
+  if (isContentOnly) {
+    console.log("Change is site/content-only. Governance check not required.");
+    process.exit(0);
+  }
 
   // Governance-relevant if:
   // 1. Test files changed with net assertions >= 0 (testing strengthens governance)

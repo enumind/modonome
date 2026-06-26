@@ -267,7 +267,7 @@
       <div style="text-align:center;max-width:780px;margin:0 auto 40px">
         <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#5dd4ab;margin-bottom:14px">Living-system simulator</div>
         <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(28px,3.6vw,40px);line-height:1.1;letter-spacing:-.02em;margin:0 0 14px;color:#f6f4ee">Watch your code and Modonome improve together.</h2>
-        <p style="font-size:16px;line-height:1.6;color:#aeb9c8;margin:0">Trigger an event and follow it across the boundary. Some changes land in your code, some sharpen Modonome’s rules, and some upgrade Modonome itself, all inside the same repository.</p>
+        <p style="font-size:16px;line-height:1.6;color:#aeb9c8;margin:0">Trigger an event and follow it across the policy boundary. Some changes land in your code, some sharpen Modonome’s rules, and some upgrade Modonome itself, all inside the same repository.</p>
       </div>
 
       <div style="display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin-bottom:30px">
@@ -283,7 +283,7 @@
         <span style="display:inline-flex;align-items:center;gap:7px"><span style="width:9px;height:9px;border-radius:50%;background:#f5b14a"></span>Sharpens the rules</span>
         <span style="display:inline-flex;align-items:center;gap:7px"><span style="width:9px;height:9px;border-radius:50%;background:#7cc4ff"></span>Upgrades Modonome</span>
         <span style="color:#54627a">|</span>
-        <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#7c8aa0">The boundary is the line the agent can’t cross, enforced in CI</span>
+        <span style="font-family:’IBM Plex Mono’,monospace;font-size:11.5px;color:#7c8aa0">The policy boundary is the enforcement point the agent cannot cross, enforced in CI</span>
       </div>
 
       <div ref="{{ setEvoStage }}" style="position:relative">
@@ -292,9 +292,9 @@
         <div style="background:rgba(159,201,180,.04);border:1px solid rgba(159,201,180,.14);border-radius:16px;padding:22px 22px 24px">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
             <span style="width:9px;height:9px;border-radius:2px;background:#7c8aa0"></span>
-            <span style="font-family:'Space Grotesk';font-weight:600;font-size:16px;color:#f6f4ee">Your application</span>
+            <span style="font-family:'Space Grotesk';font-weight:600;font-size:16px;color:#f6f4ee">Host System</span>
           </div>
-          <div style="font-size:12.5px;color:#7c8aa0;margin-bottom:18px">Any stack · your existing process</div>
+          <div style="font-size:12.5px;color:#7c8aa0;margin-bottom:18px">Your stack · external to the agent boundary</div>
           <div style="display:flex;flex-direction:column;gap:9px">
             <sc-for list="{{ repoNodes }}" as="rn" hint-placeholder-count="4">
               <div ref="{{ rn.setRef }}" style="{{ rn.cardStyle }}">
@@ -311,15 +311,15 @@
         </div>
 
         <div style="position:relative;display:flex;align-items:center;justify-content:center">
-          <div style="position:relative;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.18em;color:#7c8aa0;background:#091020;padding:6px 0;writing-mode:vertical-rl;text-orientation:mixed;border:1px solid rgba(159,201,180,.14);border-radius:6px;height:74px;display:flex;align-items:center;justify-content:center;width:22px">BOUNDARY</div>
+          <div style="position:relative;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.18em;color:#7c8aa0;background:#091020;padding:6px 0;writing-mode:vertical-rl;text-orientation:mixed;border:1px solid rgba(159,201,180,.14);border-radius:6px;height:90px;display:flex;align-items:center;justify-content:center;width:22px"><span style="display:block;letter-spacing:.18em">POLICY</span><span style="display:block;letter-spacing:.18em">BOUNDARY</span></div>
         </div>
 
         <div style="background:linear-gradient(180deg,rgba(62,201,138,.06),rgba(159,201,180,.02));border:1px solid rgba(93,212,171,.2);border-radius:16px;padding:22px 22px 24px">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
             <span style="width:9px;height:9px;border-radius:50%;background:#5dd4ab;box-shadow:0 0 8px #5dd4ab"></span>
-            <span style="font-family:'Space Grotesk';font-weight:600;font-size:16px;color:#f6f4ee">Modonome <span style="font-weight:400;color:#7c8aa0;font-size:13px">· in the same repo</span></span>
+            <span style="font-family:'Space Grotesk';font-weight:600;font-size:16px;color:#f6f4ee">Modonome <span style="font-weight:400;color:#7c8aa0;font-size:13px">· agent process</span></span>
           </div>
-          <div style="font-size:12.5px;color:#7c8aa0;margin-bottom:18px">Runs inside your repository · {{ engineVersion }} · {{ armedLabel }}</div>
+          <div style="font-size:12.5px;color:#7c8aa0;margin-bottom:18px">Executes in CI pipeline · config versioned in-repo · {{ engineVersion }} · {{ armedLabel }}</div>
           <div style="display:flex;flex-direction:column;gap:9px">
             <sc-for list="{{ engineNodes }}" as="en" hint-placeholder-count="4">
               <div ref="{{ en.setRef }}" style="{{ en.cardStyle }}">
@@ -988,16 +988,16 @@ class Component extends DCLogic {
         portStyle: `position:absolute;top:50%;${side==='r'?'right:-4px':'left:-4px'};transform:translateY(-50%);width:8px;height:8px;border-radius:50%;background:${active?pcol:'transparent'};box-shadow:${active?`0 0 10px ${pcol}`:'none'};transition:all .3s` };
     };
     const repoNodes = [
-      mkNode('r',0,{icon:'⌘', title:'Code & tests', sub:'your application and its tests', readout:`${repo.tests} tests · ${repo.coverage} covered`}),
-      mkNode('r',1,{icon:'⚙', title:'Automated checks', sub:'run on every change', readout:`${engine.gates} checks active`}),
-      mkNode('r',2,{icon:'⛉', title:'Owner approvals', sub:'people sign off on sensitive changes', readout:`protected paths`}),
-      mkNode('r',3,{icon:'◇', title:'Backlog & debt', sub:'the work to clear over time', readout:`${repo.deps} updates · ${repo.debt} open items`}),
+      mkNode('r',0,{icon:'⌘', title:'Code & Test Suite', sub:'source code, unit & integration tests', readout:`${repo.tests} tests · ${repo.coverage} covered`}),
+      mkNode('r',1,{icon:'⚙', title:'CI/CD Pipeline Gates', sub:'enforced on every push · fail-fast policy', readout:`${engine.gates} gates active`}),
+      mkNode('r',2,{icon:'⛉', title:'CODEOWNERS & Access Policies', sub:'human sign-off enforced on protected paths', readout:`protected paths`}),
+      mkNode('r',3,{icon:'◇', title:'Issue Tracker / Debt Register', sub:'open issues, dependency drift, and known regressions', readout:`${repo.deps} updates · ${repo.debt} open items`}),
     ];
     const engineNodes = [
-      mkNode('e',0,{icon:'❖', title:'Roles & instructions', sub:'separate roles keep work honest', readout:`${engine.version}`}),
-      mkNode('e',1,{icon:'▦', title:'Settings & templates', sub:'your configuration and safe defaults', readout:`config ${engine.version}`}),
-      mkNode('e',2,{icon:'⌗', title:'Safeguards', sub:'the automated checks it relies on', readout:`runs in your pipeline`}),
-      mkNode('e',3,{icon:'⎒', title:'Local memory', sub:'work queue, lessons, and decisions', readout:`${engine.lessons} lessons · ${engine.rules} rules · ${engine.queue} queued`}),
+      mkNode('e',0,{icon:'❖', title:'Roles & Instructions', sub:'agent personas with scoped permissions and behavior constraints', readout:`${engine.version}`}),
+      mkNode('e',1,{icon:'▦', title:'Settings & Templates', sub:'repo-level config, prompt templates, and safe defaults', readout:`config ${engine.version}`}),
+      mkNode('e',2,{icon:'⌗', title:'Policy Engine / Guardrail Layer', sub:'rule set enforced in CI · blocks non-compliant agent output', readout:`active · enforced in pipeline`}),
+      mkNode('e',3,{icon:'⎒', title:'Agent State Store', sub:'persistent context: lessons learned, decision log, and queued work', readout:`${engine.lessons} lessons · ${engine.rules} rules · ${engine.queue} queued`}),
     ];
     const evoScenarios = this.EVO.map((s,i) => {
       const on = i === this.state.evoScenario;
