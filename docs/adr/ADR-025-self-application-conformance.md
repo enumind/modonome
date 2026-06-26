@@ -32,11 +32,18 @@ without evidence that Modonome itself meets them.
 2. **Publish the governed-mode transcript** as release evidence:
    - For each release, capture the engine's decisions, metrics, and outcomes
    - Publish in `RELEASE-EVIDENCE.md` or a similar file that lives in the repo
-   - Include:
-     - Dry-run sweep (what work was proposed, why)
-     - Work items completed (with maker, checker, verification)
+   - The continuously-regenerated `RELEASE-EVIDENCE.md` is built only from
+     committed repo state by `scripts/build-release-evidence.mjs`, so it stays
+     reproducible and cannot drift. It includes:
+     - Autonomy posture (armed vs dry-run, from config)
      - Gates passed and failed
+     - AgentProof score and honest level
+     - Work queue state counts
      - Learnings captured and promoted
+   - Point-in-time release transcripts add the volatile, per-run detail that does
+     not belong in a reproducible file:
+     - Dry-run sweep (what work was proposed, why), from `.modonome/runs/*.json`
+     - Work items completed (with maker, checker, verification), once armed
      - Cost and token usage (if relevant)
      - Any ratchet violations or rejections
    - This transcript is human-readable and machine-auditable

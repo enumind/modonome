@@ -1,45 +1,114 @@
 name: Modonome autonomous run
 
+# Two-phase loop with structural separation of duties (ADR-006).
+# The maker and the checker run as distinct jobs, with distinct identities and
+# distinct models, on the same run. The maker authors a branch and a pull request.
+# The checker, which did not author the diff, runs every deterministic gate and
+# reviews the change. Neither job merges; the owner merges after review. CI then
+# enforces, on the resulting pull request, that maker_id and checker_id differ
+# (scripts/check-work-items.mjs) and that the checker is not ghosting
+# (scripts/check-checker-engagement.mjs).
+#
+# The whole loop stays off unless armed: MODONOME_ARMED must be true in secrets and
+# the config must say so (resolved in bin/modonome.mjs). Unset, both sessions run
+# read-only and open nothing.
+
 on:
   schedule:
     - cron: '0 2 * * 1-5'   # weekdays at 2am UTC; remove schedule to go manual-only
-  workflow_dispatch:          # also triggerable by hand from the Actions tab
+  workflow_dispatch:
 
 permissions:
   contents: write
   pull-requests: write
 
+env:
+  RUN_BRANCH: modonome/run-${{ github.run_id }}
+  MAKER_MODEL: ${{ vars.MODONOME_MAKER_MODEL || 'claude-sonnet-4-6' }}
+  CHECKER_MODEL: ${{ vars.MODONOME_CHECKER_MODEL || 'claude-opus-4-8' }}
+
 jobs:
-  autonomous-run:
+  maker:
     runs-on: ubuntu-latest
+    outputs:
+      branch: ${{ env.RUN_BRANCH }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683   # v4.2.2
-
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af   # v4.1.0
         with:
           node-version: '20'
-
+      - name: Guard against same model for both roles
+        # Workflow-level fast-fail on identical models. The validator-level check is
+        # governed by require_distinct_maker_checker_model in .modonome/config.yaml.
+        run: |
+          if [ "$MAKER_MODEL" = "$CHECKER_MODEL" ]; then
+            echo "MAKER_MODEL and CHECKER_MODEL must differ (require_distinct_maker_checker_model)." >&2
+            exit 1
+          fi
       - name: Install Claude Code CLI
         run: npm install -g @anthropic-ai/claude-code
-
-      - name: Run modonome autonomous cycle
+      - name: Maker session
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           MODONOME_ARMED: ${{ secrets.MODONOME_ARMED }}
+          MODONOME_ROLE: maker
+          MAKER_ID: maker:${{ github.run_id }}:${{ env.MAKER_MODEL }}
           GH_TOKEN: ${{ github.token }}
         run: |
-          claude --dangerously-skip-permissions \
-            --max-turns 40 \
-            -p "You are running a modonome autonomous cycle on this repo. Follow AGENTS.md exactly.
+          claude --dangerously-skip-permissions --model "$MAKER_MODEL" --max-turns 40 \
+            -p "You are the MAKER in a modonome cycle. Follow AGENTS.md exactly.
+          1. Read .modonome/STATUS.md and .modonome/DECISIONS.md. Skip any item marked hold.
+          2. Pick the first Tier 1 item (touches_protected_path: false) in queued state.
+          3. If none exists, print 'No Tier 1 items queued. Stopping.' and exit 0.
+          4. Make only the changes in allowed_edit_set. Run every gate listed in the item.
+             If any gate fails, revert and exit 1.
+          5. In the work item JSON set state to checking and set maker_id to '$MAKER_ID' and
+             maker_model to '$MAKER_MODEL'. Do NOT set checker_id.
+          6. Create branch '$RUN_BRANCH', commit, push, and open a pull request.
+          7. Do not merge. Print a one-paragraph summary."
 
-          Steps:
-          1. Read .modonome/STATUS.md to find the first queued item.
-          2. Read .modonome/DECISIONS.md and skip any item whose decision is marked hold.
-          3. Pick the first Tier 1 item (touches_protected_path: false) in queued state.
-          4. If none exists, print 'No Tier 1 items queued. Stopping.' and exit 0.
-          5. Execute the item: make only the changes listed in allowed_edit_set.
-          6. Run every gate listed in the work item. If any gate fails, revert your changes and exit 1.
-          7. Create a branch named modonome/wi-NNN-short-slug and open a pull request.
-          8. Do not merge the pull request. The owner merges after review.
-          9. Update the work item state to claimed and update STATUS.md.
-          10. Print a one-paragraph summary of what changed and why."
+  checker:
+    needs: maker
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683   # v4.2.2
+        with:
+          ref: ${{ needs.maker.outputs.branch }}
+          fetch-depth: 0
+      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af   # v4.1.0
+        with:
+          node-version: '20'
+      - name: Deterministic gates (run by the checker, who did not author the diff)
+        run: npm run verify
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+      - name: Checker session
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          MODONOME_ARMED: ${{ secrets.MODONOME_ARMED }}
+          MODONOME_ROLE: checker
+          CHECKER_ID: checker:${{ github.run_id }}:${{ env.CHECKER_MODEL }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          claude --dangerously-skip-permissions --model "$CHECKER_MODEL" --max-turns 40 \
+            -p "You are the CHECKER in a modonome cycle. You did NOT author this diff.
+          1. The deterministic gates already passed in the previous step. Review the diff and
+             the rationale on the merge_ready work item. A persuasive rationale is evidence,
+             not a verdict.
+          2. In the work item JSON set checker_id to '$CHECKER_ID' and checker_model to
+             '$CHECKER_MODEL'. checker_id MUST differ from maker_id.
+          3. Append one metrics line to .modonome/metrics.jsonl with event 'checker_review' and
+             fields checker_id, checker_requested_changes (bool), checker_questions_raised (int).
+          4. If you request changes, push them to '$RUN_BRANCH' and set state back to rework.
+             Otherwise set state to merge_ready.
+          5. Do not merge. The owner merges after review. Print a one-paragraph review."
+      - name: Assert checker wrote metrics
+        run: |
+          if [ ! -s .modonome/metrics.jsonl ]; then
+            echo "FAIL: checker session did not append to .modonome/metrics.jsonl" >&2
+            exit 1
+          fi
+      - name: Enforce separation of duties on the result
+        run: node scripts/check-work-items.mjs

@@ -6,8 +6,10 @@
 function parseScalar(raw) {
   const v = raw.trim();
   if (v === "" ) return "";
-  if (v === "true") return true;
-  if (v === "false") return false;
+  // accept all standard YAML boolean synonyms case-insensitively so that
+  // values like yes/True/on/1 do not slip past boolean-gated checks.
+  if (/^(true|yes|on)$/i.test(v)) return true;
+  if (/^(false|no|off)$/i.test(v)) return false;
   if (v === "[]") return [];
   if (v.startsWith("[") && v.endsWith("]")) {
     const inner = v.slice(1, -1).trim();

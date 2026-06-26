@@ -53,7 +53,7 @@ npx modonome dry-run .
 # 4. See the governance report
 npx modonome report .
 
-# 5. Run AgentProof (16/16 GOVERNED required to merge anything)
+# 5. Run AgentProof (16/16 HARDENED required to merge anything)
 npx modonome agentproof
 ```
 

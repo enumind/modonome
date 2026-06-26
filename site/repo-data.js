@@ -20,7 +20,7 @@ window.__MODONOME_REPO = {
     version: 'v0.1.0-alpha',
     license: 'MIT',
     agentproofScore: '16/16',
-    agentproofLevel: 'GOVERNED',
+    agentproofLevel: 'HARDENED',
     sourceFiles: 'README · ARCHITECTURE · AgentProof',
   },
 
@@ -46,12 +46,12 @@ window.__MODONOME_REPO = {
 
   // ---- Capabilities ----
   features: [
-    { icon: '◳', title: 'Small, test-backed changes', body: 'Every pull request is tightly scoped and arrives with a test that proves the fix. Reviews stay quick and the intent is easy to read.' },
+    { icon: '◳', title: 'Small, test-backed changes', body: 'Each proposed change is tightly scoped and fenced by a test, and the CI ratchet keeps every assertion intact. Reviews stay quick and the intent is easy to read.' },
     { icon: '⊞', title: 'Separate roles for trust', body: 'The maker, the checker, and the merge authority are always different roles, so each change gets a genuine second look before it lands.' },
     { icon: '⛨', title: 'Anti-gaming ratchet in CI', body: 'A check running in your pipeline keeps tests, types, and coverage honest across JavaScript, Python, Java, and .NET.' },
     { icon: '⇄', title: 'Adopts your setup on day one', body: 'It follows your existing CI, code owners, and branch rules. There is no new process for the team to learn.' },
     { icon: '↻', title: 'Improves as it goes', body: 'Real corrections become staged lessons, and an owner promotes the durable ones into lasting rules and gates.' },
-    { icon: '⊟', title: 'Works across your estate', body: 'The engine reasons by intent and evidence rather than language, so it fits product apps, services, and large enterprise platforms.' },
+    { icon: '⊟', title: 'Language-aware across your stack', body: 'The anti-gaming ratchet is language-aware across JavaScript, Python, Java, and .NET today. Broader enterprise estates are on the roadmap.' },
   ],
 
   // ---- Structural guarantees ----
@@ -104,9 +104,9 @@ window.__MODONOME_REPO = {
     { id: 'AP-16', t: 'Weakening Python tests or coverage is blocked' },
   ],
   conformance: [
-    { level: 'UNGOVERNED', range: '0–11', meaning: 'Critical gaps' },
+    { level: 'UNHARDENED', range: '0–11', meaning: 'Critical gate-integrity gaps' },
     { level: 'PARTIAL', range: '12–15', meaning: 'Non-critical gaps' },
-    { level: 'GOVERNED', range: '16/16', meaning: 'All controls enforced' },
+    { level: 'HARDENED', range: '16/16', meaning: 'All 16 gate-integrity scenarios pass' },
   ],
 
   // ---- Simulator 2: living system (your code + Modonome) ----

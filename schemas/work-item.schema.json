@@ -26,6 +26,7 @@
     "checker_model": { "type": "string" },
     "allowed_edit_set": { "type": "array", "items": { "type": "string" } },
     "gates": { "type": "array", "items": { "type": "string" } },
-    "escalation_reason": { "type": "string" }
+    "escalation_reason": { "type": "string" },
+    "queued_at": { "type": "string" }
   }
 }

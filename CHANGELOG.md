@@ -33,7 +33,7 @@ version bump.
 
 ## 0.1.0-alpha : 2026-06-23
 
-### AgentProof benchmark (16/16 GOVERNED)
+### AgentProof benchmark (16/16 HARDENED)
 
 - Introduced **AgentProof**: a portable adversarial governance benchmark with 16
   scenarios covering ratchet gaming, prompt injection, config override, identity

@@ -135,7 +135,7 @@ Merges:             9
 Lines changed:    683
 Est. hours saved: 17.0
 
-AgentProof score:  16/16 GOVERNED
+AgentProof score:  16/16 HARDENED
 
 Work items this period:
   item-001  merged   Add input validation to user registration endpoint

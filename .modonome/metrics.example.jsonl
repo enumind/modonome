@@ -1,0 +1,5 @@
+{"schema_version":1,"ts":"2026-06-16T09:12:03Z","event":"item_created","item":"item-001","state":"queued"}
+{"schema_version":1,"ts":"2026-06-16T09:14:22Z","event":"gate_passed","item":"item-001","state":"making"}
+{"schema_version":1,"ts":"2026-06-16T09:18:47Z","event":"gate_passed","item":"item-001","state":"making"}
+{"schema_version":1,"ts":"2026-06-16T09:31:05Z","event":"ratchet_rejected","item":"item-001","state":"checking"}
+{"schema_version":1,"ts":"2026-06-16T09:33:12Z","event":"merged","item":"item-001","lines_changed":47,"estimated_hours_saved":1.5,"state":"merged"}

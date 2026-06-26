@@ -32,9 +32,9 @@ const scoreMatch = apReadme.match(/Score:\s*(\d+\/\d+)/i) ||
                    readme.match(/AgentProof[^`\n]*?(\d+\/\d+)/i);
 const agentproofScore = scoreMatch ? scoreMatch[1] : null;
 
-// Parse level from agentproof/README.md - looks for "Level: GOVERNED" or similar
-const levelMatch = apReadme.match(/Level:\s*(GOVERNED|PARTIAL|UNGOVERNED)/i) ||
-                   apReadme.match(/\b(GOVERNED|PARTIAL|UNGOVERNED)\b/);
+// Parse level from agentproof/README.md - looks for "Level: HARDENED" or similar
+const levelMatch = apReadme.match(/Level:\s*(HARDENED|PARTIAL|UNHARDENED)/i) ||
+                   apReadme.match(/\b(HARDENED|PARTIAL|UNHARDENED)\b/);
 const agentproofLevel = levelMatch ? levelMatch[1].toUpperCase() : null;
 
 const repoData = read('site/repo-data.js');
@@ -67,7 +67,7 @@ if (agentproofScore) {
   );
 }
 
-// Replace agentproofLevel: 'GOVERNED'
+// Replace agentproofLevel: 'HARDENED'
 if (agentproofLevel) {
   replace('agentproofLevel',
     /(agentproofLevel:\s*')([^']+)(')/,
