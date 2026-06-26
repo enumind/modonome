@@ -1,0 +1,6 @@
+{
+  "name": "schema-collision-host",
+  "version": "1.0.0",
+  "description": "Host repo that already has a .modonome/config.yaml with incompatible schema",
+  "type": "module"
+}

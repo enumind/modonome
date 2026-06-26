@@ -1,0 +1,6 @@
+{
+  "name": "ci-job-conflict-host",
+  "version": "1.0.0",
+  "description": "Host repo whose CI already defines jobs named drift, ratchet, tests, agentproof",
+  "type": "module"
+}

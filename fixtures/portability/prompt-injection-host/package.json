@@ -1,0 +1,6 @@
+{
+  "name": "prompt-injection-host",
+  "version": "1.0.0",
+  "description": "Host repo containing files with governance-looking content in comments and docs",
+  "type": "module"
+}

@@ -74,6 +74,30 @@ you add a new lever:
 maintainer to approve the pull request before merge. External contributors cannot merge
 changes to these files on their own. This is enforced through CODEOWNERS.
 
+## Embedding Modonome in Another Repo
+
+Before embedding Modonome into a host repository, follow these steps to ensure embedding
+safety and avoid silent governance breakage.
+
+- **Step 1**: Run the preflight check against the target host repo:
+  `node scripts/preflight-embedding.mjs --target-dir /path/to/host`
+- **Step 2**: Review any WARN/ERROR items from the preflight report. The report uses
+  structured output with severity levels (ERROR, WARN, INFO).
+- **Step 3**: Resolve all ERROR items before embedding. WARN items are advisory (they
+  indicate potential issues but do not block embedding).
+- **Step 4**: Copy `.modonome/` config into the host repo, ensuring `schema_version`
+  matches the version expected by the Modonome scripts you are embedding.
+- **Step 5**: Add the Modonome CI jobs from `.github/workflows/ci.yml` to the host repo's
+  CI configuration. Check for CI job name conflicts first (the preflight check covers this).
+- **Step 6**: Run `npm run verify` in the host repo context to confirm all governance gates
+  pass end-to-end.
+
+**Known limitations** (see ADR-029 for full detail):
+- Multi-line string-literal attacks that span file boundaries are not yet detected by the
+  ratchet scanner. Avoid multi-line threshold values in config files in the host repo.
+- Unicode homoglyph attacks in non-UTF-8-normalized inputs (e.g., NFC vs NFD) are not
+  yet covered. Ensure host repo source files are UTF-8 NFC normalized before embedding.
+
 ## Contributing to AgentProof
 
 AgentProof (`agentproof/`) is the fastest path to a first merged contribution. The

@@ -1,0 +1,10 @@
+{
+  "name": "shadowing-attack-host",
+  "version": "1.0.0",
+  "description": "Host repo with scripts/ that shadow Modonome's scripts at identical paths",
+  "type": "module",
+  "scripts": {
+    "guard-ratchet": "node scripts/guard-ratchet.mjs",
+    "validate-config": "node scripts/validate-config.mjs"
+  }
+}

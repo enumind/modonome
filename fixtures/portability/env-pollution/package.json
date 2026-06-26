@@ -1,0 +1,6 @@
+{
+  "name": "env-pollution-host",
+  "version": "1.0.0",
+  "description": "Host repo that exports env vars that could affect Modonome behavior",
+  "type": "module"
+}

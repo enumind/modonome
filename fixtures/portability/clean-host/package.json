@@ -1,0 +1,9 @@
+{
+  "name": "clean-host",
+  "version": "1.0.0",
+  "description": "Minimal host repo with no Modonome conflicts. Preflight must exit 0.",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  }
+}
