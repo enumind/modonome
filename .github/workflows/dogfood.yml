@@ -1,0 +1,65 @@
+name: Modonome dogfood autonomy
+
+# Dogfood run: self-application of Modonome on this repo itself.
+# Runs on push to main and nightly schedule (NOT on PRs).
+# Pinned Haiku maker, with budget constraints and artifact capture.
+# This proves the governance layer works under real-world conditions,
+# beyond the agent harness or manual demo cycles.
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 3 * * 1-5'   # weekdays at 3am UTC; 1 hour after autonomous run
+
+permissions:
+  contents: read
+
+env:
+  DOGFOOD_BRANCH: modonome/dogfood-${{ github.run_id }}
+  DOGFOOD_MODEL: claude-haiku-4-5-20251001
+  MAX_TURNS: 10
+  BUDGET_TOKENS: 15000
+
+jobs:
+  dogfood:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683   # v4.2.2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af   # v4.1.0
+        with:
+          node-version: '20'
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+      - name: Dogfood harness end-to-end run
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          RUN_ID: dogfood-${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          # Run harness end-to-end to produce real captured artifacts
+          node scripts/agent/run-cycle.mjs \
+            --target examples/demo-app \
+            --maker-model "$DOGFOOD_MODEL" \
+            --max-turns "$MAX_TURNS" \
+            --execute \
+            2>&1 | tee dogfood-run.log
+
+      - name: Capture dogfood metrics
+        if: always()
+        run: |
+          # Archive any metrics produced by the run
+          if [ -d "examples/demo-app/runs" ]; then
+            tar -czf dogfood-runs.tar.gz examples/demo-app/runs/
+          fi
+
+      - name: Upload dogfood evidence
+        if: always()
+        uses: actions/upload-artifact@6d5d51884c938cdc4d2d9c4b9b82ba8ddeffa8ba   # v4
+        with:
+          name: dogfood-evidence-${{ github.run_id }}
+          path: |
+            dogfood-run.log
+            dogfood-runs.tar.gz
+          retention-days: 90

@@ -16,6 +16,9 @@ jobs:
           node-version: 20
       - name: Drift guard
         run: node scripts/check-drift.mjs
+      - name: Governance-relevant change assertion
+        if: github.event_name == 'pull_request'
+        run: node scripts/assert-governed-change.mjs origin/${{ github.base_ref }}
       - name: Repo hygiene check
         run: node scripts/check-repo-hygiene.mjs
       - name: Self-application conformance
