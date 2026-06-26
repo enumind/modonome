@@ -1,169 +1,34 @@
-# Modonome in action: what one week looks like on a Node.js app
+# Modonome on this demo app: real captured run
 
-> **Representative run.** Commands, output formats, ratchet messages, and governance
-> report structure are accurate: this is exactly what you would see. The specific tech
-> debt items and sequence of events are illustrative of a typical week. Simulated examples
-> are clearer than partial real-world runs with redacted details.
+Everything in this walkthrough is real. The dry-run output is verbatim tool output and
+the maker and checker logs are verbatim model output, captured under runs/2026-06-26T11-46-00Z/. Nothing
+here is hand-authored or simulated.
 
-This walkthrough shows what Modonome does in practice on a Node.js app with three
-real-world tech debt targets: missing test coverage on a high-churn path, dead feature
-flag code, and a type safety gap.
+## Step 1: the dry-run sweep
 
----
+`node scripts/dry-run-sweep.mjs examples/demo-app` reports the posture and the bounded
+work it would propose. The full verbatim output is in runs/2026-06-26T11-46-00Z/dry-run.txt and in
+../dry-run-transcript.txt. The sweep changes nothing and refuses remote spend by default.
 
-## Step 1: the dry-run finds three targets
+## Step 2: a maker proposes a bounded, test-only change
 
-```
-$ npx modonome dry-run .
+OrderService.refund has four branches (order not found, already refunded, wrong status,
+and the success path), but the committed test suite covers only the order-not-found
+branch. A maker running claude-haiku-4-5 was asked to add tests for the three uncovered
+branches, adding assertions only and changing no source file. Its verbatim proposal is
+in runs/2026-06-26T11-46-00Z/maker.log.
 
-Modonome dry-run sweep
-Mode: dry-run. This run changed nothing.
+## Step 3: an independent checker reviews it
 
-Stack: Node or TypeScript (npm)
-Protected paths: .github, CODEOWNERS, package-lock.json
+A checker running claude-sonnet-4-6, a distinct model that did not author the proposal,
+reviewed it. It approved and raised one real question: the success-path assertion is only
+correct if the fake payment client returns exactly {status: "refunded"}, so that contract
+should be confirmed before merge. The verbatim review is in runs/2026-06-26T11-46-00Z/checker.log, and the
+maker and checker events are in runs/2026-06-26T11-46-00Z/metrics.jsonl.
 
-Proposed work (3 bounded items)
-================================
+## Step 4: the change is recorded, not force-applied
 
-[1] Add assertions to the OrderService refund flow.
-    git log shows 14 changes in 90 days with zero corresponding test additions.
-    Three conditional branches, zero assertions.
-    Scope: 3-5 assertions in tests/OrderService.test.js
-    Risk tier: Tier 1 (test-only). Estimated: ~40 lines.
-
-[2] Remove dead feature flag ENABLE_LEGACY_CHECKOUT.
-    Flag has been false in all environments for 62 days.
-    Adds ~180 lines of unreachable code and two outdated test stubs.
-    Scope: remove flag check and dead branch in CheckoutService.js
-    Risk tier: Tier 1 (unreachable code removal). Estimated: ~180 lines removed.
-
-[3] Add null guards to PaymentProcessor charge path.
-    charge() and refund() accept amount with no pre-validation. A null amount passes
-    Math.round() silently and charges zero. Seven call sites pass these values unguarded.
-    Scope: add parameter guards to PaymentProcessor.js, 2 new assertions in tests/
-    Risk tier: Tier 2 (changes validated public method behaviour). Estimated: ~20 lines.
-
-None of the proposed changes have been applied.
-```
-
-The dry-run reads git history, checks CI config, and identifies bounded, safe work.
-It changed nothing. It proved it understood the codebase.
-
----
-
-## Step 2: refund test coverage merges
-
-Modonome opened a PR with 4 new assertions covering the refund path : the
-not-found case, the already-refunded case, the wrong-status case, and the
-happy path.
-
-The ratchet ran in CI:
-
-```
-guard-ratchet: checking diff...
-  tests/OrderService.test.js: +4 assertions, -0 assertions. OK.
-guard-ratchet: PASS. No gate-weakening patterns detected.
-```
-
-The checker reviewed the diff independently. The PR merged.
-
-**What this proves:** Modonome found a real gap (14 changes with no tests),
-proposed a bounded fix, and proved the fix added coverage without removing anything.
-
----
-
-## Step 3: dead code is removed cleanly
-
-The `ENABLE_LEGACY_CHECKOUT` flag removal PR landed: 83 lines deleted,
-all tests still passed, assertion count unchanged.
-
-```
-guard-ratchet: checking diff...
-  src/CheckoutService.js: 83 lines removed (non-test file). OK.
-  tests/CheckoutService.test.js: +0 assertions, -0 assertions. OK.
-guard-ratchet: PASS.
-```
-
-**What this proves:** The ratchet distinguishes between removing dead production
-code (fine) and removing test assertions (blocked). It does not treat all
-deletions as suspicious : only the ones that weaken gates.
-
----
-
-## Step 4: the ratchet blocks a bad attempt
-
-Modonome attempted to wrap the payment service with retry logic. The first
-implementation simplified a test by removing two assertions to avoid flakiness.
-
-```
-guard-ratchet: checking diff...
-  tests/PaymentProcessor.test.js: +1 assertion, -3 assertions. NET: -2.
-guard-ratchet: FAIL. This diff removes more test assertions than it adds.
-  File: tests/PaymentProcessor.test.js
-  This is the pattern of a test suite that passes by doing less checking.
-  Fix: restore the removed assertions or add compensating ones.
-  Exit 1.
-```
-
-The PR was rejected. Modonome reworked the implementation to keep all three
-assertions. The second attempt passed:
-
-```
-guard-ratchet: PASS. +3 assertions, -0 assertions.
-```
-
-**What this proves:** The ratchet is not advisory. It blocked a real shortcut
-attempt. The agent cannot pass CI by weakening the tests. The fix required
-actual work.
-
----
-
-## Step 5: the governance report
-
-```
-$ npx modonome report examples/demo-app
-
-Modonome governance report
-Period: 2026-06-16 to 2026-06-23
-============================================================
-
-Items attempted:    9
-Gates passed:      26
-Gates failed:       1  (ratchet caught assertion removal on item-003)
-Ratchet rejections: 1
-Merges:             9
-Lines changed:    683
-Est. hours saved: 17.0
-
-AgentProof score:  16/16 HARDENED
-
-Work items this period:
-  item-001  merged   Add input validation to user registration endpoint
-  item-002  merged   Remove dead ENABLE_LEGACY_CHECKOUT flag
-  item-003  merged   Wrap payment service call with retry and circuit breaker
-  item-004  merged   Add database index on orders.created_at for reporting
-  item-005  merged   Replace moment.js with date-fns in date utilities
-  item-006  merged   Enforce 80% line coverage threshold in jest.config.js
-  item-007  merged   Add structured logging to order fulfillment pipeline
-  item-008  merged   Extract inline SQL in ReportingService into named constants
-  item-009  merged   Add null check guard to user profile loader before cache write
-============================================================
-```
-
-Nine items, 683 lines improved, one ratchet rejection (caught and fixed), no
-human-written code required for any of them.
-
----
-
-## What you need to reproduce this
-
-1. **A CI runner** that can run `node scripts/guard-ratchet.mjs --diff $DIFF`
-   on every PR. See the [CI integration snippet](../../agentproof/README.md#add-agentproof-to-your-ci).
-
-2. **A coding agent harness** that loads `prompts/modonome.bundle.md` and
-   runs the governance loop. Works with any agent that can read a prompt file.
-
-3. **Branch protection + CODEOWNERS** so the merger identity is distinct from
-   the maker. Modonome validates this before arming.
-
-That is the entire stack. No database, no central service, no vendor lock-in.
+The committed sample keeps its planted debt so the corpus and the CI dogfood control still
+have something to detect. The cycle is recorded as evidence in runs/2026-06-26T11-46-00Z/ and as a done work
+item in .modonome/work-items/demo-refund-coverage.json with the real maker and checker
+identities and models, which differ as the separation-of-duties rule requires.

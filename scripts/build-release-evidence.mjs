@@ -53,6 +53,36 @@ if (existsSync(wiDir)) {
 }
 const learnings = readPromotedLearnings(root);
 
+// Sample-app captures: real maker and checker runs recorded under examples/<app>/runs/.
+// These directories are committed (unlike the gitignored .modonome/runs/), so summarizing
+// them stays reproducible from committed state. Each summary is read from the captured
+// metrics.jsonl, never hand-authored.
+function listCaptures() {
+  const out = [];
+  const exDir = join(root, "examples");
+  if (!existsSync(exDir)) return out;
+  for (const app of readdirSync(exDir)) {
+    const runsDir = join(exDir, app, "runs");
+    if (!existsSync(runsDir)) continue;
+    for (const ts of readdirSync(runsDir)) {
+      const metricsPath = join(runsDir, ts, "metrics.jsonl");
+      if (!existsSync(metricsPath)) continue;
+      const events = readFileSync(metricsPath, "utf8").split("\n").filter((l) => l.trim()).map((l) => JSON.parse(l));
+      const maker = events.find((e) => e.event === "maker_run") || {};
+      const checker = events.find((e) => e.event === "checker_review") || {};
+      out.push({
+        app, ts,
+        makerModel: maker.maker_model || "unknown",
+        checkerModel: checker.checker_model || "unknown",
+        questions: Number(checker.checker_questions_raised) || 0,
+        requestedChanges: checker.checker_requested_changes === true,
+      });
+    }
+  }
+  return out.sort((a, b) => (a.ts < b.ts ? 1 : -1));
+}
+const captures = listCaptures();
+
 const armed = cfg.autonomy_enabled === true && cfg.dry_run !== true;
 
 const lines = [];
@@ -91,6 +121,21 @@ lines.push("");
 // here so this committed file stays reproducible from committed repo state.
 // Dry-run and armed-mode sweep detail belongs in a point-in-time release
 // transcript, not in the continuously-regenerated evidence file (see ADR-025).
+lines.push("## Sample-app captures");
+lines.push("");
+if (captures.length === 0) {
+  lines.push("No captured sample-app runs recorded yet.");
+} else {
+  lines.push("Real maker and checker runs recorded on the sample apps. Each is captured output,");
+  lines.push("read from the committed metrics, not hand-authored. The maker and checker use distinct");
+  lines.push("models, and the run directory holds the verbatim logs.");
+  lines.push("");
+  for (const c of captures) {
+    const decision = c.requestedChanges ? "requested changes" : "approved";
+    lines.push(`- examples/${c.app}/runs/${c.ts}: maker ${c.makerModel}, checker ${c.checkerModel}; checker ${decision} and raised ${c.questions} question(s).`);
+  }
+}
+lines.push("");
 lines.push("## Promoted learnings (traceable)");
 lines.push("");
 if (learnings.length === 0) {
