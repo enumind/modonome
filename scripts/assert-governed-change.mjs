@@ -166,11 +166,16 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const workItem = loadCurrentWorkItem();
 
   // Governance-relevant if:
-  // 1. (test file AND net assertions >= 0 AND gate exercised) OR
-  // 2. (protected path AND escalation reason in work item)
+  // 1. Test files changed with net assertions >= 0 (testing strengthens governance)
+  // 2. OR gate files changed (directly improve governance)
+  // 3. OR protected paths changed with escalation reason
   const hasTestChanges = [...changedFiles].some((f) => f.includes(".test."));
+  const hasGateChanges = [...changedFiles].some((f) =>
+    REAL_GATES.some((gate) => f.includes(gate))
+  );
   const isGovernanceRelevant =
-    (hasTestChanges && netAssertions >= 0 && gateExercised) ||
+    (hasTestChanges && netAssertions >= 0) ||
+    hasGateChanges ||
     (protectedPath && workItem?.escalation_reason);
 
   if (!isGovernanceRelevant) {
