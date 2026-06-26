@@ -1,0 +1,9 @@
+{
+  "maker_id": "user-abc123",
+  "checker_id": "user-abc123",
+  "touches_protected_path": true,
+  "state": "merge_ready",
+  "patch": "compound-failure.patch",
+  "description": "Test assertion removal with identity collapse and protected path touch",
+  "created_at": "2026-06-26T00:00:00Z"
+}

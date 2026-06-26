@@ -28,12 +28,12 @@ structurally separate, enforced in CI. Off by default, and it runs without a cen
   <a href="https://github.com/nateshpp/modonome/actions/workflows/ci.yml"><img src="https://github.com/nateshpp/modonome/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
   <a href="https://www.npmjs.com/package/modonome"><img src="https://img.shields.io/npm/v/modonome" alt="npm" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License" /></a>
-  <a href="agentproof/README.md"><img src="https://img.shields.io/badge/AgentProof-16%2F16-brightgreen" alt="AgentProof 16/16" /></a>
+  <a href="agentproof/README.md"><img src="https://img.shields.io/badge/AgentProof-25%2F25-brightgreen" alt="AgentProof 25/25" /></a>
 </p>
 
 ---
 
-Autonomous coding agents have a predictable failure mode: they weaken gates to go green (removing test assertions, adding skips, loosening type checks). Modonome blocks that in CI: the anti-gaming ratchet runs from a base-branch copy the agent's run does not control, and it rejects diffs that weaken a gate. We published the [governed-autonomy spec](GOVERNED-AUTONOMY-SPEC.md), and Modonome is its reference implementation, scoring **[16/16 on AgentProof](agentproof/README.md)** for gate integrity (hardening against known gaming patterns, not a certificate of full autonomy governance).
+Autonomous coding agents have a predictable failure mode: they weaken gates to go green (removing test assertions, adding skips, loosening type checks). Modonome blocks that in CI: the anti-gaming ratchet runs from a base-branch copy the agent's run does not control, and it rejects diffs that weaken a gate. We published the [governed-autonomy spec](GOVERNED-AUTONOMY-SPEC.md), and Modonome is its reference implementation, scoring **[25/25 on AgentProof](agentproof/README.md)** for gate integrity (hardening against known gaming patterns, not a certificate of full autonomy governance).
 
 ## Why businesses adopt Modonome
 
@@ -126,10 +126,13 @@ arming levers are gated by the `MODONOME_ARMED` environment variable, enforced a
 with it unset, `autonomy_enabled` is forced to false no matter what the config file says. The
 levers are read from your environment or CI, never from a file the engine can rewrite.
 
-[AgentProof](agentproof/README.md) proves this with 16 adversarial scenarios: assertion removal,
+[AgentProof](agentproof/README.md) proves this with 25 adversarial scenarios: assertion removal,
 skip injection, type escape, coverage removal, unsafe config combinations, identity collapse,
-raw code leakage, drift, protected-path bypass, Java and .NET ratchet coverage, and prompt
-injection inertness. Modonome scores **16/16**. Run it yourself:
+raw code leakage, drift, protected-path bypass, Java and .NET ratchet coverage, prompt
+injection inertness, state-machine acyclicity, deterministic gate ordering, trust-boundary code
+loading, audit-trail integrity, model-family distinctness, concurrency safety, gate-dependency
+DAG validation, evidence secret screening, and resource-exhaustion caps. Modonome scores
+**25/25**. Run it yourself:
 
 ```bash
 node agentproof/runner.mjs

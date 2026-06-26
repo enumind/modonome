@@ -1,0 +1,8 @@
+{
+  "states": ["rework", "making"],
+  "terminal": [],
+  "transitions": [
+    {"from": "rework", "to": "making"},
+    {"from": "making", "to": "rework"}
+  ]
+}

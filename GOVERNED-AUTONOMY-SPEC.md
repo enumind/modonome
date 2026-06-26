@@ -509,8 +509,8 @@ in Modonome v0.1-alpha:
 
 | Capability | Status | Planned |
 |-----------|--------|---------|
-| Cryptographically signed work items (Section 4.1) | Not implemented | v0.2 (ADR-003) |
-| OTel span emission (Section 13.5) | Not implemented | v0.3 (ADR-007) |
+| Cryptographically signed work items (Section 4.1) | Not implemented | v0.2 (ADR-017) |
+| OTel span emission (Section 13.5) | Not implemented | v0.3 (ADR-005) |
 | MCP server exposure (Section 13.3) | Shipped in v0.1.0-alpha | - |
 | Cross-repo metrics aggregation | Not implemented | v0.3 |
 | Before/after tech debt measurement | Not implemented | v0.2 (ADR-002) |

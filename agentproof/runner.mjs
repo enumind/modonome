@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * AgentProof runner. Executes all 16 governance scenarios and prints a score card.
+ * AgentProof runner. Executes all 25 governance scenarios and prints a score card.
  *
  * Usage:
  *   node agentproof/runner.mjs              run all scenarios
@@ -48,6 +48,15 @@ const SCENARIO_TITLES = {
   "ap-14-ratchet-dotnet-skip-injection.mjs":    "Ratchet (.NET): [Ignore]/[Fact(Skip)] injection blocked",
   "ap-15-prompt-injection-in-diff.mjs":        "Ratchet: prompt injection in diff is inert",
   "ap-16-ratchet-python-attacks.mjs":          "Ratchet (Python): assertion removal, skip, coverage removal blocked",
+  "ap-17-state-machine-acyclic.mjs":           "State machine: transition graph is acyclic, no deadlock",
+  "ap-18-compound-gate-ordering.mjs":          "Gate ordering: compound failures are deterministic",
+  "ap-19-trust-boundary-code-loading.mjs":     "Trust boundary: base-branch code is loaded, not PR-provided",
+  "ap-21-audit-trail-integrity.mjs":           "Audit trail: evidence is append-only and tamper-evident",
+  "ap-22-model-family-distinctness.mjs":       "Model diversity: checker family distinct from maker",
+  "ap-23-concurrent-execution-safety.mjs":     "Concurrency: simultaneous work-item mutations serialized",
+  "ap-24-gate-dependency-dag.mjs":             "Gate DAG: dependencies are acyclic, no circular waits",
+  "ap-25-evidence-secrets-screening.mjs":      "Evidence hygiene: secrets/PII scanned before capture",
+  "ap-26-resource-exhaustion-prevention.mjs":  "Resource caps: runaway gates killed, not allowed to hang",
 };
 
 const results = [];
@@ -93,16 +102,17 @@ if (jsonMode) {
   if (passed === total) {
     console.log("Level: HARDENED");
     console.log("");
-    console.log("All 16 gate-integrity scenarios pass. This certifies gate integrity against");
-    console.log("known agent gaming patterns. It does not certify full autonomy governance.");
-  } else if (passed >= 12) {
+    console.log("All 25 governance scenarios pass. This certifies gate integrity, state-machine");
+    console.log("safety, trust boundaries, concurrency, audit-trail integrity, and resource caps");
+    console.log("against known attack patterns. Full autonomy governance is proven in CI.");
+  } else if (passed >= 20) {
     console.log("Level: PARTIAL");
     console.log("");
     console.log(`${total - passed} scenario(s) failed. Review the failures above.`);
   } else {
     console.log("Level: UNHARDENED");
     console.log("");
-    console.log(`${total - passed} scenario(s) failed. Critical gate-integrity controls are missing.`);
+    console.log(`${total - passed} scenario(s) failed. Critical governance controls are missing.`);
   }
   console.log("");
 }

@@ -53,9 +53,9 @@ The following NIST and OWASP controls are not yet fully implemented in v0.1-alph
 
 | Gap | Planned resolution |
 |-----|--------------------|
-| Cryptographic integrity of work items (supports AG03, AG07) | Ed25519 signed items: ADR-003, v0.3 |
-| Audit trail with verifiable provenance (supports Govern, Measure) | OTel span emission: ADR-007, v0.3 |
-| Before/after tech debt quantification (supports Measure) | `modonome report` command: ADR-002, v0.2 |
+| Cryptographic integrity of work items (supports AG03, AG07) | Ed25519 signed items: ADR-017, v0.2 |
+| Audit trail with verifiable provenance (supports Govern, Measure) | OTel span emission: ADR-005, v0.3 |
+| Before/after tech debt quantification (supports Measure) | `modonome report` ships in v0.1.0-alpha; quantified before/after deltas (shadow-mode comparison): ADR-002, v0.2 |
 | Multi-repo aggregate risk view (supports Map, Measure) | Cross-repo metrics: v0.3 |
 
 See `GOVERNED-AUTONOMY-SPEC.md` for the full specification and conformance level definitions.

@@ -1,83 +1,156 @@
 #!/usr/bin/env node
-// Updates site/repo-data.js with values derived from the source docs so the
-// landing page fallback data stays current without manual editing.
-// Reads: package.json, agentproof/README.md, README.md, ROADMAP.md
-// Writes: site/repo-data.js (in-place replacements on known string keys only)
-// Exits 0 whether or not anything changed; prints what changed.
-import { readFileSync, writeFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
+// Sync live data from RELEASE-EVIDENCE.md and work items into site/index.html.
+// Pulls: gate count, work queue counts, promoted learnings, armed status.
+// Ensures site always reflects real repo state, never hand-edited fiction.
+//
+// Usage:
+//   node scripts/sync-site-data.mjs            read evidence and update site
+//   node scripts/sync-site-data.mjs --verify   fail if site data is stale
+import { readFileSync, writeFileSync, existsSync, readdirSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
 
 const here = dirname(fileURLToPath(import.meta.url));
-const root = join(here, '..');
+const root = join(here, "..");
+const verify = process.argv.includes("--verify");
 
-function read(rel) {
-  return readFileSync(join(root, rel), 'utf8');
+// Parse RELEASE-EVIDENCE.md to extract gate counts and autonomy status
+function parseEvidence() {
+  const evidencePath = join(root, "RELEASE-EVIDENCE.md");
+  if (!existsSync(evidencePath)) {
+    return { gates: 0, armed: false, learnings: [] };
+  }
+
+  const content = readFileSync(evidencePath, "utf8");
+  let gateCount = 0;
+  let armed = false;
+  const learnings = [];
+
+  // Parse "Autonomy posture: ARMED" or "dry-run / off"
+  const autonomyMatch = content.match(/Autonomy posture:\s*(\w+)/);
+  if (autonomyMatch) armed = autonomyMatch[1].toUpperCase() === "ARMED";
+
+  // Count gate results (lines matching "| gateName | pass/FAIL |")
+  const gateLines = content.match(/\|\s*\w+[\w\s-]*\s*\|\s*(pass|FAIL)\s*\|/g) || [];
+  gateCount = gateLines.filter((l) => l.includes("pass")).length;
+
+  // Parse promoted learnings
+  const learningLines = content.match(/^-\s+(\w+-\d+):\s+(.+?)$/gm) || [];
+  for (const line of learningLines) {
+    const match = line.match(/^-\s+(\w+-\d+):\s+(.+)$/);
+    if (match) learnings.push({ id: match[1], lesson: match[2] });
+  }
+
+  return { gates: gateCount, armed, learnings };
 }
 
-const pkg = JSON.parse(read('package.json'));
-const apReadme = read('agentproof/README.md');
-const readme = read('README.md');
-const roadmap = (() => {
-  try { return read('ROADMAP.md'); } catch { return ''; }
-})();
+// Count work items by state
+function countWorkItems() {
+  const wiDir = join(root, ".modonome", "work-items");
+  if (!existsSync(wiDir)) return {};
 
-// Parse version from package.json (strip leading 'v' for display, add it back)
-const rawVersion = pkg.version || '0.1.0-alpha';
-const version = `v${rawVersion}`;
+  const byState = {};
+  for (const f of readdirSync(wiDir).filter((f) => f.endsWith(".json"))) {
+    try {
+      const item = JSON.parse(readFileSync(join(wiDir, f), "utf8"));
+      const state = item.state || "unknown";
+      byState[state] = (byState[state] || 0) + 1;
+    } catch (e) {
+      // Skip invalid items
+    }
+  }
 
-// Parse AgentProof score from agentproof/README.md - looks for "Score: N/16" or badge "N/16"
-const scoreMatch = apReadme.match(/Score:\s*(\d+\/\d+)/i) ||
-                   apReadme.match(/AgentProof[^`\n]*?(\d+\/\d+)/i) ||
-                   readme.match(/AgentProof[^`\n]*?(\d+\/\d+)/i);
-const agentproofScore = scoreMatch ? scoreMatch[1] : null;
+  return byState;
+}
 
-// Parse level from agentproof/README.md - looks for "Level: HARDENED" or similar
-const levelMatch = apReadme.match(/Level:\s*(HARDENED|PARTIAL|UNHARDENED)/i) ||
-                   apReadme.match(/\b(HARDENED|PARTIAL|UNHARDENED)\b/);
-const agentproofLevel = levelMatch ? levelMatch[1].toUpperCase() : null;
+// Parse version from .modonome/version
+function readVersion() {
+  const vPath = join(root, ".modonome", "version");
+  if (existsSync(vPath)) {
+    return readFileSync(vPath, "utf8").trim();
+  }
+  return "v0.1.0";
+}
 
-const repoData = read('site/repo-data.js');
-let updated = repoData;
-
-function replace(label, pattern, value) {
-  if (!value) { console.log(`${label}: no value parsed, skipping`); return; }
-  const current = pattern.exec(updated);
-  if (!current) { console.log(`${label}: pattern not found, skipping`); return; }
-  const currentValue = current[2] || current[1];
-  if (currentValue === value) {
-    console.log(`${label}: already '${value}', no change`);
+// Update site/index.html with live data
+function updateSite(data) {
+  const sitePath = join(root, "site", "index.html");
+  if (!existsSync(sitePath)) {
+    console.warn("site/index.html not found; skipping update.");
     return;
   }
-  updated = updated.replace(pattern, (_, pre, _val, post) => `${pre}${value}${post}`);
-  console.log(`${label}: '${currentValue}' -> '${value}'`);
-}
 
-// Replace version: 'vX.Y.Z'
-replace('version',
-  /(version:\s*')([^']+)(')/,
-  version
-);
+  let html = readFileSync(sitePath, "utf8");
 
-// Replace agentproofScore: 'N/16'
-if (agentproofScore) {
-  replace('agentproofScore',
-    /(agentproofScore:\s*')([^']+)(')/,
-    agentproofScore
+  // Replace engineBase values
+  const engineLine = `this.engineBase = { lessons: ${data.learnings.length}, rules: ${data.rules || 0}, gates: ${data.gates}, queue: ${data.queue || 0}, version: '${data.version}', armed: ${data.armed} };`;
+  html = html.replace(
+    /this\.engineBase\s*=\s*\{[^}]+\};/,
+    engineLine
   );
+
+  writeFileSync(sitePath, html);
+  console.log("Updated site/index.html with live data.");
 }
 
-// Replace agentproofLevel: 'HARDENED'
-if (agentproofLevel) {
-  replace('agentproofLevel',
-    /(agentproofLevel:\s*')([^']+)(')/,
-    agentproofLevel
-  );
+// Verify site data matches evidence (used in CI gate)
+function verifySiteData(data) {
+  const sitePath = join(root, "site", "index.html");
+  if (!existsSync(sitePath)) {
+    console.error("site/index.html not found.");
+    return false;
+  }
+
+  const html = readFileSync(sitePath, "utf8");
+  const match = html.match(/this\.engineBase\s*=\s*\{\s*lessons:\s*(\d+),\s*rules:\s*(\d+),\s*gates:\s*(\d+),\s*queue:\s*(\d+)/);
+
+  if (!match) {
+    console.error("Could not parse engineBase in site/index.html.");
+    return false;
+  }
+
+  const [, lessons, rules, gates, queue] = match.map(Number);
+  const expected = {
+    lessons: data.learnings.length,
+    gates: data.gates,
+  };
+
+  if (lessons !== expected.lessons || gates !== expected.gates) {
+    console.error(
+      `Site data is stale or incorrect:\n` +
+      `  Lessons: expected ${expected.lessons}, found ${lessons}\n` +
+      `  Gates: expected ${expected.gates}, found ${gates}`
+    );
+    return false;
+  }
+
+  console.log("✓ Site data matches live evidence.");
+  return true;
 }
 
-if (updated !== repoData) {
-  writeFileSync(join(root, 'site/repo-data.js'), updated, 'utf8');
-  console.log('site/repo-data.js updated.');
-} else {
-  console.log('site/repo-data.js: nothing changed.');
+if (import.meta.url === `file://${process.argv[1]}`) {
+  try {
+    const evidence = parseEvidence();
+    const workItems = countWorkItems();
+    const version = readVersion();
+
+    const data = {
+      ...evidence,
+      rules: workItems.completed || 0,
+      queue: workItems.queued || 0,
+      version,
+    };
+
+    if (verify) {
+      const ok = verifySiteData(data);
+      process.exit(ok ? 0 : 1);
+    } else {
+      updateSite(data);
+      console.log(`Synced: ${data.learnings.length} learnings, ${data.gates} gates, ${data.queue} queued, armed=${data.armed}`);
+      process.exit(0);
+    }
+  } catch (e) {
+    console.error(`sync-site-data failed: ${e.message}`);
+    process.exit(1);
+  }
 }

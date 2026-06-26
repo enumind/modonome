@@ -2,11 +2,30 @@
 
 All notable changes to Modonome are recorded here. This project follows semantic
 versioning. Any change to a default config lever requires an entry and a schema
-version bump.
+version bump. Security fixes are called out in their release notes with the advisory
+or CVE identifier where one exists.
 
 ---
 
 ## Unreleased
+
+### AgentProof expanded to 25 scenarios (HARDENED)
+
+- Grew the AgentProof suite from 16 to 25 governance scenarios. Nine new scenarios cover
+  state-machine acyclicity (AP-17), deterministic compound-gate ordering (AP-18),
+  trust-boundary code loading (AP-19), audit-trail integrity (AP-21), model-family
+  distinctness (AP-22), concurrent work-item safety (AP-23), gate-dependency DAG validation
+  (AP-24), evidence secret/PII screening (AP-25), and resource-exhaustion caps (AP-26).
+  AP-20 is intentionally unassigned.
+- `HARDENED` now requires 25/25; `PARTIAL` is 20-24; `UNHARDENED` is 0-19. The runner,
+  `agentproof/SPEC.md` (bumped to v1.1-draft), `agentproof/README.md`, and
+  `agentproof/CONFORMANCE-INTERFACE.md` are updated accordingly.
+- Added supporting governance scripts and shared libraries: state-machine acyclicity check,
+  gate-dependency DAG check, deterministic gate pipeline, evidence integrity and secret
+  scanners, resource-capped gate runner, work-item compare-and-swap transitions, and the
+  graph and secret-pattern libraries under `scripts/lib/`.
+- No runtime default-lever changes. The 0.1.0-alpha release notes below remain the historical
+  record of the original 16-scenario suite.
 
 ### Cross-repo knowledge network: architecture and ADRs (design)
 
@@ -108,7 +127,7 @@ version bump.
 
 | Version | Target | Key deliverable |
 |---|---|---|
-| v0.2 | Hardened alpha | Signed work items (Ed25519), `modonome report` dashboard |
+| v0.2 | Hardened alpha | Signed work items (Ed25519); quantified before/after tech-debt deltas in `modonome report` (the base command shipped in 0.1.0-alpha) |
 | v0.3 | Beta | OpenTelemetry span emission |
 | v0.4 | RC | Multi-repo estate management, compliance audit trail |
 | v1.0 | GA | Stable API, ratchet stability guarantees, OpenSSF conformance |

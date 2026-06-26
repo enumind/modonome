@@ -1,0 +1,1 @@
+{"check-drift":[],"check-repo-hygiene":["check-drift"],"check-self-application":["check-repo-hygiene"],"build-release-evidence":["check-self-application"]}

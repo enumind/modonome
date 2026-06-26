@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "id": "gb-07-distinct-family-models",
+  "state": "merge_ready",
+  "maker_id": "s-c",
+  "maker_model": "claude-sonnet-4-6",
+  "checker_id": "s-d",
+  "checker_model": "claude-opus-4-8",
+  "attempts": 1,
+  "max_attempts": 3,
+  "touches_protected_path": false
+}

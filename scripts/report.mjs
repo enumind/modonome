@@ -133,7 +133,7 @@ if (gb) {
   const failed = (results || []).filter((r) => !r.passed);
   console.log(`  Score: ${score}`);
   if (failed.length === 0) {
-    console.log("  Level: HARDENED : all 16 gate-integrity scenarios pass (not full autonomy governance)");
+    console.log("  Level: HARDENED : all 25 gate-integrity scenarios pass (not full autonomy governance)");
   } else {
     console.log(`  Level: PARTIAL : ${failed.length} scenario(s) failing:`);
     for (const f of failed) console.log(`    - ${f.title}`);

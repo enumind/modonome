@@ -8,6 +8,23 @@ import { validate } from "./lib/jsonschema.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const schema = JSON.parse(readFileSync(join(here, "..", "schemas", "work-item.schema.json"), "utf8"));
+const modelFamilies = JSON.parse(readFileSync(join(here, "..", "schemas", "model-families.json"), "utf8")).families;
+
+// Resolve a model name to its family by longest-matching prefix. Returns null
+// when no prefix matches, so unrecognized models are treated as distinct
+// families (they fall through the family check and are caught only if their
+// names are exactly equal).
+function modelFamily(model) {
+  let family = null;
+  let longest = -1;
+  for (const [prefix, fam] of Object.entries(modelFamilies)) {
+    if (model.startsWith(prefix) && prefix.length > longest) {
+      family = fam;
+      longest = prefix.length;
+    }
+  }
+  return family;
+}
 
 // Governance rules that JSON Schema cannot express (cross-field invariants).
 export function governanceErrors(item, config = {}) {
@@ -36,9 +53,17 @@ export function governanceErrors(item, config = {}) {
   }
 
   // Separation of duties: maker and checker must use distinct models (default on, disabled by config).
+  // Exact-string equality is the strict subset; family distinctness is the wider rule, since two
+  // models from the same family (architecture) share failure modes and undermine independent review.
   if (config.require_distinct_maker_checker_model !== false) {
     if (item.maker_model && item.checker_model && item.maker_model === item.checker_model) {
       errs.push(`maker_model and checker_model are the same model (${item.maker_model}). Distinct models are required.`);
+    } else if (item.maker_model && item.checker_model) {
+      const makerFamily = modelFamily(item.maker_model);
+      const checkerFamily = modelFamily(item.checker_model);
+      if (makerFamily !== null && makerFamily === checkerFamily) {
+        errs.push(`maker_model (${item.maker_model}) and checker_model (${item.checker_model}) belong to the same model family/architecture (${makerFamily}). Distinct families are required so maker and checker do not share architecture-level blind spots.`);
+      }
     }
   }
 

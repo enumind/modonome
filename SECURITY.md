@@ -85,3 +85,17 @@ stripped unless an owner approves otherwise. A central catalog is out of scope f
 
 Open a [private security advisory](https://github.com/nateshpp/modonome/security/advisories/new)
 on the GitHub repository. Please keep vulnerability reports to the private advisory channel.
+
+### Response commitment
+
+We acknowledge new vulnerability reports within 7 days, and aim to provide an initial
+assessment or remediation plan within 14 days. We keep the reporter informed of progress
+until the issue is resolved, and we credit reporters in the release notes unless they ask to
+remain anonymous. A confirmed vulnerability is fixed and disclosed within 60 days of triage
+where practical; if a fix needs longer, we communicate the timeline to the reporter.
+
+### Supported versions
+
+Modonome is pre-1.0 (`0.1.0-alpha`). Security fixes target the latest released version and
+the `main` branch. Once a stable line is published, this section will name the supported
+release range.

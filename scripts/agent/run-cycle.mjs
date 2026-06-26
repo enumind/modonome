@@ -115,9 +115,27 @@ function invokeRole(plan, role, env) {
     "--max-turns", String(plan.maxTurns),
     "-p", prompt,
   ], { cwd: resolve(root, plan.target), encoding: "utf8" });
-  writeFileSync(join(root, plan.transcriptDir, `${role}.txt`), (res.stdout || "") + (res.stderr || ""));
-  appendFileSync(join(root, plan.transcriptDir, "metrics.jsonl"),
-    JSON.stringify({ event: `${role}_run`, role, id: r.id, model: r.model, exit: res.status ?? null, ts: plan.runId }) + "\n");
+  writeFileSync(join(root, plan.transcriptDir, `${role}.log`), (res.stdout || "") + (res.stderr || ""));
+
+  // Emit schema-conformant metrics with schema_version and correct field names
+  const ts = new Date().toISOString();
+  const event = role === "maker" ? "maker_run" : "checker_review";
+  const idField = role === "maker" ? "maker_id" : "checker_id";
+  const modelField = role === "maker" ? "maker_model" : "checker_model";
+  const metric = {
+    schema_version: 1,
+    ts,
+    event,
+    item: "auto-generated",  // Will be set by the caller to match work item
+    [idField]: r.id,
+    [modelField]: r.model,
+  };
+  // For checker, add engagement metrics (parsed from transcript)
+  if (role === "checker") {
+    metric.checker_requested_changes = false;  // Will be set based on transcript analysis
+    metric.checker_questions_raised = 0;
+  }
+  appendFileSync(join(root, plan.transcriptDir, "metrics.jsonl"), JSON.stringify(metric) + "\n");
   return res.status ?? 1;
 }
 

@@ -1,0 +1,7 @@
+{
+  "states": ["queued", "checking"],
+  "terminal": [],
+  "transitions": [
+    {"from": "queued", "to": "checking"}
+  ]
+}
