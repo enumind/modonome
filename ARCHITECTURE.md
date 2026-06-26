@@ -318,11 +318,15 @@ in `.github/workflows/ci.yml`. A pull request can edit those files, yet CI runs 
 base-branch version, so the gate that judges a change stays beyond the reach of that change.
 The drift guard (`check-drift.mjs`) runs the pull request's own scripts, because config
 levers are defined partly in script defaults; CODEOWNERS review protects it from a weakening
-edit. Regressions block merge automatically. The cross-repo network's import path joins this
-same base-branch trust class: the scheduled job in `.github/workflows/modonome-network.yml`
-runs `poll-network.mjs`, `verify-packet.mjs`, `validate-knowledge-packet.mjs`, and their
-`scripts/lib/*` dependencies from the base branch only, never from a PR head (see
-`docs/adr/ADR-019-knowledge-network-execution-scope.md`).
+edit. Regressions block merge automatically.
+
+The cross-repo knowledge network is roadmap, not shipped (see ADRs 014 through 019). Only the
+packet format and its validator (`validate-knowledge-packet.mjs`) exist today. When the
+network's import path lands, it is designed to join this same base-branch trust class: a
+scheduled job in `.github/workflows/modonome-network.yml` would run `poll-network.mjs`,
+`verify-packet.mjs`, and `validate-knowledge-packet.mjs` from the base branch only, never from
+a PR head (see `docs/adr/ADR-019-knowledge-network-execution-scope.md`). Those scripts and that
+workflow are not present in this repository yet.
 
 **CODEOWNERS boundary.** Any file in `bin/`, `scripts/`, `schemas/`, `templates/`,
 `prompts/`, or `.github/` requires a human CODEOWNER approval before merge. The

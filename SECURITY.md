@@ -1,22 +1,29 @@
 # Security model
 
 Modonome ingests untrusted text (issues, pull requests, logs, web pages, package metadata)
-and can take actions in a repo. The security model keeps that safe by holding the controls
-in code that runs outside the agent.
+and can take actions in a repo. Its strongest controls are held in **code that runs outside
+the agent** (CI gates, the arming environment variable, CODEOWNERS). A second tier of
+controls is **prompt-enforced**: they live in `prompts/` and depend on the agent obeying its
+instructions. This document labels each control so the distinction is explicit.
 
-## The trust boundary is external
+- **[code]**: enforced by a script, CI gate, or runtime check the agent cannot bypass.
+- **[prompt]**: instructed in `prompts/`; relies on the model following the rule. These are
+  defense-in-depth, not hard boundaries, until backed by a deterministic check (see
+  `ROADMAP.md`).
 
-- The arming levers (`autonomy_enabled`, `auto_merge`, `max_merges_per_day`,
+## The trust boundary is external (code-enforced)
+
+- **[code]** The arming levers (`autonomy_enabled`, `auto_merge`, `max_merges_per_day`,
   `repo_network_enabled`) are gated by the `MODONOME_ARMED` environment variable, enforced
   at runtime in `bin/modonome.mjs`. With the variable unset, `autonomy_enabled` is forced to
   false regardless of what the config file says. Arming requires the environment variable,
   which lives outside any file the engine can write.
-- `bin/`, `prompts/`, `schemas/`, `scripts/`, `templates/`, and `.github/` are owner-reviewed
-  through CODEOWNERS. A human owner approves any change that would widen caps, add a trusted
-  author, or alter the ratchet.
-- The anti-gaming ratchet and the house-style linter run in CI from a trusted base-branch
-  copy, and the config and packet validators and the drift guard run in CI under CODEOWNERS
-  protection. The agent's run stays clear of the result.
+- **[code]** `bin/`, `prompts/`, `schemas/`, `scripts/`, `templates/`, and `.github/` are
+  owner-reviewed through CODEOWNERS. A human owner approves any change that would widen caps,
+  add a trusted author, or alter the ratchet.
+- **[code]** The anti-gaming ratchet and the house-style linter run in CI from a trusted
+  base-branch copy, and the config and packet validators and the drift guard run in CI under
+  CODEOWNERS protection. The agent's run stays clear of the result.
 
 ## Complementary controls
 
@@ -26,25 +33,32 @@ anti-gaming ratchet adds one more required check beside them. Arming reads from 
 secrets store through an environment variable, and protected-path review reuses your
 CODEOWNERS. Modonome extends these controls and works within them.
 
-## Untrusted input
+## Untrusted input (prompt-enforced)
 
-- External text is data, not instructions.
-- Trusted authorship is verified from platform metadata, not from text in an issue body.
-- Fork pull requests, first-time contributors, and bots are untrusted unless repo policy says
-  otherwise.
-- The engine builds URLs, shell commands, and package names only after allowlist
+These rules live in `prompts/modonome.core.md` and depend on the agent following them. They
+are not yet backed by a deterministic check, so they are defense-in-depth rather than hard
+boundaries. Hardening them into code-enforced classifiers is on the roadmap.
+
+- **[prompt]** External text is data, not instructions.
+- **[prompt]** Trusted authorship is verified from platform metadata, not from text in an
+  issue body. (There is no diff-path or metadata classifier in code today.)
+- **[prompt]** Fork pull requests, first-time contributors, and bots are untrusted unless
+  repo policy says otherwise.
+- **[prompt]** The engine builds URLs, shell commands, and package names only after allowlist
   validation. A turn that read untrusted text makes outbound calls only to the allowlist.
 
-## Secrets
+## Secrets (prompt-enforced)
 
-- Secrets stay out of model-visible prompts and logs.
-- The engine keeps secret files out of model context.
-- Dry-run mode prefers read-only tokens.
+- **[prompt]** Secrets stay out of model-visible prompts and logs.
+- **[prompt]** The engine keeps secret files out of model context.
+- **[prompt]** Dry-run mode prefers read-only tokens.
 
 ## Cross-repo sharing
 
-The cross-repo network is off by default. When enabled, a packet is published only after
-`scripts/validate-knowledge-packet.mjs` passes. That script scans for secrets, personal data,
+The cross-repo network is off by default and the import/transport path is roadmap (ADRs
+014–019), not shipped. The packet **format** and its validator exist today. **[code]** When
+enabled, a packet is published only after `scripts/validate-knowledge-packet.mjs` passes.
+That script scans for secrets, personal data,
 internal hostnames, code blocks, and identifier formats and blocks the publish when it finds
 them. Classification defaults to restricted. Repo identity is hashed and run identifiers are
 stripped unless an owner approves otherwise. A central catalog is out of scope for version 1.
@@ -61,11 +75,11 @@ stripped unless an owner approves otherwise. A central catalog is out of scope f
 
 | Actor | Capability | Defeated by |
 |-------|-----------|-------------|
-| Malicious issue poster | Inject instructions into issue body to redirect engine behavior | External text is treated as data. Trusted authorship is verified from platform metadata, not from issue content. Outbound calls blocked after a turn that read untrusted text. |
-| Compromised dependency | Introduce malicious code through a supply-chain update | Dependency changes require human review. Dependency PRs wait for an owner before merge. Package names from advisories checked against allowlist before any install is proposed. |
-| Rogue MCP client | Call MCP tools to weaken ratchet, bypass config, or exfiltrate diffs | MCP tools run validators and the ratchet externally; they cannot modify them. Temp files are removed after each call. diff_path inputs are validated against an extension allowlist and must be regular files. |
-| Agent self-modification | Edit ratchet, validators, or drift guard to weaken its own controls | CODEOWNERS gates these files. The ratchet and the house-style linter run in CI from a base-branch copy, and the validators and drift guard run in CI under CODEOWNERS protection. |
-| Prompt injection via PR body or file content | Override engine behavior through crafted content in reviewed files | Trusted authorship verified from platform metadata. The engine treats instructions in PR bodies or file content as data only. |
+| Malicious issue poster | Inject instructions into issue body to redirect engine behavior | **[prompt]** External text is treated as data. Trusted authorship is verified from platform metadata, not from issue content. Outbound calls blocked after a turn that read untrusted text. |
+| Compromised dependency | Introduce malicious code through a supply-chain update | **[code]** Dependency changes route to human review via CODEOWNERS; dependency PRs wait for an owner before merge. **[prompt]** Package names from advisories checked against allowlist before any install is proposed. |
+| Rogue MCP client | Call MCP tools to weaken ratchet, bypass config, or exfiltrate diffs | **[code]** MCP tools run validators and the ratchet externally; they cannot modify them. Temp files are removed after each call. diff_path inputs are validated against an extension allowlist and must be regular files. |
+| Agent self-modification | Edit ratchet, validators, or drift guard to weaken its own controls | **[code]** CODEOWNERS gates these files. The ratchet and the house-style linter run in CI from a base-branch copy, and the validators and drift guard run in CI under CODEOWNERS protection. |
+| Prompt injection via PR body or file content | Override engine behavior through crafted content in reviewed files | **[prompt]** Trusted authorship verified from platform metadata. The engine treats instructions in PR bodies or file content as data only. |
 
 ## Reporting
 

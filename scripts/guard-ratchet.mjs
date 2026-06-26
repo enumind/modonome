@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 // Anti-gaming ratchet. Rejects diffs that make gates pass by weakening the gates.
-// Runs in CI, outside the agent loop. Zero-false-positive checks only.
+// Runs in CI, outside the agent loop. High-signal checks only: inline // and #
+// comments are stripped before pattern matching, but block comments and string
+// literals are NOT excluded (stripping them would be brittle).
 // Supports: JavaScript/TypeScript, Python, Java (JUnit/Mockito/JaCoCo),
 //           C# .NET (MSTest/NUnit/xUnit/FluentAssertions/Coverlet).
 //
@@ -15,10 +17,14 @@ import { readFileSync } from "node:fs";
 // `..`/`...` range syntax the ratchet uses.
 const SAFE_REF = /^[A-Za-z0-9._/-]+$/;
 
+function normalizeLF(s) {
+  return s.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+}
+
 function getDiff() {
   const arg = process.argv[2];
   if (arg === "--diff") {
-    return readFileSync(process.argv[3], "utf8");
+    return normalizeLF(readFileSync(process.argv[3], "utf8"));
   }
   const base = arg || "origin/main";
   if (!SAFE_REF.test(base)) {
@@ -34,7 +40,7 @@ function getDiff() {
   if (result.status !== 0) {
     throw new Error(result.stderr || `git diff ${base}...HEAD failed`);
   }
-  return result.stdout;
+  return normalizeLF(result.stdout);
 }
 
 // ---------------------------------------------------------------------------
@@ -49,6 +55,8 @@ const TEST_FILE = new RegExp([
   String.raw`_test\.py$`, String.raw`test_.*\.py$`,
   // Java (JUnit 4, JUnit 5, integration tests, Spock)
   String.raw`Test\.java$`, String.raw`Tests\.java$`, String.raw`IT\.java$`, String.raw`Spec\.java$`,
+  // Java prefix-style test classes (TestFoo.java). [A-Z] guard excludes Testable.java; [^/]* prevents path leakage.
+  String.raw`Test[A-Z][^/]*\.java$`,
   // C# (MSTest, NUnit, xUnit, SpecFlow)
   String.raw`Tests?\.cs$`, String.raw`Spec\.cs$`, String.raw`Should\.cs$`, String.raw`Fixture\.cs$`,
 ].join("|"));
@@ -67,7 +75,7 @@ const TS_SRC    = /\.(c|m)?[jt]sx?$/;
 const JAVA_BUILD   = /^(pom\.xml|build\.gradle(\.kts)?)$/;
 const DOTNET_BUILD = /\.(runsettings|csproj|props)$/;
 const TS_CONFIG    = /tsconfig.*\.json$/;
-const COVERAGE_CONFIG = /jest\.config\.(js|ts|mjs|cjs)$|pyproject\.toml$/;
+const COVERAGE_CONFIG = /(?:jest|vitest)\.config\.(js|ts|mjs|cjs)$|pyproject\.toml$/;
 
 // ---------------------------------------------------------------------------
 // Pattern definitions
@@ -146,7 +154,9 @@ const PY_VACUOUS_ASSERT = [
 ];
 
 // Type escape injection: language-specific, non-test files only.
-// TS / JS: broad any
+// TS / JS: broad any.
+// NOTE: inline // and # comments are stripped before matching, but block comments
+// and string literals are NOT stripped, so matches inside them are possible.
 const TS_ANY_ESCAPE   = /(:\s*any\b|\bas\s+any\b)/;
 // Java: suppress unchecked cast warnings (equivalent of `as any`)
 const JAVA_UNCHECKED  = /@SuppressWarnings\s*\(\s*"unchecked"/;
@@ -155,6 +165,12 @@ const DOTNET_PRAGMA   = /#pragma\s+warning\s+disable\b/;
 
 // TypeScript strictness flags disabled.
 const TS_STRICT_OFF = /"(strict|noImplicitAny|strictNullChecks|noUnusedLocals)"\s*:\s*false/;
+
+// Regex to extract a numeric coverage value from a threshold line, anchored to
+// known coverage keywords to avoid false positives on arbitrary numbers.
+// NOTE: multi-line config blocks (value on a different line) remain a known limitation.
+const COVERAGE_VALUE_RE =
+  /(?:lines|branches|functions|statements|fail_under|minimum|Threshold)[^\d]*(\d+(?:\.\d+)?)/i;
 
 // Coverage threshold removal: all supported tools.
 const COVERAGE_THRESHOLD = new RegExp([
@@ -180,11 +196,24 @@ const problems = [];
 
 const files = {};
 let current = null;
+let preimage = null;
 for (const line of diff.split("\n")) {
-  const m = line.match(/^\+\+\+ b\/(.+)$/);
-  if (m) {
-    current = m[1];
-    files[current] = files[current] || { added: [], removed: [] };
+  // Track the pre-image path so deletions ("+++ /dev/null") can be attributed.
+  const mPre = line.match(/^--- a\/(.+)$/);
+  if (mPre) {
+    preimage = mPre[1];
+    continue;
+  }
+  const mPost = line.match(/^\+\+\+ (.+)$/);
+  if (mPost) {
+    const rhs = mPost[1];
+    // Deleted files emit "+++ /dev/null": attribute removed lines to the pre-image.
+    if (rhs === "/dev/null") {
+      current = preimage;
+    } else {
+      current = rhs.replace(/^b\//, "");
+    }
+    if (current) files[current] = files[current] || { added: [], removed: [] };
     continue;
   }
   if (!current) continue;
@@ -328,12 +357,27 @@ for (const [file, { added, removed }] of Object.entries(files)) {
     }
   }
 
-  // 5. Coverage threshold removal (all tools: Jest, pytest-cov, JaCoCo, Coverlet).
+  // 5. Coverage threshold removal or lowering (all tools: Jest, pytest-cov, JaCoCo, Coverlet).
   const isCoverageSurface = isTsConfig || isCoverageConfig || isJavaBuild || isDotnetBuild || fname === "pom.xml";
   if (isCoverageSurface) {
     for (const l of removed) {
-      if (COVERAGE_THRESHOLD.test(l) && !added.some((a) => COVERAGE_THRESHOLD.test(a))) {
+      if (!COVERAGE_THRESHOLD.test(l)) continue;
+      const matchingAdded = added.filter((a) => COVERAGE_THRESHOLD.test(a));
+      if (matchingAdded.length === 0) {
         problems.push(`${file}: removes a coverage threshold: ${l.trim()}`);
+      } else {
+        // Check whether a matching added line lowers the numeric value.
+        const oldM = l.match(COVERAGE_VALUE_RE);
+        if (oldM) {
+          const oldVal = parseFloat(oldM[1]);
+          for (const a of matchingAdded) {
+            const newM = a.match(COVERAGE_VALUE_RE);
+            if (newM && parseFloat(newM[1]) < oldVal) {
+              problems.push(`${file}: lowers a coverage threshold (${oldVal} -> ${parseFloat(newM[1])}): ${l.trim()}`);
+              break;
+            }
+          }
+        }
       }
     }
   }

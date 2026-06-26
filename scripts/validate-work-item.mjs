@@ -10,17 +10,30 @@ const here = dirname(fileURLToPath(import.meta.url));
 const schema = JSON.parse(readFileSync(join(here, "..", "schemas", "work-item.schema.json"), "utf8"));
 
 // Governance rules that JSON Schema cannot express (cross-field invariants).
-export function governanceErrors(item) {
+export function governanceErrors(item, config = {}) {
   const errs = [];
+
+  // Presence guards: identity fields are required once work is in flight.
+  // Scoped to active states only so legacy "done" items (no identity fields) stay valid.
+  const makerRequiredStates = ["making", "checking", "rework", "merge_ready"];
+  const checkerRequiredStates = ["checking", "merge_ready"];
+  if (makerRequiredStates.includes(item.state) && !item.maker_id) {
+    errs.push(`maker_id is required when state is ${item.state}. Set maker_id before advancing the item.`);
+  }
+  if (checkerRequiredStates.includes(item.state) && !item.checker_id) {
+    errs.push(`checker_id is required when state is ${item.state}. Set checker_id before advancing the item.`);
+  }
 
   // Separation of duties: maker and checker must be distinct identities.
   if (item.maker_id && item.checker_id && item.maker_id === item.checker_id) {
     errs.push(`maker_id and checker_id are the same identity (${item.maker_id}). Maker cannot review their own work.`);
   }
 
-  // Separation of duties: maker and checker must use distinct models.
-  if (item.maker_model && item.checker_model && item.maker_model === item.checker_model) {
-    errs.push(`maker_model and checker_model are the same model (${item.maker_model}). Distinct models are required when require_distinct_maker_checker_model is true.`);
+  // Separation of duties: maker and checker must use distinct models (default on, disabled by config).
+  if (config.require_distinct_maker_checker_model !== false) {
+    if (item.maker_model && item.checker_model && item.maker_model === item.checker_model) {
+      errs.push(`maker_model and checker_model are the same model (${item.maker_model}). Distinct models are required.`);
+    }
   }
 
   // Protected path items must be escalated before reaching merge_ready.
@@ -41,8 +54,8 @@ export function governanceErrors(item) {
   return errs;
 }
 
-export function validateWorkItem(item) {
-  return [...validate(schema, item), ...governanceErrors(item)];
+export function validateWorkItem(item, config = {}) {
+  return [...validate(schema, item), ...governanceErrors(item, config)];
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

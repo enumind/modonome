@@ -495,7 +495,12 @@ The table below maps every normative requirement to the specific artifact that i
 | Cross-repo off by default | `repo_network_enabled: false`; `repo_network_dry_run: true` in config defaults |
 | AGENTS.md adoption | `prompts/modules/adoption.md` adoption pass reads harness instruction files first |
 
-**Conformance level:** Modonome v0.1-alpha satisfies Level 3.
+**Conformance level:** Modonome v0.1-alpha satisfies Level 2. Level 3 additionally requires an
+owner-gated learning pipeline operating end to end and the full activation ladder in code. The
+learning-traceability and promotion gates now exist (`scripts/check-learning-traceability.mjs`,
+`scripts/check-promotion-readiness.mjs`), but the pipeline has not yet run end to end on a live
+armed loop, and the Shadow ladder rung is not implemented. Level 2 is the honest ceiling until
+those land. See [docs/CLAIMS-AUDIT-2026-06-25.md](docs/CLAIMS-AUDIT-2026-06-25.md).
 
 ### Honest Alpha Limitations
 

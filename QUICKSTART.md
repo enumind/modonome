@@ -85,34 +85,30 @@ Run the report command to see governance activity and your AgentProof score:
 npx modonome report .
 ```
 
-On a repo with one week of dry-run activity, you will see something like this:
+Until you arm the engine, the report shows no activity, because dry-run mode proposes work
+but writes and merges nothing:
 
 ```
 Modonome Governance Report
 ==========================
 Target:     .
-Period:     2026-06-16 to 2026-06-23
-Generated:  2026-06-23
+Period:     no activity recorded yet
+Generated:  2026-06-26
 
-Activity
---------
-  Items attempted:                    9
-  Gates passed:                      26
-  Gates failed:                       1
-  Ratchet rejections:                 1
-  Merges landed:                      9
-  Lines changed:                    683
-  Est. hours saved:                17.0
+No metrics recorded yet. Run a dry-run sweep to generate activity:
+  npx modonome dry-run .
 
 AgentProof Score
 ----------------
   Score: 16/16
-  Level: GOVERNED : all governance controls present and enforced
+  Level: HARDENED : all 16 gate-integrity scenarios pass (not full autonomy governance)
 ```
 
-The ratchet rejection on day 2 (item-003) is the system working correctly: the agent
-tried to fix a test by weakening it, the ratchet caught it, and the agent revised the
-fix. The merge that landed was a real fix.
+Once you arm the engine, the metrics file the engine writes at runtime begins to populate, and
+the same command summarizes real activity (items attempted, gates passed and failed, ratchet
+rejections, and merges landed). The numbers are read from `.modonome/metrics.jsonl`, which the
+engine writes; the report never invents them. A ratchet rejection in that summary is the system
+working correctly: an attempt to weaken a test was caught and revised before it could merge.
 
 A full dry-run output example is at [examples/dry-run-transcript.txt](examples/dry-run-transcript.txt).
 

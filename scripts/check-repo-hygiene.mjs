@@ -61,16 +61,24 @@ const workItems = fs.readdirSync(path.join(repoRoot, '.modonome', 'work-items'))
 const ninetyDaysAgo = Date.now() - (90 * 24 * 60 * 60 * 1000);
 
 workItems.forEach(file => {
-  const stats = fs.statSync(path.join(repoRoot, '.modonome', 'work-items', file));
-  if (stats.mtime < ninetyDaysAgo) {
-    const item = JSON.parse(fs.readFileSync(path.join(repoRoot, '.modonome', 'work-items', file), 'utf8'));
-    if (item.state === 'queued') {
+  const filePath = path.join(repoRoot, '.modonome', 'work-items', file);
+  const item = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  if (item.state === 'queued') {
+    let queuedTime;
+    if (item.queued_at) {
+      queuedTime = new Date(item.queued_at).getTime();
+    } else {
+      const stats = fs.statSync(filePath);
+      queuedTime = stats.mtime.getTime();
+      console.warn(`  warn: ${file} has no queued_at field; using mtime (unreliable in CI).`);
+    }
+    if (queuedTime < ninetyDaysAgo) {
       issues.push({
         type: 'STALE_WORK_ITEM',
         file,
         message: `Work item ${item.id} has been queued for >90 days. Archive it or move to active work.`
       });
-      console.log(`  ✗ ${item.id} (queued since ${new Date(stats.mtime).toISOString()})`);
+      console.log(`  ✗ ${item.id} (queued since ${new Date(queuedTime).toISOString()})`);
     }
   }
 });

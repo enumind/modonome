@@ -57,10 +57,14 @@ there, not because anyone remembers why).
 
 4. **Learning hygiene CI gate:**
    - On every `LEARNINGS.md` promotion, `check-learning-traceability.mjs` verifies:
-     - All required fields are present and non-empty
-     - The correction signal ID is a valid PR/issue in the repo
-     - The gate added exists and matches the learning's intent
+     - All required fields are present and non-empty.
+     - `correction_signal_id` resolves as a repo-relative path when it contains "/".
+       Non-path identifiers are rejected; no external network resolution is performed.
+     - `gate_location` (the path component before any ":") exists on disk and lives
+       under a recognized gate directory (scripts/, tests/, or .github/).
+       Intent-matching between the gate and the learning is human review, not automated.
      - The learning was staged for at least N days before promotion
+       (N set by MODONOME_MIN_STAGE_DAYS, default 0).
    - Fail if any check fails.
 
 ## Consequences

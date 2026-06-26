@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "id": "WI-005-enforce-arming-isolation-at-runtime",
-  "state": "completed",
+  "state": "done",
   "attempts": 0,
   "max_attempts": 2,
   "touches_protected_path": true,

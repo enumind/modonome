@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "id": "WI-010-add-python-bare-assert-detection",
-  "state": "completed",
+  "state": "done",
   "attempts": 0,
   "max_attempts": 2,
   "touches_protected_path": true,

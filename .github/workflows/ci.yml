@@ -18,6 +18,18 @@ jobs:
         run: node scripts/check-drift.mjs
       - name: Repo hygiene check
         run: node scripts/check-repo-hygiene.mjs
+      - name: Self-application conformance
+        run: node scripts/check-self-application.mjs
+      - name: Learning traceability
+        run: node scripts/check-learning-traceability.mjs
+      - name: Capability promotion readiness
+        run: node scripts/check-promotion-readiness.mjs
+      - name: Work item validation
+        run: node scripts/check-work-items.mjs
+      - name: Checker engagement
+        run: node scripts/check-checker-engagement.mjs
+      - name: Release evidence is current
+        run: node scripts/build-release-evidence.mjs --check
       # On a pull request, run the house-style linter from the trusted base-branch
       # copy so a pull request cannot weaken the gate that judges it. The working
       # tree stays the pull request version, so the linter still inspects the change.

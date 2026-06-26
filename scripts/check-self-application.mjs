@@ -1,0 +1,130 @@
+#!/usr/bin/env node
+// Self-application conformance (ADR-025). Proves that Modonome holds itself to the
+// governance it sells. Every check is repo-local and makes no external call, so it
+// runs in CI with no token and no network. The one invariant it cannot verify on
+// its own (branch protection requires repo-admin API access) is reported as an
+// explicit action item, not a silent pass.
+//
+// Usage: node scripts/check-self-application.mjs
+import { readFileSync, existsSync, readdirSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+import { validate } from "./lib/jsonschema.mjs";
+import { parseFlatYaml } from "./lib/yaml-lite.mjs";
+
+const here = dirname(fileURLToPath(import.meta.url));
+const root = process.env.MODONOME_ROOT ? process.env.MODONOME_ROOT : join(here, "..");
+const problems = [];
+const notes = [];
+
+function read(rel) {
+  return readFileSync(join(root, rel), "utf8");
+}
+
+// 1. The CI workflow must actually run the gates the project sells. A gate the
+//    project advertises but does not run in its own CI is the core self-application
+//    failure this script exists to prevent.
+const ci = existsSync(join(root, ".github/workflows/ci.yml")) ? read(".github/workflows/ci.yml") : "";
+// Strip YAML comment lines (including indented ones) so a commented-out step cannot
+// satisfy a needle check. This covers both "# node --test" and "  # node --test".
+const activeCI = ci.split("\n").filter((l) => !l.trimStart().startsWith("#")).join("\n");
+const REQUIRED_GATES = [
+  { name: "drift guard", needle: "check-drift.mjs" },
+  { name: "style check", needle: "check-style.mjs" },
+  { name: "tests", needle: "node --test" },
+  { name: "repo hygiene", needle: "check-repo-hygiene.mjs" },
+  { name: "anti-gaming ratchet", needle: "guard-ratchet.mjs" },
+  { name: "AgentProof", needle: "agentproof/runner.mjs" },
+  { name: "learning traceability", needle: "check-learning-traceability.mjs" },
+  { name: "capability promotion readiness", needle: "check-promotion-readiness.mjs" },
+  { name: "work item validation", needle: "check-work-items.mjs" },
+  { name: "checker engagement", needle: "check-checker-engagement.mjs" },
+];
+for (const g of REQUIRED_GATES) {
+  if (!activeCI.includes(g.needle)) problems.push(`ci.yml does not run the ${g.name} gate (${g.needle}).`);
+}
+
+// 2. The ratchet and style linter must be loaded from the base branch on a PR, so
+//    a PR cannot weaken the gate that judges it. This is the trust-isolation claim.
+if (!/git checkout "origin\/\$\{\{ github\.base_ref \}\}" -- scripts\/guard-ratchet\.mjs/.test(activeCI)) {
+  problems.push("ci.yml does not load guard-ratchet.mjs from the base branch before running it.");
+}
+if (!/git checkout "origin\/\$\{\{ github\.base_ref \}\}" -- scripts\/check-style\.mjs/.test(activeCI)) {
+  problems.push("ci.yml does not load check-style.mjs from the base branch before running it.");
+}
+
+// 3. Shipped defaults must be safe (off by default). The template is what new
+//    adopters get; it must never ship armed.
+const tmpl = parseFlatYaml(read("templates/.modonome/config.yaml"));
+const SAFE = {
+  autonomy_enabled: false, dry_run: true, auto_merge: false, max_merges_per_day: 0,
+  repo_network_enabled: false, share_raw_code_across_repos: false,
+};
+for (const [lever, want] of Object.entries(SAFE)) {
+  if (tmpl[lever] !== want) problems.push(`templates/.modonome/config.yaml: ${lever} should default to ${want}, got ${JSON.stringify(tmpl[lever])}.`);
+}
+
+// 4. The two protected-path surfaces must agree. CODEOWNERS is what GitHub
+//    enforces; protected_paths_extra is what the engine reads. If they disagree, a
+//    path is protected in name only (the bin/ gap that prompted this check).
+function dirsFromCodeowners() {
+  const set = new Set();
+  for (const line of read("CODEOWNERS").split("\n")) {
+    const t = line.trim();
+    if (!t || t.startsWith("#")) continue;
+    const path = t.split(/\s+/)[0];
+    if (path === "*") continue;
+    set.add(path.replace(/^\//, "").replace(/\/$/, ""));
+  }
+  return set;
+}
+const cfg = parseFlatYaml(read(".modonome/config.yaml"));
+const ppx = (cfg.protected_paths_extra || []).map((p) => String(p).replace(/^\//, "").replace(/\/$/, ""));
+const owners = dirsFromCodeowners();
+const ppxSet = new Set(ppx);
+for (const d of owners) {
+  if (!ppxSet.has(d)) problems.push(`CODEOWNERS protects "${d}/" but protected_paths_extra does not list it.`);
+}
+for (const d of ppx) {
+  if (!owners.has(d)) problems.push(`protected_paths_extra lists "${d}/" but CODEOWNERS does not protect it.`);
+}
+
+// 5. No shipped telemetry may violate its own schema, and the live readout path
+//    (.modonome/metrics.jsonl) must not ship as committed demo data. Synthetic
+//    numbers presented as real telemetry are the credibility failure this guards.
+const metricsSchema = JSON.parse(read("schemas/metrics.schema.json"));
+const stateDir = join(root, ".modonome");
+if (existsSync(stateDir)) {
+  for (const f of readdirSync(stateDir).filter((f) => f.endsWith(".jsonl"))) {
+    if (f === "metrics.jsonl") {
+      problems.push("A committed .modonome/metrics.jsonl ships activity as if it were real. Use metrics.example.jsonl for samples; let the engine write the live file at runtime.");
+    }
+    const text = readFileSync(join(stateDir, f), "utf8");
+    text.split("\n").filter((l) => l.trim()).forEach((line, i) => {
+      let obj;
+      try { obj = JSON.parse(line); } catch { problems.push(`.modonome/${f}:${i + 1}: not valid JSON.`); return; }
+      const errs = validate(metricsSchema, obj);
+      if (errs.length) problems.push(`.modonome/${f}:${i + 1}: ${errs[0]}`);
+    });
+  }
+}
+
+// Branch protection cannot be verified without repo-admin API access, so it is an
+// explicit action item rather than a silent pass. These are the contexts that must
+// be required on the default branch for this repo to live its own README.
+notes.push("Branch protection on the default branch is NOT verifiable from here (needs repo-admin API).");
+notes.push("Required status checks to enable on the default branch: \"verify\" and \"ratchet\" (from ci.yml).");
+
+// Report
+console.log("Self-application conformance (ADR-025)");
+console.log("=====================================");
+if (problems.length === 0) {
+  console.log("PASS: every repo-local self-governance invariant holds.");
+} else {
+  console.error(`FAIL: ${problems.length} self-application problem(s):\n`);
+  for (const p of problems) console.error("  - " + p);
+}
+console.log("\nManual action items (not machine-verifiable here):");
+for (const n of notes) console.log("  * " + n);
+
+process.exit(problems.length > 0 ? 1 : 0);

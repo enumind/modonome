@@ -23,7 +23,7 @@ require_distinct_maker_checker: true
 require_distinct_maker_checker_model: true
 
 trusted_author_allowlist: []
-protected_paths_extra: [prompts/, schemas/, scripts/, templates/, .github/, site/]
+protected_paths_extra: [bin/, prompts/, schemas/, scripts/, templates/, .github/, site/]
 state_dir: .modonome
 
 market_scan_enabled: false
