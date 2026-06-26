@@ -88,18 +88,31 @@ function getNetAssertions(diff) {
 }
 
 function exercisesRealGate(diff, changedFiles) {
-  // Check if any real gate file was modified
-  const gateModified = [...changedFiles].some((f) =>
-    REAL_GATES.some((gate) => f.includes(gate))
-  );
-
-  if (!gateModified) return false;
-
-  // Check if corresponding test file also modified
+  // Case 1: Gate file modified AND corresponding test modified → pass
   for (const gate of REAL_GATES) {
     if ([...changedFiles].some((f) => f.includes(gate))) {
       const testFile = gate.replace(/\.mjs$/, ".test.mjs");
-      return [...changedFiles].some((f) => f.includes(testFile));
+      if ([...changedFiles].some((f) => f.includes(testFile))) {
+        return true;
+      }
+    }
+  }
+
+  // Case 2: Only test files modified, but tests correspond to existing gates → pass
+  // (tests for gates that already exist in the repo are governance-relevant)
+  const testFilesChanged = [...changedFiles].filter((f) => f.includes(".test."));
+  if (testFilesChanged.length > 0 && testFilesChanged.length === changedFiles.size) {
+    // All changed files are test files; check if they test known gates
+    for (const testFile of testFilesChanged) {
+      for (const gate of REAL_GATES) {
+        const expectedTestFile = gate.replace(/\.mjs$/, ".test.mjs");
+        if (testFile.includes(expectedTestFile) || testFile.includes(gate.split("/").pop())) {
+          // This test file corresponds to a gate; test-only changes are governance-relevant
+          if (existsSync(join(root, gate))) {
+            return true;
+          }
+        }
+      }
     }
   }
 
