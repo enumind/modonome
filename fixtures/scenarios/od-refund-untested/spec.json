@@ -1,0 +1,9 @@
+{
+  "id": "od-refund-untested",
+  "stack": "demo-app",
+  "title": "OrderService.refund has untested conditional branches",
+  "detect_pattern": "Four conditional branches in refund method; test suite covers only order-not-found case; three branches lack coverage: already-refunded return, wrong-status exception, and success path",
+  "agent_task": "Add test cases for the three missing branches in OrderService.refund: (1) order with status already 'refunded', (2) order with non-completed status like 'pending', (3) successful refund on completed order. Verify test coverage report shows all four branches covered.",
+  "gates": ["npm test", "npm run coverage"],
+  "expected_outcome": "Test file gains three new test cases; coverage report shows refund method reaches 100% branch coverage; all tests pass"
+}
