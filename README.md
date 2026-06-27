@@ -35,7 +35,7 @@ structurally separate, enforced in CI. Off by default, and it runs without a cen
 
 Autonomous coding agents have a predictable failure mode: they weaken gates to go green (removing test assertions, adding skips, loosening type checks). Modonome blocks that in CI: the anti-gaming ratchet runs from a base-branch copy the agent's run does not control, and it rejects diffs that weaken a gate. We published the [governed-autonomy spec](GOVERNED-AUTONOMY-SPEC.md), and Modonome is the reference implementation for agent gate integrity, scoring **[25/25 on AgentProof](agentproof/README.md)** (hardening against known gaming patterns, not a certificate of full autonomy governance).
 
-## Why businesses adopt Modonome
+## Why Modonome
 
 Engineering teams commonly report a large share of capacity going to tech debt work: test
 gaps, stale dependencies, dead branches, type safety holes, observability gaps. Modonome
@@ -44,9 +44,7 @@ default and dry-run first. Once an owner arms it, every change is small, test-fe
 independently checked by a separate role, and gated before it can merge. It adopts your
 existing CI, code owners, and branch rules on day one, and adds no new platform or service.
 
-Support for mainframe, SAP, Oracle, Salesforce, ServiceNow, low-code, and data estates is on
-the roadmap, not shipped today. See [ENTERPRISE.md](ENTERPRISE.md) for the design and
-[docs/CLAIMS-AUDIT-2026-06-25.md](docs/CLAIMS-AUDIT-2026-06-25.md) for what is enforced now.
+Support for mainframe and other estates are future considerations. See [ENTERPRISE.md](ENTERPRISE.md) for the design and [docs/CLAIMS-AUDIT-2026-06-25.md](docs/CLAIMS-AUDIT-2026-06-25.md) for what is enforced now.
 
 ## Try it in 60 seconds (read-only)
 
