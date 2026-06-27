@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Generate RELEASE-EVIDENCE.md (ADR-025) from live repo state, so the dogfooding
+// Generate RELEASE-EVIDENCE.md (ADR-025) from live repo state, so the self-governing
 // evidence cannot drift into fiction. It reports the real autonomy posture, which
 // gates pass, the AgentProof score, promoted learnings, and the work queue. Run with
 // --check to fail if the committed file is stale.

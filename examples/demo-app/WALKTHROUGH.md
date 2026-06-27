@@ -30,6 +30,6 @@ runs/2026-06-26T11-46-00Z/metrics.jsonl.
 
 ## Step 4: the change is recorded, not force-applied
 
-The committed sample keeps its planted debt so the corpus and the CI dogfood control still
+The committed sample keeps its planted debt so the corpus and the CI negative control still
 have something to detect. The cycle is recorded as evidence in runs/2026-06-26T11-46-00Z/.
 The maker and checker identities and models differ, as the separation-of-duties rule requires.

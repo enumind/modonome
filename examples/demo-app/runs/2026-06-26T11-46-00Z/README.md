@@ -21,7 +21,7 @@ reproducible on demand (see the Reproduce section below).
 ## Why the change is not applied here
 
 The committed sample keeps its planted debt on purpose, so the corpus scenarios and the
-CI dogfood negative control still have something to detect. This run records the
+CI negative control still have something to detect. This run records the
 proposal and the independent review as evidence, not as an applied edit.
 
 ## Reproduce
