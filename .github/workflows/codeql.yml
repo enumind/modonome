@@ -18,8 +18,11 @@ jobs:
   analyze:
     name: Analyze (javascript-typescript)
     runs-on: ubuntu-latest
+    # SARIF upload requires GitHub Advanced Security, which is org-only for private
+    # repos. Analysis still runs and catches issues; upload is best-effort.
+    continue-on-error: true
     permissions:
-      security-events: write # upload results to the Security tab
+      security-events: write # upload results to the Security tab (org repos only)
       actions: read
       contents: read
     steps:
