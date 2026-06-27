@@ -37,6 +37,16 @@ Every decision defaults to hold when unanswered.
     re-enabled in Phase B once the error-handling path is hardened.
   resolved: 2026-06-27
 
+- id: dynamic-model-selection-with-fallback
+  question: How should modonome handle local model unavailability (e.g., LM Studio down)?
+  decision: Implement probe-then-route in resolve-role.mjs. At role resolution time,
+    probe the local gateway with a 5s timeout. If reachable and models present, use
+    primary (local) config. If unreachable and fallback_model defined in roles, use
+    fallback (hosted Claude). If unreachable and no fallback, fail fast with clear
+    error. Fallback requires remote_model_budget_usd_per_day > 0. Config now expresses
+    fallback intent via fallback_model fields in roles. See WI-021 for implementation.
+  resolved: 2026-06-27
+
 ## Open
 
 - id: dry-run-git-integration
