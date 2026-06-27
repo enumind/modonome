@@ -10,7 +10,8 @@
  */
 
 import ws from 'ws'
-import { IncomingMessage } from 'http'
+import { IncomingMessage, Server, ServerResponse } from 'http'
+import { Socket } from 'net'
 import { randomBytes, timingSafeEqual, createHash } from 'crypto'
 
 // ============================================================================
@@ -21,7 +22,7 @@ interface VitestMessage {
   t: 'q' | 'r' | 'e' // query, response, error
   i: string // message id
   m: string // method name
-  a?: any[] // arguments
+  a?: unknown[] // arguments
   token?: string // authentication token
 }
 
@@ -137,7 +138,7 @@ function validateAuthToken(message: VitestMessage, validToken: string): boolean 
  * 3. Requires authentication for sensitive operations
  */
 export function setupSecureWebSocket(
-  httpServer: any,
+  httpServer: Server,
   config: WebSocketSecurityConfig
 ): ws.Server {
   const wss = new ws.Server({ noServer: true })
@@ -145,7 +146,7 @@ export function setupSecureWebSocket(
   // Intercept the upgrade request
   httpServer.on(
     'upgrade',
-    (request: IncomingMessage, socket: any, head: Buffer) => {
+    (request: IncomingMessage, socket: Socket, head: Buffer) => {
       const origin = request.headers.origin
 
       // 1. CRITICAL: Validate Origin header to prevent CSWSH
@@ -332,11 +333,11 @@ function handleGetFiles(message: VitestMessage, ws: ws.WebSocket): void {
  * - Uses same-origin policy to prevent token leakage
  */
 export function createTokenEndpoint(token: string) {
-  return (req: any, res: any) => {
-    // Always use the TCP socket's remote address — never req.hostname, which is
-    // derived from the Host header and can be spoofed by a remote attacker
-    // sending `Host: localhost` to a server bound on 0.0.0.0.
-    const remoteAddr: string = req.socket?.remoteAddress || ''
+  return (req: IncomingMessage, res: ServerResponse) => {
+    // Always use the TCP socket's remote address — never the Host header, which
+    // can be spoofed by a remote attacker sending `Host: localhost` to a server
+    // bound on 0.0.0.0.
+    const remoteAddr: string = (req.socket as Socket)?.remoteAddress ?? ''
 
     const isLocal =
       remoteAddr === '127.0.0.1' ||
@@ -344,16 +345,18 @@ export function createTokenEndpoint(token: string) {
       remoteAddr === '::ffff:127.0.0.1' // IPv4-mapped on dual-stack Node socket
 
     if (!isLocal) {
-      res.status(403).json({ error: 'Forbidden: Token endpoint only available on localhost' })
+      res.writeHead(403, { 'Content-Type': 'application/json' })
+      res.end(JSON.stringify({ error: 'Forbidden: Token endpoint only available on localhost' }))
       return
     }
 
-    // Set security headers
-    res.setHeader('X-Content-Type-Options', 'nosniff')
-    res.setHeader('X-Frame-Options', 'DENY')
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private')
-
-    res.json({ token })
+    res.writeHead(200, {
+      'Content-Type': 'application/json',
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'Cache-Control': 'no-store, no-cache, must-revalidate, private',
+    })
+    res.end(JSON.stringify({ token }))
   }
 }
 

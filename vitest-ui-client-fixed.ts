@@ -12,22 +12,22 @@
  * (simplified version shown for example)
  */
 interface Flatted {
-  stringify(value: any): string
-  parse(value: string): any
+  stringify(value: unknown): string
+  parse(value: string): unknown
 }
 
 interface VitestMessage {
   t: 'q' | 'r' | 'e'
   i: string
   m: string
-  a?: any[]
+  a?: unknown[]
   token?: string
 }
 
 interface VitestResponse {
   t: 'r' | 'e'
   i: string
-  r?: any
+  r?: unknown
   e?: string
 }
 
@@ -184,7 +184,7 @@ export class VitestAPIClient {
    *
    * Sensitive operations (saveTestFile, rerun) automatically include the auth token.
    */
-  async query<T = any>(method: string, args: any[] = []): Promise<T> {
+  async query<T = unknown>(method: string, args: unknown[] = []): Promise<T> {
     return new Promise((resolve, reject) => {
       const messageId = this.generateMessageId()
       // Must stay in sync with SENSITIVE_METHODS on the server
@@ -285,14 +285,14 @@ export class VitestAPIClient {
   /**
    * Get server configuration
    */
-  async getConfig(): Promise<any> {
+  async getConfig(): Promise<unknown> {
     return this.query('getConfig', [])
   }
 
   /**
    * Update configuration (requires authentication)
    */
-  async updateConfig(config: any): Promise<void> {
+  async updateConfig(config: Record<string, unknown>): Promise<void> {
     await this.query('updateConfig', [config])
   }
 
