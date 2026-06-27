@@ -1,13 +1,14 @@
 name: codeql
 
 # Static analysis for common code-quality and security flaws (OpenSSF Best
-# Practices: static_analysis). Runs on pushes to main and on a weekly schedule
-# so newly published CodeQL queries reach existing code.
-# pull_request omitted: SARIF upload requires GitHub Advanced Security, which is
-# unavailable on private personal repos. Running on PRs produces a permanent
-# failing check with no actionable output. Analysis still runs on main and weekly.
+# Practices: static_analysis). Runs on pushes to main, pull requests, and on a
+# weekly schedule so newly published CodeQL queries reach existing code.
+# SARIF upload requires GitHub Advanced Security on private repos; on public
+# repos it is free and works without restriction.
 on:
   push:
+    branches: [main]
+  pull_request:
     branches: [main]
   schedule:
     - cron: "27 4 * * 1" # Mondays at 04:27 UTC

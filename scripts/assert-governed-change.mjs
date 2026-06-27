@@ -52,7 +52,7 @@ function getChangedFiles(diff) {
   const lines = diff.split("\n");
   for (const line of lines) {
     if (line.startsWith("diff --git")) {
-      const match = line.match(/b\/(.+)$/);
+      const match = line.match(/ b\/(.+)$/);
       if (match) files.add(match[1]);
     }
   }
