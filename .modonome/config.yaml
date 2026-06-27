@@ -43,9 +43,11 @@ roles:
   maker:
     runner: local
     model: qwen2.5.1-coder-7b-instruct
+    fallback_model: claude-sonnet-4-6
   checker:
     runner: local
     model: mistralai/mistral-7b-instruct-v0.3
+    fallback_model: claude-opus-4-8
   dogfood:
     runner: container
     model: claude-haiku-4-5

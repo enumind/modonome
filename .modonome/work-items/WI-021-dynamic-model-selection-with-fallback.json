@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "id": "WI-021-dynamic-model-selection-with-fallback",
+  "state": "queued",
+  "attempts": 0,
+  "max_attempts": 1,
+  "touches_protected_path": true,
+  "goal": "Implement probe-then-route logic in resolve-role.mjs so modonome seamlessly falls back to hosted Claude when local models are unreachable",
+  "rationale": "Phase A verified local Qwen+Mistral autonomy on Mac mini. To run the same orchestration elsewhere (cloud CI, another machine) without local LM Studio, the harness must probe the local gateway and route to fallback models if unreachable. Currently it hangs for 600s before failing. This work adds a 5s probe at resolve-role time, logging which models are used.",
+  "context": "During Phase A dry-run hardening, the gateway timeout was tuned to 600s to allow slow models to complete. But if the gateway is down, the harness waits 600s before failing. The fix: probe at startup (5s timeout), select primary or fallback, log the choice, proceed. Config now has fallback_model fields in roles (WI-021 just committed). Implement the resolver logic.",
+  "allowed_edit_set": ["scripts/agent/resolve-role.mjs"],
+  "gates": ["npm run verify"]
+}
