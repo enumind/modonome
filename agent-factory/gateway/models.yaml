@@ -1,0 +1,5 @@
+capacity: 1
+models:
+  qwen2.5-coder-32b:
+    backend: http://localhost:1234/v1
+    family: qwen

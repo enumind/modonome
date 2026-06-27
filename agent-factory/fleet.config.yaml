@@ -1,0 +1,16 @@
+# Default single-repo fleet config (used by factory-run-one). The factory keeps its
+# model wiring here, separate from any target repo's governance config.
+gateway:
+  base_url: http://localhost:8080/v1
+  api_key: lm-studio
+models:
+  maker:
+    id: qwen2.5-coder-32b
+    family: qwen
+    mode: openai
+  checker:
+    id: claude-cli
+    family: claude
+    mode: claude_cli
+    max_turns: 40
+    cli_path: claude

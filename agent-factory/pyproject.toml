@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agent-factory"
+version = "0.1.0"
+description = "Shared CrewAI and local-LLM substrate that drives modonome-governed repos."
+requires-python = ">=3.10"
+dependencies = [
+    "crewai>=0.70",
+    "langchain-openai>=0.2",
+    "fastapi>=0.110",
+    "uvicorn>=0.29",
+    "httpx>=0.27",
+    "pyyaml>=6",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[project.scripts]
+factory-run-one = "fleet_runner.run_one:_main"
+factory-schedule = "fleet_runner.scheduler:_main"
+
+[tool.setuptools.packages.find]
+include = ["fleet_runner*", "gateway*"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,23 @@
+# Self-organizing fleet registry. Common workers are shared across all repos; each
+# repo is a binding that reuses them (or overrides one). Phase A registers modonome
+# alone; add more repos by appending to `repos`.
+gateway:
+  base_url: http://localhost:8080/v1
+  api_key: lm-studio
+defaults:
+  max_concurrent: 1
+  roles: [developer, tester]
+common_workers:
+  maker:
+    id: qwen2.5-coder-32b
+    family: qwen
+    mode: openai
+  checker:
+    id: claude-cli
+    family: claude
+    mode: claude_cli
+    max_turns: 40
+    cli_path: claude
+repos:
+  - alias: modonome
+    path: ../../modonome
