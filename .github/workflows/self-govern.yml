@@ -1,6 +1,6 @@
 name: Modonome self-govern autonomy
 
-# Dogfood run: self-application of Modonome on this repo itself.
+# Self-govern run: self-application of Modonome on this repo itself.
 # Runs on push to main and nightly schedule (NOT on PRs).
 # Pinned Haiku maker, with budget constraints and artifact capture.
 # This proves the governance layer works under real-world conditions,
@@ -17,7 +17,7 @@ permissions:
 
 env:
   SELF_GOVERN_BRANCH: modonome/self-govern-${{ github.run_id }}
-  DOGFOOD_MODEL: claude-haiku-4-5-20251001
+  SELF_GOVERN_MODEL: claude-haiku-4-5-20251001
   MAX_TURNS: 10
   BUDGET_TOKENS: 15000
 
@@ -33,7 +33,7 @@ jobs:
           node-version: '20'
       - name: Install Claude Code CLI
         run: npm install -g @anthropic-ai/claude-code
-      - name: Dogfood harness end-to-end run
+      - name: Self-govern harness end-to-end run
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           RUN_ID: self-govern-${{ github.run_id }}-${{ github.run_attempt }}
@@ -41,7 +41,7 @@ jobs:
           # Run harness end-to-end to produce real captured artifacts
           node scripts/agent/run-cycle.mjs \
             --target examples/demo-app \
-            --maker-model "$DOGFOOD_MODEL" \
+            --maker-model "$SELF_GOVERN_MODEL" \
             --max-turns "$MAX_TURNS" \
             --execute \
             2>&1 | tee self-govern-run.log
@@ -56,7 +56,7 @@ jobs:
 
       - name: Upload self-govern evidence
         if: always()
-        uses: actions/upload-artifact@6d5d51884c938cdc4d2d9c4b9b82ba8ddeffa8ba   # v4
+        uses: actions/upload-artifact@v4
         with:
           name: self-govern-evidence-${{ github.run_id }}
           path: |
