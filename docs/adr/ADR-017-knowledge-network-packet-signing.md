@@ -1,6 +1,6 @@
 # ADR-017: Knowledge Network Packet Signing and Key Management
 
-**Status:** Accepted
+**Status:** Proposed
 **Date:** 2026-06-25
 
 ## Context
@@ -11,7 +11,7 @@ pinned canonicalization, a committed key allowlist, fixed signature placement, a
 fixed check order, a signature is ceremony: an attacker can re-serialize, strip,
 downgrade, or self-certify around it.
 
-There is no canonical-JSON in the repo today: `scripts/jsonschema.mjs` uses raw
+There is no canonical-JSON in the repo today: `scripts/lib/jsonschema.mjs` uses raw
 `JSON.stringify`, which is insertion-order-dependent and unsafe to sign over. We are
 a single org with no PKI, so the trust root must be committed repo state, not a CA.
 

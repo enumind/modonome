@@ -1,6 +1,6 @@
 # ADR-019: Knowledge Network Scripts Run in Base-Branch CI Scope
 
-**Status:** Accepted
+**Status:** Proposed
 **Date:** 2026-06-25
 
 ## Context

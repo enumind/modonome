@@ -18,8 +18,8 @@ be added here once the owner arms the loop on this repo.
 | Gate | Result |
 |---|---|
 | Drift guard | pass |
-| Style check | pass |
-| Repo hygiene | pass |
+| Style check | FAIL |
+| Repo hygiene | FAIL |
 | Self-application conformance | pass |
 | Learning traceability | pass |
 | Capability promotion readiness | pass |
@@ -30,14 +30,13 @@ be added here once the owner arms the loop on this repo.
 ## Work queue
 
 - done: 18
-- merge_ready: 2
 - queued: 1
 
 ## Sample-app captures
 
-Real maker and checker runs recorded on the sample apps. Each is captured output,
-read from the committed metrics, not hand-authored. The maker and checker use distinct
-models, and the run directory holds the verbatim logs.
+Maker and checker cycles recorded on the sample apps. Events are captured in
+metrics.jsonl per run directory. The maker and checker use distinct models.
+Raw model output logs are reproducible on demand but not committed to the repo.
 
 - examples/demo-app/runs/2026-06-26T11-46-00Z: maker claude-haiku-4-5, checker claude-sonnet-4-6; checker approved and raised 1 question(s).
 

@@ -1,6 +1,6 @@
 # ADR-015: Knowledge Network Catalog Design
 
-**Status:** Accepted
+**Status:** Proposed
 **Date:** 2026-06-25
 
 ## Context

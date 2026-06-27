@@ -1,6 +1,6 @@
 # ADR-016: Knowledge Network Packet Identity, Lineage, and Dedup
 
-**Status:** Accepted
+**Status:** Proposed
 **Date:** 2026-06-25
 
 ## Context

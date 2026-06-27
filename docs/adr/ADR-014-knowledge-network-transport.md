@@ -1,6 +1,6 @@
 # ADR-014: Knowledge Network Transport and Sync Model
 
-**Status:** Accepted
+**Status:** Proposed
 **Date:** 2026-06-25
 
 ## Context
