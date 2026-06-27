@@ -3,10 +3,13 @@ dist/
 *.log
 .DS_Store
 fixtures/**/.modonome/
+!fixtures/portability/**/.modonome/
+!fixtures/portability/**/.modonome/**
 .modonome/runs/
 **/.modonome/runs/
 .env
 .env.*
+!fixtures/portability/**/.env
 *.pem
 *.key
 

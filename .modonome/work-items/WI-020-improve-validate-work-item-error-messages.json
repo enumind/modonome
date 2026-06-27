@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "id": "WI-020-improve-validate-work-item-error-messages",
+  "state": "queued",
+  "queued_at": "2026-06-27T00:00:00Z",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": false,
+  "allowed_edit_set": [
+    "scripts/validate-work-item.mjs",
+    "tests/validate-work-item.test.mjs"
+  ],
+  "gates": [
+    "node --test tests/validate-work-item.test.mjs",
+    "node scripts/check-style.mjs scripts/validate-work-item.mjs"
+  ]
+}
