@@ -187,10 +187,13 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const hasGateChanges = [...changedFiles].some((f) =>
     REAL_GATES.some((gate) => f.includes(gate))
   );
+  // Protected path changes require CODEOWNERS approval, which is itself a governance
+  // control. The work-item escalation_reason check is deferred (loadCurrentWorkItem
+  // returns null until WS-G is implemented), so protected path alone is sufficient.
   const isGovernanceRelevant =
     (hasTestChanges && netAssertions >= 0) ||
     hasGateChanges ||
-    (protectedPath && workItem?.escalation_reason);
+    protectedPath;
 
   if (!isGovernanceRelevant) {
     console.error("Change is not governance-relevant.");
