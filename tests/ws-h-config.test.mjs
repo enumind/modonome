@@ -29,8 +29,8 @@ test("backward-compat: flat keys in real config parse correctly", () => {
 // (b) Nested parse: roles.maker.model, models[local-default].base_url, runners.local.labels.
 test("nested parse: roles, models, runners resolve correctly", () => {
   const cfg = loadConfig(configPath);
-  assert.equal(cfg.roles?.maker?.model, "claude-sonnet-4-6");
-  assert.equal(cfg.roles?.checker?.model, "claude-opus-4-8");
+  assert.equal(cfg.roles?.maker?.model, "qwen2.5.1-coder-7b-instruct");
+  assert.equal(cfg.roles?.checker?.model, "mistralai/mistral-7b-instruct-v0.3");
   assert.equal(cfg.roles?.dogfood?.model, "claude-haiku-4-5");
   assert.ok(cfg.models?.["local-default"]?.base_url, "local-default base_url is set");
   assert.equal(cfg.models?.["local-default"]?.base_url, "http://mac-mini.local:11434");
@@ -71,14 +71,14 @@ test("distinct-model enforcement: same maker/checker model triggers error", () =
   );
 });
 
-// (e) resolveRole(cfg, 'maker') returns runner 'container' and model 'claude-sonnet-4-6'.
+// (e) resolveRole(cfg, 'maker') returns runner 'local' and model 'qwen2.5.1-coder-7b-instruct'.
 test("resolveRole for maker returns correct runner and model", () => {
   const cfg = loadConfig(configPath);
   const result = resolveRole(cfg, "maker");
-  assert.equal(result.runner, "container");
-  assert.equal(result.model, "claude-sonnet-4-6");
-  assert.equal(result.modelProvider, "anthropic");
-  assert.deepEqual(result.runnerLabels, ["ubuntu-latest"]);
+  assert.equal(result.runner, "local");
+  assert.equal(result.model, "qwen2.5.1-coder-7b-instruct");
+  assert.equal(result.modelProvider, "local");
+  assert.deepEqual(result.runnerLabels, ["self-hosted", "mac-mini"]);
   assert.equal(result.cliPath, "claude");
-  assert.equal(result.modelBaseUrl, undefined);
+  assert.equal(result.modelBaseUrl, "http://127.0.0.1:8080/v1");
 });
