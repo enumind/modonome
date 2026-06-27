@@ -46,9 +46,9 @@ roles:
   checker:
     runner: container
     model: claude-opus-4-8
-  dogfood:
+  self-govern:
     runner: container
-    model: claude-haiku-4-5
+    model: claude-haiku-4-5-20251001
 runners:
   local:
     labels: [self-hosted, mac-mini]
@@ -61,7 +61,7 @@ models:
     provider: anthropic
   claude-opus-4-8:
     provider: anthropic
-  claude-haiku-4-5:
+  claude-haiku-4-5-20251001:
     provider: anthropic
   local-default:
     provider: local

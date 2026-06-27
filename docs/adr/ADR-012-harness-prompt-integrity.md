@@ -1,7 +1,8 @@
 # ADR-012: Harness Prompt Integrity
 
-**Status:** Accepted
+**Status:** Proposed
 **Date:** 2026-06-24
+**Milestone:** 6 (Self-governance hardening)
 
 ## Context
 

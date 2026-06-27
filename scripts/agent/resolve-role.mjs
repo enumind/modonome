@@ -11,7 +11,7 @@
 const ROLE_DEFAULTS = {
   maker: { runner: "container", model: "claude-sonnet-4-6" },
   checker: { runner: "container", model: "claude-opus-4-8" },
-  dogfood: { runner: "container", model: "claude-haiku-4-5" },
+  "self-govern": { runner: "container", model: "claude-haiku-4-5-20251001" },
 };
 
 const RUNNER_DEFAULTS = {
@@ -23,7 +23,7 @@ const RUNNER_DEFAULTS = {
  * Resolve runner and model settings for a named role.
  *
  * @param {object} cfg - Parsed config object (output of parseFlatYaml or loadConfig).
- * @param {string} role - One of "maker", "checker", "dogfood".
+ * @param {string} role - One of "maker", "checker", "self-govern".
  * @returns {{ runner: string, runnerLabels: string[], cliPath: string,
  *             model: string, modelProvider: string, modelBaseUrl: string|undefined }}
  */
@@ -52,7 +52,7 @@ if (process.argv.includes("--self-test")) {
     roles: {
       maker: { runner: "container", model: "claude-sonnet-4-6" },
       checker: { runner: "container", model: "claude-opus-4-8" },
-      dogfood: { runner: "local", model: "local-default" },
+      "self-govern": { runner: "local", model: "local-default" },
     },
     runners: {
       container: { labels: ["ubuntu-latest"], cli_path: "claude" },
@@ -71,12 +71,12 @@ if (process.argv.includes("--self-test")) {
   console.assert(maker.modelProvider === "anthropic", "maker provider");
   console.assert(maker.modelBaseUrl === undefined, "maker no base_url");
 
-  const dogfood = resolveRole(cfg, "dogfood");
-  console.assert(dogfood.runner === "local", "dogfood runner");
-  console.assert(dogfood.model === "local-default", "dogfood model");
-  console.assert(dogfood.modelProvider === "local", "dogfood provider");
-  console.assert(dogfood.modelBaseUrl === "http://mac-mini.local:11434", "dogfood base_url");
-  console.assert(dogfood.runnerLabels.includes("mac-mini"), "dogfood labels");
+  const selfGovern = resolveRole(cfg, "self-govern");
+  console.assert(selfGovern.runner === "local", "self-govern runner");
+  console.assert(selfGovern.model === "local-default", "self-govern model");
+  console.assert(selfGovern.modelProvider === "local", "self-govern provider");
+  console.assert(selfGovern.modelBaseUrl === "http://mac-mini.local:11434", "self-govern base_url");
+  console.assert(selfGovern.runnerLabels.includes("mac-mini"), "self-govern labels");
 
   // Fallback when no config provided.
   const bare = resolveRole({}, "checker");

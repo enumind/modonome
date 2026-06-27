@@ -1,7 +1,8 @@
 # ADR-018: Knowledge Network Import Pipeline and Local Re-Validation Ratchet
 
-**Status:** Accepted
+**Status:** Proposed
 **Date:** 2026-06-25
+**Milestone:** 2 (Cross-repo knowledge network GA)
 
 ## Context
 

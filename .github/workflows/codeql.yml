@@ -1,12 +1,13 @@
 name: codeql
 
 # Static analysis for common code-quality and security flaws (OpenSSF Best
-# Practices: static_analysis). Runs on pushes to main, on pull requests, and on
-# a weekly schedule so newly published CodeQL queries reach existing code.
+# Practices: static_analysis). Runs on pushes to main and on a weekly schedule
+# so newly published CodeQL queries reach existing code.
+# pull_request omitted: SARIF upload requires GitHub Advanced Security, which is
+# unavailable on private personal repos. Running on PRs produces a permanent
+# failing check with no actionable output. Analysis still runs on main and weekly.
 on:
   push:
-    branches: [main]
-  pull_request:
     branches: [main]
   schedule:
     - cron: "27 4 * * 1" # Mondays at 04:27 UTC
@@ -34,13 +35,7 @@ jobs:
           languages: javascript-typescript
           queries: security-and-quality
 
-      # The analysis runs and surfaces results in the Security tab once a maintainer
-      # enables code scanning (Settings -> Security -> Code scanning; free on public
-      # repos). Until then the SARIF upload returns a configuration error, so this
-      # step is non-blocking. After enabling code scanning, remove continue-on-error
-      # to make CodeQL an enforcing gate.
       - name: Perform CodeQL analysis
         uses: github/codeql-action/analyze@v3
-        continue-on-error: true
         with:
           category: "/language:javascript-typescript"

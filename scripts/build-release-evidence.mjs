@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Generate RELEASE-EVIDENCE.md (ADR-025) from live repo state, so the dogfooding
+// Generate RELEASE-EVIDENCE.md (ADR-025) from live repo state, so the self-governing
 // evidence cannot drift into fiction. It reports the real autonomy posture, which
 // gates pass, the AgentProof score, promoted learnings, and the work queue. Run with
 // --check to fail if the committed file is stale.
@@ -126,9 +126,9 @@ lines.push("");
 if (captures.length === 0) {
   lines.push("No captured sample-app runs recorded yet.");
 } else {
-  lines.push("Real maker and checker runs recorded on the sample apps. Each is captured output,");
-  lines.push("read from the committed metrics, not hand-authored. The maker and checker use distinct");
-  lines.push("models, and the run directory holds the verbatim logs.");
+  lines.push("Maker and checker cycles recorded on the sample apps. Events are captured in");
+  lines.push("metrics.jsonl per run directory. The maker and checker use distinct models.");
+  lines.push("Raw model output logs are reproducible on demand but not committed to the repo.");
   lines.push("");
   for (const c of captures) {
     const decision = c.requestedChanges ? "requested changes" : "approved";

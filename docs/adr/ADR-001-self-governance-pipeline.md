@@ -37,7 +37,7 @@ escalation before reaching `merge_ready`.
 
 ## Consequences
 
-- The project dogfoods its own governance mechanism continuously.
+- The project self-governs: it applies its own governance mechanism to its own repository continuously.
 - The work-items queue is the canonical backlog: visible, traceable, governed.
 - Tier 2 items still require a human CODEOWNER approval but the queue makes them
   explicit rather than left as informal notes.

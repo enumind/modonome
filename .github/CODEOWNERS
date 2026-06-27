@@ -1,0 +1,9 @@
+# Critical governance paths — all changes require maintainer review.
+# CODEOWNERS review is enforced by branch protection on main.
+/bin/         @nateshpp
+/prompts/     @nateshpp
+/schemas/     @nateshpp
+/scripts/     @nateshpp
+/templates/   @nateshpp
+/.github/     @nateshpp
+/site/        @nateshpp

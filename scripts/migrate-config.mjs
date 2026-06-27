@@ -40,7 +40,7 @@ export const SAFE_DEFAULTS = {
   roles: {
     maker: { runner: "container", model: "claude-sonnet-4-6" },
     checker: { runner: "container", model: "claude-opus-4-8" },
-    dogfood: { runner: "container", model: "claude-haiku-4-5" },
+    "self-govern": { runner: "container", model: "claude-haiku-4-5-20251001" },
   },
   runners: {
     local: { labels: ["self-hosted", "mac-mini"], cli_path: "claude" },
