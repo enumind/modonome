@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "id": "WI-999-test-autonomous-orchestration",
+  "state": "queued",
+  "attempts": 0,
+  "max_attempts": 1,
+  "touches_protected_path": false,
+  "allowed_edit_set": [".gitignore"],
+  "gates": ["node scripts/check-style.mjs ."]
+}

@@ -42,10 +42,10 @@ share_repo_identifiers_by_default: false
 roles:
   maker:
     runner: local
-    model: qwen2.5-coder-7b
+    model: qwen2.5.1-coder-7b-instruct
   checker:
     runner: local
-    model: claude-cli
+    model: mistralai/mistral-7b-instruct-v0.3
   dogfood:
     runner: container
     model: claude-haiku-4-5
@@ -57,11 +57,12 @@ runners:
     labels: [ubuntu-latest]
     cli_path: claude
 models:
-  qwen2.5-coder-7b:
+  qwen2.5.1-coder-7b-instruct:
     provider: local
     base_url: http://127.0.0.1:8080/v1
-  claude-cli:
+  mistralai/mistral-7b-instruct-v0.3:
     provider: local
+    base_url: http://127.0.0.1:8080/v1
   claude-sonnet-4-6:
     provider: anthropic
   claude-opus-4-8:
