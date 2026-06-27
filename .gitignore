@@ -13,6 +13,9 @@ fixtures/**/.modonome/
 *.pem
 *.key
 
+# Loop orchestration state (internal build scaffolding, never merge to main)
+.loop/
+
 # Python build and cache artifacts
 __pycache__/
 *.pyc

@@ -31,7 +31,7 @@ test("nested parse: roles, models, runners resolve correctly", () => {
   const cfg = loadConfig(configPath);
   assert.equal(cfg.roles?.maker?.model, "claude-sonnet-4-6");
   assert.equal(cfg.roles?.checker?.model, "claude-opus-4-8");
-  assert.equal(cfg.roles?.dogfood?.model, "claude-haiku-4-5");
+  assert.equal(cfg.roles?.["self-govern"]?.model, "claude-haiku-4-5-20251001");
   assert.ok(cfg.models?.["local-default"]?.base_url, "local-default base_url is set");
   assert.equal(cfg.models?.["local-default"]?.base_url, "http://mac-mini.local:11434");
   assert.ok(Array.isArray(cfg.runners?.local?.labels), "local labels is array");

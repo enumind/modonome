@@ -1,0 +1,9 @@
+/*
+  # 'unsafe-eval' is required by the DC (Design Component) runtime in support.js,
+  # which uses new Function() to execute user-authored component logic in the
+  # browser sandbox. This is intentional and nosemgrep-annotated in the source.
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://unpkg.com 'unsafe-eval'; font-src https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://raw.githubusercontent.com https://api.github.com; img-src 'self' data:; object-src 'none'; base-uri 'self'
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()

@@ -60,7 +60,7 @@ roles:
   checker:
     runner: container
     model: claude-opus-4-8
-  dogfood:
+  self-govern:
     runner: container
     model: claude-haiku-4-5
 runners:

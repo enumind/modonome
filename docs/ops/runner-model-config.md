@@ -11,7 +11,7 @@ spend onto self-hosted hardware.
 | ------- | --------- | ------------------ | --------- |
 | maker   | container | claude-sonnet-4-6  | anthropic |
 | checker | container | claude-opus-4-8    | anthropic |
-| dogfood | container | claude-haiku-4-5   | anthropic |
+| self-govern | container | claude-haiku-4-5   | anthropic |
 
 The `container` runner maps to GitHub-hosted `ubuntu-latest`. The `local` runner maps to
 `[self-hosted, mac-mini]` labels.
@@ -37,7 +37,7 @@ Point the role's `model` key at a `models` registry entry whose `provider` is `l
 
 ```yaml
 roles:
-  dogfood:
+  self-govern:
     runner: local
     model: local-default
 
