@@ -98,9 +98,9 @@ export function validateFilePath(
   // On Windows, handle drive letters and UNC paths
   if (platform === 'win32') {
     // Remove Windows extended-length and device path prefixes BEFORE any
-    // further processing — these bypass most kernel-level path checks.
-    // \\?\ — extended-length path (skips MAX_PATH limit and most validation)
-    // \\.\ — local device namespace (e.g. \\.\PhysicalDrive0)
+    // further processing (these bypass most kernel-level path checks).
+    // \\?\ = extended-length path (skips MAX_PATH limit and most validation)
+    // \\.\ = local device namespace (e.g. \\.\PhysicalDrive0)
     if (normalizedPath.startsWith('\\\\?\\') || normalizedPath.startsWith('\\\\?/')) {
       normalizedPath = normalizedPath.slice(4)
     }
@@ -231,7 +231,7 @@ export function isLocalhost(host: string | undefined): boolean {
     // IPv4 with port: 127.0.0.1:3000
     hostname = hostname.split(':')[0]
   }
-  // else: bare IPv6 (::1), bare IPv4, or plain hostname — use as-is
+  // else: bare IPv6 (::1), bare IPv4, or plain hostname. Use as-is.
 
   const localhostAddresses = new Set([
     'localhost',

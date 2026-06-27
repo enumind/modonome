@@ -247,14 +247,14 @@ describe('Vitest WebSocket CSWSH Security', () => {
       expect(data.token.length).toBeGreaterThan(0)
     })
 
-    it('should NOT be fooled by a spoofed Host header — socket address decides', async () => {
+    it('should NOT be fooled by a spoofed Host header (socket address decides)', async () => {
       // With the GAP-2 fix, Host: attacker.com from a local socket is still allowed,
       // because the check uses req.socket.remoteAddress (127.0.0.1), not req.hostname.
       // This test documents that the fix is immune to Host-header spoofing.
       const response = await fetch(`http://localhost:${port}/__vitest_api_token__`, {
         headers: { host: 'attacker.com' },
       })
-      // Still 200 — the Host header is irrelevant; what matters is that the
+      // Still 200: the Host header is irrelevant; what matters is that the
       // socket came from 127.0.0.1 (a remote attacker on a different machine
       // would get 403).
       expect(response.status).toBe(200)
@@ -282,7 +282,7 @@ describe('Vitest WebSocket CSWSH Security', () => {
   describe('Timing Attack Prevention', () => {
     it('should reject any wrong token with the same Unauthorized error', async () => {
       // Verifies that constantTimeCompare (backed by crypto.timingSafeEqual) returns
-      // a uniform rejection for all wrong tokens — no early-exit information leak.
+      // a uniform rejection for all wrong tokens, no early-exit information leak.
       const wrong1 = await connectAndSendMessage(
         { t: 'q', i: 'timing-1', m: 'saveTestFile', a: ['t.ts', ''] },
         'a'.repeat(64)

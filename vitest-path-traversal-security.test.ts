@@ -104,7 +104,7 @@ describe('Path Validation - Directory Traversal Prevention', () => {
 
   describe('Case variation attacks', () => {
     it('should preserve case on case-sensitive filesystems (Unix)', () => {
-      // On Linux path.normalize does not lowercase — the resolved path keeps the original case
+      // On Linux path.normalize does not lowercase: the resolved path keeps the original case
       const result = validateFilePath('SRC/TEST.TS', baseDir)
       expect(result).toBe('/home/user/project/SRC/TEST.TS')
     })

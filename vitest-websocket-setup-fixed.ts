@@ -334,7 +334,7 @@ function handleGetFiles(message: VitestMessage, ws: ws.WebSocket): void {
  */
 export function createTokenEndpoint(token: string) {
   return (req: IncomingMessage, res: ServerResponse) => {
-    // Always use the TCP socket's remote address — never the Host header, which
+    // Always use the TCP socket's remote address, never the Host header, which
     // can be spoofed by a remote attacker sending `Host: localhost` to a server
     // bound on 0.0.0.0.
     const remoteAddr: string = (req.socket as Socket)?.remoteAddress ?? ''
