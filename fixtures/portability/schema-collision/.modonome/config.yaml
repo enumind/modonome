@@ -1,0 +1,4 @@
+schema_version: 99
+autonomy_enabled: "yes"
+dry_run: false
+auto_merge: true
