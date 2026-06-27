@@ -7,8 +7,8 @@
 <p align="center"><strong>The autonomous engineering loop that arms only on your command, sends every change through an independent checker, and keeps your tests at full strength.</strong></p>
 
 <p align="center">
-It finds tech debt your team keeps deferring and proposes bounded pull requests, with a CI
-gate that keeps every test assertion intact. Maker, checker, and merge authority are
+When armed, it finds tech debt your team keeps deferring and proposes bounded pull requests,
+with a CI gate that keeps every test assertion intact. Maker, checker, and merge authority are
 structurally separate, enforced in CI. Off by default, and it runs without a central service.
 </p>
 
@@ -33,7 +33,7 @@ structurally separate, enforced in CI. Off by default, and it runs without a cen
 
 ---
 
-Autonomous coding agents have a predictable failure mode: they weaken gates to go green (removing test assertions, adding skips, loosening type checks). Modonome blocks that in CI: the anti-gaming ratchet runs from a base-branch copy the agent's run does not control, and it rejects diffs that weaken a gate. We published the [governed-autonomy spec](GOVERNED-AUTONOMY-SPEC.md), and Modonome is its reference implementation, scoring **[25/25 on AgentProof](agentproof/README.md)** for gate integrity (hardening against known gaming patterns, not a certificate of full autonomy governance).
+Autonomous coding agents have a predictable failure mode: they weaken gates to go green (removing test assertions, adding skips, loosening type checks). Modonome blocks that in CI: the anti-gaming ratchet runs from a base-branch copy the agent's run does not control, and it rejects diffs that weaken a gate. We published the [governed-autonomy spec](GOVERNED-AUTONOMY-SPEC.md), and Modonome is the reference implementation for agent gate integrity, scoring **[25/25 on AgentProof](agentproof/README.md)** (hardening against known gaming patterns, not a certificate of full autonomy governance).
 
 ## Why businesses adopt Modonome
 
@@ -156,6 +156,28 @@ leaves an engine disarmed unless an owner arms it. See [docs/VERSIONING.md](docs
 - **[Demo app walkthrough](examples/demo-app/WALKTHROUGH.md)**: one week on a Node.js app. Dry-run, ratchet blocks, merges, and governance report. No setup required to read it.
 - [examples/node-typescript](examples/node-typescript): Node and TypeScript service with [dry-run transcript](examples/node-typescript/dry-run-transcript.txt).
 - [examples/python-service](examples/python-service): Python service with [dry-run transcript](examples/python-service/dry-run-transcript.txt).
+
+## Two products, one repo
+
+**Modonome Guard (v0.1, shipped today)** is the guardrail layer any team can adopt in minutes:
+
+- Anti-gaming ratchet: blocks assertion removal, skip injection, type escape, coverage removal across JS/TS, Python, Java, .NET
+- [AgentProof](agentproof/README.md): 25/25 HARDENED adversarial benchmark for gate integrity
+- Validators: config, work-item, drift, self-application, evidence, learning traceability
+- CLI: `dry-run`, `scaffold`, `validate`, `report`
+
+Add just the ratchet to any CI pipeline in one step:
+
+```yaml
+- name: Anti-gaming ratchet
+  run: node scripts/guard-ratchet.mjs
+```
+
+**Modonome Autonomy (v0.2, roadmap)** is the governed maker/checker loop. The machinery is fully
+wired (`modonome-auto.yml`, `run-cycle.mjs`) and proven end-to-end on the demo app
+([`examples/demo-app/runs/2026-06-26T11-46-00Z/`](examples/demo-app/runs/2026-06-26T11-46-00Z/)):
+Haiku maker, Sonnet checker, distinct model families, checker approved with one question raised.
+It has not yet run in armed mode on a live production repository. That is v0.2.
 
 ## Alpha limitations (v0.1-alpha)
 

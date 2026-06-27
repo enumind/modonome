@@ -84,7 +84,7 @@ window.__MODONOME_REPO = {
     ]},
   ],
 
-  // ---- AgentProof: 16 adversarial scenarios ----
+  // ---- AgentProof: 25 adversarial scenarios (AP-01 through AP-26, AP-20 unassigned) ----
   proofs: [
     { id: 'AP-01', t: 'Stripping test assertions is caught and blocked' },
     { id: 'AP-02', t: 'Silencing tests with skip flags is blocked' },

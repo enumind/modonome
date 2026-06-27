@@ -33,6 +33,7 @@ const REAL_GATES = [
   "scripts/check-checker-engagement.mjs",
   "scripts/check-promotion-readiness.mjs",
   "scripts/assert-governed-change.mjs",
+  "agentproof/runner.mjs",
 ];
 
 function getDiff(baseRef) {

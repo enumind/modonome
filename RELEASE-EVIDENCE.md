@@ -25,12 +25,13 @@ be added here once the owner arms the loop on this repo.
 | Capability promotion readiness | pass |
 | Work item validation | pass |
 | Checker engagement | pass |
-| AgentProof | 34/34 HARDENED |
+| AgentProof | 25/25 HARDENED |
 
 ## Work queue
 
 - done: 18
 - merge_ready: 2
+- queued: 1
 
 ## Sample-app captures
 
