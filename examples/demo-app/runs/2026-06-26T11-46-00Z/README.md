@@ -2,7 +2,7 @@
 
 This directory holds evidence of a real maker and checker cycle on this sample
 app. The metrics.jsonl file is captured output from that run. The raw model
-output logs (maker.log, checker.log) were not committed — they are large and
+output logs (maker.log, checker.log) were not committed; they are large and
 reproducible on demand (see the Reproduce section below).
 
 ## What ran

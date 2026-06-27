@@ -3,7 +3,7 @@
 The dry-run output is verbatim tool output. The maker and checker cycle
 described below is a real run whose events are recorded in
 `runs/2026-06-26T11-46-00Z/metrics.jsonl`; the raw model output logs
-were not committed (they are large and reproducible on demand — see
+were not committed (they are large and reproducible on demand; see
 the Reproduce section in that directory's README).
 
 ## Step 1: the dry-run sweep
