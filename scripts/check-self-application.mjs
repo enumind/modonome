@@ -69,7 +69,7 @@ for (const [lever, want] of Object.entries(SAFE)) {
 //    path is protected in name only (the bin/ gap that prompted this check).
 function dirsFromCodeowners() {
   const set = new Set();
-  for (const line of read("CODEOWNERS").split("\n")) {
+  for (const line of read(".github/CODEOWNERS").split("\n")) {
     const t = line.trim();
     if (!t || t.startsWith("#")) continue;
     const path = t.split(/\s+/)[0];
