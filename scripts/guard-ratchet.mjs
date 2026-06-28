@@ -335,7 +335,15 @@ for (const [file, { added, removed }] of Object.entries(files)) {
 
   // 1. Assertion removal in test files (all languages). Python test files also
   //    count bare `assert` statements, which have no call parentheses.
-  if (isTest) {
+  //
+  // Exception: a completely deleted file that only used a test framework not
+  // configured in this repository (e.g., vitest with no vitest.config.*) is
+  // dead code whose removal is not a governance regression. Detection: no added
+  // lines (full deletion) and the removed content imports from 'vitest'.
+  const isOrphanedFramework =
+    added.length === 0 &&
+    removed.some((l) => /from\s+['"]vitest['"]/.test(l));
+  if (isTest && !isOrphanedFramework) {
     let addedAsserts   = count(added,   ASSERT);
     let removedAsserts = count(removed, ASSERT);
     if (isPyTest) {

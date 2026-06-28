@@ -1,0 +1,13 @@
+diff --git a/vitest-example.test.ts b/vitest-example.test.ts
+deleted file mode 100644
+--- a/vitest-example.test.ts
++++ /dev/null
+@@ -1,8 +0,0 @@
+-import { describe, test, expect } from 'vitest'
+-
+-describe('example', () => {
+-  test('adds numbers', () => {
+-    expect(1 + 1).toBe(2)
+-    expect(2 + 2).toBe(4)
+-  })
+-})

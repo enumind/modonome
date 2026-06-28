@@ -16,12 +16,18 @@ import { dirname, join } from "node:path";
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
 
-// Protected paths that require escalation and are off-limits to autonomous changes
+// Protected paths that require escalation and are off-limits to autonomous changes.
+// Must stay in sync with CODEOWNERS and protected_paths_extra in .modonome/config.yaml.
 const PROTECTED_PATHS = [
-  ".github/workflows/",
+  ".github/",
   ".modonome/config.yaml",
   "package.json",
   "bin/",
+  "scripts/",
+  "prompts/",
+  "schemas/",
+  "templates/",
+  "site/",
 ];
 
 // Gates that count as "real gate exercised" when their tests are modified

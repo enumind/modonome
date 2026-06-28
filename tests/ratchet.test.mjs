@@ -68,6 +68,11 @@ test("ratchet accepts a Python diff that adds real bare assertions", () => {
   assert.equal(r.status, 0, `real bare assertions must pass:\n${r.stderr}`);
 });
 
+test("ratchet does not flag complete deletion of an orphaned vitest file", () => {
+  const r = ratchet(join(apFixtures, "ratchet-orphaned-vitest-deletion.patch"));
+  assert.equal(r.status, 0, `orphaned vitest file deletion must pass:\n${r.stderr}`);
+});
+
 // Regression tests for adversarial audit fixes A1-A5.
 
 test("A1: CRLF line endings do not bypass file classification or assertion removal check", () => {

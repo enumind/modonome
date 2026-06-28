@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "id": "WI-022-fix-gate-orphaned-framework",
+  "state": "claimed",
+  "attempts": 1,
+  "max_attempts": 3,
+  "touches_protected_path": true,
+  "allowed_edit_set": [
+    "scripts/guard-ratchet.mjs",
+    "scripts/assert-governed-change.mjs",
+    "tests/ratchet.test.mjs",
+    "agentproof/fixtures/ratchet-orphaned-vitest-deletion.patch",
+    ".modonome/work-items/WI-022-fix-gate-orphaned-framework.json"
+  ],
+  "gates": [
+    "node scripts/check-style.mjs .",
+    "node scripts/check-self-application.mjs",
+    "node scripts/check-repo-hygiene.mjs",
+    "node --test tests/*.test.mjs"
+  ]
+}
