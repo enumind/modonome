@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "id": "WI-HOST-002-touches-protected-path",
+  "state": "claimed",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": true,
+  "allowed_edit_set": [
+    ".github/workflows/ci.yml"
+  ],
+  "gates": [
+    "npm test"
+  ]
+}

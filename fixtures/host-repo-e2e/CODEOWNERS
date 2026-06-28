@@ -1,0 +1,4 @@
+# Protected paths — changes require owner review.
+.github/workflows/    @acme-platform
+.modonome/config.yaml @acme-platform
+CODEOWNERS            @acme-platform

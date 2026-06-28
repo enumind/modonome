@@ -18,7 +18,7 @@ be added here once the owner arms the loop on this repo.
 | Gate | Result |
 |---|---|
 | Drift guard | pass |
-| Style check | pass |
+| Style check | FAIL |
 | Repo hygiene | pass |
 | Self-application conformance | pass |
 | Learning traceability | pass |
@@ -31,7 +31,7 @@ be added here once the owner arms the loop on this repo.
 
 - claimed: 2
 - done: 18
-- making: 1
+- making: 2
 - queued: 1
 
 ## Sample-app captures

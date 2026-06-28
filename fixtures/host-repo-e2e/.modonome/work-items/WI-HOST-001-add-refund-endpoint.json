@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "id": "WI-HOST-001-add-refund-endpoint",
+  "state": "claimed",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": false,
+  "allowed_edit_set": [
+    "src/index.js",
+    "tests/index.test.mjs"
+  ],
+  "gates": [
+    "npm test"
+  ]
+}

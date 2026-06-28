@@ -5,6 +5,8 @@ dist/
 fixtures/**/.modonome/
 !fixtures/portability/**/.modonome/
 !fixtures/portability/**/.modonome/**
+!fixtures/host-repo-e2e/.modonome/
+!fixtures/host-repo-e2e/.modonome/**
 .modonome/runs/
 **/.modonome/runs/
 .env

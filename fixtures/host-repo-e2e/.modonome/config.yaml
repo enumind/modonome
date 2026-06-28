@@ -1,0 +1,45 @@
+schema_version: 1
+
+# Arming levers — all off by default. E2E tests override via env vars.
+autonomy_enabled: false
+dry_run: true
+auto_merge: false
+
+# Safety caps
+max_merges_per_day: 3
+max_diff_lines: 300
+max_open_prs: 2
+max_attempts_per_item: 3
+
+# Gate requirements
+require_branch_protection: true
+require_codeowner_review: true
+require_distinct_maker_checker: true
+require_distinct_maker_checker_model: true
+
+# Trusted authors (inline array — yaml-lite does not support block sequences)
+trusted_author_allowlist: ["modonome-maker[bot]"]
+
+# Protected paths — agent must not modify without owner escalation
+protected_paths_extra: [".modonome/config.yaml", ".github/workflows", "CODEOWNERS"]
+
+# Model registry — both roles must use pinned models from this list
+models:
+  claude-opus-4-8:
+    provider: anthropic
+    context_window: 200000
+  claude-sonnet-4-6:
+    provider: anthropic
+    context_window: 200000
+
+# Role assignments — maker and checker must differ
+roles:
+  maker:
+    model: claude-opus-4-8
+    runner: local
+  checker:
+    model: claude-sonnet-4-6
+    runner: local
+
+remote_model_budget_usd_per_day: 5.00
+state_dir: .modonome
