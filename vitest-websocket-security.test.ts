@@ -5,6 +5,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import ws from 'ws'
 import { createServer } from 'http'
+import { randomInt } from 'crypto'
 import {
   setupSecureWebSocket,
   generateAuthToken,
@@ -19,7 +20,7 @@ describe('Vitest WebSocket CSWSH Security', () => {
   let port: number
 
   beforeEach(async () => {
-    port = 3000 + Math.floor(Math.random() * 1000)
+    port = randomInt(3000, 4000)
     httpServer = createServer()
     authToken = generateAuthToken()
 

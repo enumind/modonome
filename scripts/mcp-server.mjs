@@ -206,7 +206,11 @@ async function toolValidateWorkItem(args) {
 }
 
 async function toolStatus(args) {
-  const repoPath = args.repo_path || process.cwd();
+  const rawPath = args.repo_path || process.cwd();
+  const repoPath = resolve(String(rawPath));
+  if (!repoPath.startsWith("/")) {
+    return { scaffolded: false, message: "repo_path must resolve to an absolute path." };
+  }
   const configPath = join(repoPath, ".modonome", "config.yaml");
 
   if (!existsSync(configPath)) {

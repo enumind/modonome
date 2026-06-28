@@ -1,0 +1,32 @@
+name: "CodeQL config"
+
+# site/support.js is GENERATED code (dc-runtime/src/*.ts → bun run build).
+# It intentionally executes user-supplied design-component scripts inside a
+# sandboxed browser context, so new Function(), innerHTML assignments, and
+# fetch() of user-provided URLs are by design. Suppressing per-file keeps the
+# alert list actionable for the hand-written source files.
+query-filters:
+  - exclude:
+      id: js/code-injection
+      paths:
+        - "site/support.js"
+  - exclude:
+      id: js/eval-call
+      paths:
+        - "site/support.js"
+  - exclude:
+      id: js/xss-through-dom
+      paths:
+        - "site/support.js"
+  - exclude:
+      id: js/prototype-pollution
+      paths:
+        - "site/support.js"
+  - exclude:
+      id: js/unsafe-external-link
+      paths:
+        - "site/support.js"
+  - exclude:
+      id: js/remote-property-injection
+      paths:
+        - "site/support.js"

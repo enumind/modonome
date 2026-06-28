@@ -22,10 +22,27 @@ const issues = [];
 
 // 1. Check for safe-to-delete files
 console.log('Checking for safe-to-delete files...');
-const allFiles = execSync('find . -type f -name "*safe-to-delete*" 2>/dev/null', { encoding: 'utf8' })
-  .trim()
-  .split('\n')
-  .filter(Boolean);
+
+function findSafeToDeleteFiles(dir) {
+  const results = [];
+  let entries;
+  try {
+    entries = fs.readdirSync(dir, { withFileTypes: true });
+  } catch {
+    return results;
+  }
+  for (const entry of entries) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      results.push(...findSafeToDeleteFiles(full));
+    } else if (entry.name.includes('safe-to-delete')) {
+      results.push(`./${path.relative(repoRoot, full)}`);
+    }
+  }
+  return results;
+}
+
+const allFiles = findSafeToDeleteFiles(repoRoot);
 
 allFiles.forEach(file => {
   const issue = {
