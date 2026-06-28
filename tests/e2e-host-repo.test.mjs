@@ -7,21 +7,27 @@
  * installed modonome via scaffold.
  *
  * Coverage:
- *   1. Scaffold idempotency — re-running scaffold never overwrites existing files
- *   2. Dry-run isolation — dry-run-sweep produces no file/git side effects
- *   3. Cycle plan validation — planCycle() enforces policy without calling models
- *   4. Maker/checker identity separation — same-model config is rejected at plan time
- *   5. Arming levers — autonomy_enabled=false blocks execute mode
- *   6. Ratchet blocks gate gaming — assertion-removal diff is rejected
- *   7. Protected-path flag — work items touching protected paths are flagged
- *   8. Config safety invariants — armed config without trusted authors is rejected
+ *   1. Fixture integrity — host tests pass independently; config.yaml is valid
+ *   2. Scaffold idempotency — re-running scaffold never overwrites existing files
+ *   3. Dry-run isolation — dry-run-sweep produces no file/git side effects
+ *      (verified via git status --porcelain, not mtime, to avoid FS timestamp drift)
+ *   4. Cycle plan validation — planCycle() enforces policy without calling models
+ *   5. Maker/checker identity separation — same-model config is rejected at plan time
+ *   6. Arming levers — default config is safe; armed misconfig is rejected
+ *   7. Ratchet blocks gate gaming — both assert-removal and skip-injection are rejected
+ *   8. Protected-path flag — work items touching protected paths are flagged
  *   9. Scaffold → dry-run → plan integration — full pre-execution ladder in order
+ *  10. Execute-path gap (test.todo) — what requires real model credentials to verify
+ *
+ * Intentional gap: group 10 documents product promises that cannot be
+ * deterministically verified in CI without live model API calls. They appear as
+ * todo entries so the gap is visible in test output, not silently absent.
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { existsSync, readdirSync, statSync, mkdirSync, writeFileSync, rmSync, readFileSync } from "node:fs";
+import { existsSync, mkdirSync, writeFileSync, rmSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { dirname, join, sep } from "node:path";
+import { dirname, join } from "node:path";
 import { spawnSync } from "node:child_process";
 
 import { scaffold } from "../scripts/scaffold.mjs";
@@ -178,38 +184,26 @@ test("scaffold: write into a fresh temp directory succeeds and is idempotent", (
 // ---------------------------------------------------------------------------
 
 test("dry-run-sweep: produces output without modifying the fixture directory", () => {
-  // Snapshot mtime of every existing file before sweep.
-  const before = new Map();
-  function snapshot(dir) {
-    for (const name of readdirSync(dir)) {
-      const full = join(dir, name);
-      const st = statSync(full);
-      if (st.isDirectory()) {
-        snapshot(full);
-      } else {
-        // Exclude runs/ directory — dry-run-sweep may write a run log there.
-        if (!full.includes(`${sep}.modonome${sep}runs${sep}`)) {
-          before.set(full, st.mtimeMs);
-        }
-      }
-    }
-  }
-
-  snapshot(fx);
-
   const result = runDrySweep(fx);
 
   // Sweep must exit cleanly.
   assert.equal(result.status, 0, `dry-run-sweep failed:\n${result.stdout}${result.stderr}`);
 
-  // Sweep must report the fixture as a dry-run.
+  // Sweep must report dry-run mode.
   assert.match(result.stdout, /dry.run/i, "output should mention dry-run mode");
 
-  // No pre-existing file outside runs/ should have been touched.
-  for (const [path, mtime] of before) {
-    const nowMtime = statSync(path).mtimeMs;
-    assert.equal(nowMtime, mtime, `dry-run-sweep modified a source file: ${path}`);
-  }
+  // Use git status --porcelain to detect any modifications to tracked files.
+  // This is more reliable than mtime comparison (which can produce false passes
+  // on overlayfs / NFS filesystems where sub-millisecond writes share a timestamp).
+  // .modonome/runs/ is gitignored, so sweep run-logs there don't appear in the output.
+  const gitStatus = spawnSync(
+    "git",
+    ["status", "--porcelain", "fixtures/host-repo-e2e/"],
+    { encoding: "utf8", cwd: root }
+  );
+  assert.equal(gitStatus.status, 0, "git status failed");
+  const dirty = (gitStatus.stdout || "").trim();
+  assert.equal(dirty, "", `dry-run-sweep left modified tracked files:\n${dirty}`);
 });
 
 test("dry-run-sweep: detects Node.js stack in host fixture", () => {
@@ -319,11 +313,21 @@ test("safetyErrors: well-formed armed config passes safety check", () => {
 // 7. Ratchet blocks gate gaming in the host repo
 // ---------------------------------------------------------------------------
 
-test("guard-ratchet: rejects assertion-removal diff from host fixture", () => {
+test("guard-ratchet: rejects assert.equal removal from Node test file", () => {
+  // Previously the ASSERT regex only matched bare assert(...) calls, missing
+  // assert.equal(), assert.throws(), etc. from Node's built-in assert module.
+  // This test proves the fix: removing assert.* method calls is now counted.
   const diff = join(fx, "ratchet-gaming-assertion-removal.patch");
   const result = runGuardRatchet(diff);
-  assert.notEqual(result.status, 0, "ratchet must reject assertion-removal diff");
-  assert.match(result.stdout + result.stderr, /assert|ratchet|FAIL/i);
+  assert.notEqual(result.status, 0, "ratchet must reject assert.equal/throws removal");
+  assert.match(result.stdout + result.stderr, /removes more test assertions/i);
+});
+
+test("guard-ratchet: rejects test.skip injection from host fixture", () => {
+  const diff = join(fx, "ratchet-gaming-skip-injection.patch");
+  const result = runGuardRatchet(diff);
+  assert.notEqual(result.status, 0, "ratchet must reject skip injection");
+  assert.match(result.stdout + result.stderr, /skipped or focused/i);
 });
 
 test("guard-ratchet: accepts a clean diff with no gate weakening", () => {
@@ -435,3 +439,49 @@ test("integration: scaffold a fresh host, sweep it, then plan a cycle — all su
     rmSync(tmp, { recursive: true, force: true });
   }
 });
+
+// ---------------------------------------------------------------------------
+// 10. Execute-path gap — documented as todo (requires live model credentials)
+//
+// These test.todo() entries are intentional. They document product promises
+// that planCycle() validates structurally but that only runCycle(--execute)
+// actually delivers. They appear in CI output as todo so the gap is visible
+// and auditable rather than silently absent from the suite.
+//
+// Each todo maps to a product promise in docs/specs/governed-autonomy-spec.md.
+// When a stub harness or replay mechanism exists, replace with a real test.
+// ---------------------------------------------------------------------------
+
+test.todo(
+  "execute: maker produces a well-formed PR branch and transcript in the host repo " +
+  "(governed-autonomy-spec §4.1 — requires ANTHROPIC_API_KEY)"
+);
+
+test.todo(
+  "execute: checker independently reviews maker output with a distinct model " +
+  "and raises at least one question per 12 runs " +
+  "(governed-autonomy-spec §4.2 — requires ANTHROPIC_API_KEY)"
+);
+
+test.todo(
+  "execute: merger lands the PR only after all CI gates pass on the host repo " +
+  "(governed-autonomy-spec §4.3 — requires real CI environment)"
+);
+
+test.todo(
+  "execute: autonomy_enabled=false prevents any git write operations " +
+  "even when called with --execute " +
+  "(governed-autonomy-spec §5.2 — requires ANTHROPIC_API_KEY)"
+);
+
+test.todo(
+  "execute: a merged change that causes a gate failure triggers rollback " +
+  "and the work item is moved to rework state " +
+  "(governed-autonomy-spec §6 + rollback.test.mjs ledger logic — requires live git push)"
+);
+
+test.todo(
+  "execute: a learning captured from a gate failure in the host repo " +
+  "flows through staging to promotion and appears in subsequent maker prompts " +
+  "(learning pipeline — requires multi-run session)"
+);

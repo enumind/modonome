@@ -83,8 +83,12 @@ const COVERAGE_CONFIG = /(?:jest|vitest)\.config\.(js|ts|mjs|cjs)$|pyproject\.to
 
 // Assertion call sites: all supported test frameworks.
 const ASSERT = new RegExp([
-  // JS / TS / Python
+  // JS / TS / Python — bare assert(...) and expect(...) calls
   String.raw`\b(expect|assert|assertEqual|assertTrue|assertFalse|should)\b\s*\(`,
+  // Node.js built-in assert module — assert.equal(), assert.strictEqual(), etc.
+  // These are the most common assertion style in Node test suites and were previously
+  // uncounted because assert\b\s*\( only matched bare assert() calls, not method chains.
+  String.raw`\bassert\s*\.\s*(ok|equal|strictEqual|notEqual|notStrictEqual|deepEqual|deepStrictEqual|notDeepEqual|notDeepStrictEqual|throws|doesNotThrow|rejects|doesNotReject|match|doesNotMatch|ifError|fail)\s*\(`,
   // Java: JUnit 4/5, AssertJ, Hamcrest, Mockito
   String.raw`\b(assertEquals|assertNotEquals|assertNotNull|assertNull|assertSame|assertThat|assertThrows|assertDoesNotThrow|assertAll|assertArrayEquals|fail)\s*\(`,
   String.raw`\bverify\s*\(`,

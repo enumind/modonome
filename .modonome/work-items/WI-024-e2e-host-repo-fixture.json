@@ -6,10 +6,13 @@
   "maker_model": "claude-sonnet-4-6",
   "attempts": 1,
   "max_attempts": 3,
-  "touches_protected_path": false,
+  "touches_protected_path": true,
   "allowed_edit_set": [
     "fixtures/host-repo-e2e/",
     "tests/e2e-host-repo.test.mjs",
+    "scripts/guard-ratchet.mjs",
+    ".gitignore",
+    "RELEASE-EVIDENCE.md",
     ".modonome/work-items/WI-024-e2e-host-repo-fixture.json"
   ],
   "gates": [
