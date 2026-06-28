@@ -1,3 +1,10 @@
+---
+status: active
+owner: "@nateshpp"
+last_reviewed: 2026-06-28
+canonical: [vscode-workflow]
+---
+
 # VS Code manual trigger workflow
 
 Run modonome from VS Code on demand, one work item at a time, using your existing

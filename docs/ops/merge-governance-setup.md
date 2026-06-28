@@ -1,3 +1,10 @@
+---
+status: active
+owner: "@nateshpp"
+last_reviewed: 2026-06-28
+canonical: [merge-governance-setup]
+---
+
 # Merge governance setup (owner action)
 
 The merger in this repo is a deterministic GitHub rule set, not a person and not the

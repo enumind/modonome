@@ -1,3 +1,10 @@
+---
+status: active
+owner: "@nateshpp"
+last_reviewed: 2026-06-28
+canonical: [knowledge-network-architecture]
+---
+
 # Cross-Repo Knowledge Network: v0.2 Architecture
 
 **Status:** Final for owner decision (Tier 4)

@@ -1,3 +1,10 @@
+---
+status: active
+owner: "@nateshpp"
+last_reviewed: 2026-06-28
+canonical: [ratchet-spec]
+---
+
 # Anti-Gaming Ratchet Specification
 
 **Version:** 0.1-draft  

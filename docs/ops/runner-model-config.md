@@ -1,3 +1,10 @@
+---
+status: active
+owner: "@nateshpp"
+last_reviewed: 2026-06-28
+canonical: [runner-model-config]
+---
+
 # Runner and Model Configuration (WS-H)
 
 Each cost-bearing agent role reads its runner and model from `.modonome/config.yaml`.

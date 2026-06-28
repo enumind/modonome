@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "id": "WI-023-md-frontmatter-adr-fix",
+  "state": "making",
+  "maker_id": "claude-sonnet-4-6",
+  "maker_model": "claude-sonnet-4-6",
+  "attempts": 1,
+  "max_attempts": 3,
+  "touches_protected_path": false,
+  "allowed_edit_set": [
+    "docs/audits/claims-audit-2026-06-25.md",
+    "docs/enterprise.md",
+    "docs/knowledge-network-architecture.md",
+    "docs/ops/merge-governance-setup.md",
+    "docs/ops/runner-model-config.md",
+    "docs/versioning.md",
+    "docs/vscode-workflow.md",
+    "docs/compliance/compliance.md",
+    "docs/compliance/eu-ai-act-classification.md",
+    "docs/research/agentic-governance-mesh/00-RESEARCH-PLAN.md",
+    "docs/research/agentic-governance-mesh/governance-mesh-vision.md",
+    "docs/specs/governed-autonomy-spec.md",
+    "docs/specs/ratchet-spec.md",
+    "docs/research/agentic-governance-mesh/research-plan.md",
+    ".modonome/work-items/WI-023-md-frontmatter-adr-fix.json"
+  ],
+  "gates": [
+    "node scripts/check-md-governance.mjs"
+  ]
+}

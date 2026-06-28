@@ -1,3 +1,10 @@
+---
+status: active
+owner: "@nateshpp"
+last_reviewed: 2026-06-28
+canonical: [governed-autonomy-spec]
+---
+
 # Governed Autonomy: A Specification for Safe Autonomous Software Engineering Agents
 
 **Version:** 0.1-draft  

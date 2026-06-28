@@ -31,6 +31,7 @@ be added here once the owner arms the loop on this repo.
 
 - claimed: 2
 - done: 18
+- making: 1
 - queued: 1
 
 ## Sample-app captures

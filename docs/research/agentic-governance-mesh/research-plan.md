@@ -1,3 +1,10 @@
+---
+status: active
+owner: "@nateshpp"
+last_reviewed: 2026-06-28
+canonical: [agentic-governance-mesh-research-plan]
+---
+
 # Agentic Governance Mesh: Research Direction
 
 **Status:** Exploratory Research (not a committed roadmap)  

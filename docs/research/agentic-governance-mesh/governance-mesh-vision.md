@@ -1,3 +1,10 @@
+---
+status: active
+owner: "@nateshpp"
+last_reviewed: 2026-06-28
+canonical: [governance-mesh-vision]
+---
+
 # The Governance Mesh Vision: Modonome as a WWW for Repositories
 
 **Date:** 2026-06-25  

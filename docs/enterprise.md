@@ -1,3 +1,10 @@
+---
+status: active
+owner: "@nateshpp"
+last_reviewed: 2026-06-28
+canonical: [enterprise]
+---
+
 # Enterprise estates
 
 Enterprise software rarely lives in one clean Git repo. Modonome treats the adoption target

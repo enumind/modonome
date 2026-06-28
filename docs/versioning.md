@@ -1,3 +1,10 @@
+---
+status: active
+owner: "@nateshpp"
+last_reviewed: 2026-06-28
+canonical: [versioning]
+---
+
 # Versioning and embedding
 
 Modonome is built to be vendored into many repos and upgraded safely.

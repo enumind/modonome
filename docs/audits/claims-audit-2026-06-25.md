@@ -1,3 +1,10 @@
+---
+status: active
+owner: "@nateshpp"
+last_reviewed: 2026-06-25
+canonical: [claims-audit-2026-06-25]
+---
+
 # Claims audit, 2026-06-25
 
 A claim-by-claim inventory of what Modonome's documents and website promise

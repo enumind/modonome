@@ -16,7 +16,7 @@ Explores how Modonome could evolve from a single-repo governance tool into a glo
 where repositories share governance knowledge without central authority.
 
 **Start here:**
-1. `00-RESEARCH-PLAN.md`: Research hypothesis, scope, and v0.1 experiment plan
+1. `research-plan.md`: Research hypothesis, scope, and v0.1 experiment plan
 2. `governance-mesh-vision.md`: Strategic vision and architectural layers (for reference)
 3. `RD-027` through `RD-032`: Detailed design proposals for each architectural layer
 
@@ -55,7 +55,7 @@ happens in parallel.
 
 If you want to provide feedback on research proposals:
 
-1. Read the research plan document first (e.g., `agentic-governance-mesh/00-RESEARCH-PLAN.md`)
+1. Read the research plan document first (e.g., `agentic-governance-mesh/research-plan.md`)
 2. File an issue or discussion with the specific proposal (e.g., "Feedback on GPP v1 format")
 3. Reference the ADR number if your feedback is about a specific decision
 
