@@ -48,7 +48,7 @@ try {
     process.exit(1);
   }
 } catch {
-  // not found — safe to proceed
+  // not found, safe to proceed
 }
 
 // Update package.json version
@@ -79,5 +79,5 @@ run(`git commit -m "chore(release): v${newVersion}"`);
 run(`git tag -a "v${newVersion}" -m "Release v${newVersion}\n\n${changelogEntry}"`);
 
 console.log(`\nRelease v${newVersion} prepared.`);
-console.log(`\nNext step — push to trigger CI publish:\n`);
+console.log(`\nNext step: push to trigger CI publish:\n`);
 console.log(`  git push --follow-tags origin main\n`);

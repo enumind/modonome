@@ -25,11 +25,11 @@ jobs:
 
       - run: npm ci
 
-      - name: Guard — package.json must not be a stale next version
+      - name: Guard - package.json must not be a stale next version
         run: |
           PKGVER=$(node -p "require('./package.json').version")
           if echo "$PKGVER" | grep -qE '\-next\.'; then
-            echo "package.json has stale edge version $PKGVER — run stable release first"
+            echo "package.json has stale edge version $PKGVER - run stable release first"
             exit 1
           fi
 
@@ -40,7 +40,7 @@ jobs:
           STAMP=$(date -u +%Y%m%d%H%M%S)
           echo "edge=${BASE}-next.${STAMP}" >> $GITHUB_OUTPUT
 
-      - name: Stamp edge version (ephemeral — not committed)
+      - name: Stamp edge version (ephemeral, not committed)
         run: npm version ${{ steps.ver.outputs.edge }} --no-git-tag-version
 
       - name: Run governance gates

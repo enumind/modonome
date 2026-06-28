@@ -146,7 +146,7 @@ try {
   }
 } catch (e) {
   // Non-fatal in non-CI or when base branch isn't available
-  console.log('  (skipped — not a PR context)');
+  console.log('  (skipped: not a PR context)');
 }
 
 // 6. Check for Math.random() in scripts (insecure randomness; use crypto.randomBytes)

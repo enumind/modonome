@@ -36,7 +36,7 @@ jobs:
             exit 1
           fi
 
-      - name: Guard — no prerelease version to latest
+      - name: Guard - no prerelease version to latest
         run: |
           VERSION=$(node -p "require('./package.json').version")
           if echo "$VERSION" | grep -qE '\-(next|alpha|beta|rc)\.'; then
