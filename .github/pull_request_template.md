@@ -8,7 +8,7 @@
 - [ ] No em dashes in any tracked file (the style check rejects them)
 - [ ] Prose states conclusions directly (style check rejects hedging phrases)
 - [ ] No AI co-author lines in commit messages
-- [ ] If ratchet logic changed: updated `RATCHET-SPEC.md` and added/updated a fixture
+- [ ] If ratchet logic changed: updated `docs/specs/ratchet-spec.md` and added/updated a fixture
 - [ ] If a new AgentProof scenario: fixture is zero-false-positive (clean diff does not trigger it)
 - [ ] If config schema changed: `schema_version` bumped and CHANGELOG entry added
 - [ ] If prompt changed: `npm run build:prompt` regenerated the bundle

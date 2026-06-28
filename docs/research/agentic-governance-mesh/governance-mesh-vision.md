@@ -46,7 +46,7 @@ Think of it as:
 
 ## The Architectural Layers
 
-### Layer 1: Protocol (ADR-027)
+### Layer 1: Protocol (RD-027)
 **Governance Packet Protocol (GPP) v1**
 - JSON-based, content-addressed (immutable via SHA256)
 - Ed25519 signing for authenticity
@@ -56,7 +56,7 @@ Think of it as:
 
 **Benefit:** Any system can implement GPP; interoperability across governance frameworks.
 
-### Layer 2: Discovery (ADR-028)
+### Layer 2: Discovery (RD-028)
 **Trust Network & Decentralized Discovery**
 - Repos follow trusted repos (like social networks)
 - Packets propagate via gossip (no central index required)
@@ -65,7 +65,7 @@ Think of it as:
 
 **Benefit:** Discovery is decentralized; no single entity controls what's visible.
 
-### Layer 3: Evolution (ADR-029)
+### Layer 3: Evolution (RD-029)
 **Packet Lifecycle & Versioning**
 - Packets evolve through states: published → advisory → stable → superseded → archived
 - Content-addressed IDs never change; state evolves via amendments
@@ -74,7 +74,7 @@ Think of it as:
 
 **Benefit:** Packets can improve and retire gracefully without breaking content addresses.
 
-### Layer 4: Trust & Feedback (ADR-030)
+### Layer 4: Trust & Feedback (RD-030)
 **Cross-Repo Governance Feedback**
 - Repos publish validation signals when they adopt/reject packets
 - Feedback propagates through trust networks
@@ -83,7 +83,7 @@ Think of it as:
 
 **Benefit:** Trust is earned through use, not granted by a central authority.
 
-### Layer 5: Safety (ADR-031 + ADR-032)
+### Layer 5: Safety (RD-031 + RD-032)
 **Conflict Detection & Network-Level Ratchet**
 - Packets declare incompatibilities (no silent conflicts)
 - Import-time conflict detection
@@ -207,12 +207,12 @@ The second is more valuable, more aligned with open source, and scales indefinit
 
 Start here for the big picture, then dive into specifics:
 
-1. **ADR-027: Governance Packet Protocol**: understand the format
-2. **ADR-028: Trust Network & Discovery**: understand how packets spread
-3. **ADR-029: Packet Lifecycle & Versioning**: understand how packets evolve
-4. **ADR-030: Cross-Repo Governance Feedback**: understand trust propagation
-5. **ADR-031: Semantic Compatibility & Conflicts**: understand safety
-6. **ADR-032: Network-Level Ratchet**: understand network-level enforcement
+1. **RD-027: Governance Packet Protocol**: understand the format
+2. **RD-028: Trust Network & Discovery**: understand how packets spread
+3. **RD-029: Packet Lifecycle & Versioning**: understand how packets evolve
+4. **RD-030: Cross-Repo Governance Feedback**: understand trust propagation
+5. **RD-031: Semantic Compatibility & Conflicts**: understand safety
+6. **RD-032: Network-Level Ratchet**: understand network-level enforcement
 
 Then relate them back to the existing architecture:
 - **ADR-024 (Capability Promotion Gate)**: governs local adoption

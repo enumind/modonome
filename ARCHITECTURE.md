@@ -210,7 +210,7 @@ flowchart TB
 ```
 
 The engine is stack-independent. It normalizes work by intent, evidence, and interface
-contract rather than by language or framework. The `ENTERPRISE.md` adoption table lists
+contract rather than by language or framework. The `docs/enterprise.md` adoption table lists
 ten estate types: product app repos, monorepos, microservice estates, mainframe, SAP,
 Oracle, Salesforce, ServiceNow, low-code or RPA, and data or BI.
 

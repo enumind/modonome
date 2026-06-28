@@ -1,4 +1,4 @@
-# ADR-028: Trust Network & Discovery
+# RD-028: Trust Network & Discovery
 
 **Status:** Proposed  
 **Date:** 2026-06-25  
@@ -107,6 +107,6 @@ packets through trust networks, not a central index.
 
 ## Related
 
-- ADR-027 (Governance Packet Protocol): defines the packet format
+- RD-027 (Governance Packet Protocol): defines the packet format
 - ADR-024 (Capability Promotion Gate): governs how packets are adopted
-- ADR-030 (Cross-Repo Governance Feedback): trust propagation
+- RD-030 (Cross-Repo Governance Feedback): trust propagation

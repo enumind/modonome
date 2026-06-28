@@ -1,4 +1,4 @@
-# ADR-032: Network-Level Ratchet
+# RD-032: Network-Level Ratchet
 
 **Status:** Proposed  
 **Date:** 2026-06-25  
@@ -89,6 +89,6 @@ multiple repos.
 
 ## Related
 
-- ADR-030 (Cross-Repo Governance Feedback): feeds signals to the network ratchet
-- ADR-031 (Semantic Compatibility & Conflicts): conflict detection is a network signal
+- RD-030 (Cross-Repo Governance Feedback): feeds signals to the network ratchet
+- RD-031 (Semantic Compatibility & Conflicts): conflict detection is a network signal
 - ADR-025 (Self-Application Conformance): Modonome publishes signals about its own packets

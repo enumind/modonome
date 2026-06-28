@@ -88,7 +88,7 @@ for (const l of learnings) {
   if (l.correction_signal_id) {
     const sigId = String(l.correction_signal_id);
     if (!sigId.includes("/")) {
-      problems.push(`${tag}: correction_signal_id "${sigId}" is not a repo-relative path. All references must be committed documents so the audit trail is self-contained (e.g. docs/CLAIMS-AUDIT-2026-06-25.md).`);
+      problems.push(`${tag}: correction_signal_id "${sigId}" is not a repo-relative path. All references must be committed documents so the audit trail is self-contained (e.g. docs/audits/claims-audit-2026-06-25.md).`);
     } else if (!existsSync(join(root, sigId))) {
       problems.push(`${tag}: correction_signal_id "${sigId}" looks like a path but does not exist.`);
     }

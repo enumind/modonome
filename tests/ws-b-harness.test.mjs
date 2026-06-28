@@ -31,11 +31,23 @@ function cfg(overrides = {}) {
 const RID = "2026-06-26T00-00-00-000Z";
 
 test("renderPrompt substitutes placeholders from the env", () => {
-  const out = renderPrompt("maker", { MAKER_ID: "maker:x", MAKER_MODEL: "claude-haiku-4-5", RUN_BRANCH: "modonome/run-1" });
+  const out = renderPrompt("maker", {
+    MAKER_ID: "maker:x", MAKER_MODEL: "claude-haiku-4-5", RUN_BRANCH: "modonome/run-1",
+    PROMOTED_LEARNINGS: "- L-001: test lesson (gate: scripts/test.mjs)",
+  });
   assert.match(out, /maker_id to 'maker:x'/);
   assert.match(out, /maker_model to 'claude-haiku-4-5'/);
   assert.match(out, /branch 'modonome\/run-1'/);
   assert.doesNotMatch(out, /\$\{/, "no unsubstituted placeholders remain");
+});
+
+test("renderPrompt injects promoted learnings into maker prompt", () => {
+  const out = renderPrompt("maker", {
+    MAKER_ID: "maker:x", MAKER_MODEL: "claude-haiku-4-5", RUN_BRANCH: "b",
+    PROMOTED_LEARNINGS: "- L-001: never do X (gate: scripts/check-x.mjs)",
+  });
+  assert.match(out, /never do X/);
+  assert.doesNotMatch(out, /\$\{/);
 });
 
 test("renderPrompt throws when a referenced variable is unset", () => {

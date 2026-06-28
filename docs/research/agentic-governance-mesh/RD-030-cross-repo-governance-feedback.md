@@ -1,4 +1,4 @@
-# ADR-030: Cross-Repo Governance Feedback
+# RD-030: Cross-Repo Governance Feedback
 
 **Status:** Proposed  
 **Date:** 2026-06-25  
@@ -95,6 +95,6 @@ so I have more confidence in A's packet."
 
 ## Related
 
-- ADR-028 (Trust Network & Discovery): feedback flows through trust networks
-- ADR-031 (Semantic Compatibility & Conflicts): feedback helps detect conflicts
-- ADR-032 (Network-Level Ratchet): uses feedback to detect malicious patterns
+- RD-028 (Trust Network & Discovery): feedback flows through trust networks
+- RD-031 (Semantic Compatibility & Conflicts): feedback helps detect conflicts
+- RD-032 (Network-Level Ratchet): uses feedback to detect malicious patterns

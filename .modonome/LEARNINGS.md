@@ -31,7 +31,7 @@ correction signal that produced it. The block below is validated in CI by
   {
     "id": "L-001",
     "lesson": "Shipped sample telemetry must conform to its schema and must never be presented as real measured data.",
-    "correction_signal_id": "docs/CLAIMS-AUDIT-2026-06-25.md",
+    "correction_signal_id": "docs/audits/claims-audit-2026-06-25.md",
     "observation_date": "2026-06-25",
     "promotion_date": "2026-06-25",
     "evidence_summary": "Audit found .modonome/metrics.jsonl used non-schema fields (type, id) and carried synthetic merge events presented as telemetry.",
@@ -41,7 +41,7 @@ correction signal that produced it. The block below is validated in CI by
   {
     "id": "L-002",
     "lesson": "Every path named in CODEOWNERS must also appear in protected_paths_extra, so protection is real rather than nominal.",
-    "correction_signal_id": "docs/CLAIMS-AUDIT-2026-06-25.md",
+    "correction_signal_id": "docs/audits/claims-audit-2026-06-25.md",
     "observation_date": "2026-06-25",
     "promotion_date": "2026-06-25",
     "evidence_summary": "bin/ was protected by CODEOWNERS but missing from protected_paths_extra in config.",

@@ -63,7 +63,7 @@ work is undertaken.
 | EU AI Act requirement | Modonome control |
 |----------------------|-----------------|
 | Human oversight (Article 14) | Activation ladder requires principal arming. Armed mode gate checklist includes code-owner review. Protected paths always require principal approval. |
-| Transparency to deployers (Article 13) | This document, GOVERNANCE.md, COMPLIANCE.md, and the Governed Autonomy Specification provide disclosure of capabilities, limitations, and risk controls. |
+| Transparency to deployers (Article 13) | This document, GOVERNANCE.md, docs/compliance/compliance.md, and the Governed Autonomy Specification provide disclosure of capabilities, limitations, and risk controls. |
 | Accuracy and robustness (Article 15) | Anti-gaming ratchet prevents gate weakening. Deterministic gates are required before any merge. |
 | Record-keeping (Article 12) | Metrics JSONL records all items attempted, gates passed/failed, and merge events. Work items record maker/checker identities and gate results. |
 | Incident and anomaly logging | Escalation reason recorded in work item on any gate failure or ratchet rejection. |

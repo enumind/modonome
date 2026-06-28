@@ -22,6 +22,32 @@ The project runs `node scripts/check-style.mjs .` on every PR. It rejects em das
 weasel phrases, and AI authorship signatures in any tracked file. Write plainly.
 See `scripts/check-style.mjs` for the exact list of banned patterns.
 
+## Documentation
+
+Documentation placement, naming, coherence, and cleanup follow
+`docs/guidelines/markdown-governance.md` (ADR-031). Before adding, moving, or deleting a
+Markdown file, read that policy and run `node scripts/check-md-governance.mjs`. Markdown
+deletion is deny-by-default: it requires an owner-approved work item and a `DECISIONS.md`
+entry. Keep each topic to one source of truth and cross-link rather than copy.
+
+## Session artifacts
+
+Producing a document in response to a user question is a chat response, not a file.
+Write a new file to the repo only when the user explicitly asks for it to be committed
+or added to the codebase ("add this to the repo", "commit this as a doc", "write this
+to docs/"). For everything else, respond inline in chat: explanations, plans, Q&A
+writeups, offline reference material.
+
+When a single request mixes repo work and personal artifacts (a code change plus a
+marketing plan, for example), commit only the repo change. Surface the personal
+artifact inline so the user can copy it from the transcript.
+
+For artifacts the user wants saved as files but not committed, use the session
+scratchpad (/tmp/claude-0/.../scratchpad), not the working tree.
+
+When the intended destination is unclear, ask: "Should this go into the repo, or is
+this for your reference?"
+
 ## Guardrails
 
 - Stay within the `allowed_edit_set` the work item specifies.

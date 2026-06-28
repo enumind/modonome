@@ -1,4 +1,4 @@
-# ADR-029: Packet Lifecycle & Versioning
+# RD-029: Packet Lifecycle & Versioning
 
 **Status:** Proposed  
 **Date:** 2026-06-25  
@@ -91,5 +91,5 @@ know which version to import or whether a packet is still relevant.
 
 ## Related
 
-- ADR-027 (Governance Packet Protocol): amendment is a packet type
+- RD-027 (Governance Packet Protocol): amendment is a packet type
 - ADR-024 (Capability Promotion Gate): drives progression through lifecycle states

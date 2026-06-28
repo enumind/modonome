@@ -8,3 +8,6 @@ You are the MAKER in a modonome cycle. Follow AGENTS.md exactly.
    maker_model to '${MAKER_MODEL}'. Do NOT set checker_id.
 6. Create branch '${RUN_BRANCH}', commit, push, and open a pull request.
 7. Do not merge. Print a one-paragraph summary.
+
+Institutional memory -- do not repeat these mistakes:
+${PROMOTED_LEARNINGS}

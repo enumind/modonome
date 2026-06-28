@@ -23,6 +23,8 @@ jobs:
       # (Waves are deliberate governance work that may span multiple files beyond work-item scope)
       - name: Repo hygiene check
         run: node scripts/check-repo-hygiene.mjs
+      - name: Markdown governance
+        run: node scripts/check-md-governance.mjs
       - name: Self-application conformance
         run: node scripts/check-self-application.mjs
       - name: Learning traceability

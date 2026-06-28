@@ -1,4 +1,4 @@
-# ADR-031: Semantic Compatibility & Conflicts
+# RD-031: Semantic Compatibility & Conflicts
 
 **Status:** Proposed  
 **Date:** 2026-06-25  
@@ -93,5 +93,5 @@ Without conflict detection, incompatible packets silently co-exist, leading to b
 
 ## Related
 
-- ADR-030 (Cross-Repo Governance Feedback): feedback includes conflict reports
-- ADR-032 (Network-Level Ratchet): detects widespread conflicts (signal of bad packet)
+- RD-030 (Cross-Repo Governance Feedback): feedback includes conflict reports
+- RD-032 (Network-Level Ratchet): detects widespread conflicts (signal of bad packet)
