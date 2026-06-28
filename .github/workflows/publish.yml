@@ -1,0 +1,113 @@
+name: Publish stable
+
+on:
+  push:
+    tags: ['v*']
+
+concurrency:
+  group: publish-stable
+  cancel-in-progress: false
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: package.json
+          registry-url: https://registry.npmjs.org
+
+      - run: npm ci
+
+      - name: Version guard
+        run: |
+          TAG_VER="${GITHUB_REF#refs/tags/v}"
+          if ! echo "$TAG_VER" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "Stable tag must be clean semver with no prerelease suffix: $TAG_VER"
+            exit 1
+          fi
+          PKG_VER=$(node -p "require('./package.json').version")
+          if [ "$TAG_VER" != "$PKG_VER" ]; then
+            echo "Tag v$TAG_VER does not match package.json version $PKG_VER"
+            exit 1
+          fi
+
+      - name: Guard — no prerelease version to latest
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if echo "$VERSION" | grep -qE '\-(next|alpha|beta|rc)\.'; then
+            echo "Pre-release version $VERSION must not publish to latest dist-tag"
+            exit 1
+          fi
+
+      - name: Run governance gates
+        run: npm run evidence
+
+      - name: Verify published artifact
+        run: npm pack --dry-run
+
+  publish:
+    needs: gate
+    runs-on: ubuntu-latest
+    environment: npm-publish
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: package.json
+          registry-url: https://registry.npmjs.org
+
+      - run: npm ci
+
+      - name: Check if already published
+        id: check
+        run: |
+          VER=$(node -p "require('./package.json').version")
+          FOUND=$(npm view "modonome@${VER}" version 2>/dev/null || echo "")
+          if [ "$FOUND" = "$VER" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+          echo "version=$VER" >> $GITHUB_OUTPUT
+
+      - name: Dry-run publish
+        if: steps.check.outputs.skip == 'false'
+        run: npm publish --dry-run
+
+      - name: Publish to latest
+        if: steps.check.outputs.skip == 'false'
+        run: npm publish --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Verify on registry
+        if: steps.check.outputs.skip == 'false'
+        run: |
+          sleep 5
+          PUBLISHED=$(npm view "modonome@${{ steps.check.outputs.version }}" version 2>/dev/null || echo "")
+          if [ "$PUBLISHED" != "${{ steps.check.outputs.version }}" ]; then
+            echo "Registry verification failed: expected ${{ steps.check.outputs.version }}, got $PUBLISHED"
+            exit 1
+          fi
+
+      - name: Create GitHub Release
+        if: steps.check.outputs.skip == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          NOTES=$(git tag -l --format='%(contents:body)' "$GITHUB_REF_NAME")
+          gh release create "$GITHUB_REF_NAME" \
+            --title "$GITHUB_REF_NAME" \
+            --notes "$NOTES" \
+            --latest

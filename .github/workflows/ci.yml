@@ -13,7 +13,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: 20
+          node-version-file: package.json
       - name: Drift guard
         run: node scripts/check-drift.mjs
       - name: Governance-relevant change assertion
@@ -68,7 +68,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: 20
+          node-version-file: package.json
       # Run the anti-gaming ratchet from the trusted base-branch copy. The diff it
       # judges is the pull request's committed change set; the logic that judges
       # that diff stays the base-branch version, outside the pull request's reach.

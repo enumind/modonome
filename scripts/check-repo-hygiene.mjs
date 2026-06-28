@@ -118,7 +118,38 @@ uniqueRefs.forEach(num => {
   }
 });
 
-// 5. Check for Math.random() in scripts (insecure randomness; use crypto.randomBytes)
+// 5. Guard: package.json version field must not change except in a release commit
+console.log('\nChecking package.json version field...');
+try {
+  const isCI = process.env.CI === 'true';
+  const isPR = process.env.GITHUB_EVENT_NAME === 'pull_request';
+  if (isCI && isPR) {
+    const baseRef = process.env.GITHUB_BASE_REF || 'main';
+    const baseVersion = execSync(
+      `git show origin/${baseRef}:package.json`,
+      { encoding: 'utf8' }
+    );
+    const baseVer = JSON.parse(baseVersion).version;
+    const headPkg = JSON.parse(fs.readFileSync(path.join(repoRoot, 'package.json'), 'utf8'));
+    if (baseVer !== headPkg.version) {
+      // Allow only if the tip commit message starts with chore(release):
+      const tipMsg = execSync('git log -1 --format=%s', { encoding: 'utf8' }).trim();
+      if (!tipMsg.startsWith('chore(release):')) {
+        issues.push({
+          type: 'VERSION_FIELD_CHANGED',
+          file: 'package.json',
+          message: `package.json version changed from ${baseVer} to ${headPkg.version} without a chore(release): commit. Version bumps must go through scripts/release.mjs.`
+        });
+        console.log(`  ✗ version changed: ${baseVer} → ${headPkg.version}`);
+      }
+    }
+  }
+} catch (e) {
+  // Non-fatal in non-CI or when base branch isn't available
+  console.log('  (skipped — not a PR context)');
+}
+
+// 6. Check for Math.random() in scripts (insecure randomness; use crypto.randomBytes)
 console.log('\nChecking for insecure randomness in scripts...');
 const scriptDir = path.join(repoRoot, 'scripts');
 fs.readdirSync(scriptDir)

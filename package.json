@@ -27,7 +27,10 @@
     "agentproof": "node agentproof/runner.mjs",
     "report": "node scripts/report.mjs",
     "demo:agent": "node scripts/agent/run-cycle.mjs",
-    "prepare": "node scripts/install-hooks.mjs"
+    "prepare": "node scripts/install-hooks.mjs",
+    "release": "node scripts/release.mjs",
+    "preversion": "npm run verify",
+    "prepublishOnly": "node --test tests/*.test.mjs"
   },
   "files": [
     "bin",
@@ -38,6 +41,10 @@
     "docs",
     "agentproof"
   ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
