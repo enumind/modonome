@@ -74,7 +74,7 @@ protected_paths_extra: [pyproject.toml, requirements.txt, alembic]
 
 See `examples/node-typescript` and `examples/python-service` for working repos with captured
 dry-run transcripts. For mainframe and packaged-platform estates, see
-[ENTERPRISE.md](ENTERPRISE.md).
+[docs/enterprise.md](docs/enterprise.md).
 
 ## Strengthening your app
 

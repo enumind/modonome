@@ -58,4 +58,4 @@ The following NIST and OWASP controls are not yet fully implemented in v0.1-alph
 | Before/after tech debt quantification (supports Measure) | `modonome report` ships in v0.1.0-alpha; quantified before/after deltas (shadow-mode comparison): ADR-002, v0.2 |
 | Multi-repo aggregate risk view (supports Map, Measure) | Cross-repo metrics: v0.3 |
 
-See `GOVERNED-AUTONOMY-SPEC.md` for the full specification and conformance level definitions.
+See `docs/specs/governed-autonomy-spec.md` for the full specification and conformance level definitions.

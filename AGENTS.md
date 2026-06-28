@@ -22,6 +22,14 @@ The project runs `node scripts/check-style.mjs .` on every PR. It rejects em das
 weasel phrases, and AI authorship signatures in any tracked file. Write plainly.
 See `scripts/check-style.mjs` for the exact list of banned patterns.
 
+## Documentation
+
+Documentation placement, naming, coherence, and cleanup follow
+`docs/guidelines/markdown-governance.md` (ADR-031). Before adding, moving, or deleting a
+Markdown file, read that policy and run `node scripts/check-md-governance.mjs`. Markdown
+deletion is deny-by-default: it requires an owner-approved work item and a `DECISIONS.md`
+entry. Keep each topic to one source of truth and cross-link rather than copy.
+
 ## Guardrails
 
 - Stay within the `allowed_edit_set` the work item specifies.

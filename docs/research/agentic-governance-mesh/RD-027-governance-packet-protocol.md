@@ -1,4 +1,4 @@
-# ADR-027: Governance Packet Protocol
+# RD-027: Governance Packet Protocol
 
 **Status:** Proposed  
 **Date:** 2026-06-25  
@@ -82,4 +82,4 @@ protocol for governance packets.
 
 - ADR-017 (Packet Signing)
 - ADR-024 (Capability Promotion Gate)
-- ADR-028 (Trust Network & Discovery)
+- RD-028 (Trust Network & Discovery)

@@ -16,11 +16,11 @@ structurally separate, enforced in CI. Off by default, and it runs without a cen
   <a href="https://modonome.com">Website</a> ·
   <a href="QUICKSTART.md">Quickstart</a> ·
   <a href="ADOPTION-GUIDE.md">Adoption guide</a> ·
-  <a href="ENTERPRISE.md">Enterprise</a> ·
+  <a href="docs/enterprise.md">Enterprise</a> ·
   <a href="SECURITY.md">Security</a> ·
   <a href="GOVERNANCE.md">Governance</a> ·
-  <a href="COMPLIANCE.md">Compliance</a> ·
-  <a href="GOVERNED-AUTONOMY-SPEC.md">Specification</a> ·
+  <a href="docs/compliance/compliance.md">Compliance</a> ·
+  <a href="docs/specs/governed-autonomy-spec.md">Specification</a> ·
   <a href="agentproof/README.md">AgentProof</a>
 </p>
 
@@ -33,7 +33,7 @@ structurally separate, enforced in CI. Off by default, and it runs without a cen
 
 ---
 
-Autonomous coding agents have a predictable failure mode: they weaken gates to go green (removing test assertions, adding skips, loosening type checks). Modonome blocks that in CI: the anti-gaming ratchet runs from a base-branch copy the agent's run does not control, and it rejects diffs that weaken a gate. We published the [governed-autonomy spec](GOVERNED-AUTONOMY-SPEC.md), and Modonome is the reference implementation for agent gate integrity, scoring **[25/25 on AgentProof](agentproof/README.md)** (hardening against known gaming patterns, not a certificate of full autonomy governance).
+Autonomous coding agents have a predictable failure mode: they weaken gates to go green (removing test assertions, adding skips, loosening type checks). Modonome blocks that in CI: the anti-gaming ratchet runs from a base-branch copy the agent's run does not control, and it rejects diffs that weaken a gate. We published the [governed-autonomy spec](docs/specs/governed-autonomy-spec.md), and Modonome is the reference implementation for agent gate integrity, scoring **[25/25 on AgentProof](agentproof/README.md)** (hardening against known gaming patterns, not a certificate of full autonomy governance).
 
 ## Why businesses adopt Modonome
 
@@ -45,8 +45,8 @@ independently checked by a separate role, and gated before it can merge. It adop
 existing CI, code owners, and branch rules on day one, and adds no new platform or service.
 
 Support for mainframe, SAP, Oracle, Salesforce, ServiceNow, low-code, and data estates is on
-the roadmap, not shipped today. See [ENTERPRISE.md](ENTERPRISE.md) for the design and
-[docs/CLAIMS-AUDIT-2026-06-25.md](docs/CLAIMS-AUDIT-2026-06-25.md) for what is enforced now.
+the roadmap, not shipped today. See [docs/enterprise.md](docs/enterprise.md) for the design and
+[docs/audits/claims-audit-2026-06-25.md](docs/audits/claims-audit-2026-06-25.md) for what is enforced now.
 
 ## Try it in 60 seconds (read-only)
 
@@ -139,7 +139,7 @@ node agentproof/runner.mjs
 ```
 
 Read [SECURITY.md](SECURITY.md), [GOVERNANCE.md](GOVERNANCE.md), and
-[GOVERNED-AUTONOMY-SPEC.md](GOVERNED-AUTONOMY-SPEC.md).
+[docs/specs/governed-autonomy-spec.md](docs/specs/governed-autonomy-spec.md).
 
 ## Embed it
 
@@ -149,7 +149,7 @@ Read [SECURITY.md](SECURITY.md), [GOVERNANCE.md](GOVERNANCE.md), and
 - Package: import the schemas and scripts, keep config and state local.
 
 Upgrades preserve your config. New levers always arrive with safe defaults, so an update
-leaves an engine disarmed unless an owner arms it. See [docs/VERSIONING.md](docs/VERSIONING.md).
+leaves an engine disarmed unless an owner arms it. See [docs/versioning.md](docs/versioning.md).
 
 ## Examples
 

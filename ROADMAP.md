@@ -16,7 +16,7 @@ shift. Each item lands only when its own gates are green.
 - Knowledge packet publish and import pipeline out of advisory mode.
 - Central catalog design (opt-in, hash-only identity, no ranking).
 - Network-level ratchet: imported patterns require local gate validation before adoption.
-- Stack-normalized packet taxonomy covering the ten estate types in ENTERPRISE.md.
+- Stack-normalized packet taxonomy covering the ten estate types in docs/enterprise.md.
 
 ## Milestone 3 · Control panel and metrics dashboard
 
@@ -86,7 +86,7 @@ a central authority.
 
 **Key research phases (subject to proof-of-concept results):**
 
-- **Phase 1 (Q4 2026):** Governance Packet Protocol (ADR-027): Define an open,
+- **Phase 1 (Q4 2026):** Governance Packet Protocol (RD-027): Define an open,
   implementation-agnostic format for governance packets. Validate that a third-party tool
   can read and verify packets without Modonome code.
 
@@ -94,9 +94,9 @@ a central authority.
   as GPP packets and validate import/export fidelity.
 
 - **Phase 3 (if Phase 1-2 succeed):** Trust networks and decentralized discovery
-  (ADR-028), packet lifecycle management (ADR-029), and cross-repo feedback loops (ADR-030).
+  (RD-028), packet lifecycle management (RD-029), and cross-repo feedback loops (RD-030).
 
-- **Phase 4 (future):** Network-level safety mechanisms (ADR-031, ADR-032).
+- **Phase 4 (future):** Network-level safety mechanisms (RD-031, RD-032).
 
 **Decision gate:** Q2 2027. If the v0.1 experiment succeeds and user feedback supports the
 direction, commit to a full mesh roadmap. If it fails, the research informs future strategy

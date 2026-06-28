@@ -500,7 +500,7 @@ owner-gated learning pipeline operating end to end and the full activation ladde
 learning-traceability and promotion gates now exist (`scripts/check-learning-traceability.mjs`,
 `scripts/check-promotion-readiness.mjs`), but the pipeline has not yet run end to end on a live
 armed loop, and the Shadow ladder rung is not implemented. Level 2 is the honest ceiling until
-those land. See [docs/CLAIMS-AUDIT-2026-06-25.md](docs/CLAIMS-AUDIT-2026-06-25.md).
+those land. See [the claims audit](../audits/claims-audit-2026-06-25.md).
 
 ### Honest Alpha Limitations
 

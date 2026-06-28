@@ -30,7 +30,7 @@ This is not a business requirement for v0.2. It's a strategic direction for 2027
 > central authority.
 
 **Hypothesis (testable):**
-> If we define an open protocol for governance packets (ADR-027), we can demonstrate that
+> If we define an open protocol for governance packets (RD-027), we can demonstrate that
 > repositories can safely import and validate knowledge from external sources, building
 > confidence that a broader network is feasible.
 
@@ -58,7 +58,7 @@ This is not a business requirement for v0.2. It's a strategic direction for 2027
 **Goal:** Validate that an open governance packet protocol is viable.
 
 **Scope:**
-1. **Implement Governance Packet Protocol (GPP) v1 spec** (ADR-027)
+1. **Implement Governance Packet Protocol (GPP) v1 spec** (RD-027)
    - JSON schema for packets
    - Content addressing (SHA256 hash)
    - Ed25519 signing
@@ -78,7 +78,7 @@ This is not a business requirement for v0.2. It's a strategic direction for 2027
 
 **Timeline:** Q4 2026 (after Milestone 3)
 
-**Go/No-Go Decision:** If v0.1 succeeds, explore ADR-028 (discovery). If it fails,
+**Go/No-Go Decision:** If v0.1 succeeds, explore RD-028 (discovery). If it fails,
 reassess whether a mesh is necessary.
 
 ---
@@ -154,7 +154,7 @@ is proven.
 1. **Immediate (Q3 2026):** Document this research plan; gather feedback from
    early users and the community
 
-2. **Q4 2026:** Implement ADR-027 (GPP protocol spec) as a standalone open standard
+2. **Q4 2026:** Implement RD-027 (GPP protocol spec) as a standalone open standard
 
 3. **Q1 2027:** Test import/export on Modonome's own repo (proof of concept)
 
@@ -186,10 +186,10 @@ happens in parallel and informs future direction.
 
 ## References
 
-- **ADR-027**: Governance Packet Protocol (open standard format)
-- **ADR-028**: Trust Network & Discovery (how packets spread)
-- **ADR-029**: Packet Lifecycle & Versioning (how packets evolve)
-- **ADR-030**: Cross-Repo Governance Feedback (feedback loops)
-- **ADR-031**: Semantic Compatibility & Conflicts (safety)
-- **ADR-032**: Network-Level Ratchet (network-wide protection)
+- **RD-027**: Governance Packet Protocol (open standard format)
+- **RD-028**: Trust Network & Discovery (how packets spread)
+- **RD-029**: Packet Lifecycle & Versioning (how packets evolve)
+- **RD-030**: Cross-Repo Governance Feedback (feedback loops)
+- **RD-031**: Semantic Compatibility & Conflicts (safety)
+- **RD-032**: Network-Level Ratchet (network-wide protection)
 - **Vision doc**: governance-mesh-vision.md (strategic thinking)

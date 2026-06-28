@@ -570,7 +570,7 @@ measurement of whether proposed changes degrade quality gates.
 
 **Governed Autonomy Specification:**
 AgentProof is the conformance test suite for the Governed Autonomy
-Specification (`GOVERNED-AUTONOMY-SPEC.md`). A framework achieving
+Specification (`docs/specs/governed-autonomy-spec.md`). A framework achieving
 AgentProof HARDENED status satisfies the machine-verifiable subset of
 Governed Autonomy Level 2 requirements.
 
