@@ -17,7 +17,7 @@
  * and writes responses to stdout. All log output goes to stderr.
  */
 import { createInterface } from "node:readline";
-import { writeFileSync, readFileSync, existsSync, rmSync, statSync } from "node:fs";
+import { writeFileSync, readFileSync, existsSync, rmSync, statSync, mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname, resolve, extname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -111,7 +111,7 @@ const TOOLS = [
 
 async function toolRatchet(args) {
   let diffPath;
-  let tempFile = null;
+  let tempDir = null;
 
   if (args.diff_path) {
     const resolved = resolve(String(args.diff_path));
@@ -128,7 +128,8 @@ async function toolRatchet(args) {
     }
     diffPath = resolved;
   } else if (args.diff) {
-    tempFile = join(tmpdir(), `modonome-ratchet-${process.pid}-${Math.floor(Math.random() * 1e9)}.patch`);
+    tempDir = mkdtempSync(join(tmpdir(), "modonome-ratchet-"));
+    const tempFile = join(tempDir, "diff.patch");
     writeFileSync(tempFile, args.diff, "utf8");
     diffPath = tempFile;
   } else {
@@ -151,13 +152,14 @@ async function toolRatchet(args) {
       violations,
     };
   } finally {
-    if (tempFile) try { rmSync(tempFile); } catch { /* best-effort */ }
+    if (tempDir) try { rmSync(tempDir, { recursive: true }); } catch { /* best-effort */ }
   }
 }
 
 async function toolValidateConfig(args) {
   const ext = (args.format || "yaml") === "json" ? ".json" : ".yaml";
-  const tempFile = join(tmpdir(), `modonome-config-${process.pid}-${Math.floor(Math.random() * 1e9)}${ext}`);
+  const tempDir = mkdtempSync(join(tmpdir(), "modonome-config-"));
+  const tempFile = join(tempDir, `config${ext}`);
   writeFileSync(tempFile, args.content, "utf8");
 
   try {
@@ -175,12 +177,13 @@ async function toolValidateConfig(args) {
 
     return { valid: result.status === 0, errors };
   } finally {
-    try { rmSync(tempFile); } catch { /* best-effort */ }
+    try { rmSync(tempDir, { recursive: true }); } catch { /* best-effort */ }
   }
 }
 
 async function toolValidateWorkItem(args) {
-  const tempFile = join(tmpdir(), `modonome-item-${process.pid}-${Math.floor(Math.random() * 1e9)}.json`);
+  const tempDir = mkdtempSync(join(tmpdir(), "modonome-item-"));
+  const tempFile = join(tempDir, "item.json");
   writeFileSync(tempFile, JSON.stringify(args.item, null, 2), "utf8");
 
   try {
@@ -198,7 +201,7 @@ async function toolValidateWorkItem(args) {
 
     return { valid: result.status === 0, errors };
   } finally {
-    try { rmSync(tempFile); } catch { /* best-effort */ }
+    try { rmSync(tempDir, { recursive: true }); } catch { /* best-effort */ }
   }
 }
 

@@ -420,7 +420,7 @@
   }
   function compileTemplate(html, host) {
     const tpl = document.createElement("template");
-    //! nosemgrep: direct-inner-html-assignment
+    //! nosemgrep: direct-inner-html-assignment // lgtm[js/xss-through-dom]
     tpl.innerHTML = encodeCase(html);
     let tplN = 0;
     (function stamp(node) {
@@ -698,7 +698,7 @@
     }
   };
   function evalDcLogic(src) {
-    //! nosemgrep: eval-and-function-constructor
+    //! nosemgrep: eval-and-function-constructor // lgtm[js/eval-call]
     const fn = new Function(
       "DCLogic",
       "StreamableLogic",
@@ -1040,7 +1040,7 @@
         }).code : src;
         const module = { exports: {} };
         const before = new Set(Object.keys(window));
-        //! nosemgrep: eval-and-function-constructor
+        //! nosemgrep: eval-and-function-constructor // lgtm[js/eval-call]
         new Function("React", "module", "exports", "require", code)(
           getReact(),
           module,

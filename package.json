@@ -25,7 +25,8 @@
     "scaffold": "node scripts/scaffold.mjs",
     "agentproof": "node agentproof/runner.mjs",
     "report": "node scripts/report.mjs",
-    "demo:agent": "node scripts/agent/run-cycle.mjs"
+    "demo:agent": "node scripts/agent/run-cycle.mjs",
+    "prepare": "node scripts/install-hooks.mjs"
   },
   "files": [
     "bin",

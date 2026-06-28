@@ -101,6 +101,23 @@ uniqueRefs.forEach(num => {
   }
 });
 
+// 5. Check for Math.random() in scripts (insecure randomness; use crypto.randomBytes)
+console.log('\nChecking for insecure randomness in scripts...');
+const scriptDir = path.join(repoRoot, 'scripts');
+fs.readdirSync(scriptDir)
+  .filter(f => f.endsWith('.mjs') && f !== 'check-repo-hygiene.mjs')
+  .forEach(file => {
+    const content = fs.readFileSync(path.join(scriptDir, file), 'utf8');
+    if (content.includes('Math.random(')) {
+      issues.push({
+        type: 'INSECURE_RANDOMNESS',
+        file: `scripts/${file}`,
+        message: `scripts/${file} uses Math.random(). Use crypto.randomBytes() or crypto.randomUUID() instead (CodeQL js/insecure-randomness).`
+      });
+      console.log(`  ✗ ${file}`);
+    }
+  });
+
 // Report
 console.log('\n' + '='.repeat(70));
 if (issues.length === 0) {
