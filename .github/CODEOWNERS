@@ -1,3 +1,6 @@
+# All files — global catchall so every path requires maintainer review.
+*             @nateshpp
+
 # Critical governance paths — all changes require maintainer review.
 # CODEOWNERS review is enforced by branch protection on main.
 /bin/         @nateshpp

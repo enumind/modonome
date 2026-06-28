@@ -29,7 +29,7 @@ be added here once the owner arms the loop on this repo.
 
 ## Work queue
 
-- claimed: 1
+- claimed: 2
 - done: 18
 - queued: 1
 
