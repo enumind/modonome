@@ -1,0 +1,67 @@
+name: Publish edge
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: publish-edge
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish-next:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: package.json
+          registry-url: https://registry.npmjs.org
+
+      - run: npm ci
+
+      - name: Guard - package.json must not be a stale next version
+        run: |
+          PKGVER=$(node -p "require('./package.json').version")
+          if echo "$PKGVER" | grep -qE '\-next\.'; then
+            echo "package.json has stale edge version $PKGVER - run stable release first"
+            exit 1
+          fi
+
+      - name: Compute edge version
+        id: ver
+        run: |
+          BASE=$(node -p "require('./package.json').version.replace(/-.*$/, '')")
+          STAMP=$(date -u +%Y%m%d%H%M%S)
+          echo "edge=${BASE}-next.${STAMP}" >> $GITHUB_OUTPUT
+
+      - name: Stamp edge version (ephemeral, not committed)
+        run: npm version ${{ steps.ver.outputs.edge }} --no-git-tag-version
+
+      - name: Run governance gates
+        run: npm run evidence
+
+      - name: Publish to next
+        run: npm publish --tag next --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Deprecate old next versions (keep 5 most recent)
+        run: |
+          ALL_NEXT=$(npm view modonome versions --json 2>/dev/null | \
+            node -e "
+              const vs = JSON.parse(require('fs').readFileSync('/dev/stdin','utf8'));
+              const next = vs.filter(v => v.includes('-next.')).sort();
+              console.log(next.slice(0, Math.max(0, next.length - 5)).join('\n'));
+            ")
+          if [ -z "$ALL_NEXT" ]; then exit 0; fi
+          while IFS= read -r ver; do
+            npm deprecate "modonome@$ver" "Superseded. Use modonome@next for the latest edge build." || true
+          done <<< "$ALL_NEXT"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
