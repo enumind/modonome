@@ -23,6 +23,8 @@ require_distinct_maker_checker: true
 require_distinct_maker_checker_model: true
 
 trusted_author_allowlist: []
+# The version field in package.json is agent-protected: only chore(release): commits
+# from scripts/release.mjs may change it. check-repo-hygiene.mjs enforces this on PRs.
 protected_paths_extra: [bin/, prompts/, schemas/, scripts/, templates/, .github/, site/]
 state_dir: .modonome
 
