@@ -50,7 +50,7 @@ window.__MODONOME_REPO = {
     { icon: '⊞', title: 'Separate roles for trust', body: 'The maker, the checker, and the merge authority are always different roles, so each change gets a genuine second look before it lands.' },
     { icon: '⛨', title: 'Anti-gaming ratchet in CI', body: 'A check running in your pipeline keeps tests, types, and coverage honest across JavaScript, Python, Java, and .NET.' },
     { icon: '⇄', title: 'Adopts your setup on day one', body: 'It follows your existing CI, code owners, and branch rules. There is no new process for the team to learn.' },
-    { icon: '↻', title: 'Improves as it goes', body: 'Real corrections become staged lessons. Once an owner promotes them, they become durable rules — the loop gets smarter with each cycle.' },
+    { icon: '↻', title: 'Improves as it goes', body: 'Real corrections become staged lessons. Once an owner promotes them, they become durable rules: the loop gets smarter with each cycle.' },
     { icon: '⊟', title: 'Language-aware across your stack', body: 'The anti-gaming ratchet is language-aware across JavaScript, Python, Java, and .NET today. Broader enterprise estates are on the roadmap.' },
   ],
 
