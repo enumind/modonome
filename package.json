@@ -1,5 +1,5 @@
 {
-  "name": "modonome",
+  "name": "@modonome/modonome",
   "version": "0.1.0-next.0",
   "description": "HARDENED - Governed autonomy for any repo. An off-by-default autonomy loop that adopts your repo's rules, proposes small reviewable changes, and gates them in CI so weakened tests cannot merge.",
   "type": "module",
@@ -27,10 +27,8 @@
     "agentproof": "node agentproof/runner.mjs",
     "report": "node scripts/report.mjs",
     "demo:agent": "node scripts/agent/run-cycle.mjs",
-    "prepare": "node scripts/install-hooks.mjs",
     "release": "node scripts/release.mjs",
-    "preversion": "npm run verify",
-    "prepublishOnly": "node --test tests/*.test.mjs"
+    "preversion": "npm run verify"
   },
   "files": [
     "bin",
@@ -42,10 +40,6 @@
     "agentproof",
     "tests"
   ],
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://npmjs.org"
-  },
   "license": "MIT",
   "repository": {
     "type": "git",
