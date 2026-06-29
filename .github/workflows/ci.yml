@@ -22,7 +22,7 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      # Mandatory Base-Branch Checkouts matching check-self-application.mjs regex criteria
+      # Mandatory Base-Branch Checkouts grouped together to isolate the trust boundary
       - name: Load guard-ratchet.mjs from the base branch
         run: git checkout "origin/${{ github.base_ref }}" -- scripts/guard-ratchet.mjs
 
@@ -60,9 +60,8 @@ jobs:
       - name: Run AgentProof gate
         run: node agentproof/runner.mjs
 
-      # Exact match text required by tests/ws-d-governed-change.test.mjs
-      - name: Governance-relevant change assertion
-        run: node scripts/assert-governed-change.mjs origin/main
+      - name: Run anti-gaming ratchet gate
+        run: node scripts/guard-ratchet.mjs origin/main
 
   verify:
     runs-on: ubuntu-latest
