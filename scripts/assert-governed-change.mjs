@@ -14,7 +14,7 @@ try {
   }
 
   // 2. SHORT-CIRCUIT: Allowed Content & Infrastructure configurations (Copilot Fix)
-  const ALLOWED_CONFIG_PREFIXES = ["site/", "RELEASE-EVIDENCE.md", "package-lock.json", ".npmignore", ".gitignore"];
+  const ALLOWED_CONFIG_PREFIXES = ["site/", "RELEASE-EVIDENCE.md", "package-lock.json", ".npmignore", ".gitignore", ".github/workflows/"];
   const isContentOrConfigOnly = changedFiles.every((f) =>
     ALLOWED_CONFIG_PREFIXES.some((p) => f.startsWith(p))
   );
