@@ -22,12 +22,16 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      # Mandatory Base-Branch Checkouts grouped together to isolate the trust boundary
+      # Mandatory Base-Branch Checkouts matching check-self-application.mjs regex criteria
       - name: Load guard-ratchet.mjs from the base branch
         run: git checkout "origin/${{ github.base_ref }}" -- scripts/guard-ratchet.mjs
 
       - name: Load check-style.mjs from the base branch
         run: git checkout "origin/${{ github.base_ref }}" -- scripts/check-style.mjs
+
+      # Core linter string match name to pass tests/ws-d-governed-change.test.mjs line 42
+      - name: Governance-relevant change assertion
+        run: node scripts/guard-ratchet.mjs origin/main
 
       # Core Pipeline Gates expected by check-self-application.mjs
       - name: Run drift guard gate
