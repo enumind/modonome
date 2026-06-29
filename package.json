@@ -39,11 +39,12 @@
     "schemas",
     "scripts",
     "docs",
-    "agentproof"
+    "agentproof",
+    "tests"
   ],
   "publishConfig": {
     "access": "public",
-    "registry": "https://registry.npmjs.org/"
+    "registry": "https://npmjs.org"
   },
   "license": "MIT",
   "repository": {
