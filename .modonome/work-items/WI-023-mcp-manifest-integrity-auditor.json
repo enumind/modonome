@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "id": "WI-023-mcp-manifest-integrity-auditor",
+  "state": "done",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": false,
+  "allowed_edit_set": [
+    "scripts/check-mcp-integrity.mjs",
+    "tests/mcp-integrity.test.mjs"
+  ],
+  "gates": [
+    "node --test tests/*.test.mjs",
+    "node scripts/check-style.mjs ."
+  ]
+}

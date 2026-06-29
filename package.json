@@ -1,7 +1,7 @@
 {
   "name": "modonome",
   "version": "0.1.0-alpha",
-  "description": "Governed autonomy for any repo. An off-by-default autonomy loop that adopts your repo's rules, proposes small reviewable changes, and gates them in CI so weakened tests cannot merge.",
+  "description": "HARDENED - Governed autonomy for any repo. An off-by-default autonomy loop that adopts your repo's rules, proposes small reviewable changes, and gates them in CI so weakened tests cannot merge.",
   "type": "module",
   "bin": {
     "modonome": "bin/modonome.mjs"

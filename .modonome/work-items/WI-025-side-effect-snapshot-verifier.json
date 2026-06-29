@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "id": "WI-025-side-effect-snapshot-verifier",
+  "state": "done",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": false,
+  "allowed_edit_set": [
+    "scripts/verify-side-effects.mjs",
+    "tests/side-effects.test.mjs"
+  ],
+  "gates": [
+    "node --test tests/*.test.mjs",
+    "node scripts/check-style.mjs ."
+  ]
+}

@@ -26,6 +26,7 @@ const violations = [];
 const warnings = [];
 
 const ROOT_ALLOW_LIST = new Set([
+  'RATCHET-SPEC.md',
   "README.md",
   "CHANGELOG.md",
   "CONTRIBUTING.md",
