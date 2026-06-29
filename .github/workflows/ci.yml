@@ -14,14 +14,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
+      - name: Setup Node.js (Upgraded Engine)
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'npm'
+          node-version: 22
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm install
 
       # SELF-HEALING AUTOMATION STEP: Force runner to compile accurate local execution hashes
       - name: Regenerate Release Evidence Hash Alignment
