@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "id": "WI-026-stakeholder-outcome-metrics-and-readout",
+  "state": "queued",
+  "queued_at": "2026-06-29T00:00:00Z",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": true,
+  "allowed_edit_set": [
+    "schemas/metrics.schema.json",
+    "scripts/report.mjs",
+    "scripts/build-release-evidence.mjs",
+    ".modonome/metrics.example.jsonl",
+    "README.md",
+    "QUICKSTART.md",
+    "docs/public-claims.json",
+    "tests/metrics.test.mjs",
+    "tests/public-claims.test.mjs",
+    "site/index.html",
+    "site/repo-data.js",
+    "RELEASE-EVIDENCE.md"
+  ],
+  "gates": [
+    "node scripts/check-self-application.mjs",
+    "node scripts/check-repo-hygiene.mjs",
+    "node --test tests/metrics.test.mjs tests/public-claims.test.mjs",
+    "node scripts/build-release-evidence.mjs --check",
+    "node scripts/check-style.mjs ."
+  ]
+}

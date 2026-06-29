@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "id": "WI-022-smart-dry-run-and-surface-coherence",
+  "state": "queued",
+  "queued_at": "2026-06-29T00:00:00Z",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": true,
+  "allowed_edit_set": [
+    "bin/modonome.mjs",
+    "scripts/dry-run-sweep.mjs",
+    "README.md",
+    "QUICKSTART.md",
+    "ADOPTION-GUIDE.md",
+    "docs/TESTING.md",
+    "docs/public-claims.json",
+    "examples/dry-run-transcript.txt",
+    "fixtures/dry-run/",
+    "tests/host-adoption.test.mjs",
+    "tests/public-claims.test.mjs",
+    "site/index.html",
+    "site/repo-data.js"
+  ],
+  "gates": [
+    "node scripts/check-self-application.mjs",
+    "node scripts/check-repo-hygiene.mjs",
+    "node --test tests/host-adoption.test.mjs tests/public-claims.test.mjs",
+    "node --test tests/*.test.mjs",
+    "node scripts/check-style.mjs ."
+  ]
+}
