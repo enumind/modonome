@@ -16,3 +16,8 @@ test('governance: verify core npmignore publication blocklist rules are structur
   assert.ok(content.includes('tests/'), 'Missing publication boundary pattern: tests/');
   assert.ok(content.includes('modonome/'), 'Missing publication boundary pattern: modonome/');
 });
+
+test('governance: verify project lockfile is structurally present for deployment safety', () => {
+  const hasLockfile = fs.existsSync('package-lock.json');
+  assert.strictEqual(hasLockfile, true, 'Missing critical package-lock.json asset dependency configuration');
+});
