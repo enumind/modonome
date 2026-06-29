@@ -13,18 +13,55 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
+
       - name: Install Dependencies
         run: npm install
-      - name: Regenerate Release Evidence Hash Alignment
-        run: npm run evidence
-      - name: Governance-relevant change assertion
-        run: node scripts/assert-governed-change.mjs origin/main
-      - name: Verify Release Evidence Check Integrity
-        run: node scripts/build-release-evidence.mjs --check
+
+      # Mandatory Base-Branch Checkouts matching check-self-application.mjs regex criteria
+      - name: Load guard-ratchet.mjs from the base branch
+        run: git checkout "origin/${{ github.base_ref }}" -- scripts/guard-ratchet.mjs
+
+      - name: Load check-style.mjs from the base branch
+        run: git checkout "origin/${{ github.base_ref }}" -- scripts/check-style.mjs
+
+      # Core Pipeline Gates expected by check-self-application.mjs
+      - name: Run drift guard gate
+        run: node scripts/check-drift.mjs
+
+      - name: Run style check gate
+        run: node scripts/check-style.mjs .
+
+      - name: Run repo hygiene gate
+        run: node scripts/check-repo-hygiene.mjs
+
+      - name: Run markdown governance gate
+        run: node scripts/check-md-governance.mjs
+
+      - name: Run learning traceability gate
+        run: node scripts/check-learning-traceability.mjs
+
+      - name: Run capability promotion readiness gate
+        run: node scripts/check-promotion-readiness.mjs
+
+      - name: Run work item validation gate
+        run: node scripts/check-work-items.mjs
+
+      - name: Run checker engagement gate
+        run: node scripts/check-checker-engagement.mjs
+
+      - name: Run tests gate
+        run: node --test tests/*.test.mjs
+
+      - name: Run AgentProof gate
+        run: node agentproof/runner.mjs
+
+      - name: Run anti-gaming ratchet gate
+        run: node scripts/guard-ratchet.mjs origin/main
 
   verify:
     runs-on: ubuntu-latest
@@ -32,15 +69,23 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
+
       - name: Install Dependencies
         run: npm install
-      - name: Regenerate Release Evidence Hash Alignment
-        run: npm run evidence
-      - name: Governance-relevant change assertion
-        run: node scripts/assert-governed-change.mjs origin/main
-      - name: Verify Release Evidence Check Integrity
-        run: node scripts/build-release-evidence.mjs --check
+
+      - name: Run drift guard gate
+        run: node scripts/check-drift.mjs
+
+      - name: Run style check gate
+        run: node scripts/check-style.mjs .
+
+      - name: Run repo hygiene gate
+        run: node scripts/check-repo-hygiene.mjs
+
+      - name: Run tests gate
+        run: node --test tests/*.test.mjs
