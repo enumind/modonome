@@ -13,20 +13,34 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
-
       - name: Install Dependencies
         run: npm install
-
       - name: Regenerate Release Evidence Hash Alignment
         run: npm run evidence
-
       - name: Governance-relevant change assertion
         run: node scripts/assert-governed-change.mjs origin/main
+      - name: Verify Release Evidence Check Integrity
+        run: node scripts/build-release-evidence.mjs --check
 
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Dependencies
+        run: npm install
+      - name: Regenerate Release Evidence Hash Alignment
+        run: npm run evidence
+      - name: Governance-relevant change assertion
+        run: node scripts/assert-governed-change.mjs origin/main
       - name: Verify Release Evidence Check Integrity
         run: node scripts/build-release-evidence.mjs --check
