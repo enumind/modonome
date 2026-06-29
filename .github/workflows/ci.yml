@@ -29,7 +29,7 @@ jobs:
       - name: Load check-style.mjs from the base branch
         run: git checkout "origin/${{ github.base_ref }}" -- scripts/check-style.mjs
 
-      # Core linter string match name to pass tests/ws-d-governed-change.test.mjs line 42
+      # Exact match for BOTH check-self-application.mjs AND tests/ws-d-governed-change.test.mjs
       - name: Governance-relevant change assertion
         run: node scripts/guard-ratchet.mjs origin/main
 
