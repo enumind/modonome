@@ -10,3 +10,9 @@ test('governance: verify core gitignore blocklist rules are structurally present
   assert.ok(content.includes('CLAUDE.md'), 'Missing security boundary pattern: CLAUDE.md');
   assert.ok(content.includes('runs/'), 'Missing cache boundary pattern: runs/');
 });
+
+test('governance: verify core npmignore publication blocklist rules are structurally present', () => {
+  const content = fs.readFileSync('.npmignore', 'utf8');
+  assert.ok(content.includes('tests/'), 'Missing publication boundary pattern: tests/');
+  assert.ok(content.includes('modonome/'), 'Missing publication boundary pattern: modonome/');
+});

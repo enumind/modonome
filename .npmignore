@@ -1,0 +1,6 @@
+
+# Block unit tests and local sandboxes from production package publishing
+tests/
+modonome/
+.venv/
+runs/
