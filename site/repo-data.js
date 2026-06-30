@@ -1,4 +1,4 @@
-/* repo-data.js - Content mirror of github.com/nateshpp/modonome
+/* repo-data.js - Content mirror of github.com/enumind/modonome
  *
  * This is the single refresh point for the landing page. Every repo-derived
  * list (features, AgentProof scenarios, roadmap, guarantees, cost, standards)
@@ -15,8 +15,8 @@
 window.__MODONOME_REPO = {
   meta: {
     name: 'Modonome',
-    repoUrl: 'https://github.com/nateshpp/modonome',
-    rawBase: 'https://raw.githubusercontent.com/nateshpp/modonome/main',
+    repoUrl: 'https://github.com/enumind/modonome',
+    rawBase: 'https://raw.githubusercontent.com/enumind/modonome/main',
     version: 'v0.1.0-alpha',
     license: 'MIT',
     agentproofScore: '25/25',
