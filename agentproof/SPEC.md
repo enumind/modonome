@@ -578,7 +578,7 @@ Governed Autonomy Level 2 requirements.
 
 ## 11. Reference Implementation
 
-The reference implementation is Modonome (`github.com/nateshpp/modonome`).
+The reference implementation is Modonome (`github.com/enumind/modonome`).
 It achieves AgentProof HARDENED status (25/25). The enforcement scripts
 under test are in `scripts/`. The fixture directory is `agentproof/fixtures/`.
 
@@ -586,4 +586,4 @@ under test are in `scripts/`. The fixture directory is `agentproof/fixtures/`.
 
 *AgentProof is published under the MIT License.*
 *Proposed for adoption by: OWASP Agentic WG, OpenSSF Securing Software Repositories WG, AAIF.*
-*Submissions and extensions: github.com/nateshpp/modonome*
+*Submissions and extensions: github.com/enumind/modonome*

@@ -41,7 +41,7 @@ the first week.
 
 ```bash
 # 1. Clone the repo and enter the demo app
-git clone https://github.com/nateshpp/modonome
+git clone https://github.com/enumind/modonome
 cd modonome/examples/demo-app
 
 # 2. Install dependencies

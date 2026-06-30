@@ -67,6 +67,10 @@ jobs:
           node-version-file: package.json
           registry-url: https://registry.npmjs.org
 
+      # OIDC trusted publishing requires npm 11.5.0 or newer
+      - name: Upgrade npm for trusted publishing
+        run: npm install -g npm@latest
+
       - run: npm ci
 
       - name: Check if already published

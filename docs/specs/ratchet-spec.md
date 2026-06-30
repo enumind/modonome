@@ -362,7 +362,7 @@ An extended-conformant ratchet additionally:
 ### 6.3 Reference Implementation
 
 The reference implementation is `scripts/guard-ratchet.mjs` in the Modonome repository
-(github.com/nateshpp/modonome). It satisfies minimum conformance. The reference test suite
+(github.com/enumind/modonome). It satisfies minimum conformance. The reference test suite
 is AgentProof scenarios AP-01 through AP-04 in `agentproof/scenarios/`.
 
 ### 6.4 Conformance Test Suite
@@ -410,5 +410,5 @@ process for adding a check:
 ---
 
 *This specification is published under the MIT License as part of the Modonome project.*  
-*Submissions and extensions: github.com/nateshpp/modonome*  
+*Submissions and extensions: github.com/enumind/modonome*  
 *Proposed for adoption by: OpenSSF Securing Software Repositories WG, OWASP Agentic WG*

@@ -46,7 +46,7 @@ protocol for governance packets.
     ]
   },
   "evidence": {
-    "correction_signal": "github.com/nateshpp/modonome/pull/42",
+    "correction_signal": "github.com/enumind/modonome/pull/42",
     "observation_date": "2026-06-01",
     "trace_id": "ADR-022"
   },

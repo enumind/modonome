@@ -21,7 +21,7 @@ packets through trust networks, not a central index.
    follows:
      - github.com/google/platform      # I trust their learnings
      - github.com/kubernetes/core      # I watch their innovations
-     - github.com/nateshpp/modonome    # I track the reference impl
+     - github.com/enumind/modonome    # I track the reference impl
    ```
 
    When repo B follows repo A, B subscribes to A's published packets. Discovery is

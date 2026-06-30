@@ -470,7 +470,7 @@ armed mode in regulated contexts.
 
 ## Annexure A: Modonome as Reference Implementation
 
-Modonome (github.com/nateshpp/modonome) is the reference implementation of this specification.
+Modonome (github.com/enumind/modonome) is the reference implementation of this specification.
 The table below maps every normative requirement to the specific artifact that implements it.
 
 | Requirement | Modonome artifact |
@@ -522,4 +522,4 @@ compliance audit trails without the additions planned for v0.3.
 ---
 
 *This specification is published under the MIT License. Contributions and extensions
-welcome via pull request to github.com/nateshpp/modonome.*
+welcome via pull request to github.com/enumind/modonome.*

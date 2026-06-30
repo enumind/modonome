@@ -143,7 +143,7 @@ node agentproof/runner.mjs
 Once your implementation passes, add the badge to your README:
 
 ```markdown
-[![AgentProof](https://img.shields.io/badge/AgentProof-25%2F25%20HARDENED-brightgreen)](https://github.com/nateshpp/modonome/blob/main/agentproof/SPEC.md)
+[![AgentProof](https://img.shields.io/badge/AgentProof-25%2F25%20HARDENED-brightgreen)](https://github.com/enumind/modonome/blob/main/agentproof/SPEC.md)
 ```
 
 Customize the score to match your actual result:
@@ -418,7 +418,7 @@ AgentProof is being proposed for adoption by:
 - **OpenSSF Securing Software Repositories WG** as an anti-gaming ratchet conformance standard
 - **AAIF** as a governed autonomy benchmark
 
-To collaborate on a submission, open an issue at `github.com/nateshpp/modonome`.
+To collaborate on a submission, open an issue at `github.com/enumind/modonome`.
 
 ---
 

@@ -83,7 +83,7 @@ stripped unless an owner approves otherwise. A central catalog is out of scope f
 
 ## Reporting
 
-Open a [private security advisory](https://github.com/nateshpp/modonome/security/advisories/new)
+Open a [private security advisory](https://github.com/enumind/modonome/security/advisories/new)
 on the GitHub repository. Please keep vulnerability reports to the private advisory channel.
 
 ### Response commitment

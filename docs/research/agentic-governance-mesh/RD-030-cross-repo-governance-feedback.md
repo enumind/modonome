@@ -48,7 +48,7 @@ so I have more confidence in A's packet."
    follows:
      - github.com/google/platform          # depth 1 (direct)
        follows:
-         - github.com/nateshpp/modonome    # depth 2 (transitive)
+         - github.com/enumind/modonome    # depth 2 (transitive)
    ```
 
    If Repo C trusts Repo B, and Repo B validated Repo A's packet, Repo C can see B's
