@@ -22,6 +22,18 @@ repo-hygiene, self-application conformance, learning-traceability, promotion-rea
 work-item validation, checker-engagement, the test suite, and the AgentProof benchmark. It
 needs no network or secrets.
 
+To measure coverage, run:
+
+```bash
+npm run test:coverage
+```
+
+This uses the Node test runner with no extra dependency. CI enforces minimum
+coverage of 80% lines, 60% branches, and 80% functions. The branch floor is held
+below the line floor on purpose: raising branch coverage to 80% is tracked work
+toward the OpenSSF gold criteria. Do not lower these thresholds to make a change
+pass; add tests instead.
+
 ## How we respond
 
 We triage new issues and pull requests within 5 business days, and label them so you know
