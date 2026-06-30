@@ -21,7 +21,7 @@ jobs:
 
       # Stripping registry-url prevents writing placeholder tokens that break OIDC handshakes
       - name: Setup Node.js Environment
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 22
 
