@@ -37,7 +37,7 @@ The workflow uses the built-in `GITHUB_TOKEN`. There is no long-lived deploy cre
 
 Two layers keep the page in sync with the product:
 
-1. **Runtime (live):** `repo-data.js` fetches from `raw.githubusercontent.com/nateshpp/modonome/main`
+1. **Runtime (live):** `repo-data.js` fetches from `raw.githubusercontent.com/enumind/modonome/main`
    on each page load and updates the AgentProof score, version, and scenario list in memory.
    The static values below serve as fallback when the repo is unreachable.
 
