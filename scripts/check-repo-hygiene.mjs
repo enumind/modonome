@@ -15,6 +15,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { execSync as nodeExecSync } from 'node:child_process';
 import { isModelIdentifierBranch, resolveBranchName } from './lib/branch-name.mjs';
+import { findForbiddenCommits } from './lib/commit-identity.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.join(__dirname, '..');
@@ -186,6 +187,33 @@ if (branchName && branchName !== 'HEAD' && isModelIdentifierBranch(branchName)) 
   console.log(`  ✗ ${branchName}`);
 } else {
   console.log('  (ok)');
+}
+
+// 8. Guard: commit author and committer identity must not belong to a coding agent
+console.log('\nChecking commit author identity...');
+try {
+  const isPR = process.env.GITHUB_EVENT_NAME === 'pull_request';
+  const baseRef = isPR ? (process.env.GITHUB_BASE_REF || 'main') : 'main';
+  const range = `origin/${baseRef}..HEAD`;
+  const log = execSync(
+    `git log ${range} --no-merges --format=%an%x09%ae%x09%cn%x09%ce%x09%h`,
+    { encoding: 'utf8' }
+  );
+  const offenders = findForbiddenCommits(log);
+  if (offenders.length > 0) {
+    offenders.forEach((o) => {
+      issues.push({
+        type: 'AGENT_COMMIT_IDENTITY',
+        file: o.sha,
+        message: `Commit ${o.sha} carries an agent identity (author: ${o.author}, committer: ${o.committer}). Re-author with a human or project identity before merge.`
+      });
+      console.log(`  ✗ ${o.sha} ${o.author}`);
+    });
+  } else {
+    console.log('  (ok)');
+  }
+} catch {
+  console.log('  (skipped: commit range not available)');
 }
 
 // Report

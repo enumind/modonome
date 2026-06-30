@@ -15,6 +15,7 @@ governs where docs live.
 ## Governance and compliance
 
 - [compliance/compliance.md](compliance/compliance.md): OWASP, NIST, and EU AI Act control mapping.
+- [compliance/openssf-badge-evidence.md](compliance/openssf-badge-evidence.md): OpenSSF Best Practices criteria mapped to artifacts, with a gap ledger.
 - [compliance/eu-ai-act-classification.md](compliance/eu-ai-act-classification.md): EU AI Act risk classification.
 - [guidelines/markdown-governance.md](guidelines/markdown-governance.md): documentation structure policy.
 
