@@ -32,8 +32,30 @@ jobs:
       - name: Install Secure Dependencies
         run: npm ci
 
+      # Each push gets a unique prerelease so edge runs never collide on an existing version.
+      # The version is set at publish time only and is not committed back to the repo.
+      - name: Set unique edge version
+        id: edge
+        run: |
+          BASE=$(node -p "require('./package.json').version.split('-')[0]")
+          EDGE_VERSION="${BASE}-next.${GITHUB_RUN_NUMBER}"
+          npm pkg set version="$EDGE_VERSION"
+          echo "version=$EDGE_VERSION" >> "$GITHUB_OUTPUT"
+          echo "Publishing edge version $EDGE_VERSION"
+
+      - name: Skip if already published
+        id: check
+        run: |
+          FOUND=$(npm view "modonome@${{ steps.edge.outputs.version }}" version 2>/dev/null || echo "")
+          if [ "$FOUND" = "${{ steps.edge.outputs.version }}" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
       # Auth resolves OIDC trusted publishing first; NODE_AUTH_TOKEN is the fallback when set
       - name: Publish to next
+        if: steps.check.outputs.skip == 'false'
         run: npm publish --tag next --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
