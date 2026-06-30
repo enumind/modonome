@@ -14,6 +14,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { execSync as nodeExecSync } from 'node:child_process';
+import { isModelIdentifierBranch, resolveBranchName } from './lib/branch-name.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.join(__dirname, '..');
@@ -165,6 +166,27 @@ fs.readdirSync(scriptDir)
       console.log(`  ✗ ${file}`);
     }
   });
+
+// 7. Guard: branch name must not carry a model-identifier prefix
+console.log('\nChecking branch name...');
+let branchName = resolveBranchName();
+if (!branchName) {
+  try {
+    branchName = execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim();
+  } catch {
+    branchName = '';
+  }
+}
+if (branchName && branchName !== 'HEAD' && isModelIdentifierBranch(branchName)) {
+  issues.push({
+    type: 'MODEL_IDENTIFIER_BRANCH',
+    file: branchName,
+    message: `Branch "${branchName}" leads with a model-identifier prefix. Rename it; agent identity must not appear in branch names, history, or pull requests.`
+  });
+  console.log(`  ✗ ${branchName}`);
+} else {
+  console.log('  (ok)');
+}
 
 // Report
 console.log('\n' + '='.repeat(70));
