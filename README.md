@@ -29,6 +29,9 @@ structurally separate, enforced in CI. Off by default, and it runs without a cen
   <a href="https://www.npmjs.com/package/modonome"><img src="https://img.shields.io/npm/v/modonome" alt="npm" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License" /></a>
   <a href="agentproof/README.md"><img src="https://img.shields.io/badge/AgentProof-25%2F25-brightgreen" alt="AgentProof 25/25" /></a>
+  <a href="https://scorecard.dev/viewer/?uri=github.com/enumind/modonome"><img src="https://api.securityscorecards.dev/projects/github.com/enumind/modonome/badge" alt="OpenSSF Scorecard" /></a>
+  <!-- OpenSSF Best Practices badge: register the project at https://www.bestpractices.dev to obtain a numeric PROJECT_ID, then add the line below.
+       <a href="https://www.bestpractices.dev/projects/PROJECT_ID"><img src="https://www.bestpractices.dev/projects/PROJECT_ID/badge" alt="OpenSSF Best Practices" /></a> -->
 </p>
 
 ---

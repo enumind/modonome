@@ -1,0 +1,48 @@
+name: scorecard
+
+# OpenSSF Scorecard analysis. Scores the repository against automated supply
+# chain and security best practices and publishes the result to the Security tab
+# and the public OpenSSF Scorecard API. Runs on pushes to main, on branch
+# protection changes, and weekly so new checks reach the repository.
+on:
+  push:
+    branches: [main]
+  branch_protection_rule:
+  schedule:
+    - cron: "20 7 * * 1" # Mondays at 07:20 UTC
+
+permissions: read-all
+
+jobs:
+  analysis:
+    name: Scorecard analysis
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write # upload results to the Security tab
+      id-token: write # publish results to the public Scorecard API
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      # ossf/scorecard-action and the actions below are tracked by Dependabot
+      # (see .github/dependabot.yml) and may be pinned to a SHA later.
+      - name: Run analysis
+        uses: ossf/scorecard-action@v2
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          publish_results: true
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: SARIF file
+          path: results.sarif
+          retention-days: 5
+
+      - name: Upload to code scanning
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: results.sarif
