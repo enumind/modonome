@@ -81,6 +81,152 @@ function agentproofScore() {
 }
 
 // ---------------------------------------------------------------------------
+// Impact snapshot (offline, read-only, deterministic)
+// ---------------------------------------------------------------------------
+// Cheap filesystem/git-free heuristics used to gauge repo health over time.
+// Every field here is derived only from files already on disk; nothing is
+// fetched, executed, or written outside of writeRunLog's runs directory.
+
+const IMPACT_SCAN_CAP = 2000; // bounds file/symbol scanning so this stays fast
+
+function listFilesRecursive(dir, matches, cap = IMPACT_SCAN_CAP) {
+  const out = [];
+  if (!existsSync(dir)) return out;
+  const stack = [dir];
+  while (stack.length && out.length < cap) {
+    const current = stack.pop();
+    let entries;
+    try { entries = readdirSync(current, { withFileTypes: true }); } catch { continue; }
+    for (const entry of entries) {
+      const full = join(current, entry.name);
+      if (entry.isDirectory()) {
+        stack.push(full);
+      } else if (matches(entry.name)) {
+        out.push(full);
+        if (out.length >= cap) break;
+      }
+    }
+  }
+  return out;
+}
+
+// A source module counts as "documented" if its first non-shebang line is a
+// `//` comment, or the file contains a `/** ... */` JSDoc block anywhere.
+// This is a simple heuristic, not a full doc-coverage analysis.
+function isDocumented(filePath) {
+  let text;
+  try { text = readFileSync(filePath, "utf8"); } catch { return false; }
+  if (text.includes("/**")) return true;
+  const lines = text.split("\n");
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed === "" || trimmed.startsWith("#!")) continue;
+    return trimmed.startsWith("//");
+  }
+  return false;
+}
+
+// Advisory, bounded heuristic: an exported symbol is a "dead code suspect"
+// when its declared name never appears again (by plain text match) anywhere
+// else under scripts/ or tests/. This is a name-collision-prone approximation,
+// not a real usage analysis (it cannot see re-exports, string-built access,
+// or cross-package consumers) so treat the count as a lead, not a verdict.
+function findExportedSymbols(filePath) {
+  let text;
+  try { text = readFileSync(filePath, "utf8"); } catch { return []; }
+  const names = [];
+  const re = /export\s+(?:async\s+function|function|const|class)\s+([A-Za-z_$][\w$]*)/g;
+  let m;
+  while ((m = re.exec(text)) !== null) names.push(m[1]);
+  return names;
+}
+
+export function computeDeadCodeSuspects(sourceFiles, root, cap = IMPACT_SCAN_CAP) {
+  const capped = sourceFiles.slice(0, cap);
+  const symbolToFile = new Map();
+  for (const file of capped) {
+    for (const name of findExportedSymbols(file)) {
+      if (!symbolToFile.has(name)) symbolToFile.set(name, file);
+    }
+  }
+  if (symbolToFile.size === 0) return 0;
+
+  const haystackFiles = [
+    ...listFilesRecursive(join(root, "scripts"), (n) => n.endsWith(".mjs") || n.endsWith(".js"), cap),
+    ...listFilesRecursive(join(root, "tests"), (n) => n.endsWith(".test.mjs"), cap),
+  ];
+  const fileTexts = haystackFiles.map((f) => { try { return readFileSync(f, "utf8"); } catch { return ""; } });
+
+  let suspects = 0;
+  for (const name of symbolToFile.keys()) {
+    // Count total plain-text occurrences of the symbol name across every
+    // scanned file. One occurrence is the export declaration itself; a
+    // suspect is a name that never shows up anywhere beyond that.
+    let occurrences = 0;
+    for (const text of fileTexts) occurrences += text.split(name).length - 1;
+    if (occurrences <= 1) suspects++;
+  }
+  return suspects;
+}
+
+// Computes a deterministic, offline snapshot of repo-impact metrics rooted at
+// `root` (a directory containing scripts/, tests/, docs/). Pure aside from
+// filesystem reads; never writes anything.
+export function computeImpactSnapshot(root) {
+  const sourceFiles = listFilesRecursive(join(root, "scripts"), (n) => n.endsWith(".mjs") || n.endsWith(".js"));
+  const testFiles = listFilesRecursive(join(root, "tests"), (n) => n.endsWith(".test.mjs"));
+  const docFiles = listFilesRecursive(join(root, "docs"), (n) => n.endsWith(".md"));
+
+  const documented = sourceFiles.filter(isDocumented).length;
+  const docCoverage = sourceFiles.length === 0 ? 0 : Math.round((documented / sourceFiles.length) * 100) / 100;
+
+  return {
+    source_files: sourceFiles.length,
+    test_files: testFiles.length,
+    doc_files: docFiles.length,
+    doc_coverage: docCoverage,
+    dead_code_suspects: computeDeadCodeSuspects(sourceFiles, root),
+  };
+}
+
+const IMPACT_NUMERIC_FIELDS = ["source_files", "test_files", "doc_files", "doc_coverage", "dead_code_suspects"];
+
+// Reads the newest run log under runsDir that carries an `impact` field.
+// Returns null if none exists (first run, no baseline).
+export function findPriorImpactSnapshot(runsDir) {
+  if (!existsSync(runsDir)) return null;
+  let files;
+  try { files = readdirSync(runsDir).filter((f) => f.endsWith(".json")).sort(); } catch { return null; }
+  for (const f of files.reverse()) {
+    try {
+      const data = JSON.parse(readFileSync(join(runsDir, f), "utf8"));
+      if (data && data.impact) return data.impact;
+    } catch { /* skip unreadable/partial log */ }
+  }
+  return null;
+}
+
+// Pure delta computation: current minus prior for each numeric field. When
+// prior is null/undefined, returns a "first run, no baseline" marker instead
+// of numeric deltas.
+export function computeImpactDelta(current, prior) {
+  if (!prior) return { baseline: false, note: "first run, no baseline" };
+  const delta = { baseline: true };
+  for (const field of IMPACT_NUMERIC_FIELDS) {
+    const cur = typeof current[field] === "number" ? current[field] : 0;
+    const prev = typeof prior[field] === "number" ? prior[field] : 0;
+    const diff = cur - prev;
+    delta[field] = field === "doc_coverage" ? Math.round(diff * 100) / 100 : diff;
+  }
+  return delta;
+}
+
+function formatDelta(n) {
+  const sign = n > 0 ? "+" : "";
+  return `${sign}${n}`;
+}
+
+// ---------------------------------------------------------------------------
 // Render
 // ---------------------------------------------------------------------------
 
@@ -143,12 +289,29 @@ if (gb) {
 }
 
 console.log("");
+console.log("Impact");
+console.log("------");
+const runsDir = join(target, ".modonome", "runs");
+const impact = computeImpactSnapshot(target);
+const priorImpact = findPriorImpactSnapshot(runsDir);
+const impactDelta = computeImpactDelta(impact, priorImpact);
+for (const field of IMPACT_NUMERIC_FIELDS) {
+  const value = impact[field];
+  const suffix = impactDelta.baseline ? ` (${formatDelta(impactDelta[field])})` : "";
+  console.log(`  ${pad(field + ":", 30)} ${rpad(value, 6)}${suffix}`);
+}
+if (!impactDelta.baseline) {
+  console.log(`  ${impactDelta.note}`);
+}
 
-writeRunLog(join(target, ".modonome", "runs"), "report", {
+console.log("");
+
+writeRunLog(runsDir, "report", {
   argv: process.argv.slice(2),
   target,
   summary: counts,
   agentproof_score: gb ? gb.score : null,
+  impact,
   exit_code: 0,
   duration_ms: Date.now() - startMs,
 });
