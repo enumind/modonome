@@ -27,6 +27,7 @@ import { resolveExecutionTarget } from "./route-action.mjs";
 import { enqueue } from "./action-queue.mjs";
 import { chatCompletion } from "./openai-client.mjs";
 import { extractDiff, applyPatch } from "./apply-patch.mjs";
+import { parseCheckerTelemetry } from "./parse-checker-telemetry.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..", "..");
@@ -176,8 +177,9 @@ function writeTranscriptAndMetric(plan, role, r, transcriptText, extra = {}) {
   };
   // For checker, add engagement metrics (parsed from transcript)
   if (role === "checker") {
-    metric.checker_requested_changes = false;  // Will be set based on transcript analysis
-    metric.checker_questions_raised = 0;
+    const telemetry = parseCheckerTelemetry(transcriptText);
+    metric.checker_requested_changes = telemetry.checker_requested_changes;
+    metric.checker_questions_raised = telemetry.checker_questions_raised;
   }
   appendFileSync(join(root, plan.transcriptDir, "metrics.jsonl"), JSON.stringify(metric) + "\n");
 }
