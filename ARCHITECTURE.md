@@ -14,9 +14,10 @@ Four questions shape everything else, so this document answers them first:
   its definition.
 - **When does the prompt run?** A harness loads the core prompt on each turn of a run. The
   adoption pass runs once per repository. The CI ratchet runs on every pull request.
-- **Where does it run?** Three places: a local Node CLI for read-only commands, a harness
-  for the loop (agent scope), and CI for the enforcing scripts (enforcement scope). One
-  package, three execution contexts, and no central service.
+- **Where does it run?** Four places: a local Node CLI for read-only commands, an MCP server
+  for harnesses that integrate over the Model Context Protocol instead of shelling out, a
+  harness for the loop (agent scope), and CI for the enforcing scripts (enforcement scope).
+  One package, four execution contexts, and no central service.
 - **How does it relate to the host repo?** Repo-wise, Modonome installs as a development
   dependency and copies its state into the host's `.modonome/` directory. At runtime, it
   reads the host's CI, CODEOWNERS, tests, and conventions, and writes back through pull
@@ -42,6 +43,10 @@ flowchart TB
     CLI["npx modonome<br/>dry-run, scaffold, validate, report"]
   end
 
+  subgraph MCPSCOPE["MCP server (Node 20 or newer)"]
+    MCP["modonome-mcp<br/>ratchet, validate, status, compliance, snapshot tools"]
+  end
+
   subgraph AGENT["Harness loads the prompt (agent scope)"]
     LOOP["Engine loop<br/>adopt, sweep, make, check, gate, merge"]
   end
@@ -59,6 +64,7 @@ flowchart TB
   T -->|scaffold once| STATE
   S -->|run on every pull request| RAT
   CLI -->|reads and proposes| HOST
+  MCP -->|reads and validates| HOST
   LOOP <-->|reads and writes back| SURF
   LOOP <-->|keeps authority in| STATE
   LOOP -->|opens pull request| SURF
@@ -67,12 +73,13 @@ flowchart TB
   class P,T,S dist
   class LOOP agent
   class RAT ci
-  class SURF,STATE,CLI host
+  class SURF,STATE,CLI,MCP host
 ```
 
 | Context | What runs there | When it runs | What it can touch |
 | --- | --- | --- | --- |
 | Local CLI (Node 20+) | `dry-run`, `scaffold`, `validate`, `report` | On demand, driven by a person | Reads the repo; writes only the `.modonome/` files you choose to scaffold |
+| MCP server (Node 20+) | `modonome_ratchet`, `modonome_validate_config`, `modonome_validate_work_item`, `modonome_status`, `modonome_compliance`, `modonome_verify_attestation`, `modonome_snapshot` | On demand, driven by a harness or IDE over stdio | Reads the repo; runs the same read-only checks as the CLI, exposed as callable tools |
 | Agent harness (agent scope) | The engine loop: adopt, sweep, make, check, gate | Each harness turn while a run is active | The host's ordinary surfaces: branches, pull requests, and `.modonome/` state |
 | CI (enforcement scope) | Ratchet, validators, drift and style guards | On every pull request and on push to the default branch | Read-only judgment. It blocks merges and writes no application code |
 
@@ -111,7 +118,13 @@ default until an owner arms it.
   `scripts/lib/lang-adapters/`). A dependency-free pipeline (walk, Merkle hash, per-file
   signature extraction, redaction, import graph with PageRank, tier assembly, deterministic
   serialization) that writes the tiered `.modonome/snapshot/` artifact for LLM context
-  (ADR-032). The `snapshot-core.mjs` orchestrator is pure and read-only; the CLI does the I/O.
+  (ADR-033). The `snapshot-core.mjs` orchestrator is pure and read-only; the CLI does the I/O.
+- The MCP server (`scripts/mcp-server.mjs`). A stdio JSON-RPC server that exposes the same
+  governance checks as callable tools instead of CLI subprocesses: `modonome_ratchet`,
+  `modonome_validate_config`, `modonome_validate_work_item`, `modonome_status`,
+  `modonome_compliance`, `modonome_verify_attestation`, and `modonome_snapshot`. For a
+  harness that already speaks Model Context Protocol, this is the fourth execution context
+  from the questions above. Its trust scope is `docs/adr/ADR-009-mcp-tool-auth-scope.md`.
 
 ## The agent loop
 
@@ -125,6 +138,7 @@ flowchart LR
   classDef role fill:#eef2ff,stroke:#6366f1,color:#1e1b4b;
   classDef gate fill:#fef3c7,stroke:#d97706,color:#78350f;
   classDef sink fill:#dcfce7,stroke:#16a34a,color:#14532d;
+  classDef stop fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
 
   queue[["Durable work queue<br/>.modonome/work-items/"]]
   packet["Work packet<br/>claimed and leased"]
@@ -135,15 +149,19 @@ flowchart LR
   merge["Merge authority<br/>lands when every gate is green"]
   repo[("Host repo")]
   learn["Staged learnings<br/>LEARNINGS.md"]
+  escalated[["Escalated<br/>cap exceeded, parked for owner"]]
 
   queue -->|claim and lease| packet
   packet --> maker
+  packet -.->|lease expires: crash recovery| queue
   maker -->|diff and rationale| checker
   checker -->|rework below cap| maker
+  checker -->|attempts exceeded| escalated
   checker -->|approved| gates
   gates -->|Tier 2 protected path| owner
   gates -->|Tier 1 eligible| merge
   owner -->|approved| merge
+  escalated -->|owner or frontier review| owner
   merge -->|pull request| repo
   gates -->|evidence| learn
   learn -->|owner promotes| repo
@@ -152,6 +170,7 @@ flowchart LR
   class maker,checker,owner role
   class gates gate
   class repo,learn sink
+  class escalated stop
 ```
 
 The ratchet (`guard-ratchet.mjs`) runs as a separate CI step, outside agent scope, and

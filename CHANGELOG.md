@@ -9,6 +9,26 @@ or CVE identifier where one exists.
 
 ## Unreleased
 
+### Documentation governance gate fix
+
+- Fixed a gap in the ADR-number-uniqueness check (`check-md-governance.mjs`, ADR-031):
+  it only ever compared `docs/adr/` against `docs/research/` and could not detect two
+  files inside `docs/adr/` claiming the same number. Two same-day pull requests had
+  independently done exactly that (`ADR-032-oss-adapter-boundary.md` and
+  `ADR-032-repo-snapshot.md`), undetected by CI. The check now also flags duplicates
+  within a single directory. `ADR-032-repo-snapshot.md` is renamed to
+  `ADR-033-repo-snapshot.md`. Added a regression test
+  (`tests/check-md-governance.test.mjs`) and a permanent adversarial scenario
+  (AgentProof AP-36, now 25/25 normative plus 10/10 extended). See
+  `docs/audits/claims-audit-2026-07-01.md` for the full re-verification this prompted.
+- Corrected ARCHITECTURE.md: it claimed three execution contexts while
+  `scripts/mcp-server.mjs`, a fully implemented MCP stdio server, was already a fourth.
+  Also added the `rework`, `escalated`, and lease-expiry states to the agent-loop
+  diagram, which previously showed only the linear happy path.
+- ADR-025 now cross-references ADR-002's decision to remove "shadow mode" from docs
+  pending implementation, instead of reusing the term a day later with no link between
+  the two.
+
 ### Repo snapshot utility hardening
 
 - Fixed a CodeQL-flagged time-of-check-to-time-of-use race in `scaffold`'s `AGENTS.md`
@@ -29,7 +49,7 @@ or CVE identifier where one exists.
   and is deterministic. New config levers live under `snapshot` (`ci_mode` warn by default,
   `sign` false, `parser` heuristic, `token_budget`, `strict_redact`). Discovery is layered
   through `llms.txt`, an `AGENTS.md` pointer, `prompts/modules/snapshot.md`, and the
-  `modonome_snapshot` MCP tool. See ADR-032.
+  `modonome_snapshot` MCP tool. See ADR-033.
 - Snapshot regeneration is incremental: a local, gitignored cache under `.modonome/cache/`
   plus git change detection means only changed files are re-read and re-parsed, while the
   output stays byte-identical to a full rebuild. `--full` forces a from-scratch build.

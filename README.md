@@ -175,7 +175,7 @@ npx modonome snapshot . --since HEAD~1   # print the signature-level delta since
 ```
 
 Agents discover it through the root `llms.txt`, a pointer in `AGENTS.md` or `CLAUDE.md`, or
-the `modonome_snapshot` MCP tool. See [docs/adr/ADR-032-repo-snapshot.md](docs/adr/ADR-032-repo-snapshot.md).
+the `modonome_snapshot` MCP tool. See [docs/adr/ADR-033-repo-snapshot.md](docs/adr/ADR-033-repo-snapshot.md).
 
 ## Embed it
 

@@ -7,7 +7,8 @@
 //   1. Root allow-list: only approved Markdown files at the repo root.
 //   2. Protected-file manifest: agent-critical files exist at their declared path.
 //   3. Link integrity: every relative Markdown link under root and docs/ resolves.
-//   4. ADR number uniqueness: no ADR-NNN reused across docs/adr/ and docs/research/.
+//   4. ADR number uniqueness: no ADR-NNN reused within docs/adr/, and no ADR-NNN reused
+//      across docs/adr/ and docs/research/.
 //   5. Audit naming: docs/audits/ files follow <type>-YYYY-MM-DD.md.
 //   6. Canonical uniqueness: no two active docs claim the same canonical topic key.
 //
@@ -20,7 +21,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join, relative, resolve, extname, basename } from "node:path";
 
 const here = dirname(fileURLToPath(import.meta.url));
-const root = join(here, "..");
+const root = process.env.MODONOME_ROOT ? process.env.MODONOME_ROOT : join(here, "..");
 
 const violations = [];
 const warnings = [];
@@ -137,23 +138,40 @@ for (const file of linkFiles) {
   }
 }
 
-// 4. ADR number uniqueness across docs/adr and docs/research.
+// 4. ADR number uniqueness within docs/adr, and across docs/adr and docs/research.
 function adrNumbers(dir) {
-  const nums = new Map();
+  const nums = new Map(); // number -> file[]
   for (const f of walkMd(dir)) {
     const b = basename(f);
     const mm = b.match(/^ADR-(\d{3})/);
-    if (mm) nums.set(mm[1], f);
+    if (!mm) continue;
+    if (!nums.has(mm[1])) nums.set(mm[1], []);
+    nums.get(mm[1]).push(f);
   }
   return nums;
 }
 const adrMain = adrNumbers(join(root, "docs", "adr"));
+
+// 4a. Intra-directory duplicates: two files in docs/adr/ claiming the same number.
+// A same-directory collision cannot be caught by comparing against docs/research/,
+// so it needs its own pass over adrMain before that comparison runs.
+for (const [num, files] of adrMain) {
+  if (files.length > 1) {
+    const names = files.map((f) => relative(root, f)).sort();
+    violations.push(
+      `[adr-number] ADR-${num} is used by ${files.length} files in docs/adr/: ${names.join(", ")}. ` +
+        `Renumber all but one to the next unused ADR-NNN.`
+    );
+  }
+}
+
+// 4b. Cross-directory: an ADR-NNN prefix reused under docs/research/, which must use RD-NNN instead.
 const adrResearch = adrNumbers(join(root, "docs", "research"));
-for (const [num, f] of adrResearch) {
+for (const [num, files] of adrResearch) {
   if (adrMain.has(num)) {
     violations.push(
-      `[adr-number] ADR-${num} is used in both docs/adr/ and docs/research/ (${relative(root, f)}). ` +
-        `Research must use the RD-NNN prefix so numbers are never reused.`
+      `[adr-number] ADR-${num} is used in both docs/adr/ (${relative(root, adrMain.get(num)[0])}) and ` +
+        `docs/research/ (${relative(root, files[0])}). Research must use the RD-NNN prefix so numbers are never reused.`
     );
   }
 }

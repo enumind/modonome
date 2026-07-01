@@ -41,6 +41,7 @@ const REQUIRED_GATES = [
   { name: "checker engagement", needle: "check-checker-engagement.mjs" },
   { name: "license and adapter boundary", needle: "check-licenses.mjs" },
   { name: "prompt behavioral regression", needle: "test-prompt-behavior.mjs" },
+  { name: "markdown governance", needle: "check-md-governance.mjs" },
 ];
 for (const g of REQUIRED_GATES) {
   if (!activeCI.includes(g.needle)) problems.push(`ci.yml does not run the ${g.name} gate (${g.needle}).`);
@@ -117,7 +118,7 @@ if (existsSync(stateDir)) {
 notes.push("Branch protection on the default branch is NOT verifiable from here (needs repo-admin API).");
 notes.push("Required status checks to enable on the default branch: \"verify\" and \"ratchet\" (from ci.yml).");
 
-// 6. Snapshot dogfooding (ADR-032). Modonome must consume its own snapshot: a
+// 6. Snapshot dogfooding (ADR-033). Modonome must consume its own snapshot: a
 //    committed signature must exist, agent instructions must point at the map, and
 //    the hook plus CI gate must keep it fresh. This makes the "we use our own
 //    feature" claim machine-checked rather than aspirational.
