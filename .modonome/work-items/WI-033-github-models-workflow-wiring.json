@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "id": "WI-033-github-models-workflow-wiring",
+  "state": "queued",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": true,
+  "allowed_edit_set": [
+    ".github/workflows/modonome-free.yml",
+    ".modonome/config.yaml",
+    "templates/.modonome/config.yaml"
+  ],
+  "gates": [
+    "node scripts/agent/run-cycle.mjs --target examples/demo-app --dry-run",
+    "node scripts/check-style.mjs .",
+    "npm run verify"
+  ],
+  "queued_at": "2026-07-01"
+}

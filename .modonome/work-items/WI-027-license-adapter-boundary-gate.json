@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "id": "WI-027-license-adapter-boundary-gate",
+  "state": "queued",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": true,
+  "allowed_edit_set": [
+    "scripts/check-licenses.mjs",
+    "docs/adr/ADR-032-oss-adapter-boundary.md",
+    "schemas/adapters.schema.json",
+    "adapters.json",
+    ".github/workflows/ci.yml",
+    "scripts/check-self-application.mjs",
+    "tests/check-licenses.test.mjs"
+  ],
+  "gates": [
+    "node --test tests/check-licenses.test.mjs",
+    "node scripts/check-licenses.mjs",
+    "node scripts/check-md-governance.mjs",
+    "node scripts/check-style.mjs .",
+    "npm run verify"
+  ],
+  "queued_at": "2026-07-01"
+}
