@@ -15,7 +15,7 @@
 //   node scripts/agent/run-cycle.mjs --target examples/demo-app [--dry-run | --execute]
 //       [--maker-model ID] [--checker-model ID] [--max-turns N] [--runner local|container]
 import { spawnSync } from "node:child_process";
-import { mkdirSync, writeFileSync, appendFileSync } from "node:fs";
+import { mkdirSync, writeFileSync, appendFileSync, readFileSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join, basename, resolve } from "node:path";
 import { loadConfig } from "../validate-config.mjs";
@@ -28,6 +28,7 @@ import { enqueue } from "./action-queue.mjs";
 import { chatCompletion } from "./openai-client.mjs";
 import { extractDiff, applyPatch } from "./apply-patch.mjs";
 import { parseCheckerTelemetry } from "./parse-checker-telemetry.mjs";
+import { runToolLoopAdapter } from "./tool-loop-adapter.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..", "..");
@@ -48,6 +49,15 @@ export function resolveRoleSequence(cfg) {
   const seq = cfg?.role_sequence;
   if (Array.isArray(seq) && seq.length > 0) return [...seq];
   return [...CORE_ROLE_SEQUENCE];
+}
+
+// Resolve a role's execution mode from its model's config entry. The default is
+// "patch" (the WI-029 single-shot-diff path) whenever exec_mode is absent, so
+// existing configs behave exactly as before. Only "tool-loop" selects the
+// agentic adapter path.
+export function resolveExecMode(cfg, model) {
+  const mode = cfg?.models?.[model]?.exec_mode;
+  return mode === "tool-loop" ? "tool-loop" : "patch";
 }
 
 export function parseArgs(argv) {
@@ -128,8 +138,8 @@ export function planCycle(opts, cfg, runId) {
     appName,
     target: opts.target,
     runId,
-    maker: { ...maker, id: `maker:${appName}:${runId}:${maker.model}`, route: makerRoute },
-    checker: { ...checker, id: `checker:${appName}:${runId}:${checker.model}`, route: checkerRoute },
+    maker: { ...maker, id: `maker:${appName}:${runId}:${maker.model}`, route: makerRoute, execMode: resolveExecMode(cfg, maker.model) },
+    checker: { ...checker, id: `checker:${appName}:${runId}:${checker.model}`, route: checkerRoute, execMode: resolveExecMode(cfg, checker.model) },
     roleSequence: resolveRoleSequence(cfg),
     maxTurns,
     transcriptDir: join(opts.target, "runs", runId),
@@ -151,7 +161,7 @@ export function planCycle(opts, cfg, runId) {
       throw new Error(`${role} model "${crew.model}" is not in the models registry; pin it in .modonome/config.yaml.`);
     }
     const route = resolveExecutionTarget(crew, cfg);
-    plan[role] = { ...crew, id: `${role}:${appName}:${runId}:${crew.model}`, route };
+    plan[role] = { ...crew, id: `${role}:${appName}:${runId}:${crew.model}`, route, execMode: resolveExecMode(cfg, crew.model) };
     if (isBillable(crew.costClass)) plan.usesRemote = true;
   }
 
@@ -275,9 +285,68 @@ export async function invokeRoleOpenAI(plan, role, env, deps = {}) {
   return 0;
 }
 
+// Load the single agentic-CLI adapter entry from adapters.json for the tool-loop
+// path. Returns the first declared adapter, or null when the manifest is empty or
+// absent (which makes tool-loop degrade to a bounded refusal, never a crash).
+function loadAdapterEntry(deps = {}) {
+  if (deps.adapterEntry !== undefined) return deps.adapterEntry;
+  const path = join(root, "adapters.json");
+  if (!existsSync(path)) return null;
+  try {
+    const manifest = JSON.parse(readFileSync(path, "utf8"));
+    const adapters = Array.isArray(manifest) ? manifest : manifest.adapters;
+    return Array.isArray(adapters) && adapters.length > 0 ? adapters[0] : null;
+  } catch {
+    return null;
+  }
+}
+
+// Agentic tool-loop execution: spawn the declared external coding CLI (adapt-first,
+// ADR-032) pointed at the resolved OpenAI-compatible endpoint. Containment, the turn
+// cap, and the wall-clock timeout are enforced in tool-loop-adapter.mjs. The result
+// is written through the same writeTranscriptAndMetric helper as every other
+// transport, so telemetry parsing and file naming stay consistent. Returns the
+// adapter's status; a bounded failure (timeout, non-zero exit, cap) is a clean
+// non-zero status recorded in the transcript, not a throw.
+export async function invokeRoleToolLoop(plan, role, env, deps = {}) {
+  const runToolLoopImpl = deps.runToolLoopImpl ?? runToolLoopAdapter;
+  const r = plan[role];
+  const prompt = buildRolePrompt(plan, role, env);
+  const baseUrl = r.modelBaseUrl ?? deps.defaultBaseUrl ?? resolveProvider(r.modelProvider).defaultBaseUrl;
+  const authToken = r.authEnv ? env[r.authEnv] : undefined;
+  const adapterEntry = loadAdapterEntry(deps);
+
+  const result = await runToolLoopImpl({
+    prompt,
+    endpoint: { baseUrl, authToken, model: r.model },
+    root,
+    target: plan.target,
+    adapterEntry,
+    maxTurns: plan.maxTurns,
+    timeoutMs: deps.toolLoopTimeoutMs,
+    env,
+    deps,
+  });
+
+  writeTranscriptAndMetric(plan, role, r, result.transcript, {
+    exec_mode: "tool-loop",
+    adapter: adapterEntry ? adapterEntry.name : null,
+    adapter_status: result.status,
+    adapter_reason: result.reason,
+  });
+  // A bounded adapter failure (timeout, non-zero exit, cap hit) is recorded in
+  // the metric above and is a clean no-op for the cycle, mirroring the single-shot
+  // path: the cycle continues rather than aborting on a bounded outcome.
+  return 0;
+}
+
 function invokeRole(plan, role, env, deps) {
   const r = plan[role];
-  if (r.transport === "openai-http") return invokeRoleOpenAI(plan, role, env, deps);
+  if (r.transport === "openai-http") {
+    return r.execMode === "tool-loop"
+      ? invokeRoleToolLoop(plan, role, env, deps)
+      : invokeRoleOpenAI(plan, role, env, deps);
+  }
   return invokeRoleClaudeCli(plan, role, env);
 }
 
