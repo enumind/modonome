@@ -5,6 +5,7 @@
 import { existsSync, readFileSync, readdirSync, mkdirSync, writeFileSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
+import { deriveSignals, scoreProposals } from "./score-proposals.mjs";
 
 const args = process.argv.slice(2);
 const target = args[0] || ".";
@@ -112,6 +113,18 @@ function proposeWork(stack, hotFiles) {
   return generic.slice(0, 3);
 }
 
+// Order proposals by descending deterministic priority score (highest-value,
+// lowest-risk first). Signals are derived heuristically from each proposal's
+// text and the hot-file churn count for the file it names, if any.
+export function orderProposalsByScore(proposals, hotFiles) {
+  const topChanges = hotFiles && hotFiles.length > 0 ? hotFiles[0].changes : 0;
+  const withSignals = proposals.map((proposal) => ({
+    proposal,
+    signals: deriveSignals(proposal, { hotFileChanges: topChanges }),
+  }));
+  return scoreProposals(withSignals);
+}
+
 export function proposalToWorkItem(proposal, opts = {}) {
   const id = opts.id || `WI-auto-${slug(proposal)}`;
   const queuedAt = opts.queuedAt || new Date().toISOString();
@@ -141,9 +154,10 @@ const hotFiles = detectHotFiles();
 const adopted = has(".autonomy") ? ".autonomy (adopted)" : ".modonome";
 
 const proposals = proposeWork(stack, hotFiles);
+const scored = orderProposalsByScore(proposals, hotFiles);
 
-if (emitWorkItem && proposals.length > 0) {
-  const workItem = proposalToWorkItem(proposals[0]);
+if (emitWorkItem && scored.length > 0) {
+  const workItem = proposalToWorkItem(scored[0].proposal);
   console.log(JSON.stringify(workItem, null, 2));
 } else {
   const lines = [];
@@ -157,8 +171,8 @@ if (emitWorkItem && proposals.length > 0) {
   for (const g of stack.gates) lines.push(`  - ${g}`);
   lines.push("\nProtected paths it would never auto-merge:");
   for (const p of (protectedPaths.length ? protectedPaths : ["none detected, ask the owner to confirm"])) lines.push(`  - ${p}`);
-  lines.push("\nProposed bounded work (each becomes a small reviewable pull request):");
-  proposals.forEach((w, i) => lines.push(`  ${i + 1}. ${w}`));
+  lines.push("\nProposed bounded work (each becomes a small reviewable pull request, ordered by priority score):");
+  scored.forEach((s, i) => lines.push(`  ${i + 1}. [score ${s.score.toFixed(1)}] ${s.proposal}`));
   lines.push("\nRefused by default: autonomy off, no auto-merge, no protected-path edits, no remote spend, nothing shared across repos.");
   lines.push("Next safe step: review this output, then run `npx modonome scaffold .` to drop disabled, dry-run state files.");
 
@@ -171,6 +185,7 @@ writeRunLog(join(target, ".modonome", "runs"), "dry-run", {
   detected_stack: { name: stack.name, pm: stack.pm },
   protected_paths: protectedPaths,
   proposals,
+  scored,
   hot_files: hotFiles,
   exit_code: 0,
   duration_ms: Date.now() - startMs,
