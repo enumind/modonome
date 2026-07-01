@@ -44,31 +44,17 @@
     },
     "roles": {
       "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "maker": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "runner": { "type": "string", "enum": ["local", "container"] },
-            "model": { "type": "string", "minLength": 1 }
-          }
-        },
-        "checker": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "runner": { "type": "string", "enum": ["local", "container"] },
-            "model": { "type": "string", "minLength": 1 }
-          }
-        },
-        "self-govern": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "runner": { "type": "string", "enum": ["local", "container"] },
-            "model": { "type": "string", "minLength": 1 }
-          }
+      "description": "Role registry. maker and checker are the first-class separation-of-duties pair (a distinct model each is enforced by require_distinct_maker_checker_model). Any other key is a crew role added in config with no core-code change; it carries the same optional runner/model/provider/transport/trigger/execution-target fields.",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "runner": { "type": "string", "enum": ["local", "container"] },
+          "model": { "type": "string", "minLength": 1 },
+          "provider": { "type": "string", "minLength": 1 },
+          "transport": { "type": "string", "minLength": 1 },
+          "trigger": { "type": "string", "minLength": 1 },
+          "execution_target": { "type": "string", "minLength": 1 }
         }
       }
     },

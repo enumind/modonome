@@ -35,6 +35,21 @@ const root = join(here, "..", "..");
 const DEFAULT_MAX_TURNS = 40;
 const HARD_TURN_CAP = 80;
 
+// The maker/checker pair is the first-class separation-of-duties cycle and always
+// runs. Any additional entries in the derived sequence are single-role crew
+// invocations that do not participate in the maker/checker distinctness pairing.
+const CORE_ROLE_SEQUENCE = ["maker", "checker"];
+
+// Derive the ordered list of roles the cycle executes. An explicit cfg.role_sequence
+// (a non-empty array of role names) is honored so a crew role added in config runs
+// with no code change; otherwise it defaults to the maker/checker pair, preserving
+// current behavior exactly. Pure: reads config, returns a fresh array.
+export function resolveRoleSequence(cfg) {
+  const seq = cfg?.role_sequence;
+  if (Array.isArray(seq) && seq.length > 0) return [...seq];
+  return [...CORE_ROLE_SEQUENCE];
+}
+
 export function parseArgs(argv) {
   const opts = { execute: false };
   for (let i = 0; i < argv.length; i++) {
@@ -109,18 +124,38 @@ export function planCycle(opts, cfg, runId) {
   const makerRoute = resolveExecutionTarget(maker, cfg);
   const checkerRoute = resolveExecutionTarget(checker, cfg);
 
-  return {
+  const plan = {
     appName,
     target: opts.target,
     runId,
     maker: { ...maker, id: `maker:${appName}:${runId}:${maker.model}`, route: makerRoute },
     checker: { ...checker, id: `checker:${appName}:${runId}:${checker.model}`, route: checkerRoute },
+    roleSequence: resolveRoleSequence(cfg),
     maxTurns,
     transcriptDir: join(opts.target, "runs", runId),
     budget,
     usesRemote,
     remoteAllowed,
   };
+
+  // Crew roles: any role in the sequence beyond the built-in maker/checker pair
+  // resolves its provider/transport/route through the same machinery and is
+  // attached to the plan under its own name. It is a single-role invocation that
+  // does not participate in the maker/checker distinctness pairing above. Each
+  // crew role's model is still budget-classified and route-resolved (fail-closed).
+  for (const role of plan.roleSequence) {
+    if (role === "maker" || role === "checker" || plan[role]) continue;
+    const crew = resolveRole(cfg, role);
+    if (opts.runner) crew.runner = opts.runner;
+    if (known.size > 0 && !known.has(crew.model)) {
+      throw new Error(`${role} model "${crew.model}" is not in the models registry; pin it in .modonome/config.yaml.`);
+    }
+    const route = resolveExecutionTarget(crew, cfg);
+    plan[role] = { ...crew, id: `${role}:${appName}:${runId}:${crew.model}`, route };
+    if (isBillable(crew.costClass)) plan.usesRemote = true;
+  }
+
+  return plan;
 }
 
 // Build the child-process environment for a role invocation. When the resolved
@@ -163,9 +198,12 @@ function writeTranscriptAndMetric(plan, role, r, transcriptText, extra = {}) {
   writeFileSync(join(root, plan.transcriptDir, `${role}.log`), transcriptText);
 
   const ts = new Date().toISOString();
-  const event = role === "maker" ? "maker_run" : "checker_review";
-  const idField = role === "maker" ? "maker_id" : "checker_id";
-  const modelField = role === "maker" ? "maker_model" : "checker_model";
+  // maker/checker keep their fixed event and id/model field names unchanged. A crew
+  // role (any other name) records a generic role_run event with role-scoped fields,
+  // so its metric is well-formed without borrowing the checker's schema.
+  const event = role === "maker" ? "maker_run" : role === "checker" ? "checker_review" : `${role}_run`;
+  const idField = role === "maker" ? "maker_id" : role === "checker" ? "checker_id" : `${role}_id`;
+  const modelField = role === "maker" ? "maker_model" : role === "checker" ? "checker_model" : `${role}_model`;
   const metric = {
     schema_version: 1,
     ts,
@@ -262,7 +300,7 @@ export function runCycle(opts, { execute, cfg, runId, env = process.env, queueDi
   // returns without a model call. planCycle has already failed closed on any
   // unreachable combination.
   const here = localEnv(opts, env);
-  const roles = ["maker", "checker"];
+  const roles = plan.roleSequence;
   const needsEnqueue = roles.some((role) => plan[role].route.target !== here);
   if (opts.enqueue || (here !== null && needsEnqueue)) {
     const enqueued = [];

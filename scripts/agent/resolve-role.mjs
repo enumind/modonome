@@ -10,11 +10,19 @@
 
 import { resolveProvider } from "./providers.mjs";
 
+// Built-in role defaults for the roles the harness ships with. A role present in
+// cfg.roles but absent here is a crew role added in config: it inherits the generic
+// fallback (container runner, the generic maker model) and reads its runner/model
+// overrides from cfg.roles like any other role, so a new role needs no code change.
 const ROLE_DEFAULTS = {
   maker: { runner: "container", model: "claude-sonnet-4-6" },
   checker: { runner: "container", model: "claude-opus-4-8" },
   "self-govern": { runner: "container", model: "claude-haiku-4-5-20251001" },
 };
+
+// Generic fallback for any role without a built-in default. Keeps a crew role
+// resolvable to a valid descriptor with safe container/hosted defaults.
+const GENERIC_ROLE_DEFAULT = { runner: "container", model: "claude-sonnet-4-6" };
 
 const RUNNER_DEFAULTS = {
   container: { labels: ["ubuntu-latest"], cli_path: "claude" },
@@ -31,7 +39,7 @@ const RUNNER_DEFAULTS = {
  *             transport: string, costClass: string, authEnv: string|null }}
  */
 export function resolveRole(cfg, role) {
-  const roleDefaults = ROLE_DEFAULTS[role] ?? { runner: "container", model: "claude-sonnet-4-6" };
+  const roleDefaults = ROLE_DEFAULTS[role] ?? GENERIC_ROLE_DEFAULT;
   const roleCfg = cfg.roles?.[role] ?? {};
 
   const runner = roleCfg.runner ?? roleDefaults.runner;
