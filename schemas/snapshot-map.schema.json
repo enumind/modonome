@@ -68,7 +68,6 @@
         "required": ["path_id"],
         "properties": {
           "path_id": { "type": "string" },
-          "churn": { "type": "integer", "minimum": 0 },
           "centrality": { "type": "integer", "minimum": 0 },
           "pagerank": { "type": "number", "minimum": 0 }
         }

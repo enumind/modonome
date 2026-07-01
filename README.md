@@ -153,8 +153,8 @@ turn:
 - Tier 0 `signature.json`: a small fingerprint (Merkle root, stack, entrypoints, commands,
   governance posture). If `merkle_root` is unchanged, the repo is unchanged.
 - Tier 1 `map.json` and `map.md`: modules, public API signatures, import edges, and an
-  attention ranking by churn, degree centrality, and PageRank. Short `F:` and `S:` anchors
-  resolve to an exact file and line so an agent can cite and act without a full read.
+  attention ranking by degree centrality and PageRank. Short `F:` and `S:` anchors resolve to
+  an exact file and line so an agent can cite and act without a full read.
 
 It is dependency-free, deterministic, and read-only. Secrets are redacted before anything is
 written. Keep it fresh with a git hook and a CI check; verify integrity any time.

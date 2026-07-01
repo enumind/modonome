@@ -15,7 +15,7 @@ import { redactText } from "./snapshot-redact.mjs";
 import { buildImportGraph, centrality, pagerank, attentionRank, findCycle } from "./snapshot-graph.mjs";
 import { buildPathDictionary, buildSymbolDictionary, symbolAnchor } from "./snapshot-anchors.mjs";
 import { estimateTokens, budgetTier } from "./token-estimate.mjs";
-import { detectStack, detectProtected, detectInstructions, detectHotFiles } from "./repo-detect.mjs";
+import { detectStack, detectProtected, detectInstructions } from "./repo-detect.mjs";
 
 export const SNAPSHOT_SCHEMA_VERSION = 1;
 const DEFAULT_TOKEN_BUDGET = 120000;
@@ -108,9 +108,11 @@ export function buildSnapshot(root, opts = {}) {
   const adjacency = buildImportGraph(perFile, fileSet);
   const centralityMap = centrality(adjacency);
   const pagerankMap = pagerank(adjacency);
-  const churn = new Map(detectHotFiles(root, { limit: Infinity }).map((h) => [h.file, h.changes]));
+  // Attention ranking uses only content-derived signals (degree centrality and
+  // PageRank) so the committed artifact stays deterministic across commits. Git
+  // churn is a live signal surfaced on demand elsewhere, not baked into the map.
   const codePaths = perFile.filter((f) => f.symbols.length > 0 || (adjacency[f.relPath] || []).length > 0).map((f) => f.relPath);
-  const attentionAll = attentionRank(codePaths, { churn, centralityMap, pagerankMap });
+  const attentionAll = attentionRank(codePaths, { centralityMap, pagerankMap });
   const scoreByPath = new Map(attentionAll.map((a) => [a.path, a.score]));
 
   // Path dictionary over files that appear in the map.
@@ -172,7 +174,7 @@ export function buildSnapshot(root, opts = {}) {
 
   const attention = attentionAll.slice(0, MAX_ATTENTION)
     .filter((a) => pathIdByPath[a.path])
-    .map((a) => ({ path_id: pathIdByPath[a.path], churn: a.churn, centrality: a.centrality, pagerank: a.pagerank }));
+    .map((a) => ({ path_id: pathIdByPath[a.path], centrality: a.centrality, pagerank: a.pagerank }));
 
   const symbolDict = buildSymbolDictionary(api);
 
@@ -288,11 +290,11 @@ function renderMarkdown({ generatedFor, merkleRoot, files, totalBytes, map }) {
     lines.push(`- ${idToPath[edge.from] || edge.from} -> ${idToPath[edge.to] || edge.to}`);
   }
   lines.push("");
-  lines.push("## Attention (churn + centrality + pagerank)");
+  lines.push("## Attention (centrality + pagerank)");
   lines.push("");
   if (map.attention.length === 0) lines.push("No ranking available.");
   map.attention.forEach((a, i) => {
-    lines.push(`${i + 1}. ${idToPath[a.path_id] || a.path_id} churn=${a.churn} centrality=${a.centrality} pagerank=${a.pagerank}`);
+    lines.push(`${i + 1}. ${idToPath[a.path_id] || a.path_id} centrality=${a.centrality} pagerank=${a.pagerank}`);
   });
   lines.push("");
   return lines.join("\n");

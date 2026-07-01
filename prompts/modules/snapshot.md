@@ -13,9 +13,9 @@ Read order:
   and governance posture. If `merkle_root` equals the value from your last read, the repo has
   not changed and you can reuse your prior understanding.
 - Tier 1, `.modonome/snapshot/map.md` or `map.json`: modules with a one-line purpose, the
-  public API as signatures (not bodies), import edges, and an attention ranking by churn,
-  degree centrality, and PageRank. Read `map.md` for a compact human-and-model view, or
-  `map.json` for structured fields.
+  public API as signatures (not bodies), import edges, and an attention ranking by degree
+  centrality and PageRank. Read `map.md` for a compact human-and-model view, or `map.json`
+  for structured fields.
 
 Anchors and citation:
 

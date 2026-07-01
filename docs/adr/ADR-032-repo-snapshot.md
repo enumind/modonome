@@ -29,8 +29,10 @@ Ship `modonome snapshot`, a utility that writes a tiered artifact under
   language mix, entrypoints, commands, protected paths, and governance posture. An unchanged
   `merkle_root` means an unchanged repo.
 - Tier 1 `map.json` and `map.md`: modules with a one-line purpose, public API signatures
-  (never bodies), import edges, and an attention ranking by churn, degree centrality, and
-  PageRank. `map.md` is the LLM-native rendering; `map.json` is the machine form.
+  (never bodies), import edges, and an attention ranking by degree centrality and PageRank.
+  `map.md` is the LLM-native rendering; `map.json` is the machine form. The ranking uses only
+  content-derived signals so the committed artifact stays deterministic across commits; git
+  churn is a live overlay reserved for a later phase rather than baked into the map.
 
 Design choices:
 
@@ -62,5 +64,6 @@ an MCP tool `modonome_snapshot` that returns a tier or a verify report on demand
 - Heuristic extraction is approximate. Signatures are advisory context; anchors always
   resolve to ground truth in the file. The registry leaves an exact-parser upgrade path.
 - Later phases add multi-language adapters, incremental Merkle diffing, Tier 2 deep shards,
-  signed delta packets, and graph-backed snapshot queries. These are deferred so this change
-  stays deterministic and low-risk.
+  signed delta packets, graph-backed snapshot queries, and a git-churn attention overlay
+  surfaced on demand rather than committed. These are deferred so this change stays
+  deterministic and low-risk.
