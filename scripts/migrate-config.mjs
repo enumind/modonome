@@ -35,6 +35,15 @@ export const SAFE_DEFAULTS = {
   repo_network_dry_run: true,
   share_raw_code_across_repos: false,
   share_repo_identifiers_by_default: false,
+  // Snapshot utility levers. Safe defaults: freshness check only warns, snapshots
+  // are unsigned, and the dependency-free parser is used.
+  snapshot: {
+    ci_mode: "warn",
+    sign: false,
+    parser: "heuristic",
+    token_budget: 120000,
+    strict_redact: false,
+  },
   // WS-H: runner and model assignment for cost-bearing agent roles.
   // Defaults preserve existing container/hosted-Claude posture.
   roles: {

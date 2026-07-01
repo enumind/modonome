@@ -17,6 +17,7 @@ const MODULE_ORDER = [
   "gates",
   "control-panel",
   "network",
+  "snapshot",
 ];
 
 const HEADER = `<!-- modonome:bundle GENERATED. Do not edit by hand. Run: node scripts/build-prompt.mjs --write -->\n`;

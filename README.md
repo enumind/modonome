@@ -144,6 +144,30 @@ node agentproof/runner.mjs
 Read [SECURITY.md](SECURITY.md), [GOVERNANCE.md](GOVERNANCE.md), and
 [docs/specs/governed-autonomy-spec.md](docs/specs/governed-autonomy-spec.md).
 
+## Repo snapshot for LLM context
+
+`modonome snapshot` reads any repo and writes a tiered, Merkle-verified artifact under
+`.modonome/snapshot/` so an agent can understand the code without re-reading every file each
+turn:
+
+- Tier 0 `signature.json`: a small fingerprint (Merkle root, stack, entrypoints, commands,
+  governance posture). If `merkle_root` is unchanged, the repo is unchanged.
+- Tier 1 `map.json` and `map.md`: modules, public API signatures, import edges, and an
+  attention ranking by degree centrality and PageRank. Short `F:` and `S:` anchors resolve to
+  an exact file and line so an agent can cite and act without a full read.
+
+It is dependency-free, deterministic, and read-only. Secrets are redacted before anything is
+written. Keep it fresh with a git hook and a CI check; verify integrity any time.
+
+```bash
+npx modonome snapshot .            # write .modonome/snapshot/ and llms.txt
+npx modonome snapshot . --verify   # recompute the Merkle root and confirm no drift
+npx modonome snapshot . --since HEAD~1   # print the signature-level delta since a ref
+```
+
+Agents discover it through the root `llms.txt`, a pointer in `AGENTS.md` or `CLAUDE.md`, or
+the `modonome_snapshot` MCP tool. See [docs/adr/ADR-032-repo-snapshot.md](docs/adr/ADR-032-repo-snapshot.md).
+
 ## Embed it
 
 - Reference: link to the prompt and keep your state local.

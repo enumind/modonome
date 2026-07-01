@@ -53,6 +53,12 @@ repo_network_enabled: false    # env or CI only
 repo_network_dry_run: true
 share_raw_code_across_repos: false
 share_repo_identifiers_by_default: false
+snapshot:
+  ci_mode: warn
+  sign: false
+  parser: heuristic
+  token_budget: 120000
+  strict_redact: false
 roles:
   maker:
     runner: container
@@ -148,3 +154,5 @@ Load these from `prompts/modules/` as needed:
 - `control-panel.md`: the operator control panel.
 - `network.md`: the cross-repo knowledge network. Load only when `repo_network_enabled` is
   set.
+- `snapshot.md`: the repo snapshot utility. How to read and cite the tiered snapshot,
+  and how to keep it fresh.

@@ -289,6 +289,24 @@ if (gb) {
 }
 
 console.log("");
+console.log("Repo Snapshot");
+console.log("-------------");
+const snapSigPath = join(target, ".modonome", "snapshot", "signature.json");
+if (existsSync(snapSigPath)) {
+  try {
+    const sig = JSON.parse(readFileSync(snapSigPath, "utf8"));
+    console.log(`  ${pad("Snapshot version:", 30)} ${rpad(sig.snapshot_version, 6)}`);
+    console.log(`  ${pad("Tracked files:", 30)} ${rpad(sig.size?.files ?? "?", 6)}`);
+    console.log(`  Merkle root: ${sig.merkle_root}`);
+    console.log("  Freshness: run `modonome snapshot . --verify` to confirm no drift.");
+  } catch {
+    console.log("  (snapshot present but unreadable)");
+  }
+} else {
+  console.log("  none. Run `modonome snapshot .` to generate an LLM-ready repo map.");
+}
+
+console.log("");
 console.log("Impact");
 console.log("------");
 const runsDir = join(target, ".modonome", "runs");

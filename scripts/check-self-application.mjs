@@ -117,6 +117,30 @@ if (existsSync(stateDir)) {
 notes.push("Branch protection on the default branch is NOT verifiable from here (needs repo-admin API).");
 notes.push("Required status checks to enable on the default branch: \"verify\" and \"ratchet\" (from ci.yml).");
 
+// 6. Snapshot dogfooding (ADR-032). Modonome must consume its own snapshot: a
+//    committed signature must exist, agent instructions must point at the map, and
+//    the hook plus CI gate must keep it fresh. This makes the "we use our own
+//    feature" claim machine-checked rather than aspirational.
+const snapSig = "snapshot/signature.json";
+if (!existsSync(join(root, ".modonome", "snapshot", "signature.json"))) {
+  problems.push(`.modonome/${snapSig} is missing. Run: node scripts/snapshot.mjs . (modonome must ship its own snapshot).`);
+}
+const agents = existsSync(join(root, "AGENTS.md")) ? read("AGENTS.md") : "";
+if (!agents.includes(".modonome/snapshot/map.md")) {
+  problems.push("AGENTS.md does not point agents at .modonome/snapshot/map.md.");
+}
+const hook = existsSync(join(root, "scripts/install-hooks.mjs")) ? read("scripts/install-hooks.mjs") : "";
+if (!hook.includes("snapshot.mjs")) {
+  problems.push("scripts/install-hooks.mjs does not regenerate the snapshot in the pre-commit hook.");
+}
+if (!activeCI.includes("snapshot.mjs . --check")) {
+  problems.push("ci.yml does not run the snapshot freshness gate (snapshot.mjs . --check).");
+}
+const selfCfg = parseFlatYaml(read(".modonome/config.yaml"));
+if (!selfCfg.snapshot || selfCfg.snapshot.ci_mode !== "fail") {
+  problems.push('.modonome/config.yaml: snapshot.ci_mode should be "fail" so modonome\'s own snapshot cannot go stale.');
+}
+
 // Report
 console.log("Self-application conformance (ADR-025)");
 console.log("=====================================");

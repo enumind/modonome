@@ -9,6 +9,40 @@ or CVE identifier where one exists.
 
 ## Unreleased
 
+### Repo snapshot utility hardening
+
+- Fixed a CodeQL-flagged time-of-check-to-time-of-use race in `scaffold`'s `AGENTS.md`
+  creation by making it an atomic exclusive write. A follow-up manual security audit (the
+  snapshot tool reads arbitrary repositories, including untrusted ones) found and fixed three
+  more issues: git revision values from the local cache and `--since` are now validated before
+  reaching `git` (argument injection), the ignore-pattern compiler collapses adjacent
+  wildcards (polynomial ReDoS on a crafted `.gitignore`), and per-file maps keyed by raw paths
+  use `Object.create(null)` (prototype pollution via a file named `__proto__`).
+
+### Repo snapshot utility
+
+- Added `modonome snapshot`, a dependency-free utility that reads any repo and writes a
+  tiered, Merkle-verified artifact under `.modonome/snapshot/` for LLM context: Tier 0
+  `signature.json` (fingerprint), Tier 1 `map.json` and `map.md` (modules, public API
+  signatures, import edges, PageRank attention ranking). It emits a root `llms.txt`, supports
+  `--check`, `--verify`, `--tier`, `--since`, and `--pack`, redacts secrets before writing,
+  and is deterministic. New config levers live under `snapshot` (`ci_mode` warn by default,
+  `sign` false, `parser` heuristic, `token_budget`, `strict_redact`). Discovery is layered
+  through `llms.txt`, an `AGENTS.md` pointer, `prompts/modules/snapshot.md`, and the
+  `modonome_snapshot` MCP tool. See ADR-032.
+- Snapshot regeneration is incremental: a local, gitignored cache under `.modonome/cache/`
+  plus git change detection means only changed files are re-read and re-parsed, while the
+  output stays byte-identical to a full rebuild. `--full` forces a from-scratch build.
+- `scaffold --write` turns snapshot consumption on by default during adoption: it generates
+  the first snapshot, installs a host pre-commit hook that keeps it fresh, and drops an
+  `AGENTS.md` pointer when the host has none. `--no-snapshot` opts out; existing host files
+  are never overwritten.
+- Extraction now ships dependency-free heuristic adapters for JavaScript/TypeScript, Python,
+  Go, Java, and a generic fallback, each locked by golden tests. An optional tree-sitter parser
+  (`--parser tree-sitter` or `snapshot.parser`) loads lazily only when installed and falls back
+  to the heuristic with a warning otherwise, so the core stays zero-dependency. The committed
+  snapshot always uses the heuristic default to stay reproducible across contributors.
+
 ### AgentProof expanded to 25 scenarios (HARDENED)
 
 - Grew the AgentProof suite from 16 to 25 governance scenarios. Nine new scenarios cover

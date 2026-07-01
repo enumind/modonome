@@ -37,8 +37,9 @@ governs where docs live.
 
 ## Architecture Decision Records
 
-- [adr/](adr/): 31 accepted ADRs covering the major design decisions. The markdown
+- [adr/](adr/): 32 accepted ADRs covering the major design decisions. The markdown
   governance decision is [adr/ADR-031-markdown-governance.md](adr/ADR-031-markdown-governance.md).
+  The repo snapshot decision is [adr/ADR-032-repo-snapshot.md](adr/ADR-032-repo-snapshot.md).
 
 ## Audits
 

@@ -107,6 +107,11 @@ default until an owner arms it.
 - The scripts (`scripts/`). The enforcing code: build the prompt bundle, scaffold state, run
   a dry-run sweep, run the anti-gaming ratchet, validate config and packets, migrate config,
   check house style, and guard against drift.
+- The snapshot utility (`scripts/snapshot.mjs` plus `scripts/lib/snapshot-*.mjs` and
+  `scripts/lib/lang-adapters/`). A dependency-free pipeline (walk, Merkle hash, per-file
+  signature extraction, redaction, import graph with PageRank, tier assembly, deterministic
+  serialization) that writes the tiered `.modonome/snapshot/` artifact for LLM context
+  (ADR-032). The `snapshot-core.mjs` orchestrator is pure and read-only; the CLI does the I/O.
 
 ## The agent loop
 

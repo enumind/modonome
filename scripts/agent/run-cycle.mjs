@@ -21,7 +21,7 @@ import { dirname, join, basename, resolve } from "node:path";
 import { loadConfig } from "../validate-config.mjs";
 import { resolveRole } from "./resolve-role.mjs";
 import { isBillable, resolveProvider } from "./providers.mjs";
-import { renderPrompt } from "./render-prompt.mjs";
+import { renderPrompt, snapshotContext } from "./render-prompt.mjs";
 import { readPromotedLearnings } from "../lib/learnings.mjs";
 import { resolveExecutionTarget } from "./route-action.mjs";
 import { enqueue } from "./action-queue.mjs";
@@ -147,7 +147,7 @@ function buildRolePrompt(plan, role, env) {
   const promotedLearnings = learnings.length === 0
     ? "(none yet)"
     : learnings.map(l => `- ${l.id}: ${l.lesson} (gate: ${l.gate_location})`).join("\n");
-  return renderPrompt(role, {
+  return snapshotContext() + renderPrompt(role, {
     ...env,
     [idKey]: r.id,
     [modelKey]: r.model,

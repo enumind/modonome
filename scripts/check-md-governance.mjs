@@ -34,6 +34,8 @@ const ROOT_ALLOW_LIST = new Set([
   "SECURITY.md",
   "GOVERNANCE.md",
   "AGENTS.md",
+  "CLAUDE.md",
+  "CODEX.md",
   "RELEASE-EVIDENCE.md",
   "QUICKSTART.md",
   "ADOPTION-GUIDE.md",

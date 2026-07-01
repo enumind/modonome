@@ -2,7 +2,7 @@
 // Modonome command line. Safe by default. The two commands you need first are
 // `dry-run` (changes nothing) and `scaffold` (drops disabled, dry-run state).
 import { spawnSync } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { loadConfig } from "../scripts/validate-config.mjs";
@@ -24,6 +24,10 @@ Usage:
   npx modonome status [dir]              print the effective arming posture for the target repo.
   npx modonome report [dir]              print governance activity summary and AgentProof score.
   npx modonome compliance <dir>          write a read-only OpenSSF, SLSA, and NIST evidence pack for the repo.
+  npx modonome snapshot <dir>            write a tiered, Merkle-verified repo snapshot for LLM context.
+  npx modonome snapshot <dir> --check   fail or warn (per config) if the committed snapshot is stale.
+  npx modonome snapshot <dir> --pack    write a single portable .msnap bundle for sharing.
+  npx modonome snapshot <dir> --since <ref>  print the file-level delta since a git ref.
   npx modonome agentproof                run the AgentProof adversarial benchmark suite (16 scenarios).
   npx modonome help                      show this message.
 
@@ -103,6 +107,22 @@ function main(argv) {
       console.log(`Config autonomy:     ${configSaysArmed ? "enabled" : "disabled"} (advisory)`);
       console.log(`MODONOME_ARMED env:  ${envArmed ? "set" : "not set"} (authoritative)`);
       console.log(`Effective state:     ${effectiveArmed ? "ARMED" : "dry-run"}`);
+      const snapPath = join(targetDir, ".modonome", "snapshot", "signature.json");
+      if (existsSync(snapPath)) {
+        try {
+          const sig = JSON.parse(readFileSync(snapPath, "utf8"));
+          console.log("");
+          console.log("Repo snapshot");
+          console.log("=============");
+          console.log(`Version:             ${sig.snapshot_version}`);
+          console.log(`Merkle root:         ${sig.merkle_root}`);
+          console.log(`Files:               ${sig.size?.files ?? "?"}`);
+          console.log("Freshness:           run `modonome snapshot . --verify` to confirm no drift");
+        } catch { /* unreadable snapshot is reported as absent below */ }
+      } else {
+        console.log("");
+        console.log("Repo snapshot:       none. Run `modonome snapshot .` to generate one.");
+      }
       process.exit(0);
       break;
     }
@@ -111,6 +131,9 @@ function main(argv) {
       break;
     case "compliance":
       run("build-compliance-evidence.mjs", rest);
+      break;
+    case "snapshot":
+      run("snapshot.mjs", rest);
       break;
     case "agentproof":
       process.exit(spawnSync("node", [join(here, "..", "agentproof", "runner.mjs"), ...rest], { stdio: "inherit" }).status ?? 1);

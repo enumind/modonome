@@ -22,6 +22,12 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      # Snapshot freshness runs BEFORE the base-branch checkouts below, which
+      # overwrite guard-ratchet.mjs and check-style.mjs with base versions. Hashing
+      # must see this branch's real files. Honors snapshot.ci_mode (warn by default).
+      - name: Run snapshot freshness gate
+        run: node scripts/snapshot.mjs . --check
+
       # Mandatory Base-Branch Checkouts matching check-self-application.mjs criteria
       # NOTE: These steps only run on pull requests where github.base_ref is defined.
       # On push events, github.base_ref is empty, so these are skipped to prevent
