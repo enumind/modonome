@@ -11,12 +11,18 @@
 //      across docs/adr/ and docs/research/.
 //   5. Audit naming: docs/audits/ files follow <type>-YYYY-MM-DD.md.
 //   6. Canonical uniqueness: no two active docs claim the same canonical topic key.
+//   7. Staleness (docs/compliance/ and docs/audits/ only): last_reviewed front-matter is
+//      required, and must not predate a meaningful number of commits to the paths the
+//      doc cites. This is the small, externally-facing trust surface; the rest of docs/
+//      stays under the advisory front-matter check below until it is fully migrated.
 //
 // Advisory checks (warn only, during the migration window):
-//   kebab-case naming, front-matter presence, docs index coverage, absolute self-links.
+//   kebab-case naming, front-matter presence (outside docs/compliance/ and docs/audits/),
+//   docs index coverage, absolute self-links.
 //
 // Usage: node scripts/check-md-governance.mjs
 import { readdirSync, readFileSync, existsSync, statSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join, relative, resolve, extname, basename } from "node:path";
 
@@ -213,7 +219,44 @@ function parseFrontMatter(text) {
   return fm;
 }
 
-// 6. Canonical uniqueness and advisory front-matter / naming coverage.
+// 7. Staleness helpers, scoped to docs/compliance/ and docs/audits/.
+const STALENESS_DIRS = new Set(["compliance", "audits"]);
+const STALENESS_COMMIT_THRESHOLD = 15;
+
+// Backtick-quoted repo paths a doc cites as evidence, e.g. `scripts/check-drift.mjs` or
+// the bare `check-drift.mjs`. Only paths that resolve to a real file count: prose can
+// backtick-quote all sorts of things that are not paths.
+function extractCitedPaths(text) {
+  const found = new Set();
+  const re = /`([a-zA-Z0-9_.\/-]+\.(?:mjs|yml|yaml|json|md))`/g;
+  let m;
+  while ((m = re.exec(text)) !== null) {
+    const raw = m[1];
+    const candidates = raw.endsWith(".mjs") && !raw.includes("/") ? [raw, `scripts/${raw}`] : [raw];
+    for (const c of candidates) {
+      if (existsSync(join(root, c))) { found.add(c); break; }
+    }
+  }
+  return [...found];
+}
+
+// Commits touching any of `paths` since `sinceDate` (a YYYY-MM-DD string already
+// validated by the caller). Returns 0 (fail open, warn-free) if this is not a git
+// checkout, e.g. an npm-installed copy of the package with no .git directory.
+function commitsSince(paths, sinceDate) {
+  if (paths.length === 0) return 0;
+  try {
+    const out = execFileSync("git", ["log", "--since", sinceDate, "--oneline", "--", ...paths], {
+      cwd: root,
+      encoding: "utf8",
+    });
+    return out.split("\n").filter((l) => l.trim()).length;
+  } catch {
+    return 0;
+  }
+}
+
+// 6 and 7. Canonical uniqueness, staleness, and advisory front-matter / naming coverage.
 const docsFiles = walkMd(join(root, "docs"));
 const canonicalOwners = new Map();
 let missingFrontMatter = 0;
@@ -221,6 +264,8 @@ for (const file of docsFiles) {
   const b = basename(file);
   const text = readFileSync(file, "utf8");
   const fm = parseFrontMatter(text);
+  const relPath = relative(root, file);
+  const parentDir = basename(dirname(file));
 
   // Advisory: kebab-case naming (allow README, ADR-, RD-).
   if (b !== "README.md" && !/^ADR-\d{3}-[a-z0-9-]+\.md$/.test(b) && !/^RD-\d{3}-[a-z0-9-]+\.md$/.test(b)) {
@@ -229,9 +274,38 @@ for (const file of docsFiles) {
     }
   }
 
-  // Advisory: front-matter presence (skip ADR and RD records, which use a header convention).
+  // Blocking (docs/compliance/, docs/audits/) or advisory (everywhere else under docs/):
+  // front-matter presence. ADR and RD records use a header convention instead.
   if (b !== "README.md" && !/^(ADR|RD)-\d{3}/.test(b)) {
-    if (!fm) missingFrontMatter++;
+    if (!fm) {
+      if (STALENESS_DIRS.has(parentDir)) {
+        violations.push(
+          `[staleness] ${relPath} is missing 'last_reviewed' front-matter. ` +
+            `docs/compliance/ and docs/audits/ require it (see docs/guidelines/markdown-governance.md).`
+        );
+      } else {
+        missingFrontMatter++;
+      }
+    }
+  }
+
+  // Blocking: staleness, for docs/compliance/ and docs/audits/ only. A doc whose
+  // last_reviewed predates a meaningful number of commits to the paths it cites may be
+  // describing behavior that has since changed.
+  if (fm && fm.last_reviewed && STALENESS_DIRS.has(parentDir) && fm.status !== "superseded" && fm.status !== "deprecated") {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(fm.last_reviewed)) {
+      violations.push(`[staleness] ${relPath}: last_reviewed "${fm.last_reviewed}" is not a YYYY-MM-DD date.`);
+    } else {
+      const cited = extractCitedPaths(text);
+      const n = commitsSince(cited, fm.last_reviewed);
+      if (n > STALENESS_COMMIT_THRESHOLD) {
+        violations.push(
+          `[staleness] ${relPath}: last_reviewed is ${fm.last_reviewed}, but ${n} commits have touched ` +
+            `the paths it cites since then (threshold ${STALENESS_COMMIT_THRESHOLD}). Re-verify the claims ` +
+            `and bump last_reviewed, or the doc may describe behavior that has since changed.`
+        );
+      }
+    }
   }
 
   // Blocking: canonical uniqueness among active docs.

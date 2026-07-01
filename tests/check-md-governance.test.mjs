@@ -38,6 +38,23 @@ function runScript(tmp) {
   });
 }
 
+// A git-init'd variant of makeMinimalRepo(), for the staleness check, which shells out
+// to `git log` and needs a real repository to query.
+function makeMinimalGitRepo() {
+  const tmp = makeMinimalRepo();
+  spawnSync("git", ["init", "-q"], { cwd: tmp });
+  spawnSync("git", ["config", "user.email", "test@test.com"], { cwd: tmp });
+  spawnSync("git", ["config", "user.name", "test"], { cwd: tmp });
+  spawnSync("git", ["add", "-A"], { cwd: tmp });
+  spawnSync("git", ["commit", "-q", "-m", "initial"], { cwd: tmp });
+  return tmp;
+}
+
+function gitCommit(tmp, message) {
+  spawnSync("git", ["add", "-A"], { cwd: tmp });
+  spawnSync("git", ["commit", "-q", "-m", message], { cwd: tmp });
+}
+
 test("markdown governance passes on this repo's own docs/adr", () => {
   const r = spawnSync("node", [join(root, "scripts/check-md-governance.mjs")], { encoding: "utf8", timeout: 30000 });
   // The live repo may carry pre-existing advisory warnings (front-matter migration is in
@@ -96,6 +113,107 @@ test("negative: an ADR-NNN prefix reused under docs/research/ is still caught (c
     const r = runScript(tmp);
     assert.strictEqual(r.status, 1, `expected exit 1 but got ${r.status}:\n${r.stdout}\n${r.stderr}`);
     assert.match(r.stdout + r.stderr, /\[adr-number\] ADR-060 is used in both docs\/adr\/.*and.*docs\/research\//);
+  } finally {
+    rmSync(tmp, { recursive: true, force: true });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Staleness gate (docs/compliance/, docs/audits/ only).
+// ---------------------------------------------------------------------------
+
+test("negative: a docs/compliance/ file with no front-matter is blocking", () => {
+  const tmp = makeMinimalRepo();
+  try {
+    mkdirSync(join(tmp, "docs", "compliance"), { recursive: true });
+    writeFileSync(join(tmp, "docs", "compliance", "some-claim.md"), "# Some claim\n\nNo front-matter here.\n");
+    const r = runScript(tmp);
+    assert.strictEqual(r.status, 1, `expected exit 1 but got ${r.status}:\n${r.stdout}\n${r.stderr}`);
+    assert.match(r.stdout + r.stderr, /\[staleness\] docs\/compliance\/some-claim\.md is missing 'last_reviewed'/);
+  } finally {
+    rmSync(tmp, { recursive: true, force: true });
+  }
+});
+
+test("negative: a docs/audits/ file with a malformed last_reviewed date is blocking", () => {
+  const tmp = makeMinimalRepo();
+  try {
+    mkdirSync(join(tmp, "docs", "audits"), { recursive: true });
+    writeFileSync(
+      join(tmp, "docs", "audits", "some-audit-2026-07-01.md"),
+      "---\nstatus: active\nowner: \"@test\"\nlast_reviewed: not-a-date\n---\n\n# Some audit\n"
+    );
+    const r = runScript(tmp);
+    assert.strictEqual(r.status, 1, `expected exit 1 but got ${r.status}:\n${r.stdout}\n${r.stderr}`);
+    assert.match(r.stdout + r.stderr, /\[staleness\].*last_reviewed "not-a-date" is not a YYYY-MM-DD date/);
+  } finally {
+    rmSync(tmp, { recursive: true, force: true });
+  }
+});
+
+test("negative: many commits touching a cited path since last_reviewed trips the staleness threshold", () => {
+  const tmp = makeMinimalGitRepo();
+  try {
+    mkdirSync(join(tmp, "docs", "compliance"), { recursive: true });
+    mkdirSync(join(tmp, "scripts"), { recursive: true });
+    writeFileSync(join(tmp, "scripts", "cited.mjs"), "// v0\n");
+    writeFileSync(
+      join(tmp, "docs", "compliance", "old-claim.md"),
+      "---\nstatus: active\nowner: \"@test\"\nlast_reviewed: 2020-01-01\n---\n\n# Old claim\n\nCites `scripts/cited.mjs`.\n"
+    );
+    gitCommit(tmp, "add old claim");
+    for (let i = 1; i <= 16; i++) {
+      writeFileSync(join(tmp, "scripts", "cited.mjs"), `// v${i}\n`);
+      gitCommit(tmp, `touch ${i}`);
+    }
+    const r = runScript(tmp);
+    assert.strictEqual(r.status, 1, `expected exit 1 but got ${r.status}:\n${r.stdout}\n${r.stderr}`);
+    assert.match(r.stdout + r.stderr, /\[staleness\] docs\/compliance\/old-claim\.md: last_reviewed is 2020-01-01, but \d+ commits/);
+  } finally {
+    rmSync(tmp, { recursive: true, force: true });
+  }
+});
+
+test("positive: a recently-reviewed docs/compliance/ file with the same cited path does not trip staleness", () => {
+  const tmp = makeMinimalGitRepo();
+  try {
+    mkdirSync(join(tmp, "docs", "compliance"), { recursive: true });
+    mkdirSync(join(tmp, "scripts"), { recursive: true });
+    writeFileSync(join(tmp, "scripts", "cited.mjs"), "// v0\n");
+    gitCommit(tmp, "add cited script");
+    for (let i = 1; i <= 16; i++) {
+      writeFileSync(join(tmp, "scripts", "cited.mjs"), `// v${i}\n`);
+      gitCommit(tmp, `touch ${i}`);
+    }
+    writeFileSync(
+      join(tmp, "docs", "compliance", "fresh-claim.md"),
+      "---\nstatus: active\nowner: \"@test\"\nlast_reviewed: 2026-07-01\n---\n\n# Fresh claim\n\nCites `scripts/cited.mjs`.\n"
+    );
+    gitCommit(tmp, "add fresh claim, reviewed today");
+    const r = runScript(tmp);
+    assert.doesNotMatch(r.stdout + r.stderr, /\[staleness\]/, `unexpected staleness violation:\n${r.stdout}\n${r.stderr}`);
+  } finally {
+    rmSync(tmp, { recursive: true, force: true });
+  }
+});
+
+test("positive: a superseded doc is exempt from the staleness threshold", () => {
+  const tmp = makeMinimalGitRepo();
+  try {
+    mkdirSync(join(tmp, "docs", "audits"), { recursive: true });
+    mkdirSync(join(tmp, "scripts"), { recursive: true });
+    writeFileSync(join(tmp, "scripts", "cited.mjs"), "// v0\n");
+    writeFileSync(
+      join(tmp, "docs", "audits", "old-audit-2020-01-01.md"),
+      "---\nstatus: superseded\nowner: \"@test\"\nlast_reviewed: 2020-01-01\n---\n\n# Old audit\n\nCites `scripts/cited.mjs`.\n"
+    );
+    gitCommit(tmp, "add superseded audit");
+    for (let i = 1; i <= 16; i++) {
+      writeFileSync(join(tmp, "scripts", "cited.mjs"), `// v${i}\n`);
+      gitCommit(tmp, `touch ${i}`);
+    }
+    const r = runScript(tmp);
+    assert.doesNotMatch(r.stdout + r.stderr, /\[staleness\]/, `unexpected staleness violation:\n${r.stdout}\n${r.stderr}`);
   } finally {
     rmSync(tmp, { recursive: true, force: true });
   }

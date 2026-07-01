@@ -114,6 +114,15 @@ default until an owner arms it.
 - The scripts (`scripts/`). The enforcing code: build the prompt bundle, scaffold state, run
   a dry-run sweep, run the anti-gaming ratchet, validate config and packets, migrate config,
   check house style, and guard against drift.
+- The agent execution layer (`scripts/agent/`). Orchestrates one maker/checker cycle:
+  `run-cycle.mjs` (planner and top-level loop), `providers.mjs` (model provider and cost-class
+  registry), `resolve-role.mjs` and `render-prompt.mjs` (role config and prompt substitution),
+  `route-action.mjs` and `action-queue.mjs` (execution-target routing and the durable action
+  queue), `openai-client.mjs` (the zero-dependency OpenAI-compatible HTTP client),
+  `apply-patch.mjs` (diff application), `parse-checker-telemetry.mjs` (checker feedback
+  parsing), and `tool-loop-adapter.mjs` (spawns an external agentic CLI for the tool-loop
+  execution mode, ADR-032). This is what `npm run demo:agent` and the maker/checker jobs in
+  `.github/workflows/modonome-auto.yml` actually run.
 - The snapshot utility (`scripts/snapshot.mjs` plus `scripts/lib/snapshot-*.mjs` and
   `scripts/lib/lang-adapters/`). A dependency-free pipeline (walk, Merkle hash, per-file
   signature extraction, redaction, import graph with PageRank, tier assembly, deterministic
@@ -172,6 +181,13 @@ flowchart LR
   class repo,learn sink
   class escalated stop
 ```
+
+The diagram's roles and stages map onto the literal `state` field in
+`schemas/work-item.schema.json`: queue and packet are `queued`, the maker's turn is
+`making`, the checker's turn is `checking`, gates and merge cover `merge_ready` and
+`merging`, and a landed item is `done`. `rework` and `escalated` are named directly on the
+diagram. `prompts/modules/state-machine.md` is the normative source for the full transition
+table, including the `queued` reversion on an expired lease.
 
 The ratchet (`guard-ratchet.mjs`) runs as a separate CI step, outside agent scope, and
 blocks merge if any quality threshold regresses. The integration diagram below shows where

@@ -9,6 +9,35 @@ or CVE identifier where one exists.
 
 ## Unreleased
 
+### Documentation drift prevention, phase two
+
+- Added `check-architecture-drift.mjs`: fails CI if a file under `scripts/agent/` or
+  `scripts/mcp-server.mjs` is not mentioned anywhere in ARCHITECTURE.md, if
+  ARCHITECTURE.md cites a `scripts/*.mjs` path that no longer exists, or if a
+  work-item state in `schemas/work-item.schema.json` is not named in ARCHITECTURE.md's
+  "The agent loop" section. Running it against this repo surfaced two real gaps: the
+  agent execution layer (`scripts/agent/`) had no entry in "The pieces," and the
+  agent-loop diagram used role labels (Maker, Checker) with no bridge to the literal
+  state-machine vocabulary. Both are fixed in ARCHITECTURE.md, not worked around.
+- `check-self-application.mjs` now asserts the AgentProof score hand-typed in
+  README.md, agentproof/README.md, and agentproof/SPEC.md matches
+  `agentproof/runner.mjs --json`'s own computed score, and that the markdown
+  governance, architecture drift, and self-application gates are each wired into
+  `ci.yml`. Skipped entirely for a fixture or host repo with no `agentproof/`
+  directory of its own.
+- `check-md-governance.mjs` now requires `last_reviewed` front-matter on every file
+  under `docs/compliance/` and `docs/audits/`, and fails if more than 15 commits have
+  touched a doc's own cited paths since it was last reviewed. Scoped to this small,
+  externally-facing set rather than all of `docs/`, where front-matter coverage is
+  still mid-migration. Backfilled front-matter on the five existing files in scope.
+- Fixed two pre-existing bugs in `tests/self-application.test.mjs`'s fixture that had
+  been masked by exit-code-only assertions: `makeMinimalRepo()` wrote CODEOWNERS to
+  the repository root instead of `.github/CODEOWNERS`, and it was missing every file
+  the snapshot-dogfooding check (ADR-033) requires. Both caused the script to crash
+  rather than run cleanly; the crash's exit code happened to match what the negative
+  tests expected, so nothing caught it until a test that required a genuine exit 0
+  was added.
+
 ### Documentation governance gate fix
 
 - Fixed a gap in the ADR-number-uniqueness check (`check-md-governance.mjs`, ADR-031):
