@@ -40,6 +40,7 @@ const REQUIRED_GATES = [
   { name: "work item validation", needle: "check-work-items.mjs" },
   { name: "checker engagement", needle: "check-checker-engagement.mjs" },
   { name: "license and adapter boundary", needle: "check-licenses.mjs" },
+  { name: "prompt behavioral regression", needle: "test-prompt-behavior.mjs" },
 ];
 for (const g of REQUIRED_GATES) {
   if (!activeCI.includes(g.needle)) problems.push(`ci.yml does not run the ${g.name} gate (${g.needle}).`);
