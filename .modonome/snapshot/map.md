@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:51a339b6e6f6df93c9a8b9ac7a4a54eaef9490a77fa56929425de67a0dff44a4
-Files: 521  Bytes: 1638394  Map tokens: 49238/120000
+Merkle root: sha256:5b5cef2c75f307e86d19338cd2a4c5119480ec46c11d39646e43a42131b0605d
+Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 
 ## Modules
 
@@ -133,6 +133,7 @@ Files: 521  Bytes: 1638394  Map tokens: 49238/120000
 - scripts/agent/resolve-role.mjs [F:304ce7b89d]: Resolve runner and model settings for a named role. * * @param {object} cfg - Parsed config object (output of parseFlatYaml or loadConfig). * @param {string} ro
 - scripts/agent/route-action.mjs [F:37f4a5c04e]: Classify a role's model endpoint into a coarse reachability descriptor: kind: "local" self-hosted / private-host endpoint (Ollama, llama.cpp) kind: "github" the
 - scripts/agent/run-cycle.mjs [F:ddeb486c49]: Derive the ordered list of roles the cycle executes. An explicit cfg.role_sequence (a non-empty array of role names) is honored so a crew role added in config r
+- scripts/agent/tool-loop-adapter.mjs [F:aa77f227a6]: Resolve the command the external adapter is invoked as. Precedence: an explicit * adapterEntry.command, then adapterEntry.name, then a bare fallback. The value 
 - scripts/audit-learnings.mjs [F:c9493b5275]: !/usr/bin/env node
 - scripts/build-compliance-evidence.mjs [F:2e327963ed]: Observe concrete facts about a repository. Pure with respect to its inputs: it only reads the filesystem under root and returns a plain object.
 - scripts/build-prompt.mjs [F:c4395c3023]: !/usr/bin/env node
@@ -239,6 +240,7 @@ Files: 521  Bytes: 1638394  Map tokens: 49238/120000
 - tests/snapshot-golden.test.mjs [F:2a74ae3f05]: function names
 - tests/snapshot-incremental.test.mjs [F:4637e1fecb]: function repo
 - tests/tick.test.mjs [F:baf7641a01]: function tmp
+- tests/tool-loop-adapter.test.mjs [F:ed9c47feb2]: A scriptable fake child process. Captures the constructor call, emits the configured stdout/stderr, then closes (or hangs, when never told to close).
 - tests/ws-b-harness.test.mjs [F:1bcaaff9eb]: A config fixture with distinct maker/checker models and a models registry.
 - tests/ws-e-negative-controls.test.mjs [F:bbb6476d71]: WS-E: negative-control fixtures that prove governance gates have teeth.
 - tests/ws-e-ratchet-languages.test.mjs [F:2b49c74e74]: function runRatchet
@@ -609,6 +611,12 @@ Files: 521  Bytes: 1638394  Map tokens: 49238/120000
 - S:07a58ff928 function rpc `function rpc(requests, expectedIds)` L14 : Send requests to a fresh server process and resolve once every expected id has replied. The child is killed as soon as the responses arrive, which avoids the stdin-close race in batch mode.
 ### scripts/install-hooks.mjs [F:a7ce0f6452]
 - S:2681abe2e5 function installHooks `export function installHooks(targetRoot, { self = false } = {})` L31 : Install the pre-commit hook into targetRoot. Returns "installed", "kept" (a host hook already existed and was preserved), or "no-git". self=true writes modonome's own dev hook and overwrites; a host i
+### scripts/agent/tool-loop-adapter.mjs [F:aa77f227a6]
+- S:170dcaab55 function resolveAdapterCommand `export function resolveAdapterCommand(adapterEntry)` L28 : Resolve the command the external adapter is invoked as. Precedence: an explicit * adapterEntry.command, then adapterEntry.name, then a bare fallback. The value is * a bare command name resolved agains
+- S:d7a4f68100 function containedCwd `export function containedCwd(root, target)` L46 : Enforce ADR-009 path containment. The adapter's working directory must resolve * to exactly the target directory (resolve(root, plan.target)); a cwd outside the * target, reached via ".." or an absolu
+- S:5b2eae49a8 function sep `function sep()` L56
+- S:7ed39c68da function buildAdapterArgs `export function buildAdapterArgs(endpoint, maxTurns, adapterEntry)` L72 : Build the argument vector for the external CLI. Points it at the resolved * endpoint (base URL and model), forwards a bounded max-turns flag, and reads the * prompt from stdin (so no prompt text lands
+- S:bd7f311fdb function runToolLoopAdapter `export async function runToolLoopAdapter(` L98 : Run the external agentic CLI for one role. Never throws on a bounded/expected * failure (spawn error, non-zero exit, timeout, cap hit): returns a clean status * object mirroring the single-shot path's
 ### scripts/mcp-server.mjs [F:ab5077147a]
 - S:55a57d9fd6 function toolRatchet `async function toolRatchet(args)` L167
 - S:a4d0ce8fea function toolValidateConfig `async function toolValidateConfig(args)` L214
@@ -707,19 +715,22 @@ Files: 521  Bytes: 1638394  Map tokens: 49238/120000
 ### tests/promoted-learnings.test.mjs [F:ddd82fc886]
 - S:e0832e1baa function withRoot `function withRoot(learningsBody)` L8
 ### scripts/agent/run-cycle.mjs [F:ddeb486c49]
-- S:1d6822da4e function resolveRoleSequence `export function resolveRoleSequence(cfg)` L47 : Derive the ordered list of roles the cycle executes. An explicit cfg.role_sequence (a non-empty array of role names) is honored so a crew role added in config runs with no code change; otherwise it de
-- S:41689151ff function parseArgs `export function parseArgs(argv)` L53
-- S:15286656f4 function localEnv `function localEnv(opts, env)` L74 : The execution environment this process is running in. Routing compares each role's required target against this to decide inline vs enqueue. Precedence: an explicit --worker-env flag, then MODONOME_WO
-- S:959be959f7 function planCycle `export function planCycle(opts, cfg, runId)` L81 : Resolve and validate a full cycle plan without calling any model. Pure: it reads the passed config and runId and throws on any policy violation. This is the testable core of the harness; the execute p
-- S:a75126f856 function buildRunnerEnv `export function buildRunnerEnv(baseEnv, role)` L167 : Build the child-process environment for a role invocation. When the resolved model carries a base_url (a local, self-hosted, or gateway endpoint), route the CLI there by setting ANTHROPIC_BASE_URL, wh
-- S:9b986c2d8a function buildRolePrompt `function buildRolePrompt(plan, role, env)` L177 : Render the role prompt with the same variables regardless of transport: identity/model placeholders, the run branch, and promoted learnings.
-- S:9f59110fda function writeTranscriptAndMetric `function writeTranscriptAndMetric(plan, role, r, transcriptText, extra = {})` L197 : Write the transcript log and append the schema-conformant metric shared by every transport. `extra` merges additional fields into the metric record (for example whether an openai-http patch applied).
-- S:fe41df17f9 function invokeRoleClaudeCli `function invokeRoleClaudeCli(plan, role, env)` L225
-- S:c028c053e3 function invokeRoleOpenAI `export async function invokeRoleOpenAI(plan, role, env, deps = {})` L247 : Provider-native single-shot execution: render the same prompt, call an OpenAI-compatible chat-completions endpoint once, and turn the response into file changes deterministically by extracting a unifi
-- S:f8004b7b76 function invokeRole `function invokeRole(plan, role, env, deps)` L278
-- S:4f43d4e206 function runCycle `export function runCycle(opts, { execute, cfg, runId, env = process.env, queueDir, deps })` L288 : Execute a plan. Refuses a hosted run when the budget is zero. Runs the maker, then the checker, each as a distinct CLI invocation with its own model and identity. `deps` (chatCompletionImpl/applyPatch
-- S:d33c2c4d3e function runRoles `function runRoles(plan, roles, env, deps)` L333 : Invoke each role in turn and produce the "executed" result. A role's transport decides whether invokeRole returns a status number synchronously (anthropic-cli) or a Promise (openai-http, which awaits 
-- S:f71a25079c function main `async function main()` L348
+- S:1d6822da4e function resolveRoleSequence `export function resolveRoleSequence(cfg)` L48 : Derive the ordered list of roles the cycle executes. An explicit cfg.role_sequence (a non-empty array of role names) is honored so a crew role added in config runs with no code change; otherwise it de
+- S:4b76f865fa function resolveExecMode `export function resolveExecMode(cfg, model)` L58 : Resolve a role's execution mode from its model's config entry. The default is "patch" (the WI-029 single-shot-diff path) whenever exec_mode is absent, so existing configs behave exactly as before. Onl
+- S:41689151ff function parseArgs `export function parseArgs(argv)` L63
+- S:15286656f4 function localEnv `function localEnv(opts, env)` L84 : The execution environment this process is running in. Routing compares each role's required target against this to decide inline vs enqueue. Precedence: an explicit --worker-env flag, then MODONOME_WO
+- S:959be959f7 function planCycle `export function planCycle(opts, cfg, runId)` L91 : Resolve and validate a full cycle plan without calling any model. Pure: it reads the passed config and runId and throws on any policy violation. This is the testable core of the harness; the execute p
+- S:a75126f856 function buildRunnerEnv `export function buildRunnerEnv(baseEnv, role)` L177 : Build the child-process environment for a role invocation. When the resolved model carries a base_url (a local, self-hosted, or gateway endpoint), route the CLI there by setting ANTHROPIC_BASE_URL, wh
+- S:9b986c2d8a function buildRolePrompt `function buildRolePrompt(plan, role, env)` L187 : Render the role prompt with the same variables regardless of transport: identity/model placeholders, the run branch, and promoted learnings.
+- S:9f59110fda function writeTranscriptAndMetric `function writeTranscriptAndMetric(plan, role, r, transcriptText, extra = {})` L207 : Write the transcript log and append the schema-conformant metric shared by every transport. `extra` merges additional fields into the metric record (for example whether an openai-http patch applied).
+- S:fe41df17f9 function invokeRoleClaudeCli `function invokeRoleClaudeCli(plan, role, env)` L235
+- S:c028c053e3 function invokeRoleOpenAI `export async function invokeRoleOpenAI(plan, role, env, deps = {})` L257 : Provider-native single-shot execution: render the same prompt, call an OpenAI-compatible chat-completions endpoint once, and turn the response into file changes deterministically by extracting a unifi
+- S:8f6d716f36 function loadAdapterEntry `function loadAdapterEntry(deps = {})` L291 : Load the single agentic-CLI adapter entry from adapters.json for the tool-loop path. Returns the first declared adapter, or null when the manifest is empty or absent (which makes tool-loop degrade to 
+- S:83b3a2ab69 function invokeRoleToolLoop `export async function invokeRoleToolLoop(plan, role, env, deps = {})` L311 : Agentic tool-loop execution: spawn the declared external coding CLI (adapt-first, ADR-032) pointed at the resolved OpenAI-compatible endpoint. Containment, the turn cap, and the wall-clock timeout are
+- S:f8004b7b76 function invokeRole `function invokeRole(plan, role, env, deps)` L343
+- S:4f43d4e206 function runCycle `export function runCycle(opts, { execute, cfg, runId, env = process.env, queueDir, deps })` L357 : Execute a plan. Refuses a hosted run when the budget is zero. Runs the maker, then the checker, each as a distinct CLI invocation with its own model and identity. `deps` (chatCompletionImpl/applyPatch
+- S:d33c2c4d3e function runRoles `function runRoles(plan, roles, env, deps)` L402 : Invoke each role in turn and produce the "executed" result. A role's transport decides whether invokeRole returns a status number synchronously (anthropic-cli) or a Promise (openai-http, which awaits 
+- S:f71a25079c function main `async function main()` L417
 ### tests/scaffold-adoption.test.mjs [F:de5ebbf586]
 - S:fe07a3bcbc function gitRepo `function gitRepo()` L13
 - S:8579f519b1 function scaffold `function scaffold(dir, extra = [])` L25
@@ -743,6 +754,8 @@ Files: 521  Bytes: 1638394  Map tokens: 49238/120000
 - S:135fde5dfb function startMockServer `export function startMockServer(options = {})` L23 : Start a mock OpenAI chat-completions server. * * @param {object} [options] * @param {"success"|"retry-then-success"|"delay"|"malformed"|"error"} [options.mode] * - "success": always returns a normal c
 - S:b65916676a function successBody `function successBody(overrides)` L98
 - S:ac31df31c0 function writeJson `function writeJson(res, status, body)` L113
+### tests/tool-loop-adapter.test.mjs [F:ed9c47feb2]
+- S:b1e3e516c3 function makeFakeSpawn `function makeFakeSpawn(script = {})` L27 : A scriptable fake child process. Captures the constructor call, emits the configured stdout/stderr, then closes (or hangs, when never told to close).
 ### scripts/run-gate-pipeline.mjs [F:edb11415f0]
 - S:dd1940719c function parseArgs `function parseArgs(argv)` L44 : parseArgs(argv) -> { diff, "work-item" } map of fixture paths by gate arg name.
 - S:e6654c6139 function gateOrder `export function gateOrder(graph)` L57 : gateOrder(graph) -> [...] the gates in dependency-first topological order. topoSort orders a gate ahead of the gates it points to, so reverse to put each gate's dependencies before the gate itself.
@@ -927,11 +940,13 @@ Files: 521  Bytes: 1638394  Map tokens: 49238/120000
 - scripts/agent/run-cycle.mjs -> scripts/agent/providers.mjs
 - scripts/agent/run-cycle.mjs -> scripts/agent/openai-client.mjs
 - scripts/agent/run-cycle.mjs -> scripts/validate-config.mjs
+- scripts/agent/run-cycle.mjs -> scripts/agent/tool-loop-adapter.mjs
 - scripts/agent/run-cycle.mjs -> scripts/agent/render-prompt.mjs
 - tests/role-registry.test.mjs -> scripts/agent/resolve-role.mjs
 - tests/role-registry.test.mjs -> scripts/validate-config.mjs
 - tests/role-registry.test.mjs -> scripts/agent/run-cycle.mjs
 - tests/promote-learning.test.mjs -> scripts/lib/learnings.mjs
+- tests/tool-loop-adapter.test.mjs -> scripts/agent/run-cycle.mjs
 - scripts/run-gate-pipeline.mjs -> scripts/lib/run-gate-capped.mjs
 - scripts/run-gate-pipeline.mjs -> scripts/lib/graph.mjs
 - tests/providers.test.mjs -> scripts/agent/resolve-role.mjs
@@ -946,54 +961,54 @@ Files: 521  Bytes: 1638394  Map tokens: 49238/120000
 
 ## Attention (centrality + pagerank)
 
-1. scripts/lib/yaml-lite.mjs centrality=12 pagerank=0.013323
-2. scripts/lib/jsonschema.mjs centrality=8 pagerank=0.018115
-3. scripts/agent/run-cycle.mjs centrality=15 pagerank=0.00488
-4. scripts/lib/learnings.mjs centrality=9 pagerank=0.012061
-5. scripts/validate-config.mjs centrality=11 pagerank=0.007812
-6. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.002803
-7. scripts/lib/canonical-json.mjs centrality=8 pagerank=0.008731
-8. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.00605
-9. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.008722
-10. scripts/validate-work-item.mjs centrality=6 pagerank=0.005711
-11. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.002804
-12. scripts/agent/resolve-role.mjs centrality=6 pagerank=0.00482
-13. scripts/lib/graph.mjs centrality=4 pagerank=0.006863
-14. scripts/snapshot.mjs centrality=8 pagerank=0.001676
-15. scripts/agent/providers.mjs centrality=3 pagerank=0.006544
-16. examples/demo-app/src/index.js centrality=6 pagerank=0.001676
-17. scripts/agent/render-prompt.mjs centrality=3 pagerank=0.00399
-18. scripts/verify-packet.mjs centrality=4 pagerank=0.002032
-19. tests/config.test.mjs centrality=4 pagerank=0.001676
-20. tests/packet-signing.test.mjs centrality=4 pagerank=0.001676
-21. tests/providers.test.mjs centrality=4 pagerank=0.001676
-22. scripts/lib/snapshot-cache.mjs centrality=3 pagerank=0.002803
-23. scripts/migrate-config.mjs centrality=3 pagerank=0.002744
-24. scripts/lib/branch-name.mjs centrality=2 pagerank=0.003812
-25. scripts/lib/commit-identity.mjs centrality=2 pagerank=0.003812
-26. scripts/lib/run-gate-capped.mjs centrality=2 pagerank=0.003812
-27. scripts/lib/snapshot-walk.mjs centrality=3 pagerank=0.002567
-28. scripts/dry-run-sweep.mjs centrality=3 pagerank=0.002388
-29. tests/helpers/mock-openai-server.mjs centrality=2 pagerank=0.003575
-30. examples/demo-app/src/CartService.js centrality=2 pagerank=0.003337
-31. examples/demo-app/src/CheckoutService.js centrality=2 pagerank=0.003337
-32. examples/demo-app/src/InventoryService.js centrality=2 pagerank=0.003337
-33. examples/demo-app/src/NotificationService.js centrality=2 pagerank=0.003337
-34. examples/demo-app/src/OrderService.js centrality=2 pagerank=0.003337
-35. examples/demo-app/src/PaymentProcessor.js centrality=2 pagerank=0.003337
-36. scripts/lib/merkle.mjs centrality=3 pagerank=0.002092
-37. bin/modonome.mjs centrality=2 pagerank=0.0031
-38. scripts/lib/repo-detect.mjs centrality=2 pagerank=0.002929
-39. tests/chaos.test.mjs centrality=3 pagerank=0.001676
-40. tests/performance.test.mjs centrality=3 pagerank=0.001676
-41. tests/role-registry.test.mjs centrality=3 pagerank=0.001676
-42. tests/run-cycle-openai.test.mjs centrality=3 pagerank=0.001676
-43. tests/snapshot-incremental.test.mjs centrality=3 pagerank=0.001676
-44. tests/snapshot-security.test.mjs centrality=3 pagerank=0.001676
-45. tests/ws-b-harness.test.mjs centrality=3 pagerank=0.001676
-46. tests/ws-h-config.test.mjs centrality=3 pagerank=0.001676
-47. scripts/lib/lang-adapters/tree-sitter.mjs centrality=2 pagerank=0.002566
-48. scripts/agent/apply-patch.mjs centrality=2 pagerank=0.002565
-49. scripts/agent/action-queue.mjs centrality=2 pagerank=0.002091
-50. scripts/lib/packet-id.mjs centrality=2 pagerank=0.002032
+1. scripts/lib/jsonschema.mjs centrality=8 pagerank=0.018096
+2. scripts/lib/yaml-lite.mjs centrality=12 pagerank=0.013272
+3. scripts/agent/run-cycle.mjs centrality=17 pagerank=0.006266
+4. scripts/lib/learnings.mjs centrality=9 pagerank=0.012059
+5. scripts/validate-config.mjs centrality=11 pagerank=0.007836
+6. scripts/lib/canonical-json.mjs centrality=8 pagerank=0.008677
+7. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.002786
+8. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.006012
+9. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.008669
+10. scripts/validate-work-item.mjs centrality=6 pagerank=0.005676
+11. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.002787
+12. scripts/agent/resolve-role.mjs centrality=6 pagerank=0.004863
+13. scripts/lib/graph.mjs centrality=4 pagerank=0.006821
+14. scripts/snapshot.mjs centrality=8 pagerank=0.001665
+15. scripts/agent/providers.mjs centrality=3 pagerank=0.006637
+16. examples/demo-app/src/index.js centrality=6 pagerank=0.001665
+17. scripts/agent/render-prompt.mjs centrality=3 pagerank=0.004037
+18. scripts/verify-packet.mjs centrality=4 pagerank=0.002019
+19. scripts/lib/snapshot-cache.mjs centrality=3 pagerank=0.002786
+20. tests/config.test.mjs centrality=4 pagerank=0.001665
+21. tests/packet-signing.test.mjs centrality=4 pagerank=0.001665
+22. tests/providers.test.mjs centrality=4 pagerank=0.001665
+23. scripts/migrate-config.mjs centrality=3 pagerank=0.002727
+24. scripts/lib/branch-name.mjs centrality=2 pagerank=0.003789
+25. scripts/lib/commit-identity.mjs centrality=2 pagerank=0.003789
+26. scripts/lib/run-gate-capped.mjs centrality=2 pagerank=0.003789
+27. scripts/lib/snapshot-walk.mjs centrality=3 pagerank=0.002551
+28. tests/helpers/mock-openai-server.mjs centrality=2 pagerank=0.003553
+29. scripts/dry-run-sweep.mjs centrality=3 pagerank=0.002373
+30. examples/demo-app/src/CartService.js centrality=2 pagerank=0.003317
+31. examples/demo-app/src/CheckoutService.js centrality=2 pagerank=0.003317
+32. examples/demo-app/src/InventoryService.js centrality=2 pagerank=0.003317
+33. examples/demo-app/src/NotificationService.js centrality=2 pagerank=0.003317
+34. examples/demo-app/src/OrderService.js centrality=2 pagerank=0.003317
+35. examples/demo-app/src/PaymentProcessor.js centrality=2 pagerank=0.003317
+36. scripts/lib/merkle.mjs centrality=3 pagerank=0.002079
+37. bin/modonome.mjs centrality=2 pagerank=0.003081
+38. scripts/lib/repo-detect.mjs centrality=2 pagerank=0.002911
+39. tests/chaos.test.mjs centrality=3 pagerank=0.001665
+40. tests/performance.test.mjs centrality=3 pagerank=0.001665
+41. tests/role-registry.test.mjs centrality=3 pagerank=0.001665
+42. tests/run-cycle-openai.test.mjs centrality=3 pagerank=0.001665
+43. tests/snapshot-incremental.test.mjs centrality=3 pagerank=0.001665
+44. tests/snapshot-security.test.mjs centrality=3 pagerank=0.001665
+45. tests/ws-b-harness.test.mjs centrality=3 pagerank=0.001665
+46. tests/ws-h-config.test.mjs centrality=3 pagerank=0.001665
+47. scripts/agent/apply-patch.mjs centrality=2 pagerank=0.002621
+48. scripts/lib/lang-adapters/tree-sitter.mjs centrality=2 pagerank=0.00255
+49. scripts/agent/action-queue.mjs centrality=2 pagerank=0.00215
+50. scripts/lib/packet-id.mjs centrality=2 pagerank=0.002019
 
