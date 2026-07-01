@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "id": "WI-030-agentic-tool-loop-adapter",
+  "state": "queued",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": true,
+  "allowed_edit_set": [
+    "scripts/agent/tool-loop-adapter.mjs",
+    "scripts/agent/tool-loop.mjs",
+    "scripts/agent/run-cycle.mjs",
+    "adapters.json",
+    "tests/tool-loop-adapter.test.mjs"
+  ],
+  "gates": [
+    "node --test tests/tool-loop-adapter.test.mjs",
+    "node scripts/check-licenses.mjs",
+    "node scripts/check-style.mjs .",
+    "npm run verify"
+  ],
+  "queued_at": "2026-07-01"
+}

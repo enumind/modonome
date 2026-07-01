@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "id": "WI-040-generic-role-registry",
+  "state": "queued",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": true,
+  "allowed_edit_set": [
+    "scripts/agent/resolve-role.mjs",
+    "scripts/agent/run-cycle.mjs",
+    "schemas/config.schema.json",
+    "tests/role-registry.test.mjs"
+  ],
+  "gates": [
+    "node --test tests/role-registry.test.mjs",
+    "node scripts/check-style.mjs .",
+    "npm run verify"
+  ],
+  "queued_at": "2026-07-01"
+}

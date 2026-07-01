@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "id": "WI-031-execution-routing-action-queue",
+  "state": "queued",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": true,
+  "allowed_edit_set": [
+    "scripts/agent/route-action.mjs",
+    "scripts/agent/action-queue.mjs",
+    "scripts/agent/run-cycle.mjs",
+    "schemas/config.schema.json",
+    "schemas/action-queue.schema.json",
+    "templates/.modonome/config.yaml",
+    "tests/route-action.test.mjs",
+    "tests/action-queue.test.mjs"
+  ],
+  "gates": [
+    "node --test tests/route-action.test.mjs",
+    "node --test tests/action-queue.test.mjs",
+    "node scripts/check-style.mjs .",
+    "npm run verify"
+  ],
+  "queued_at": "2026-07-01"
+}

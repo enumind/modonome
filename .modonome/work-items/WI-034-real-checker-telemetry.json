@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "id": "WI-034-real-checker-telemetry",
+  "state": "queued",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": true,
+  "allowed_edit_set": [
+    "scripts/agent/parse-checker-telemetry.mjs",
+    "scripts/agent/run-cycle.mjs",
+    "tests/parse-checker-telemetry.test.mjs"
+  ],
+  "gates": [
+    "node --test tests/parse-checker-telemetry.test.mjs",
+    "node scripts/check-checker-engagement.mjs",
+    "node scripts/check-style.mjs .",
+    "npm run verify"
+  ],
+  "queued_at": "2026-07-01"
+}

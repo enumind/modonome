@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "id": "WI-026-provider-registry-cost-class",
+  "state": "queued",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": true,
+  "allowed_edit_set": [
+    "scripts/agent/providers.mjs",
+    "scripts/agent/resolve-role.mjs",
+    "scripts/agent/run-cycle.mjs",
+    "schemas/config.schema.json",
+    "templates/.modonome/config.yaml",
+    ".modonome/config.yaml",
+    "tests/providers.test.mjs"
+  ],
+  "gates": [
+    "node --test tests/providers.test.mjs",
+    "node scripts/validate-config.mjs .modonome/config.yaml",
+    "node scripts/check-style.mjs .",
+    "npm run verify"
+  ],
+  "queued_at": "2026-07-01"
+}

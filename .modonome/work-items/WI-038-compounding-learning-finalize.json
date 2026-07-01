@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "id": "WI-038-compounding-learning-finalize",
+  "state": "queued",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": true,
+  "allowed_edit_set": [
+    "scripts/promote-learning.mjs",
+    "tests/promote-learning.test.mjs"
+  ],
+  "gates": [
+    "node --test tests/promote-learning.test.mjs",
+    "node scripts/check-learning-traceability.mjs",
+    "node scripts/check-style.mjs .",
+    "npm run verify"
+  ],
+  "queued_at": "2026-07-01"
+}

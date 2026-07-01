@@ -23,6 +23,11 @@ governs where docs live.
 
 - [enterprise.md](enterprise.md): enterprise adoption design.
 
+## Autonomy
+
+- [autonomy-plan.md](autonomy-plan.md): the session-independent plan for governed autonomy
+  on free models, paired with the WI-026 through WI-040 work-item queue.
+
 ## Versioning and operations
 
 - [versioning.md](versioning.md): embedding and upgrade contract.

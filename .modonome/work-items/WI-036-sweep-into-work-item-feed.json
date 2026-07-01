@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "id": "WI-036-sweep-into-work-item-feed",
+  "state": "queued",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": true,
+  "allowed_edit_set": [
+    "scripts/dry-run-sweep.mjs",
+    "tests/sweep-to-work-item.test.mjs"
+  ],
+  "gates": [
+    "node --test tests/sweep-to-work-item.test.mjs",
+    "node scripts/check-work-items.mjs",
+    "node scripts/check-style.mjs .",
+    "npm run verify"
+  ],
+  "queued_at": "2026-07-01"
+}
