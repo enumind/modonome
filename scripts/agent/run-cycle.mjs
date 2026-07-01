@@ -20,6 +20,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join, basename, resolve } from "node:path";
 import { loadConfig } from "../validate-config.mjs";
 import { resolveRole } from "./resolve-role.mjs";
+import { isBillable } from "./providers.mjs";
 import { renderPrompt } from "./render-prompt.mjs";
 import { readPromotedLearnings } from "../lib/learnings.mjs";
 
@@ -81,9 +82,10 @@ export function planCycle(opts, cfg, runId) {
   if (!Number.isInteger(maxTurns) || maxTurns <= 0) throw new Error("max-turns must be a positive integer.");
   if (maxTurns > HARD_TURN_CAP) throw new Error(`max-turns ${maxTurns} exceeds the hard cap ${HARD_TURN_CAP}.`);
 
-  // Budget: a hosted (remote) model may only run when the daily budget is above zero.
+  // Budget: only a billable (paid cost class) role requires the daily budget to be
+  // above zero. Free and local roles never gate on budget, regardless of provider name.
   const budget = Number(cfg.remote_model_budget_usd_per_day ?? 0);
-  const usesRemote = maker.modelProvider !== "local" || checker.modelProvider !== "local";
+  const usesRemote = isBillable(maker.costClass) || isBillable(checker.costClass);
   const remoteAllowed = budget > 0;
 
   return {

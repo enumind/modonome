@@ -61,3 +61,22 @@ models:
   local-default:
     provider: local
     base_url: http://mac-mini.local:11434
+  # Off-by-default example: a free-tier gateway model. Uncomment and reference it
+  # from a role's `model:` to run at zero cost (free cost class, no budget needed).
+  # gh-gpt-4o-mini:
+  #   provider: github-models
+  # Off-by-default example: a paid frontier model from another vendor via an
+  # OpenAI-compatible endpoint. Using this requires raising
+  # remote_model_budget_usd_per_day above 0 and arming the engine; it is billable.
+  # frontier-gpt:
+  #   provider: openai-compatible
+  #   base_url: https://api.openai.com/v1
+
+# Provider registry override/extension. The built-in registry
+# (scripts/agent/providers.mjs) already covers anthropic/local/github-models/
+# openai-compatible; add an entry here only to redefine a provider's transport,
+# cost class, or auth env var for this repo. The entry below restates the
+# github-models built-in verbatim (no-op) so this map has a concrete example.
+providers:
+  github-models:
+    costClass: free

@@ -93,6 +93,21 @@
           "base_url": { "type": "string", "minLength": 1 }
         }
       }
+    },
+    "providers": {
+      "type": "object",
+      "description": "Optional provider registry override/extension. Merged over the built-in registry in scripts/agent/providers.mjs.",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "transport": { "type": "string", "minLength": 1 },
+          "costClass": { "type": "string", "enum": ["paid", "free", "local"] },
+          "authEnv": { "type": "string", "minLength": 1 },
+          "base_url": { "type": "string", "minLength": 1 },
+          "defaultBaseUrl": { "type": "string", "minLength": 1 }
+        }
+      }
     }
   }
 }
