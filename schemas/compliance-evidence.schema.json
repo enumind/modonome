@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://modonome.com/schemas/compliance-evidence.schema.json",
+  "title": "Modonome compliance evidence pack",
+  "description": "Read-only, advisory map of observed repository facts to OpenSSF, SLSA, and NIST AI RMF criteria.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "generated_for", "frameworks", "criteria", "summary"],
+  "properties": {
+    "schema_version": { "type": "integer", "minimum": 1 },
+    "generated_for": { "type": "string", "minLength": 1 },
+    "generated_at": { "type": "string" },
+    "frameworks": { "type": "array", "items": { "type": "string" } },
+    "criteria": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "framework", "level", "status", "evidence"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "framework": { "type": "string", "enum": ["openssf", "slsa", "nist-ai-rmf"] },
+          "level": { "type": "string", "minLength": 1 },
+          "status": { "type": "string", "enum": ["met", "gap"] },
+          "evidence": { "type": "string" }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["met", "gap", "total"],
+      "properties": {
+        "met": { "type": "integer", "minimum": 0 },
+        "gap": { "type": "integer", "minimum": 0 },
+        "total": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}
