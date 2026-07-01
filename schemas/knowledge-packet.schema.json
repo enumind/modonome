@@ -31,6 +31,18 @@
     "measured_impact": { "type": "object" },
     "local_validation_required": { "type": "boolean" },
     "owner_decision_required": { "type": "boolean" },
-    "expires_at": { "type": "string" }
+    "expires_at": { "type": "string" },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["alg", "key_alias", "pubkey_b64", "sig_b64", "signed_at"],
+      "properties": {
+        "alg": { "type": "string", "enum": ["ed25519"] },
+        "key_alias": { "type": "string", "minLength": 1 },
+        "pubkey_b64": { "type": "string", "minLength": 1 },
+        "sig_b64": { "type": "string", "minLength": 1 },
+        "signed_at": { "type": "string" }
+      }
+    }
   }
 }
