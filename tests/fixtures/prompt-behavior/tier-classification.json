@@ -1,0 +1,7 @@
+{
+  "id": "tier-classification-auth-change",
+  "scenario": "A change touches auth, secrets, or a schema. The engine must classify it as the highest-risk tier that requires owner or frontier review, not a local-only checker.",
+  "expected_decision": "Tier 3: owner or frontier review",
+  "anchors": ["owner or frontier review"],
+  "source": "prompts/modules/roles.md"
+}

@@ -1,0 +1,7 @@
+{
+  "id": "lease-expiry-return-to-queued",
+  "scenario": "A work item was claimed and leased but the lease has expired. On the next tick the engine must revoke the stale claim and return the item to the queue for crash recovery.",
+  "expected_decision": "Expired leases return to queued on tick",
+  "anchors": ["expired leases return to"],
+  "source": "prompts/modules/state-machine.md"
+}
