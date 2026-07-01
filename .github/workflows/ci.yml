@@ -51,6 +51,9 @@ jobs:
       - name: Run markdown governance gate
         run: node scripts/check-md-governance.mjs
 
+      - name: Run license and adapter boundary gate
+        run: node scripts/check-licenses.mjs
+
       - name: Run learning traceability gate
         run: node scripts/check-learning-traceability.mjs
 
