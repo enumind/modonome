@@ -47,9 +47,40 @@ models:
     base_url: http://mac-mini.local:11434
 ```
 
-The `base_url` is passed to the CLI call for that role. Any model ID can be used as a
-registry key; add entries as needed. The existing hosted-Claude entries remain in the
+The `base_url` is applied as `ANTHROPIC_BASE_URL` on the child process for that role,
+which the CLI honors to reach any Anthropic-compatible endpoint. Any model ID can be used
+as a registry key; add entries as needed. The existing hosted-Claude entries remain in the
 registry as references.
+
+## Provider-agnostic, zero-charge runs
+
+A role whose model `provider` is `local` is treated as non-remote, so it runs with
+`remote_model_budget_usd_per_day` at `0` and incurs no metered API spend. Combined with
+`base_url`, this lets you test the maker and checker loop against a local or free endpoint
+at no cost:
+
+```yaml
+remote_model_budget_usd_per_day: 0   # no paid hosted calls
+
+roles:
+  maker:
+    model: local-maker
+  checker:
+    model: local-checker
+
+models:
+  local-maker:
+    provider: local
+    base_url: http://localhost:11434   # local server or free gateway
+  local-checker:
+    provider: local
+    base_url: http://localhost:11435
+```
+
+For providers other than Anthropic, run an Anthropic-compatible gateway (for example
+LiteLLM, or an Ollama proxy) and point `base_url` at it. Routing maker and checker at
+different endpoints also strengthens model-family distinctness. None of this changes the
+arming posture: the autonomous loop stays off until an owner arms it.
 
 ## Enforcement
 

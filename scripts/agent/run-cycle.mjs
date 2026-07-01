@@ -100,6 +100,20 @@ export function planCycle(opts, cfg, runId) {
   };
 }
 
+// Build the child-process environment for a role invocation. When the resolved
+// model carries a base_url (a local, self-hosted, or gateway endpoint), route the
+// CLI there by setting ANTHROPIC_BASE_URL, which the Claude Code CLI honors for any
+// Anthropic-compatible endpoint. This is how a provider-agnostic, zero-charge run
+// works: point base_url at a local model server or a free gateway and the existing
+// CLI invocation is reused unchanged. Pure: returns a fresh object, mutates nothing.
+export function buildRunnerEnv(baseEnv, role) {
+  const env = { ...baseEnv };
+  if (role && role.modelBaseUrl) {
+    env.ANTHROPIC_BASE_URL = role.modelBaseUrl;
+  }
+  return env;
+}
+
 function invokeRole(plan, role, env) {
   const r = plan[role];
   const idKey = `${role.toUpperCase()}_ID`;
@@ -120,7 +134,7 @@ function invokeRole(plan, role, env) {
     "--model", r.model,
     "--max-turns", String(plan.maxTurns),
     "-p", prompt,
-  ], { cwd: resolve(root, plan.target), encoding: "utf8" });
+  ], { cwd: resolve(root, plan.target), encoding: "utf8", env: buildRunnerEnv(env, r) });
   writeFileSync(join(root, plan.transcriptDir, `${role}.log`), (res.stdout || "") + (res.stderr || ""));
 
   // Emit schema-conformant metrics with schema_version and correct field names
