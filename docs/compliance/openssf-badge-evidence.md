@@ -48,7 +48,7 @@ evidence exists, work remains), **Gap** (not satisfied yet, with the remediation
 
 | Criterion | Status | Evidence |
 |-----------|--------|----------|
-| Branch coverage 80% or higher | Gap | current branch coverage 61.05%; see gap ledger |
+| Branch coverage 80% or higher | Gap | measured branch coverage 68.4%, CI floor 66%; see gap ledger |
 | Two unassociated significant contributors | Gap | see gap ledger |
 | Bus factor of two or more | Gap | see gap ledger |
 | Code review before merge for most changes | Partial | CODEOWNERS plus required checks; two-person review pending a second maintainer |
@@ -60,11 +60,14 @@ evidence exists, work remains), **Gap** (not satisfied yet, with the remediation
 
 These criteria are not met today. They are recorded here rather than claimed.
 
-1. **Branch coverage 80% (gold).** Current branch coverage is 61.05% (lines 80.79%,
-   functions 85.28%). Remediation: add tests for uncovered branches, then raise the CI
-   branch floor in `package.json` and `ci.yml` from 60 to 80. Tracked as a dedicated PR.
-   The floor is held below the line floor on purpose so the gap is visible and ratcheted,
-   not hidden.
+1. **Branch coverage 80% (gold).** Measured branch coverage is 68.4% over library and
+   CLI code (lines 81.5%, functions 85.2%), with the CI branch floor ratcheted to 66%.
+   Two factors keep the measured number below 80%: many CLI scripts are
+   integration-tested through subprocesses, which in-process coverage does not count, and
+   the `agentproof/` scenarios (exercised by the AgentProof gate) are excluded as test
+   assets. Remediation toward gold: expose pure functions from the larger CLI scripts so
+   their branches are measured in process, then raise the floor. Tracked. The floor is
+   held below the line floor on purpose so the gap stays visible and ratcheted.
 2. **Two unassociated significant contributors and bus factor of two (gold).** The
    project is single-maintainer today (`@nateshpp` in `.github/CODEOWNERS`). This is a
    people criterion that code cannot satisfy. Remediation: add a second maintainer, then

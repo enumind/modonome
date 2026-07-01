@@ -97,4 +97,4 @@ jobs:
         run: node scripts/check-repo-hygiene.mjs
 
       - name: Run tests and coverage gate
-        run: node --test --experimental-test-coverage --test-coverage-exclude='tests/**' --test-coverage-lines=80 --test-coverage-branches=60 --test-coverage-functions=80 tests/*.test.mjs
+        run: node --test --experimental-test-coverage --test-coverage-exclude='tests/**' --test-coverage-exclude='agentproof/**' --test-coverage-lines=80 --test-coverage-branches=66 --test-coverage-functions=80 tests/*.test.mjs

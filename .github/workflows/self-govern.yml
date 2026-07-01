@@ -38,6 +38,9 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           RUN_ID: self-govern-${{ github.run_id }}-${{ github.run_attempt }}
         run: |
+          # pipefail ensures the harness exit status propagates through tee rather
+          # than being masked by tee's own success.
+          set -o pipefail
           # Run harness end-to-end to produce real captured artifacts
           node scripts/agent/run-cycle.mjs \
             --target examples/demo-app \

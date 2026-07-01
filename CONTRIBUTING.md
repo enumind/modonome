@@ -28,11 +28,16 @@ To measure coverage, run:
 npm run test:coverage
 ```
 
-This uses the Node test runner with no extra dependency. CI enforces minimum
-coverage of 80% lines, 60% branches, and 80% functions. The branch floor is held
-below the line floor on purpose: raising branch coverage to 80% is tracked work
-toward the OpenSSF gold criteria. Do not lower these thresholds to make a change
-pass; add tests instead.
+This uses the Node test runner with no extra dependency. Coverage is measured
+over the library and CLI code; the `tests/` and `agentproof/` trees are excluded
+because they are test assets (the AgentProof scenarios are exercised by
+`npm run agentproof`, a separate gate that asserts 25/25). CI enforces minimum
+coverage of 80% lines, 66% branches, and 80% functions. The branch floor is held
+below the line floor on purpose: many CLI scripts are integration-tested through
+subprocesses, which in-process coverage does not count, so the measured branch
+number understates real coverage. Raising the measured branch coverage to 80% for
+the OpenSSF gold criterion is tracked work. Do not lower these thresholds to make
+a change pass; add tests instead.
 
 ## How we respond
 
