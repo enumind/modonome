@@ -52,13 +52,15 @@ function firstCommentLine(source) {
   return "";
 }
 
-function derivePurpose(relPath, symbols, source, strict) {
+// Derive a module purpose from its symbols and source. Returns the raw (unredacted)
+// string so it can be cached; redaction is applied at map assembly time.
+function rawPurpose(relPath, symbols, source) {
   let purpose = "";
   const withDoc = symbols.find((s) => s.doc);
   if (/\.(md|markdown)$/i.test(relPath) && symbols[0]) purpose = symbols[0].name;
   else if (withDoc) purpose = withDoc.doc;
   else purpose = firstCommentLine(source) || (symbols[0] ? `${symbols[0].kind} ${symbols[0].name}` : "");
-  return redactText(String(purpose).slice(0, 160), { strict }).text;
+  return String(purpose).slice(0, 160);
 }
 
 // Build the full snapshot for a repository root.
@@ -69,6 +71,8 @@ export function buildSnapshot(root, opts = {}) {
     strictRedact = false,
     prev = null,
     generatedFor = basename(root) || ".",
+    cache = null,
+    changed = null,
   } = opts;
 
   const ignore = loadIgnore(root);
@@ -78,27 +82,47 @@ export function buildSnapshot(root, opts = {}) {
   const fileHashes = {};
   const languageMix = {};
   let totalBytes = 0;
-  const perFile = []; // { relPath, symbols, imports, source }
+  let reusedCount = 0;
+  const perFile = []; // { relPath, symbols, imports, purposeRaw }
+  const cacheEntries = {}; // relPath -> { hash, symbols, imports, purposeRaw }
+  // Incremental reuse: trust the cache for a file only when git reported it did not
+  // change. When `changed` is null (git unavailable) every file is treated as changed,
+  // which is a full rebuild. Reused entries are byte-identical to a fresh read because
+  // the content is unchanged, so the artifact matches a from-scratch build exactly.
+  const cacheEntriesIn = (cache && cache.entries) || {};
 
   for (const f of files) {
-    let buffer;
-    try { buffer = readFileSync(f.absPath); } catch { continue; }
-    totalBytes += f.size;
     const ext = extOf(f.relPath);
     languageMix[ext] = (languageMix[ext] || 0) + 1;
+    totalBytes += f.size;
 
-    const binary = isBinary(buffer);
-    fileHashes[f.relPath] = binary || f.size > MAX_EXTRACT_BYTES
-      ? hashFileContent(buffer)
-      : hashFileContent(buffer);
+    const reusable = changed && !changed.has(f.relPath) && Object.prototype.hasOwnProperty.call(cacheEntriesIn, f.relPath);
+    if (reusable) {
+      const e = cacheEntriesIn[f.relPath];
+      fileHashes[f.relPath] = e.hash;
+      perFile.push({ relPath: f.relPath, symbols: e.symbols || [], imports: e.imports || [], purposeRaw: e.purposeRaw || "" });
+      cacheEntries[f.relPath] = e;
+      reusedCount++;
+      continue;
+    }
 
-    if (binary || f.size > MAX_EXTRACT_BYTES) {
-      perFile.push({ relPath: f.relPath, symbols: [], imports: [], source: "" });
+    let buffer;
+    try { buffer = readFileSync(f.absPath); } catch { continue; }
+    const hash = hashFileContent(buffer);
+    fileHashes[f.relPath] = hash;
+
+    if (isBinary(buffer) || f.size > MAX_EXTRACT_BYTES) {
+      const entry = { hash, symbols: [], imports: [], purposeRaw: "" };
+      perFile.push({ relPath: f.relPath, ...entry });
+      cacheEntries[f.relPath] = entry;
       continue;
     }
     const source = buffer.toString("utf8");
     const { symbols, imports } = extractFile(f.relPath, source);
-    perFile.push({ relPath: f.relPath, symbols, imports, source });
+    const purposeRaw = rawPurpose(f.relPath, symbols, source);
+    const entry = { hash, symbols, imports, purposeRaw };
+    perFile.push({ relPath: f.relPath, ...entry });
+    cacheEntries[f.relPath] = entry;
   }
 
   const merkleEntries = Object.entries(fileHashes).map(([relPath, hash]) => ({ relPath, hash }));
@@ -130,7 +154,7 @@ export function buildSnapshot(root, opts = {}) {
     .map((f) => ({
       id: pathIdByPath[f.relPath],
       path: f.relPath,
-      purpose: derivePurpose(f.relPath, f.symbols, f.source, strictRedact),
+      purpose: redactText(f.purposeRaw || "", { strict: strictRedact }).text,
       hash: fileHashes[f.relPath],
     }))
     .sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0));
@@ -233,6 +257,8 @@ export function buildSnapshot(root, opts = {}) {
     fileHashes,
     merkleNodes,
     cycle,
+    cacheEntries,
+    stats: { files: files.length, reused: reusedCount, rebuilt: files.length - reusedCount },
   };
 }
 

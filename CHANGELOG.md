@@ -20,6 +20,13 @@ or CVE identifier where one exists.
   `sign` false, `parser` heuristic, `token_budget`, `strict_redact`). Discovery is layered
   through `llms.txt`, an `AGENTS.md` pointer, `prompts/modules/snapshot.md`, and the
   `modonome_snapshot` MCP tool. See ADR-032.
+- Snapshot regeneration is incremental: a local, gitignored cache under `.modonome/cache/`
+  plus git change detection means only changed files are re-read and re-parsed, while the
+  output stays byte-identical to a full rebuild. `--full` forces a from-scratch build.
+- `scaffold --write` turns snapshot consumption on by default during adoption: it generates
+  the first snapshot, installs a host pre-commit hook that keeps it fresh, and drops an
+  `AGENTS.md` pointer when the host has none. `--no-snapshot` opts out; existing host files
+  are never overwritten.
 
 ### AgentProof expanded to 25 scenarios (HARDENED)
 

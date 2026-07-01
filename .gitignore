@@ -29,3 +29,6 @@ runs/
 
 # Modonome snapshot portable pack (regenerate with: modonome snapshot --pack)
 *.msnap
+
+# Modonome snapshot local incremental cache (regenerated, never committed)
+.modonome/cache/

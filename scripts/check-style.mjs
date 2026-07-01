@@ -23,6 +23,10 @@ function walk(dir, out = []) {
     if (SKIP_DIRS.has(entry)) continue;
     const full = join(dir, entry);
     const s = statSync(full);
+    // Skip the regenerated, gitignored snapshot cache: it holds extracted docstrings
+    // from source, not authored text, so it is not subject to house style.
+    const norm = full.split(/[\\/]/).join("/");
+    if (norm === ".modonome/cache" || norm.endsWith("/.modonome/cache")) continue;
     if (s.isDirectory()) walk(full, out);
     else if (TEXT_EXT.has(extname(entry)) && !SKIP_FILES.has(entry)) out.push(full);
   }

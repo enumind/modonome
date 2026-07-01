@@ -63,7 +63,13 @@ an MCP tool `modonome_snapshot` that returns a tier or a verify report on demand
   than silent.
 - Heuristic extraction is approximate. Signatures are advisory context; anchors always
   resolve to ground truth in the file. The registry leaves an exact-parser upgrade path.
-- Later phases add multi-language adapters, incremental Merkle diffing, Tier 2 deep shards,
-  signed delta packets, graph-backed snapshot queries, and a git-churn attention overlay
-  surfaced on demand rather than committed. These are deferred so this change stays
+- Regeneration is incremental: a local gitignored cache (`.modonome/cache/`) plus git change
+  detection re-reads only changed files, so cost scales with the change, not the repo size,
+  while output stays byte-identical to a full rebuild (`--full` forces the latter). Adoption
+  (`scaffold --write`) turns consumption on by default: it generates the first snapshot,
+  installs a host pre-commit hook, and adds an `AGENTS.md` pointer when none exists, never
+  overwriting host files.
+- Later phases add multi-language adapters, an optional tree-sitter adapter, Tier 2 deep
+  shards, signed delta packets, graph-backed snapshot queries, and a git-churn attention
+  overlay surfaced on demand rather than committed. These are deferred so this change stays
   deterministic and low-risk.

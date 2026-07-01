@@ -11,6 +11,7 @@ const DEFAULT_IGNORES = [
   ".git/",
   "node_modules/",
   ".modonome/snapshot/",
+  ".modonome/cache/",
   ".modonome/runs/",
   "llms.txt",
   "dist/",

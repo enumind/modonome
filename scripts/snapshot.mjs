@@ -21,6 +21,7 @@ import { parseFlatYaml } from "./lib/yaml-lite.mjs";
 import { buildSnapshot } from "./lib/snapshot-core.mjs";
 import { walkRepo, loadIgnore } from "./lib/snapshot-walk.mjs";
 import { hashFileContent, buildMerkleTree } from "./lib/merkle.mjs";
+import { loadCache, saveCache, changedPaths, gitHead } from "./lib/snapshot-cache.mjs";
 
 function flagValue(argv, name) {
   const i = argv.indexOf(name);
@@ -89,6 +90,16 @@ function buildOptions(root, argv, now) {
 }
 
 function nowIso() { return new Date().toISOString(); }
+
+// Resolve incremental build inputs. --full forces a from-scratch rebuild. Otherwise
+// load the cache and ask git what changed; a missing cache or unusable git yields a
+// full rebuild that produces identical output.
+function incrementalInputs(root, argv) {
+  if (argv.includes("--full")) return { cache: null, changed: null };
+  const cache = loadCache(root);
+  const changed = cache ? changedPaths(root, cache) : null;
+  return { cache, changed };
+}
 
 // Recompute file hashes and the Merkle root directly from disk. Used by --verify.
 function recomputeMerkle(root) {
@@ -195,9 +206,11 @@ function main(argv) {
 
   // --pack: write a single portable bundle.
   if (argv.includes("--pack")) {
-    const built = buildSnapshot(root, buildOptions(root, argv, nowIso()));
+    const { cache, changed } = incrementalInputs(root, argv);
+    const built = buildSnapshot(root, { ...buildOptions(root, argv, nowIso()), cache, changed });
     const dir = snapshotDir(root);
     mkdirSync(dir, { recursive: true });
+    saveCache(root, { built_at_head: gitHead(root), entries: built.cacheEntries });
     const packPath = flagValue(argv, "--pack-out") || join(dir, "snapshot.msnap");
     writeFileSync(packPath, built.packBytes);
     console.log(`Wrote ${packPath} (${built.signature.size.files} files, ${built.map.token_estimate} map tokens).`);
@@ -208,13 +221,16 @@ function main(argv) {
     console.warn("[warn] Signed snapshots ship in a later phase. Writing an unsigned snapshot.");
   }
 
-  // Default: write the artifact.
-  const built = buildSnapshot(root, buildOptions(root, argv, nowIso()));
+  // Default: write the artifact (incremental when a cache and git are available).
+  const { cache, changed } = incrementalInputs(root, argv);
+  const built = buildSnapshot(root, { ...buildOptions(root, argv, nowIso()), cache, changed });
   writeArtifact(root, built);
+  saveCache(root, { built_at_head: gitHead(root), entries: built.cacheEntries });
   const dir = snapshotDir(root);
   console.log(`Wrote snapshot to ${dir}`);
   console.log(`  files: ${built.signature.size.files}  merkle: ${built.signature.merkle_root}`);
   console.log(`  map tokens: ${built.map.token_estimate}/${built.map.token_budget}${built.map.truncated ? " (truncated)" : ""}  api: ${built.map.api.length}  modules: ${built.map.modules.length}`);
+  console.log(`  build: ${built.stats.rebuilt} rebuilt, ${built.stats.reused} reused from cache`);
   if (built.cycle && built.cycle.cyclic) console.log(`  note: import cycle detected: ${built.cycle.cycle.join(" -> ")}`);
   process.exit(0);
 }

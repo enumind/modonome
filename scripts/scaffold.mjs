@@ -5,6 +5,42 @@
 import { readdirSync, readFileSync, writeFileSync, existsSync, mkdirSync, statSync, unlinkSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { spawnSync } from "node:child_process";
+import { installHooks } from "./install-hooks.mjs";
+
+// Minimal instruction file created only when the host has none, so agents discover
+// the snapshot. An existing AGENTS.md is never modified.
+const AGENTS_POINTER = `# Agent instructions
+
+## Repo snapshot
+
+For fast context, read \`.modonome/snapshot/map.md\` before reading source files. It lists
+modules, public API signatures, and import edges. Check \`.modonome/snapshot/signature.json\`:
+if \`merkle_root\` matches your last read, the repo is unchanged. Cite the F: and S: anchors
+and open only the lines you need. After changing files, run \`npx modonome snapshot .\`.
+`;
+
+// Turn snapshot consumption on during adoption: generate the first snapshot, install
+// a host pre-commit hook, and drop an AGENTS.md pointer when none exists. Skipped with
+// --no-snapshot. Never overwrites an existing host file.
+function enableSnapshot(target, here) {
+  const snap = spawnSync("node", [join(here, "snapshot.mjs"), target], { stdio: "inherit" });
+  if (snap.status !== 0) {
+    console.log("  note: snapshot generation skipped (run `npx modonome snapshot .` manually).");
+    return;
+  }
+  const agentsPath = join(target, "AGENTS.md");
+  if (!existsSync(agentsPath)) {
+    writeFileSync(agentsPath, AGENTS_POINTER);
+    console.log("  created: AGENTS.md (snapshot pointer)");
+  } else if (!readFileSync(agentsPath, "utf8").includes(".modonome/snapshot/map.md")) {
+    console.log("  note: point your AGENTS.md at .modonome/snapshot/map.md so agents read it first.");
+  }
+  const hook = installHooks(target, { self: false });
+  if (hook === "installed") console.log("  installed: pre-commit hook (keeps the snapshot fresh)");
+  else if (hook === "kept") console.log("  note: existing pre-commit hook kept; add `npx modonome snapshot .` to it.");
+  console.log("  note: add `.modonome/cache/` to your .gitignore (local snapshot cache, not for commit).");
+}
 
 const here = dirname(fileURLToPath(import.meta.url));
 const templateDir = join(here, "..", "templates", ".modonome");
@@ -76,8 +112,13 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   console.log(write ? "Scaffold applied." : "Scaffold preview (no files written). Pass --write to apply.");
   for (const p of planned) console.log(`  ${p.action === "create" ? (write ? "created" : "would create") : "kept"}: ${p.rel}`);
   console.log("\nThe engine stays disabled and dry-run until an owner arms it.");
-  console.log("Next: run `npx modonome snapshot .` to write .modonome/snapshot/ and llms.txt,");
-  console.log("then point your agent instructions (AGENTS.md or CLAUDE.md) at .modonome/snapshot/map.md.");
+  if (write && !process.argv.includes("--no-snapshot")) {
+    console.log("\nEnabling repo snapshot for agent context:");
+    enableSnapshot(target, here);
+  } else {
+    console.log("Next: run `npx modonome snapshot .` to write .modonome/snapshot/ and llms.txt,");
+    console.log("then point your agent instructions (AGENTS.md or CLAUDE.md) at .modonome/snapshot/map.md.");
+  }
   writeRunLog(join(target, ".modonome", "runs"), "scaffold", {
     argv: process.argv.slice(2),
     target,

@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:9ce28118ccdc1bfc4266c6d6878a15cfa5cd26f4c4d31dbee353e8a540b0ca8c
-Files: 463  Bytes: 1404209  Map tokens: 36139/120000
+Merkle root: sha256:49aaedaecc14df8f36dcdf1b69d652289a24a5e946df8f417a1eae22e01ca656
+Files: 466  Bytes: 1420464  Map tokens: 37570/120000
 
 ## Modules
 
@@ -143,6 +143,7 @@ Files: 463  Bytes: 1404209  Map tokens: 36139/120000
 - scripts/check-style.mjs [F:ca0833ac73]: !/usr/bin/env node
 - scripts/dry-run-sweep.mjs [F:6f247eb514]: !/usr/bin/env node
 - scripts/guard-ratchet.mjs [F:8a10462927]: !/usr/bin/env node
+- scripts/install-hooks.mjs [F:a7ce0f6452]: Install the pre-commit hook into targetRoot. Returns "installed", "kept" (a host hook already existed and was preserved), or "no-git". self=true writes modonome
 - scripts/lib/branch-name.mjs [F:6e0bd62fa3]: True when the first path segment of a branch name equals a denylisted token. * Matching is case-insensitive. "feature/ai-adapter" is allowed because the * first
 - scripts/lib/canonical-json.mjs [F:245efb551c]: Domain separation tag binds a signature to this packet type and version so a signature over one structure cannot be replayed as another.
 - scripts/lib/commit-identity.mjs [F:e4ff19bbe2]: True when a name or email belongs to a denylisted agent or vendor identity. * Real automation such as dependabot is allowed; only coding-agent and model * vendo
@@ -159,6 +160,7 @@ Files: 463  Bytes: 1404209  Map tokens: 36139/120000
 - scripts/lib/run-gate-capped.mjs [F:b014028f57]: Thin wrapper around spawnSync with a hard timeout and output-size cap.
 - scripts/lib/secret-patterns.mjs [F:68c4da7fe8]: Returns an array of { name } objects for every pattern that matches text.
 - scripts/lib/snapshot-anchors.mjs [F:1cf31c4792]: A short, stable id from a string. Hex keeps it deterministic across platforms.
+- scripts/lib/snapshot-cache.mjs [F:119e3c0fce]: Load the cache for a repo, or null when absent, unreadable, or a different version.
 - scripts/lib/snapshot-core.mjs [F:dbb9c92ca1]: Detect binary content by scanning a prefix for a null byte.
 - scripts/lib/snapshot-graph.mjs [F:015261eab0]: Normalize a relative import against the importing file's directory, resolving "." and ".." segments. Returns a posix path with no leading "./".
 - scripts/lib/snapshot-redact.mjs [F:4b91a9f65b]: Mask every matching secret in `text`. Returns { text, redactions } where each redaction records the pattern name and how many matches it masked.
@@ -171,9 +173,9 @@ Files: 463  Bytes: 1404209  Map tokens: 36139/120000
 - scripts/release.mjs [F:edf42fb1af]: !/usr/bin/env node
 - scripts/report.mjs [F:3b382f95c0]: !/usr/bin/env node
 - scripts/run-gate-pipeline.mjs [F:edb11415f0]: parseArgs(argv) -> { diff, "work-item" } map of fixture paths by gate arg name.
-- scripts/scaffold.mjs [F:5e450ff82c]: !/usr/bin/env node
+- scripts/scaffold.mjs [F:5e450ff82c]: Turn snapshot consumption on during adoption: generate the first snapshot, install a host pre-commit hook, and drop an AGENTS.md pointer when none exists. Skipp
 - scripts/sign-packet.mjs [F:7b3e38c9a6]: Pure: attach a signature object to a packet using the given private key.
-- scripts/snapshot.mjs [F:a0d489df6d]: Recompute file hashes and the Merkle root directly from disk. Used by --verify.
+- scripts/snapshot.mjs [F:a0d489df6d]: Resolve incremental build inputs. --full forces a from-scratch rebuild. Otherwise load the cache and ask git what changed; a missing cache or unusable git yield
 - scripts/sync-site-data.mjs [F:8abf9e432a]: Parse RELEASE-EVIDENCE.md to extract gate counts and autonomy status
 - scripts/transition-work-item.mjs [F:d135cffeaa]: A lease is "live" if it has an owner and an unexpired lease_expires_at. The lease holder is recorded as lease_owner (the field this swap writes) or, for older i
 - scripts/validate-config.mjs [F:932d33be00]: Safety rules beyond structural validation. These keep a config from claiming an armed posture without the controls that make arming safe. Note on arming levers:
@@ -207,8 +209,10 @@ Files: 463  Bytes: 1404209  Map tokens: 36139/120000
 - tests/ratchet.test.mjs [F:f238d164c9]: function ratchet
 - tests/rollback.test.mjs [F:0103cf3d56]: Recursively snapshot path -> "size:sha-like(content)" for every file.
 - tests/run-log.test.mjs [F:d7d4e8d2a9]: function tmp
+- tests/scaffold-adoption.test.mjs [F:de5ebbf586]: function gitRepo
 - tests/self-application.test.mjs [F:48355ccf4d]: Build a minimal passing temp repo and return the path. Caller must rmSync(tmp, {recursive:true}).
 - tests/snapshot-cli.test.mjs [F:9f36b3ef29]: function run
+- tests/snapshot-incremental.test.mjs [F:4637e1fecb]: function repo
 - tests/tick.test.mjs [F:baf7641a01]: function tmp
 - tests/ws-b-harness.test.mjs [F:1bcaaff9eb]: A config fixture with distinct maker/checker models and a models registry.
 - tests/ws-e-negative-controls.test.mjs [F:bbb6476d71]: WS-E: negative-control fixtures that prove governance gates have teeth.
@@ -246,6 +250,14 @@ Files: 463  Bytes: 1404209  Map tokens: 36139/120000
 - S:1c7919b4ea function signMessage `export function signMessage(message, privateKeyObject)` L40
 - S:fb81ef11a3 function verifyMessage `export function verifyMessage(message, sigB64, publicKeyObject)` L44
 - S:4a08c48993 function fingerprint `export function fingerprint(pubB64)` L54 : Short fingerprint for out-of-band key comparison (ADR-017 enrollment): the first 16 hex characters of sha256 over the raw public key bytes.
+### scripts/lib/snapshot-cache.mjs [F:119e3c0fce]
+- S:670e55d75a const CACHE_SCHEMA_VERSION `export const CACHE_SCHEMA_VERSION = 1;` L10
+- S:7762c6d861 function cachePath `function cachePath(root)` L12
+- S:59b9039619 function loadCache `export function loadCache(root)` L19 : Load the cache for a repo, or null when absent, unreadable, or a different version.
+- S:ba5f7d1ffe function saveCache `export function saveCache(root, { built_at_head = null, entries = {} })` L32 : Persist the cache. entries is { relPath: { hash, symbols, imports, purposeRaw } }.
+- S:ed24428ce0 function gitHead `export function gitHead(root)` L41 : The current git HEAD sha for the repo, or null when unavailable.
+- S:236237bc1b function unquote `function unquote(p)` L47 : Strip git's optional quoting from a porcelain path.
+- S:93d0a78f18 function changedPaths `export function changedPaths(root, cache)` L56 : The set of paths that changed since the cache was built: uncommitted work (git status) plus commits since cache.built_at_head. Returns null when git is not usable, which forces a full rebuild.
 ### scripts/lib/packet-id.mjs [F:12c7a4e461]
 - S:3968554637 const VOLATILE_FIELDS `export const VOLATILE_FIELDS = ['id', 'signature'];` L8
 - S:9f7fa8d585 function packetContent `export function packetContent(packet)` L10
@@ -336,6 +348,8 @@ Files: 463  Bytes: 1404209  Map tokens: 36139/120000
 ### tests/cli-dispatch.test.mjs [F:40e4f39b59]
 - S:daac1f172a function cli `function cli(...args)` L12
 - S:1c82a73570 function tmp `function tmp()` L19
+### tests/snapshot-incremental.test.mjs [F:4637e1fecb]
+- S:48356203e2 function repo `function repo()` L13
 ### tests/self-application.test.mjs [F:48355ccf4d]
 - S:e3c36060ec function makeMinimalRepo `function makeMinimalRepo()` L63 : Build a minimal passing temp repo and return the path. Caller must rmSync(tmp, {recursive:true}).
 - S:7c9eb8f22d function runScript `function runScript(tmp)` L77
@@ -359,9 +373,10 @@ Files: 463  Bytes: 1404209  Map tokens: 36139/120000
 ### examples/demo-app/src/CartService.js [F:599f5b2f28]
 - S:1ef7d0ea53 class CartService `export class CartService` L3
 ### scripts/scaffold.mjs [F:5e450ff82c]
-- S:8c6ccd3e8b function listTemplate `function listTemplate(dir, base = "")` L13
-- S:6dcbe228c5 function scaffold `export function scaffold(target, write)` L24
-- S:1856df868b function writeRunLog `function writeRunLog(runsDir, command, payload)` L58
+- S:ea76c925e2 function enableSnapshot `function enableSnapshot(target, here)` L26 : Turn snapshot consumption on during adoption: generate the first snapshot, install a host pre-commit hook, and drop an AGENTS.md pointer when none exists. Skipped with --no-snapshot. Never overwrites 
+- S:8c6ccd3e8b function listTemplate `function listTemplate(dir, base = "")` L49
+- S:6dcbe228c5 function scaffold `export function scaffold(target, write)` L60
+- S:1856df868b function writeRunLog `function writeRunLog(runsDir, command, payload)` L94
 ### tests/arming.test.mjs [F:60548316f5]
 - S:5d58defc25 function tmpRepo `function tmpRepo(configBody)` L14
 - S:580f464240 function runStatus `function runStatus(dir, env)` L23
@@ -468,23 +483,26 @@ Files: 463  Bytes: 1404209  Map tokens: 36139/120000
 - S:ad93bbf998 function run `function run(args, cwd)` L14
 - S:107eb40a1d function makeRepo `function makeRepo()` L18
 ### scripts/snapshot.mjs [F:a0d489df6d]
-- S:996743005b function flagValue `function flagValue(argv, name)` L25
-- S:59ba63dbab function readConfig `function readConfig(root)` L30
-- S:3c2bad87be function snapshotDir `function snapshotDir(root) { return join(root, ".modonome", "snapshot"); }` L36
-- S:5353762af1 function loadCommittedSignature `function loadCommittedSignature(root)` L38
-- S:d5719588cb function llmsText `function llmsText(signature)` L44
-- S:88bd705d3f function badgeJson `function badgeJson(signature, map)` L58
-- S:bc3262b829 function writeArtifact `function writeArtifact(root, built)` L67
-- S:3466f40801 function buildOptions `function buildOptions(root, argv, now)` L77
-- S:6584162247 function nowIso `function nowIso() { return new Date().toISOString(); }` L91
-- S:df5cb6eb12 function recomputeMerkle `function recomputeMerkle(root)` L94 : Recompute file hashes and the Merkle root directly from disk. Used by --verify.
-- S:2a5511d42c function gitDelta `function gitDelta(root, ref)` L100
-- S:2ce7a5bbe7 function positional `function positional(argv)` L120
-- S:68308360b1 function main `function main(argv)` L130
+- S:996743005b function flagValue `function flagValue(argv, name)` L26
+- S:59ba63dbab function readConfig `function readConfig(root)` L31
+- S:3c2bad87be function snapshotDir `function snapshotDir(root) { return join(root, ".modonome", "snapshot"); }` L37
+- S:5353762af1 function loadCommittedSignature `function loadCommittedSignature(root)` L39
+- S:d5719588cb function llmsText `function llmsText(signature)` L45
+- S:88bd705d3f function badgeJson `function badgeJson(signature, map)` L59
+- S:bc3262b829 function writeArtifact `function writeArtifact(root, built)` L68
+- S:3466f40801 function buildOptions `function buildOptions(root, argv, now)` L78
+- S:6584162247 function nowIso `function nowIso() { return new Date().toISOString(); }` L92
+- S:383c03d511 function incrementalInputs `function incrementalInputs(root, argv)` L97 : Resolve incremental build inputs. --full forces a from-scratch rebuild. Otherwise load the cache and ask git what changed; a missing cache or unusable git yields a full rebuild that produces identical
+- S:df5cb6eb12 function recomputeMerkle `function recomputeMerkle(root)` L105 : Recompute file hashes and the Merkle root directly from disk. Used by --verify.
+- S:2a5511d42c function gitDelta `function gitDelta(root, ref)` L111
+- S:2ce7a5bbe7 function positional `function positional(argv)` L131
+- S:68308360b1 function main `function main(argv)` L141
 ### fixtures/negative-controls/app-syntax-error.js [F:a1411f1423]
 - S:7369c62b84 class OrderServiceBroken `export class OrderServiceBroken` L5
 ### tests/mcp-compliance.test.mjs [F:a167609a41]
 - S:07a58ff928 function rpc `function rpc(requests, expectedIds)` L14 : Send requests to a fresh server process and resolve once every expected id has replied. The child is killed as soon as the responses arrive, which avoids the stdin-close race in batch mode.
+### scripts/install-hooks.mjs [F:a7ce0f6452]
+- S:2681abe2e5 function installHooks `export function installHooks(targetRoot, { self = false } = {})` L31 : Install the pre-commit hook into targetRoot. Returns "installed", "kept" (a host hook already existed and was preserved), or "no-git". self=true writes modonome's own dev hook and overwrites; a host i
 ### scripts/mcp-server.mjs [F:ab5077147a]
 - S:55a57d9fd6 function toolRatchet `async function toolRatchet(args)` L167
 - S:a4d0ce8fea function toolValidateConfig `async function toolValidateConfig(args)` L214
@@ -540,9 +558,9 @@ Files: 463  Bytes: 1404209  Map tokens: 36139/120000
 ### scripts/check-style.mjs [F:ca0833ac73]
 - S:ee9b2c90d1 function walk `function walk(dir, out = [])` L21
 ### scripts/lib/snapshot-walk.mjs [F:cb66095cb4]
-- S:7c5c3a31a4 function compilePattern `function compilePattern(pattern)` L31 : Compile one gitignore-style pattern into a tester over a posix relative path. Supported: comments, negation (!), leading / (anchored), trailing / (directory), * (within a segment), ** (across segments
-- S:531cf59eb3 function loadIgnore `export function loadIgnore(root)` L62 : Build an ignore predicate for a repo root. The predicate takes a posix relative path and returns true when the path should be excluded. Later patterns win, so a negation can re-include a path a broad 
-- S:d4e650f5ae function walkRepo `export function walkRepo(root, { ignore = () => false, maxDepth = 12 } = {})` L86 : Walk a repository into a sorted list of files. Symlinks are skipped to avoid cycles and escapes. Returns [{ relPath, absPath, size }] ordered by relPath.
+- S:7c5c3a31a4 function compilePattern `function compilePattern(pattern)` L32 : Compile one gitignore-style pattern into a tester over a posix relative path. Supported: comments, negation (!), leading / (anchored), trailing / (directory), * (within a segment), ** (across segments
+- S:531cf59eb3 function loadIgnore `export function loadIgnore(root)` L63 : Build an ignore predicate for a repo root. The predicate takes a posix relative path and returns true when the path should be excluded. Later patterns win, so a negation can re-include a path a broad 
+- S:d4e650f5ae function walkRepo `export function walkRepo(root, { ignore = () => false, maxDepth = 12 } = {})` L87 : Walk a repository into a sorted list of files. Symlinks are skipped to avoid cycles and escapes. Returns [{ relPath, absPath, size }] ordered by relPath.
 ### tests/embedding-safety.test.mjs [F:cc65dd1342]
 - S:298b204d13 function runPreflight `function runPreflight(fixtureName)` L22 : Run preflight in --json mode against a fixture. Returns { code, report, raw }. A clean environment is used so the host's own MODONOME_* shell does not leak into the env-pollution check.
 - S:c73cab5b60 function ids `function ids(report)` L42
@@ -559,11 +577,11 @@ Files: 463  Bytes: 1404209  Map tokens: 36139/120000
 - S:154918aa5a function isBinary `function isBinary(buffer)` L32 : Detect binary content by scanning a prefix for a null byte.
 - S:3734794a77 function extOf `function extOf(relPath)` L38
 - S:cbe5a2e179 function firstCommentLine `function firstCommentLine(source)` L44
-- S:4db2aa2626 function derivePurpose `function derivePurpose(relPath, symbols, source, strict)` L55
-- S:e9e4290005 function buildSnapshot `export function buildSnapshot(root, opts = {})` L65 : Build the full snapshot for a repository root.
-- S:45b2f146f0 function buildEdgeList `function buildEdgeList(adjacency, pathIdByPath)` L240 : Resolve adjacency into a sorted edge list of dictionary path ids.
-- S:dbf47f93d3 function renderMarkdown `function renderMarkdown({ generatedFor, merkleRoot, files, totalBytes, map })` L254
-- S:890a9e6691 function readGovernance `function readGovernance(root)` L305 : Read a light governance posture from the target config and environment. It never arms anything; it only reports posture so a snapshot can double as a status probe.
+- S:05fa5077ed function rawPurpose `function rawPurpose(relPath, symbols, source)` L57 : Derive a module purpose from its symbols and source. Returns the raw (unredacted) string so it can be cached; redaction is applied at map assembly time.
+- S:e9e4290005 function buildSnapshot `export function buildSnapshot(root, opts = {})` L67 : Build the full snapshot for a repository root.
+- S:45b2f146f0 function buildEdgeList `function buildEdgeList(adjacency, pathIdByPath)` L266 : Resolve adjacency into a sorted edge list of dictionary path ids.
+- S:dbf47f93d3 function renderMarkdown `function renderMarkdown({ generatedFor, merkleRoot, files, totalBytes, map })` L280
+- S:890a9e6691 function readGovernance `function readGovernance(root)` L331 : Read a light governance posture from the target config and environment. It never arms anything; it only reports posture so a snapshot can double as a status probe.
 ### tests/promoted-learnings.test.mjs [F:ddd82fc886]
 - S:e0832e1baa function withRoot `function withRoot(learningsBody)` L8
 ### scripts/agent/run-cycle.mjs [F:ddeb486c49]
@@ -572,6 +590,9 @@ Files: 463  Bytes: 1404209  Map tokens: 36139/120000
 - S:a75126f856 function buildRunnerEnv `export function buildRunnerEnv(baseEnv, role)` L109 : Build the child-process environment for a role invocation. When the resolved model carries a base_url (a local, self-hosted, or gateway endpoint), route the CLI there by setting ANTHROPIC_BASE_URL, wh
 - S:f8004b7b76 function invokeRole `function invokeRole(plan, role, env)` L117
 - S:4f43d4e206 function runCycle `export function runCycle(opts, { execute, cfg, runId, env = process.env })` L164 : Execute a plan. Refuses a hosted run when the budget is zero. Runs the maker, then the checker, each as a distinct CLI invocation with its own model and identity.
+### tests/scaffold-adoption.test.mjs [F:de5ebbf586]
+- S:fe07a3bcbc function gitRepo `function gitRepo()` L13
+- S:8579f519b1 function scaffold `function scaffold(dir, extra = [])` L25
 ### scripts/lib/commit-identity.mjs [F:e4ff19bbe2]
 - S:d7029fdff9 function isForbiddenIdentity `export function isForbiddenIdentity(name, email)` L26 : True when a name or email belongs to a denylisted agent or vendor identity. * Real automation such as dependabot is allowed; only coding-agent and model * vendor identities are rejected.
 - S:5c7ed4ab16 function findForbiddenCommits `export function findForbiddenCommits(logOutput)` L42 : Parse `git log` output where each commit is one line of * "authorName<TAB>authorEmail<TAB>committerName<TAB>committerEmail<TAB>shortSha". * Returns the commits whose author or committer is a forbidden
@@ -655,12 +676,16 @@ Files: 463  Bytes: 1404209  Map tokens: 36139/120000
 - scripts/check-self-application.mjs -> scripts/lib/yaml-lite.mjs
 - scripts/check-self-application.mjs -> scripts/lib/jsonschema.mjs
 - tests/runner-env.test.mjs -> scripts/agent/run-cycle.mjs
+- tests/snapshot-incremental.test.mjs -> scripts/lib/snapshot-cache.mjs
+- tests/snapshot-incremental.test.mjs -> scripts/lib/canonical-json.mjs
+- tests/snapshot-incremental.test.mjs -> scripts/lib/snapshot-core.mjs
 - tests/self-application.test.mjs -> scripts/lib/jsonschema.mjs
 - scripts/lib/snapshot-redact.mjs -> scripts/lib/secret-patterns.mjs
 - tests/branch-name.test.mjs -> scripts/lib/branch-name.mjs
 - examples/demo-app/tests/CheckoutService.test.js -> examples/demo-app/src/CheckoutService.js
 - tests/learnings.test.mjs -> scripts/lib/learnings.mjs
 - tests/maker-checker.test.mjs -> scripts/validate-work-item.mjs
+- scripts/scaffold.mjs -> scripts/install-hooks.mjs
 - tests/arming.test.mjs -> bin/modonome.mjs
 - scripts/check-repo-hygiene.mjs -> scripts/lib/branch-name.mjs
 - scripts/check-repo-hygiene.mjs -> scripts/lib/commit-identity.mjs
@@ -690,6 +715,7 @@ Files: 463  Bytes: 1404209  Map tokens: 36139/120000
 - scripts/build-release-evidence.mjs -> scripts/lib/learnings.mjs
 - scripts/migrate-config.mjs -> scripts/lib/yaml-lite.mjs
 - tests/snapshot-cli.test.mjs -> scripts/lib/jsonschema.mjs
+- scripts/snapshot.mjs -> scripts/lib/snapshot-cache.mjs
 - scripts/snapshot.mjs -> scripts/lib/yaml-lite.mjs
 - scripts/snapshot.mjs -> scripts/lib/canonical-json.mjs
 - scripts/snapshot.mjs -> scripts/lib/merkle.mjs
@@ -731,54 +757,54 @@ Files: 463  Bytes: 1404209  Map tokens: 36139/120000
 
 ## Attention (centrality + pagerank)
 
-1. scripts/lib/yaml-lite.mjs centrality=12 pagerank=0.015022
-2. scripts/lib/jsonschema.mjs centrality=7 pagerank=0.017734
-3. scripts/validate-config.mjs centrality=9 pagerank=0.008367
-4. scripts/lib/learnings.mjs centrality=7 pagerank=0.010916
-5. scripts/lib/canonical-json.mjs centrality=7 pagerank=0.009504
-6. scripts/lib/snapshot-core.mjs centrality=11 pagerank=0.002239
-7. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.00691
-8. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.009893
-9. scripts/lib/graph.mjs centrality=4 pagerank=0.00777
-10. scripts/validate-work-item.mjs centrality=5 pagerank=0.00571
-11. scripts/agent/run-cycle.mjs centrality=6 pagerank=0.004083
-12. examples/demo-app/src/index.js centrality=6 pagerank=0.001914
-13. scripts/agent/render-prompt.mjs centrality=3 pagerank=0.004951
-14. scripts/agent/resolve-role.mjs centrality=3 pagerank=0.004951
-15. scripts/snapshot.mjs centrality=5 pagerank=0.001914
-16. scripts/verify-packet.mjs centrality=4 pagerank=0.002321
-17. tests/config.test.mjs centrality=4 pagerank=0.001914
-18. tests/packet-signing.test.mjs centrality=4 pagerank=0.001914
-19. scripts/migrate-config.mjs centrality=3 pagerank=0.003134
-20. scripts/lib/branch-name.mjs centrality=2 pagerank=0.004354
-21. scripts/lib/commit-identity.mjs centrality=2 pagerank=0.004354
-22. scripts/lib/run-gate-capped.mjs centrality=2 pagerank=0.004354
-23. scripts/lib/merkle.mjs centrality=3 pagerank=0.00243
-24. examples/demo-app/src/CartService.js centrality=2 pagerank=0.003812
-25. examples/demo-app/src/CheckoutService.js centrality=2 pagerank=0.003812
-26. examples/demo-app/src/InventoryService.js centrality=2 pagerank=0.003812
-27. examples/demo-app/src/NotificationService.js centrality=2 pagerank=0.003812
-28. examples/demo-app/src/OrderService.js centrality=2 pagerank=0.003812
-29. examples/demo-app/src/PaymentProcessor.js centrality=2 pagerank=0.003812
-30. scripts/lib/repo-detect.mjs centrality=2 pagerank=0.003731
-31. scripts/lib/lang-adapters/index.mjs centrality=3 pagerank=0.002104
-32. bin/modonome.mjs centrality=2 pagerank=0.003541
-33. tests/chaos.test.mjs centrality=3 pagerank=0.001914
-34. tests/performance.test.mjs centrality=3 pagerank=0.001914
-35. tests/ws-b-harness.test.mjs centrality=3 pagerank=0.001914
-36. tests/ws-h-config.test.mjs centrality=3 pagerank=0.001914
-37. scripts/lib/snapshot-walk.mjs centrality=2 pagerank=0.00243
-38. scripts/lib/packet-id.mjs centrality=2 pagerank=0.002321
-39. scripts/sign-packet.mjs centrality=2 pagerank=0.002321
-40. scripts/lib/snapshot-graph.mjs centrality=2 pagerank=0.002104
-41. scripts/lib/snapshot-redact.mjs centrality=2 pagerank=0.002104
-42. scripts/transition-work-item.mjs centrality=1 pagerank=0.003541
-43. scripts/build-release-evidence.mjs centrality=2 pagerank=0.001914
-44. scripts/check-drift.mjs centrality=2 pagerank=0.001914
-45. scripts/check-repo-hygiene.mjs centrality=2 pagerank=0.001914
-46. scripts/check-self-application.mjs centrality=2 pagerank=0.001914
-47. scripts/check-work-items.mjs centrality=2 pagerank=0.001914
-48. scripts/run-gate-pipeline.mjs centrality=2 pagerank=0.001914
-49. tests/ws-e-negative-controls.test.mjs centrality=2 pagerank=0.001914
-50. scripts/lib/lang-adapters/generic.mjs centrality=1 pagerank=0.002808
+1. scripts/lib/yaml-lite.mjs centrality=12 pagerank=0.014868
+2. scripts/lib/jsonschema.mjs centrality=7 pagerank=0.017567
+3. scripts/lib/canonical-json.mjs centrality=8 pagerank=0.009929
+4. scripts/validate-config.mjs centrality=9 pagerank=0.008289
+5. scripts/lib/learnings.mjs centrality=7 pagerank=0.010813
+6. scripts/lib/snapshot-core.mjs centrality=12 pagerank=0.002702
+7. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.006845
+8. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.009835
+9. scripts/lib/graph.mjs centrality=4 pagerank=0.007732
+10. scripts/validate-work-item.mjs centrality=5 pagerank=0.005656
+11. scripts/agent/run-cycle.mjs centrality=6 pagerank=0.004045
+12. examples/demo-app/src/index.js centrality=6 pagerank=0.001896
+13. scripts/snapshot.mjs centrality=6 pagerank=0.001896
+14. scripts/agent/render-prompt.mjs centrality=3 pagerank=0.004904
+15. scripts/agent/resolve-role.mjs centrality=3 pagerank=0.004904
+16. scripts/verify-packet.mjs centrality=4 pagerank=0.002299
+17. tests/config.test.mjs centrality=4 pagerank=0.001896
+18. tests/packet-signing.test.mjs centrality=4 pagerank=0.001896
+19. scripts/migrate-config.mjs centrality=3 pagerank=0.003105
+20. scripts/lib/branch-name.mjs centrality=2 pagerank=0.004313
+21. scripts/lib/commit-identity.mjs centrality=2 pagerank=0.004313
+22. scripts/lib/run-gate-capped.mjs centrality=2 pagerank=0.004313
+23. scripts/lib/merkle.mjs centrality=3 pagerank=0.002394
+24. examples/demo-app/src/CartService.js centrality=2 pagerank=0.003776
+25. examples/demo-app/src/CheckoutService.js centrality=2 pagerank=0.003776
+26. examples/demo-app/src/InventoryService.js centrality=2 pagerank=0.003776
+27. examples/demo-app/src/NotificationService.js centrality=2 pagerank=0.003776
+28. examples/demo-app/src/OrderService.js centrality=2 pagerank=0.003776
+29. examples/demo-app/src/PaymentProcessor.js centrality=2 pagerank=0.003776
+30. scripts/lib/repo-detect.mjs centrality=2 pagerank=0.003737
+31. scripts/lib/lang-adapters/index.mjs centrality=3 pagerank=0.002126
+32. bin/modonome.mjs centrality=2 pagerank=0.003508
+33. tests/chaos.test.mjs centrality=3 pagerank=0.001896
+34. tests/performance.test.mjs centrality=3 pagerank=0.001896
+35. tests/snapshot-incremental.test.mjs centrality=3 pagerank=0.001896
+36. tests/ws-b-harness.test.mjs centrality=3 pagerank=0.001896
+37. tests/ws-h-config.test.mjs centrality=3 pagerank=0.001896
+38. scripts/lib/snapshot-cache.mjs centrality=2 pagerank=0.002702
+39. scripts/lib/snapshot-walk.mjs centrality=2 pagerank=0.002394
+40. scripts/lib/packet-id.mjs centrality=2 pagerank=0.002299
+41. scripts/sign-packet.mjs centrality=2 pagerank=0.002299
+42. scripts/lib/snapshot-graph.mjs centrality=2 pagerank=0.002126
+43. scripts/lib/snapshot-redact.mjs centrality=2 pagerank=0.002126
+44. scripts/install-hooks.mjs centrality=1 pagerank=0.003508
+45. scripts/transition-work-item.mjs centrality=1 pagerank=0.003508
+46. scripts/build-release-evidence.mjs centrality=2 pagerank=0.001896
+47. scripts/check-drift.mjs centrality=2 pagerank=0.001896
+48. scripts/check-repo-hygiene.mjs centrality=2 pagerank=0.001896
+49. scripts/check-self-application.mjs centrality=2 pagerank=0.001896
+50. scripts/check-work-items.mjs centrality=2 pagerank=0.001896
 
