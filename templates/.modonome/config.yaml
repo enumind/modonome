@@ -45,12 +45,24 @@ roles:
     runner: container
     model: claude-haiku-4-5
 runners:
+  # A runner target may declare its execution environment and what model
+  # endpoints it can reach. Routing (scripts/agent/route-action.mjs) reads these
+  # to send a role whose model is only reachable from one environment to a worker
+  # in that environment. Optional: omit them and every runner is treated as able
+  # to run the default anthropic roles. reachable_providers may contain "*".
   local:
     labels: [self-hosted, mac-mini]
     cli_path: claude
+    environment: local-host
+    # The self-hosted host can reach a local Ollama/llama.cpp endpoint and any
+    # networked (egress) provider.
+    reachable_providers: [local, anthropic, openai-compatible]
   container:
     labels: [ubuntu-latest]
     cli_path: claude
+    environment: ci
+    # A CI runner with models:read can reach github-models plus egress providers.
+    reachable_providers: [github-models, anthropic, openai-compatible]
 models:
   claude-sonnet-4-6:
     provider: anthropic

@@ -7,6 +7,8 @@ fixtures/**/.modonome/
 !fixtures/portability/**/.modonome/**
 .modonome/runs/
 **/.modonome/runs/
+.modonome/queue/
+**/.modonome/queue/
 .env
 .env.*
 !fixtures/portability/**/.env
