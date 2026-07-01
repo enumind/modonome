@@ -12,6 +12,7 @@ const DEFAULT_IGNORES = [
   "node_modules/",
   ".modonome/snapshot/",
   ".modonome/runs/",
+  "llms.txt",
   "dist/",
   "build/",
   ".astro/",

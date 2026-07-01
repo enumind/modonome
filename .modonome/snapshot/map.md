@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:53eb82bc13bd2cbcda076d456275678aac8ed7438255c88305177f4a17904ba6
-Files: 459  Bytes: 1366363  Map tokens: 35774/120000
+Merkle root: sha256:d8920034457ca04298d99338d7c4d82612e604d455921e4c53ae5f1d56f0ec42
+Files: 462  Bytes: 1395101  Map tokens: 36103/120000
 
 ## Modules
 
@@ -64,6 +64,7 @@ Files: 459  Bytes: 1366363  Map tokens: 35774/120000
 - docs/adr/ADR-029-adversarial-test-design.md [F:d66f93d7b7]: ADR-029: Adversarial Test Design Principles
 - docs/adr/ADR-030-embedding-safety.md [F:5a04bfa7a4]: ADR-030: Embedding Safety Framework
 - docs/adr/ADR-031-markdown-governance.md [F:627afb27fd]: ADR-031: Markdown governance
+- docs/adr/ADR-032-repo-snapshot.md [F:105d90c489]: ADR-032: Repo snapshot
 - docs/audits/claims-audit-2026-06-25.md [F:8a7591db62]: Claims audit, 2026-06-25
 - docs/compliance/compliance.md [F:95e51a604d]: Compliance
 - docs/compliance/eu-ai-act-classification.md [F:5fa0ad758b]: EU AI Act Classification
@@ -118,6 +119,7 @@ Files: 459  Bytes: 1366363  Map tokens: 35774/120000
 - prompts/modules/gates.md [F:02359d48d5]: Deterministic gates
 - prompts/modules/network.md [F:c98f6b55e3]: Cross-repo knowledge network
 - prompts/modules/roles.md [F:8f62475ebe]: Agent roles
+- prompts/modules/snapshot.md [F:c324fab0cc]: Repo snapshot
 - prompts/modules/state-machine.md [F:9a28b4e90e]: Durable state machine
 - scripts/agent/render-prompt.mjs [F:fd660a117b]: Substitute every ${VAR} from env. Throw if a referenced variable is unset, so a missing identity or branch fails loudly instead of rendering an empty value into
 - scripts/agent/resolve-role.mjs [F:304ce7b89d]: Resolve runner and model settings for a named role. * * @param {object} cfg - Parsed config object (output of parseFlatYaml or loadConfig). * @param {string} ro
@@ -205,6 +207,7 @@ Files: 459  Bytes: 1366363  Map tokens: 35774/120000
 - tests/rollback.test.mjs [F:0103cf3d56]: Recursively snapshot path -> "size:sha-like(content)" for every file.
 - tests/run-log.test.mjs [F:d7d4e8d2a9]: function tmp
 - tests/self-application.test.mjs [F:48355ccf4d]: Build a minimal passing temp repo and return the path. Caller must rmSync(tmp, {recursive:true}).
+- tests/snapshot-cli.test.mjs [F:9f36b3ef29]: function run
 - tests/tick.test.mjs [F:baf7641a01]: function tmp
 - tests/ws-b-harness.test.mjs [F:1bcaaff9eb]: A config fixture with distinct maker/checker models and a models registry.
 - tests/ws-e-negative-controls.test.mjs [F:bbb6476d71]: WS-E: negative-control fixtures that prove governance gates have teeth.
@@ -459,7 +462,10 @@ Files: 459  Bytes: 1366363  Map tokens: 35774/120000
 ### scripts/migrate-config.mjs [F:9d69a6b766]
 - S:3fd1032067 const CURRENT_SCHEMA_VERSION `export const CURRENT_SCHEMA_VERSION = 1;` L10
 - S:18c9f379c0 const SAFE_DEFAULTS `export const SAFE_DEFAULTS =` L13 : Safe defaults for every lever. Migration fills any missing key from here.
-- S:b8cdbe3fd3 function migrate `export function migrate(cfg)` L57
+- S:b8cdbe3fd3 function migrate `export function migrate(cfg)` L66
+### tests/snapshot-cli.test.mjs [F:9f36b3ef29]
+- S:ad93bbf998 function run `function run(args, cwd)` L14
+- S:107eb40a1d function makeRepo `function makeRepo()` L18
 ### scripts/snapshot.mjs [F:a0d489df6d]
 - S:996743005b function flagValue `function flagValue(argv, name)` L25
 - S:59ba63dbab function readConfig `function readConfig(root)` L30
@@ -479,15 +485,16 @@ Files: 459  Bytes: 1366363  Map tokens: 35774/120000
 ### tests/mcp-compliance.test.mjs [F:a167609a41]
 - S:07a58ff928 function rpc `function rpc(requests, expectedIds)` L14 : Send requests to a fresh server process and resolve once every expected id has replied. The child is killed as soon as the responses arrive, which avoids the stdin-close race in batch mode.
 ### scripts/mcp-server.mjs [F:ab5077147a]
-- S:55a57d9fd6 function toolRatchet `async function toolRatchet(args)` L154
-- S:a4d0ce8fea function toolValidateConfig `async function toolValidateConfig(args)` L201
-- S:2d1eeb5346 function toolValidateWorkItem `async function toolValidateWorkItem(args)` L226
-- S:6499fa18ee function toolStatus `async function toolStatus(args)` L250
-- S:2d2b3ccfa2 function toolCompliance `async function toolCompliance(args)` L304
-- S:f613554429 function toolVerifyAttestation `async function toolVerifyAttestation(args)` L313
-- S:16d8c02a8e function send `function send(obj)` L334
-- S:2306976428 function errorResponse `function errorResponse(id, code, message)` L338
-- S:dd3b976184 function handleRequest `async function handleRequest(req)` L342
+- S:55a57d9fd6 function toolRatchet `async function toolRatchet(args)` L167
+- S:a4d0ce8fea function toolValidateConfig `async function toolValidateConfig(args)` L214
+- S:2d1eeb5346 function toolValidateWorkItem `async function toolValidateWorkItem(args)` L239
+- S:6499fa18ee function toolStatus `async function toolStatus(args)` L263
+- S:2d2b3ccfa2 function toolCompliance `async function toolCompliance(args)` L317
+- S:f613554429 function toolVerifyAttestation `async function toolVerifyAttestation(args)` L326
+- S:521fca28ad function toolSnapshot `async function toolSnapshot(args)` L343
+- S:16d8c02a8e function send `function send(obj)` L371
+- S:2306976428 function errorResponse `function errorResponse(id, code, message)` L375
+- S:dd3b976184 function handleRequest `async function handleRequest(req)` L379
 ### scripts/check-evidence-secrets.mjs [F:ace169adc4]
 - S:e19487a8ae function resolveFiles `function resolveFiles(argPath)` L20 : Resolve the list of files to scan. If a path argument is supplied use it directly; otherwise walk examples/runs/metrics.jsonl via readdirSync.
 ### scripts/lib/repo-detect.mjs [F:ae46bbab81]
@@ -522,7 +529,7 @@ Files: 459  Bytes: 1366363  Map tokens: 35774/120000
 ### examples/demo-app/src/InventoryService.js [F:bd02b28f17]
 - S:c7db2cc29d class InventoryService `export class InventoryService` L3
 ### scripts/build-prompt.mjs [F:c4395c3023]
-- S:27005d8f20 function buildBundle `function buildBundle()` L24
+- S:27005d8f20 function buildBundle `function buildBundle()` L25
 ### scripts/check-promotion-readiness.mjs [F:c5938c33fd]
 - S:3ad956fb93 function configDefaults `function configDefaults(rel)` L32
 - S:1e5dabea9c function hasHeading `function hasHeading(text, section)` L39 : Check that a section appears as a Markdown heading (h1-h6), so a one-line ADR with the section words buried in prose cannot game the gate.
@@ -532,9 +539,9 @@ Files: 459  Bytes: 1366363  Map tokens: 35774/120000
 ### scripts/check-style.mjs [F:ca0833ac73]
 - S:ee9b2c90d1 function walk `function walk(dir, out = [])` L21
 ### scripts/lib/snapshot-walk.mjs [F:cb66095cb4]
-- S:7c5c3a31a4 function compilePattern `function compilePattern(pattern)` L30 : Compile one gitignore-style pattern into a tester over a posix relative path. Supported: comments, negation (!), leading / (anchored), trailing / (directory), * (within a segment), ** (across segments
-- S:531cf59eb3 function loadIgnore `export function loadIgnore(root)` L61 : Build an ignore predicate for a repo root. The predicate takes a posix relative path and returns true when the path should be excluded. Later patterns win, so a negation can re-include a path a broad 
-- S:d4e650f5ae function walkRepo `export function walkRepo(root, { ignore = () => false, maxDepth = 12 } = {})` L85 : Walk a repository into a sorted list of files. Symlinks are skipped to avoid cycles and escapes. Returns [{ relPath, absPath, size }] ordered by relPath.
+- S:7c5c3a31a4 function compilePattern `function compilePattern(pattern)` L31 : Compile one gitignore-style pattern into a tester over a posix relative path. Supported: comments, negation (!), leading / (anchored), trailing / (directory), * (within a segment), ** (across segments
+- S:531cf59eb3 function loadIgnore `export function loadIgnore(root)` L62 : Build an ignore predicate for a repo root. The predicate takes a posix relative path and returns true when the path should be excluded. Later patterns win, so a negation can re-include a path a broad 
+- S:d4e650f5ae function walkRepo `export function walkRepo(root, { ignore = () => false, maxDepth = 12 } = {})` L86 : Walk a repository into a sorted list of files. Symlinks are skipped to avoid cycles and escapes. Returns [{ relPath, absPath, size }] ordered by relPath.
 ### tests/embedding-safety.test.mjs [F:cc65dd1342]
 - S:298b204d13 function runPreflight `function runPreflight(fixtureName)` L22 : Run preflight in --json mode against a fixture. Returns { code, report, raw }. A clean environment is used so the host's own MODONOME_* shell does not leak into the env-pollution check.
 - S:c73cab5b60 function ids `function ids(report)` L42
@@ -586,10 +593,10 @@ Files: 459  Bytes: 1366363  Map tokens: 35774/120000
 ### examples/demo-app/tests/InventoryService.test.js [F:f8168b956f]
 - S:af1e7a50ba function makeDb `function makeDb()` L5
 ### bin/modonome.mjs [F:f90930c3c3]
-- S:5835c8b608 function resolveArming `export function resolveArming(targetDir, env = process.env)` L36 : The authoritative arming gate. A config file the agent can write can never arm the engine on its own: arming requires the MODONOME_ARMED=true environment variable, which lives in CI or operator scope,
-- S:53b9eda0f8 function run `function run(script, args)` L57
-- S:214691c25d function targetDirFrom `function targetDirFrom(rest)` L67
-- S:9249714b12 function main `function main(argv)` L71
+- S:5835c8b608 function resolveArming `export function resolveArming(targetDir, env = process.env)` L40 : The authoritative arming gate. A config file the agent can write can never arm the engine on its own: arming requires the MODONOME_ARMED=true environment variable, which lives in CI or operator scope,
+- S:53b9eda0f8 function run `function run(script, args)` L61
+- S:214691c25d function targetDirFrom `function targetDirFrom(rest)` L71
+- S:9249714b12 function main `function main(argv)` L75
 ### tests/metrics.test.mjs [F:fadcf390da]
 - S:c176253e9c function tmp `function tmp()` L12
 - S:8bff005013 function runReport `function runReport(targetDir)` L16
@@ -680,6 +687,7 @@ Files: 459  Bytes: 1366363  Map tokens: 35774/120000
 - scripts/build-release-evidence.mjs -> scripts/lib/yaml-lite.mjs
 - scripts/build-release-evidence.mjs -> scripts/lib/learnings.mjs
 - scripts/migrate-config.mjs -> scripts/lib/yaml-lite.mjs
+- tests/snapshot-cli.test.mjs -> scripts/lib/jsonschema.mjs
 - scripts/snapshot.mjs -> scripts/lib/yaml-lite.mjs
 - scripts/snapshot.mjs -> scripts/lib/canonical-json.mjs
 - scripts/snapshot.mjs -> scripts/lib/merkle.mjs
@@ -721,54 +729,54 @@ Files: 459  Bytes: 1366363  Map tokens: 35774/120000
 
 ## Attention (churn + centrality + pagerank)
 
-1. scripts/lib/yaml-lite.mjs churn=3 centrality=12 pagerank=0.015163
-2. scripts/lib/jsonschema.mjs churn=2 centrality=6 pagerank=0.016258
-3. scripts/validate-config.mjs churn=2 centrality=9 pagerank=0.008446
-4. scripts/lib/learnings.mjs churn=2 centrality=7 pagerank=0.011018
-5. scripts/validate-knowledge-packet.mjs churn=4 centrality=7 pagerank=0.006975
-6. scripts/lib/canonical-json.mjs churn=1 centrality=7 pagerank=0.009594
-7. RELEASE-EVIDENCE.md churn=17 centrality=0 pagerank=0.001932
-8. scripts/lib/snapshot-core.mjs churn=0 centrality=11 pagerank=0.00226
-9. scripts/validate-work-item.mjs churn=4 centrality=5 pagerank=0.005764
-10. scripts/lib/secret-patterns.mjs churn=1 centrality=4 pagerank=0.009986
-11. scripts/agent/run-cycle.mjs churn=4 centrality=6 pagerank=0.004121
-12. site/index.html churn=13 centrality=0 pagerank=0.001932
-13. scripts/lib/graph.mjs churn=1 centrality=4 pagerank=0.007843
-14. scripts/check-repo-hygiene.mjs churn=9 centrality=2 pagerank=0.001932
-15. README.md churn=10 centrality=0 pagerank=0.001932
-16. examples/demo-app/src/index.js churn=1 centrality=6 pagerank=0.001932
-17. scripts/agent/resolve-role.mjs churn=2 centrality=3 pagerank=0.004997
-18. scripts/migrate-config.mjs churn=3 centrality=3 pagerank=0.003164
-19. scripts/agent/render-prompt.mjs churn=1 centrality=3 pagerank=0.004997
-20. examples/demo-app/src/CheckoutService.js churn=3 centrality=2 pagerank=0.003848
-21. tests/config.test.mjs churn=2 centrality=4 pagerank=0.001932
-22. bin/modonome.mjs churn=3 centrality=2 pagerank=0.003574
-23. scripts/verify-packet.mjs churn=1 centrality=4 pagerank=0.002342
-24. scripts/snapshot.mjs churn=0 centrality=5 pagerank=0.001932
-25. CONTRIBUTING.md churn=7 centrality=0 pagerank=0.001932
-26. agentproof/SPEC.md churn=7 centrality=0 pagerank=0.001932
-27. examples/demo-app/src/OrderService.js churn=2 centrality=2 pagerank=0.003848
-28. examples/demo-app/src/PaymentProcessor.js churn=2 centrality=2 pagerank=0.003848
-29. scripts/build-release-evidence.mjs churn=4 centrality=2 pagerank=0.001932
-30. tests/packet-signing.test.mjs churn=1 centrality=4 pagerank=0.001932
-31. scripts/lib/branch-name.mjs churn=1 centrality=2 pagerank=0.004395
-32. scripts/lib/commit-identity.mjs churn=1 centrality=2 pagerank=0.004395
-33. scripts/lib/run-gate-capped.mjs churn=1 centrality=2 pagerank=0.004395
-34. tests/ws-b-harness.test.mjs churn=2 centrality=3 pagerank=0.001932
-35. tests/ws-h-config.test.mjs churn=2 centrality=3 pagerank=0.001932
-36. agentproof/README.md churn=6 centrality=0 pagerank=0.001932
-37. examples/demo-app/src/CartService.js churn=1 centrality=2 pagerank=0.003848
-38. examples/demo-app/src/InventoryService.js churn=1 centrality=2 pagerank=0.003848
-39. examples/demo-app/src/NotificationService.js churn=1 centrality=2 pagerank=0.003848
-40. scripts/check-self-application.mjs churn=3 centrality=2 pagerank=0.001932
-41. scripts/lib/repo-detect.mjs churn=1 centrality=2 pagerank=0.003766
-42. tests/chaos.test.mjs churn=1 centrality=3 pagerank=0.001932
-43. tests/performance.test.mjs churn=1 centrality=3 pagerank=0.001932
-44. .modonome/LEARNINGS.md churn=5 centrality=0 pagerank=0.001932
-45. ARCHITECTURE.md churn=5 centrality=0 pagerank=0.001932
-46. ROADMAP.md churn=5 centrality=0 pagerank=0.001932
-47. SECURITY.md churn=5 centrality=0 pagerank=0.001932
-48. examples/demo-app/README.md churn=5 centrality=0 pagerank=0.001932
-49. examples/demo-app/WALKTHROUGH.md churn=5 centrality=0 pagerank=0.001932
-50. scripts/guard-ratchet.mjs churn=5 centrality=0 pagerank=0.001932
+1. scripts/lib/yaml-lite.mjs churn=3 centrality=12 pagerank=0.015051
+2. scripts/lib/jsonschema.mjs churn=2 centrality=7 pagerank=0.017768
+3. scripts/validate-config.mjs churn=2 centrality=9 pagerank=0.008383
+4. scripts/lib/learnings.mjs churn=2 centrality=7 pagerank=0.010937
+5. scripts/validate-knowledge-packet.mjs churn=4 centrality=7 pagerank=0.006923
+6. scripts/lib/canonical-json.mjs churn=1 centrality=7 pagerank=0.009523
+7. RELEASE-EVIDENCE.md churn=17 centrality=0 pagerank=0.001918
+8. scripts/lib/snapshot-core.mjs churn=1 centrality=11 pagerank=0.002244
+9. scripts/validate-work-item.mjs churn=4 centrality=5 pagerank=0.005721
+10. scripts/agent/run-cycle.mjs churn=4 centrality=6 pagerank=0.004091
+11. scripts/lib/secret-patterns.mjs churn=1 centrality=4 pagerank=0.009912
+12. site/index.html churn=13 centrality=0 pagerank=0.001918
+13. scripts/lib/graph.mjs churn=1 centrality=4 pagerank=0.007785
+14. scripts/check-repo-hygiene.mjs churn=9 centrality=2 pagerank=0.001918
+15. README.md churn=11 centrality=0 pagerank=0.001918
+16. examples/demo-app/src/index.js churn=1 centrality=6 pagerank=0.001918
+17. scripts/migrate-config.mjs churn=4 centrality=3 pagerank=0.00314
+18. scripts/agent/resolve-role.mjs churn=2 centrality=3 pagerank=0.00496
+19. bin/modonome.mjs churn=4 centrality=2 pagerank=0.003548
+20. scripts/agent/render-prompt.mjs churn=1 centrality=3 pagerank=0.00496
+21. scripts/snapshot.mjs churn=1 centrality=5 pagerank=0.001918
+22. tests/config.test.mjs churn=2 centrality=4 pagerank=0.001918
+23. examples/demo-app/src/CheckoutService.js churn=3 centrality=2 pagerank=0.003819
+24. scripts/verify-packet.mjs churn=1 centrality=4 pagerank=0.002325
+25. CONTRIBUTING.md churn=7 centrality=0 pagerank=0.001918
+26. agentproof/SPEC.md churn=7 centrality=0 pagerank=0.001918
+27. scripts/build-release-evidence.mjs churn=4 centrality=2 pagerank=0.001918
+28. tests/packet-signing.test.mjs churn=1 centrality=4 pagerank=0.001918
+29. examples/demo-app/src/OrderService.js churn=2 centrality=2 pagerank=0.003819
+30. examples/demo-app/src/PaymentProcessor.js churn=2 centrality=2 pagerank=0.003819
+31. tests/ws-b-harness.test.mjs churn=2 centrality=3 pagerank=0.001918
+32. tests/ws-h-config.test.mjs churn=2 centrality=3 pagerank=0.001918
+33. scripts/lib/branch-name.mjs churn=1 centrality=2 pagerank=0.004363
+34. scripts/lib/commit-identity.mjs churn=1 centrality=2 pagerank=0.004363
+35. scripts/lib/run-gate-capped.mjs churn=1 centrality=2 pagerank=0.004363
+36. ARCHITECTURE.md churn=6 centrality=0 pagerank=0.001918
+37. ROADMAP.md churn=6 centrality=0 pagerank=0.001918
+38. agentproof/README.md churn=6 centrality=0 pagerank=0.001918
+39. scripts/mcp-server.mjs churn=6 centrality=0 pagerank=0.001918
+40. scripts/check-self-application.mjs churn=3 centrality=2 pagerank=0.001918
+41. scripts/lib/merkle.mjs churn=1 centrality=3 pagerank=0.002434
+42. examples/demo-app/src/CartService.js churn=1 centrality=2 pagerank=0.003819
+43. examples/demo-app/src/InventoryService.js churn=1 centrality=2 pagerank=0.003819
+44. examples/demo-app/src/NotificationService.js churn=1 centrality=2 pagerank=0.003819
+45. scripts/lib/repo-detect.mjs churn=1 centrality=2 pagerank=0.003738
+46. scripts/lib/lang-adapters/index.mjs churn=1 centrality=3 pagerank=0.002108
+47. tests/chaos.test.mjs churn=1 centrality=3 pagerank=0.001918
+48. tests/performance.test.mjs churn=1 centrality=3 pagerank=0.001918
+49. .modonome/LEARNINGS.md churn=5 centrality=0 pagerank=0.001918
+50. CHANGELOG.md churn=5 centrality=0 pagerank=0.001918
 
