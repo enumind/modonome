@@ -1,0 +1,26 @@
+.mdn-safetystrip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mdn-space-5);
+  padding: var(--mdn-space-4) var(--mdn-space-5);
+  background: var(--mdn-surface-1);
+  border: 1px solid var(--mdn-border);
+  border-radius: var(--mdn-radius-lg);
+}
+
+.mdn-safetystrip__cell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mdn-space-1);
+  min-width: 96px;
+}
+
+.mdn-safetystrip__label-row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.mdn-safetystrip__label {
+  white-space: nowrap;
+}

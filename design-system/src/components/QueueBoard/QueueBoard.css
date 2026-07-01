@@ -1,0 +1,85 @@
+.mdn-board {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(216px, 1fr);
+  gap: var(--mdn-space-3);
+  overflow-x: auto;
+  padding-bottom: var(--mdn-space-2);
+}
+
+.mdn-board__col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mdn-space-3);
+  background: var(--mdn-bg-alt);
+  border: 1px solid var(--mdn-border);
+  border-radius: var(--mdn-radius-md);
+  padding: var(--mdn-space-3);
+  min-height: 120px;
+}
+
+.mdn-board__colhead {
+  display: flex;
+  align-items: center;
+  gap: var(--mdn-space-2);
+}
+.mdn-board__coldot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+.mdn-board__coldot[data-state="queued"] {
+  background: var(--mdn-state-queued);
+}
+.mdn-board__coldot[data-state="claimed"] {
+  background: var(--mdn-state-claimed);
+}
+.mdn-board__coldot[data-state="making"] {
+  background: var(--mdn-state-making);
+}
+.mdn-board__coldot[data-state="checking"] {
+  background: var(--mdn-state-checking);
+}
+.mdn-board__coldot[data-state="merge_ready"] {
+  background: var(--mdn-state-merge_ready);
+}
+.mdn-board__coldot[data-state="done"] {
+  background: var(--mdn-state-done);
+}
+.mdn-board__coldot[data-state="escalated"] {
+  background: var(--mdn-state-escalated);
+}
+.mdn-board__collabel {
+  flex: 1 1 auto;
+  font-family: var(--mdn-font-mono);
+  font-size: var(--mdn-text-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mdn-text-3);
+}
+.mdn-board__colcount {
+  font-family: var(--mdn-font-mono);
+  font-size: var(--mdn-text-xs);
+  color: var(--mdn-text-2);
+  background: var(--mdn-surface-2);
+  border-radius: var(--mdn-radius-pill);
+  padding: 1px 8px;
+}
+.mdn-board__col--escalated {
+  border-color: rgba(242, 104, 95, 0.28);
+}
+
+.mdn-board__colbody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mdn-space-2);
+}
+.mdn-board__empty {
+  margin: 0;
+  padding: var(--mdn-space-3);
+  text-align: center;
+  font-family: var(--mdn-font-mono);
+  font-size: var(--mdn-text-xs);
+  color: var(--mdn-faint);
+}

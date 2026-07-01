@@ -1,0 +1,101 @@
+.mdn-gatepanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mdn-space-3);
+  width: 100%;
+}
+
+.mdn-gatepanel__title {
+  margin: 0;
+  font-size: var(--mdn-text-base);
+}
+
+.mdn-gatepanel__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--mdn-space-2);
+}
+
+.mdn-gatepanel__row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mdn-space-1);
+  padding: var(--mdn-space-3) var(--mdn-space-4);
+  background: var(--mdn-surface-1);
+  border: 1px solid var(--mdn-border);
+  border-radius: var(--mdn-radius-md);
+  transition: border-color var(--mdn-dur) var(--mdn-ease), background var(--mdn-dur) var(--mdn-ease);
+}
+
+.mdn-gatepanel__row--fail {
+  border-color: rgba(242, 104, 95, 0.32);
+}
+
+.mdn-gatepanel__row--flaky {
+  border-color: rgba(245, 177, 74, 0.32);
+}
+
+.mdn-gatepanel__main {
+  display: flex;
+  align-items: center;
+  gap: var(--mdn-space-3);
+  min-width: 0;
+}
+
+.mdn-gatepanel__icon {
+  flex: none;
+}
+
+.mdn-gatepanel__icon--pass {
+  color: var(--mdn-primary);
+}
+.mdn-gatepanel__icon--fail {
+  color: var(--mdn-danger);
+}
+.mdn-gatepanel__icon--flaky {
+  color: var(--mdn-owner);
+}
+.mdn-gatepanel__icon--running {
+  color: var(--mdn-info);
+}
+
+.mdn-gatepanel__name {
+  color: var(--mdn-heading);
+  font-size: var(--mdn-text-md);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mdn-gatepanel__required {
+  flex: none;
+  font-family: var(--mdn-font-mono);
+  font-size: var(--mdn-text-xs);
+  letter-spacing: var(--mdn-tracking-label);
+  text-transform: uppercase;
+  color: var(--mdn-faint);
+  border: 1px solid var(--mdn-border);
+  border-radius: var(--mdn-radius-xs);
+  padding: 2px 7px;
+}
+
+.mdn-gatepanel__required--on {
+  color: var(--mdn-owner);
+  border-color: rgba(245, 177, 74, 0.32);
+  background: var(--mdn-owner-soft);
+}
+
+.mdn-gatepanel__duration {
+  flex: none;
+  font-size: var(--mdn-text-sm);
+  color: var(--mdn-text-2);
+}
+
+.mdn-gatepanel__detail {
+  margin: 0;
+  padding-left: calc(16px + var(--mdn-space-3));
+  font-size: var(--mdn-text-sm);
+}

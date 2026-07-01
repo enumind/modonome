@@ -1,0 +1,10 @@
+.mdn-confirm__body {
+  font-size: var(--mdn-text-md);
+  color: var(--mdn-text-2);
+  line-height: 1.55;
+}
+.mdn-confirm__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--mdn-space-3);
+}

@@ -1,0 +1,62 @@
+.mdn-statuspill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mdn-space-1);
+  font-family: var(--mdn-font-mono);
+  font-weight: 500;
+  border: 1px solid transparent;
+  border-radius: var(--mdn-radius-pill);
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.mdn-statuspill--sm {
+  font-size: var(--mdn-text-xs);
+  padding: 3px 9px;
+}
+.mdn-statuspill--md {
+  font-size: var(--mdn-text-sm);
+  padding: 5px 12px;
+}
+
+.mdn-statuspill__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+
+.mdn-statuspill__label {
+  letter-spacing: 0.01em;
+}
+
+.mdn-statuspill--neutral {
+  color: var(--mdn-muted);
+  background: var(--mdn-surface-2);
+  border-color: var(--mdn-border);
+}
+
+.mdn-statuspill--ok {
+  color: var(--mdn-primary);
+  background: var(--mdn-primary-soft);
+  border-color: var(--mdn-border-teal);
+}
+
+.mdn-statuspill--info {
+  color: var(--mdn-info);
+  background: var(--mdn-info-soft);
+  border-color: rgba(124, 196, 255, 0.3);
+}
+
+.mdn-statuspill--attention {
+  color: var(--mdn-owner);
+  background: var(--mdn-owner-soft);
+  border-color: rgba(245, 177, 74, 0.32);
+}
+
+.mdn-statuspill--blocked {
+  color: var(--mdn-danger);
+  background: var(--mdn-danger-soft);
+  border-color: rgba(242, 104, 95, 0.32);
+}
