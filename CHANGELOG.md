@@ -27,6 +27,11 @@ or CVE identifier where one exists.
   the first snapshot, installs a host pre-commit hook that keeps it fresh, and drops an
   `AGENTS.md` pointer when the host has none. `--no-snapshot` opts out; existing host files
   are never overwritten.
+- Extraction now ships dependency-free heuristic adapters for JavaScript/TypeScript, Python,
+  Go, Java, and a generic fallback, each locked by golden tests. An optional tree-sitter parser
+  (`--parser tree-sitter` or `snapshot.parser`) loads lazily only when installed and falls back
+  to the heuristic with a warning otherwise, so the core stays zero-dependency. The committed
+  snapshot always uses the heuristic default to stay reproducible across contributors.
 
 ### AgentProof expanded to 25 scenarios (HARDENED)
 

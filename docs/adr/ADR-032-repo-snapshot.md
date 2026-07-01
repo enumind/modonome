@@ -69,7 +69,13 @@ an MCP tool `modonome_snapshot` that returns a tier or a verify report on demand
   (`scaffold --write`) turns consumption on by default: it generates the first snapshot,
   installs a host pre-commit hook, and adds an `AGENTS.md` pointer when none exists, never
   overwriting host files.
-- Later phases add multi-language adapters, an optional tree-sitter adapter, Tier 2 deep
-  shards, signed delta packets, graph-backed snapshot queries, and a git-churn attention
-  overlay surfaced on demand rather than committed. These are deferred so this change stays
-  deterministic and low-risk.
+- Dependency-free heuristic adapters cover JavaScript/TypeScript, Python, Go, Java, and a
+  generic fallback, each locked by golden tests. An optional tree-sitter parser is available
+  via `--parser tree-sitter` or `snapshot.parser`: it is loaded lazily and only when installed,
+  falls back to the heuristic with a warning otherwise, and is never a hard dependency. Because
+  the parser choice changes extraction output, the committed snapshot always uses the heuristic
+  default so it stays reproducible across contributors; tree-sitter is for on-demand richer
+  reads or a host that standardizes on it.
+- Later phases add Tier 2 deep shards, signed delta packets, graph-backed snapshot queries,
+  and a git-churn attention overlay surfaced on demand rather than committed. These are
+  deferred so this change stays deterministic and low-risk.

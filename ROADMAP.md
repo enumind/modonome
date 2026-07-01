@@ -10,9 +10,10 @@ shift. Each item lands only when its own gates are green.
 - Anti-gaming ratchet, config and packet validators, drift guard.
 - Two runnable examples with captured dry-run transcripts.
 - Repo snapshot utility: tiered, Merkle-verified, dependency-free repo map for LLM context
-  with a CI freshness check, incremental regeneration, and adoption-default consumption
-  (ADR-032). Multi-language adapters, an optional tree-sitter adapter, Tier 2 deep shards,
-  signed delta packets, and graph-backed queries follow in later milestones.
+  with a CI freshness check, incremental regeneration, adoption-default consumption, heuristic
+  adapters for JavaScript/TypeScript, Python, Go, and Java, and an optional tree-sitter parser
+  (ADR-032). Tier 2 deep shards, signed delta packets, and graph-backed queries follow in
+  later milestones.
 - Safe defaults throughout. Cross-repo network ships off and advisory.
 
 ## Milestone 2 · Cross-repo knowledge network GA

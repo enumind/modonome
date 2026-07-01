@@ -36,6 +36,8 @@ share_repo_identifiers_by_default: false
 
 # Snapshot utility. ci_mode is one of warn, fail, disabled (quote-free values are
 # fine; disabled is used instead of off so YAML does not read it as a boolean).
+# parser is heuristic (default, zero-dependency) or tree-sitter (optional, loaded
+# only if installed). Keep the committed snapshot on one parser across contributors.
 snapshot:
   ci_mode: warn
   sign: false

@@ -5,6 +5,9 @@
 // registerAdapter without any change to the core pipeline.
 import { extname } from "node:path";
 import { adapter as jsTs } from "./js-ts.mjs";
+import { adapter as python } from "./python.mjs";
+import { adapter as go } from "./go.mjs";
+import { adapter as java } from "./java.mjs";
 import { adapter as generic } from "./generic.mjs";
 
 const registry = new Map();
@@ -14,6 +17,9 @@ export function registerAdapter(adapter) {
 }
 
 registerAdapter(jsTs);
+registerAdapter(python);
+registerAdapter(go);
+registerAdapter(java);
 
 // Resolve the adapter for a path by extension, defaulting to the generic fallback.
 export function getAdapter(relPath) {

@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:49aaedaecc14df8f36dcdf1b69d652289a24a5e946df8f417a1eae22e01ca656
-Files: 466  Bytes: 1420464  Map tokens: 37570/120000
+Merkle root: sha256:892274a608ce7ce8e17f100d4715098377d86180fad9838cfa12c83d1f2f0423
+Files: 471  Bytes: 1438238  Map tokens: 39384/120000
 
 ## Modules
 
@@ -106,8 +106,8 @@ Files: 466  Bytes: 1420464  Map tokens: 37570/120000
 - examples/node-typescript/README.md [F:d52b08ebeb]: Example: Node and TypeScript service
 - examples/node-typescript/src/checkout.ts [F:93f0f5d3de]: type Card
 - examples/python-service/README.md [F:ae227d695d]: Example: Python service
-- examples/python-service/app/orders.py [F:7ccad64380]: def total
-- examples/python-service/tests/test_orders.py [F:2c2cc77861]: def test_total_sums_prices
+- examples/python-service/app/orders.py [F:7ccad64380]: Apply a percentage discount to a list of items. Args: items: List of dicts with "price" key discount_percent: Discount percentage (0-100) Returns: Total after d
+- examples/python-service/tests/test_orders.py [F:2c2cc77861]: Test discount with 0% - should return full amount. Note: This covers only the zero-discount case. The function should be tested with non-zero discounts (10%, 50
 - fixtures/evidence-tampered.md [F:fdaf1308e4]: RELEASE-EVIDENCE
 - fixtures/negative-controls/app-syntax-error.js [F:a1411f1423]: Negative control: intentional syntax error in example app
 - fixtures/portability/prompt-injection-host/docs/guide.md [F:6fdd929a92]: Host Documentation
@@ -151,8 +151,12 @@ Files: 466  Bytes: 1420464  Map tokens: 37570/120000
 - scripts/lib/graph.mjs [F:f51cba9beb]: isCyclic(adjacency) -> { cyclic: bool, cycle: [...] } Detects whether the graph contains a cycle. When a cycle is found, `cycle` holds the nodes involved in the
 - scripts/lib/jsonschema.mjs [F:34cb2b6c48]: A small, dependency-free JSON Schema validator.
 - scripts/lib/lang-adapters/generic.mjs [F:594f505f11]: Fallback extractor for languages without a dedicated adapter. It captures common
+- scripts/lib/lang-adapters/go.mjs [F:ffe5c1269b]: Dependency-free signature extractor for Go. It captures top-level func (including methods with a receiver), type, const, and var declarations, their preceding l
 - scripts/lib/lang-adapters/index.mjs [F:2554ddd30c]: Resolve the adapter for a path by extension, defaulting to the generic fallback.
+- scripts/lib/lang-adapters/java.mjs [F:c598a2d684]: Dependency-free signature extractor for Java. It captures type declarations
 - scripts/lib/lang-adapters/js-ts.mjs [F:36419aa427]: Dependency-free signature extractor for JavaScript and TypeScript. It scans top
+- scripts/lib/lang-adapters/python.mjs [F:3213d03b72]: Dependency-free signature extractor for Python. It captures top-level def and class declarations (async included), their leading triple-quoted docstring, and im
+- scripts/lib/lang-adapters/tree-sitter.mjs [F:cecdb96382]: Attempt to register tree-sitter adapters. `register` is the registry's registerAdapter. Returns true when at least one grammar was registered.
 - scripts/lib/learnings.mjs [F:4ebb5aa8a0]: Extract the first fenced json block that appears after the "## Promoted" heading.
 - scripts/lib/merkle.mjs [F:2b9c43b0ca]: Hash raw file bytes (Buffer or string) into a prefixed digest.
 - scripts/lib/packet-id.mjs [F:12c7a4e461]: Content-addressed packet identity (ADR-016). The id is sha256 over the JCS of the
@@ -212,6 +216,7 @@ Files: 466  Bytes: 1420464  Map tokens: 37570/120000
 - tests/scaffold-adoption.test.mjs [F:de5ebbf586]: function gitRepo
 - tests/self-application.test.mjs [F:48355ccf4d]: Build a minimal passing temp repo and return the path. Caller must rmSync(tmp, {recursive:true}).
 - tests/snapshot-cli.test.mjs [F:9f36b3ef29]: function run
+- tests/snapshot-golden.test.mjs [F:2a74ae3f05]: function names
 - tests/snapshot-incremental.test.mjs [F:4637e1fecb]: function repo
 - tests/tick.test.mjs [F:baf7641a01]: function tmp
 - tests/ws-b-harness.test.mjs [F:1bcaaff9eb]: A config fixture with distinct maker/checker models and a models registry.
@@ -285,9 +290,12 @@ Files: 466  Bytes: 1420464  Map tokens: 37570/120000
 - S:781c4112a2 const PACKET_DOMAIN `export const PACKET_DOMAIN = 'modonome.knowledge-packet.v1\n';` L22 : Domain separation tag binds a signature to this packet type and version so a signature over one structure cannot be replayed as another.
 - S:210b0c6999 function signedBytes `export function signedBytes(packet)` L26 : The exact bytes a packet signature covers: the domain tag followed by the JCS of the packet with its signature object removed.
 ### scripts/lib/lang-adapters/index.mjs [F:2554ddd30c]
-- S:4df7a92e8e function registerAdapter `export function registerAdapter(adapter)` L12
-- S:a07487517b function getAdapter `export function getAdapter(relPath)` L19 : Resolve the adapter for a path by extension, defaulting to the generic fallback.
-- S:ec18e42e1a function extractFile `export function extractFile(relPath, source)` L26 : Extract from one file, guarding against any adapter error so a single bad file never aborts a whole snapshot.
+- S:4df7a92e8e function registerAdapter `export function registerAdapter(adapter)` L15
+- S:a07487517b function getAdapter `export function getAdapter(relPath)` L25 : Resolve the adapter for a path by extension, defaulting to the generic fallback.
+- S:ec18e42e1a function extractFile `export function extractFile(relPath, source)` L32 : Extract from one file, guarding against any adapter error so a single bad file never aborts a whole snapshot.
+### tests/snapshot-golden.test.mjs [F:2a74ae3f05]
+- S:d595535449 function names `function names(result)` L9
+- S:a5baaff840 function modules `function modules(result)` L12
 ### tests/ws-e-ratchet-languages.test.mjs [F:2b49c74e74]
 - S:b9942b1651 function runRatchet `function runRatchet(diffFile)` L11
 ### scripts/lib/merkle.mjs [F:2b9c43b0ca]
@@ -296,8 +304,8 @@ Files: 466  Bytes: 1420464  Map tokens: 37570/120000
 - S:a320bea4da function buildMerkleTree `export function buildMerkleTree(entries)` L21 : Build a Merkle tree from file leaves. `entries` is [{ relPath, hash }]. Returns { root, nodes } where nodes maps every directory path (root is ".") to its hash.
 - S:85c852fd1a function diffMerkle `export function diffMerkle(prevFiles, nextFiles)` L52 : File-level diff between two { relPath -> hash } maps. Returns sorted lists of added, removed, and changed paths. Directory node hashes (from buildMerkleTree) let a caller skip re-extracting an unchang
 ### examples/python-service/tests/test_orders.py [F:2c2cc77861]
-- S:ad4edf7e81 def test_total_sums_prices `def test_total_sums_prices():` L4
-- S:54d2db3f99 def test_apply_discount_zero_percent `def test_apply_discount_zero_percent():` L8
+- S:ad4edf7e81 function test_total_sums_prices `def test_total_sums_prices()` L4
+- S:54d2db3f99 function test_apply_discount_zero_percent `def test_apply_discount_zero_percent()` L8 : Test discount with 0% - should return full amount. Note: This covers only the zero-discount case. The function should be tested with non-zero discounts (10%, 50%, etc.) to verify correct discount calc
 ### scripts/check-portability.mjs [F:2d4c555ba1]
 - S:93fa315ac7 function fail `function fail(code, message)` L41
 - S:8252cf2ba8 function warn `function warn(code, message)` L45
@@ -314,6 +322,12 @@ Files: 466  Bytes: 1420464  Map tokens: 37570/120000
 - S:43f1c85009 function renderMarkdown `export function renderMarkdown(evidence)` L107
 ### scripts/agent/resolve-role.mjs [F:304ce7b89d]
 - S:0713a27a1f function resolveRole `export function resolveRole(cfg, role)` L30 : Resolve runner and model settings for a named role. * * @param {object} cfg - Parsed config object (output of parseFlatYaml or loadConfig). * @param {string} role - One of "maker", "checker", "self-go
+### scripts/lib/lang-adapters/python.mjs [F:3213d03b72]
+- S:618d055a7c function clean `function clean(text)` L5 : Dependency-free signature extractor for Python. It captures top-level def and class declarations (async included), their leading triple-quoted docstring, and import edges. Bodies are never included. e
+- S:37c1996b57 function signature `function signature(line)` L10
+- S:1bafda617f function docBelow `function docBelow(lines, defIndex)` L15 : The docstring is the first triple-quoted string on the line(s) after a def/class.
+- S:82727ee8e7 function collectImports `function collectImports(trimmed, lineNo, out)` L35
+- S:aaa1eac555 const adapter `export const adapter =` L47
 ### scripts/lib/jsonschema.mjs [F:34cb2b6c48]
 - S:f794e6adf4 function typeOf `function typeOf(value)` L6
 - S:0768a4cf0f function matchesType `function matchesType(value, type)` L13
@@ -420,8 +434,8 @@ Files: 466  Bytes: 1420464  Map tokens: 37570/120000
 ### scripts/sign-packet.mjs [F:7b3e38c9a6]
 - S:8ec4bd5dec function signPacket `export function signPacket(packet, privateKeyObject, { keyAlias, signedAt })` L19 : Pure: attach a signature object to a packet using the given private key.
 ### examples/python-service/app/orders.py [F:7ccad64380]
-- S:41443bba10 def total `def total(items):` L1
-- S:05fcfe1c5b def apply_discount `def apply_discount(items, discount_percent):` L5
+- S:41443bba10 function total `def total(items)` L1
+- S:05fcfe1c5b function apply_discount `def apply_discount(items, discount_percent)` L5 : Apply a percentage discount to a list of items. Args: items: List of dicts with "price" key discount_percent: Discount percentage (0-100) Returns: Total after discount
 ### scripts/check-drift.mjs [F:87c30bdb4c]
 - S:6b5288f35f function coreLevers `function coreLevers()` L16
 - S:b4e887ed4f function schemaLevers `function schemaLevers()` L25
@@ -483,20 +497,21 @@ Files: 466  Bytes: 1420464  Map tokens: 37570/120000
 - S:ad93bbf998 function run `function run(args, cwd)` L14
 - S:107eb40a1d function makeRepo `function makeRepo()` L18
 ### scripts/snapshot.mjs [F:a0d489df6d]
-- S:996743005b function flagValue `function flagValue(argv, name)` L26
-- S:59ba63dbab function readConfig `function readConfig(root)` L31
-- S:3c2bad87be function snapshotDir `function snapshotDir(root) { return join(root, ".modonome", "snapshot"); }` L37
-- S:5353762af1 function loadCommittedSignature `function loadCommittedSignature(root)` L39
-- S:d5719588cb function llmsText `function llmsText(signature)` L45
-- S:88bd705d3f function badgeJson `function badgeJson(signature, map)` L59
-- S:bc3262b829 function writeArtifact `function writeArtifact(root, built)` L68
-- S:3466f40801 function buildOptions `function buildOptions(root, argv, now)` L78
-- S:6584162247 function nowIso `function nowIso() { return new Date().toISOString(); }` L92
-- S:383c03d511 function incrementalInputs `function incrementalInputs(root, argv)` L97 : Resolve incremental build inputs. --full forces a from-scratch rebuild. Otherwise load the cache and ask git what changed; a missing cache or unusable git yields a full rebuild that produces identical
-- S:df5cb6eb12 function recomputeMerkle `function recomputeMerkle(root)` L105 : Recompute file hashes and the Merkle root directly from disk. Used by --verify.
-- S:2a5511d42c function gitDelta `function gitDelta(root, ref)` L111
-- S:2ce7a5bbe7 function positional `function positional(argv)` L131
-- S:68308360b1 function main `function main(argv)` L141
+- S:996743005b function flagValue `function flagValue(argv, name)` L28
+- S:59ba63dbab function readConfig `function readConfig(root)` L33
+- S:3c2bad87be function snapshotDir `function snapshotDir(root) { return join(root, ".modonome", "snapshot"); }` L39
+- S:5353762af1 function loadCommittedSignature `function loadCommittedSignature(root)` L41
+- S:d5719588cb function llmsText `function llmsText(signature)` L47
+- S:88bd705d3f function badgeJson `function badgeJson(signature, map)` L61
+- S:bc3262b829 function writeArtifact `function writeArtifact(root, built)` L70
+- S:3466f40801 function buildOptions `function buildOptions(root, argv, now)` L80
+- S:6584162247 function nowIso `function nowIso() { return new Date().toISOString(); }` L94
+- S:383c03d511 function incrementalInputs `function incrementalInputs(root, argv)` L99 : Resolve incremental build inputs. --full forces a from-scratch rebuild. Otherwise load the cache and ask git what changed; a missing cache or unusable git yields a full rebuild that produces identical
+- S:df5cb6eb12 function recomputeMerkle `function recomputeMerkle(root)` L107 : Recompute file hashes and the Merkle root directly from disk. Used by --verify.
+- S:2a5511d42c function gitDelta `function gitDelta(root, ref)` L113
+- S:2ce7a5bbe7 function positional `function positional(argv)` L133
+- S:ecd0da924a function maybeRegisterParser `async function maybeRegisterParser(root, argv)` L145 : Register the tree-sitter parser when requested via --parser or config, with a graceful fallback to the heuristic default when tree-sitter is not installed.
+- S:68308360b1 function main `async function main(argv)` L153
 ### fixtures/negative-controls/app-syntax-error.js [F:a1411f1423]
 - S:7369c62b84 class OrderServiceBroken `export class OrderServiceBroken` L5
 ### tests/mcp-compliance.test.mjs [F:a167609a41]
@@ -553,6 +568,11 @@ Files: 466  Bytes: 1420464  Map tokens: 37570/120000
 - S:3ad956fb93 function configDefaults `function configDefaults(rel)` L32
 - S:1e5dabea9c function hasHeading `function hasHeading(text, section)` L39 : Check that a section appears as a Markdown heading (h1-h6), so a one-line ADR with the section words buried in prose cannot game the gate.
 - S:6b1894b02c function findPromotionAdr `function findPromotionAdr(flag)` L43
+### scripts/lib/lang-adapters/java.mjs [F:c598a2d684]
+- S:03b490fb81 function clean `function clean(text)` L7
+- S:ec2e53ab2e function signature `function signature(line)` L12
+- S:ebdb053467 function docAbove `function docAbove(lines, index)` L17
+- S:df1c5c3628 const adapter `export const adapter =` L33
 ### scripts/audit-learnings.mjs [F:c9493b5275]
 - S:9299cd9a70 function matches `function matches(l)` L29
 ### scripts/check-style.mjs [F:ca0833ac73]
@@ -565,6 +585,9 @@ Files: 466  Bytes: 1420464  Map tokens: 37570/120000
 - S:298b204d13 function runPreflight `function runPreflight(fixtureName)` L22 : Run preflight in --json mode against a fixture. Returns { code, report, raw }. A clean environment is used so the host's own MODONOME_* shell does not leak into the env-pollution check.
 - S:c73cab5b60 function ids `function ids(report)` L42
 - S:2ca7aeeeaf function findingsBySeverity `function findingsBySeverity(report, severity)` L46
+### scripts/lib/lang-adapters/tree-sitter.mjs [F:cecdb96382]
+- S:ad7d7732a1 function makeExtract `function makeExtract(Parser, grammar)` L24
+- S:464c90cba5 function registerTreeSitter `export async function registerTreeSitter(register)` L71 : Attempt to register tree-sitter adapters. `register` is the registry's registerAdapter. Returns true when at least one grammar was registered.
 ### scripts/transition-work-item.mjs [F:d135cffeaa]
 - S:8d1ca74a54 function leaseHolder `function leaseHolder(item)` L22 : A lease is "live" if it has an owner and an unexpired lease_expires_at. The lease holder is recorded as lease_owner (the field this swap writes) or, for older items, the schema's `owner` field; either
 - S:87ca9c146a function leaseIsLive `function leaseIsLive(item, now)` L26
@@ -641,6 +664,11 @@ Files: 466  Bytes: 1420464  Map tokens: 37570/120000
 - S:cdac115f81 function runPortabilityCheck `function runPortabilityCheck(fixturePath, opts = {})` L46 : Run check-portability.mjs against a fixture directory.
 ### examples/demo-app/src/PaymentProcessor.js [F:ff3aef693f]
 - S:9dee57c7c2 class PaymentProcessor `export class PaymentProcessor` L5
+### scripts/lib/lang-adapters/go.mjs [F:ffe5c1269b]
+- S:e7e0d4979a function clean `function clean(text)` L5 : Dependency-free signature extractor for Go. It captures top-level func (including methods with a receiver), type, const, and var declarations, their preceding line comments, and import edges (single a
+- S:a9f138bd93 function signature `function signature(line)` L10
+- S:f9d6a590e4 function docAbove `function docAbove(lines, index)` L14
+- S:28d1266e44 const adapter `export const adapter =` L24
 
 ## Import edges
 
@@ -658,8 +686,13 @@ Files: 466  Bytes: 1420464  Map tokens: 37570/120000
 - tests/ws-b-harness.test.mjs -> scripts/validate-config.mjs
 - tests/ws-b-harness.test.mjs -> scripts/agent/run-cycle.mjs
 - tests/ws-b-harness.test.mjs -> scripts/agent/render-prompt.mjs
+- scripts/lib/lang-adapters/index.mjs -> scripts/lib/lang-adapters/python.mjs
 - scripts/lib/lang-adapters/index.mjs -> scripts/lib/lang-adapters/js-ts.mjs
 - scripts/lib/lang-adapters/index.mjs -> scripts/lib/lang-adapters/generic.mjs
+- scripts/lib/lang-adapters/index.mjs -> scripts/lib/lang-adapters/java.mjs
+- scripts/lib/lang-adapters/index.mjs -> scripts/lib/lang-adapters/go.mjs
+- tests/snapshot-golden.test.mjs -> scripts/lib/lang-adapters/index.mjs
+- tests/snapshot-golden.test.mjs -> scripts/lib/lang-adapters/tree-sitter.mjs
 - scripts/lib/merkle.mjs -> scripts/lib/canonical-json.mjs
 - scripts/check-learning-traceability.mjs -> scripts/lib/learnings.mjs
 - examples/demo-app/tests/PaymentProcessor.test.js -> examples/demo-app/src/PaymentProcessor.js
@@ -718,8 +751,10 @@ Files: 466  Bytes: 1420464  Map tokens: 37570/120000
 - scripts/snapshot.mjs -> scripts/lib/snapshot-cache.mjs
 - scripts/snapshot.mjs -> scripts/lib/yaml-lite.mjs
 - scripts/snapshot.mjs -> scripts/lib/canonical-json.mjs
+- scripts/snapshot.mjs -> scripts/lib/lang-adapters/index.mjs
 - scripts/snapshot.mjs -> scripts/lib/merkle.mjs
 - scripts/snapshot.mjs -> scripts/lib/snapshot-walk.mjs
+- scripts/snapshot.mjs -> scripts/lib/lang-adapters/tree-sitter.mjs
 - scripts/snapshot.mjs -> scripts/lib/snapshot-core.mjs
 - scripts/check-evidence-secrets.mjs -> scripts/lib/secret-patterns.mjs
 - tests/performance.test.mjs -> scripts/validate-knowledge-packet.mjs
@@ -757,54 +792,54 @@ Files: 466  Bytes: 1420464  Map tokens: 37570/120000
 
 ## Attention (centrality + pagerank)
 
-1. scripts/lib/yaml-lite.mjs centrality=12 pagerank=0.014868
-2. scripts/lib/jsonschema.mjs centrality=7 pagerank=0.017567
-3. scripts/lib/canonical-json.mjs centrality=8 pagerank=0.009929
-4. scripts/validate-config.mjs centrality=9 pagerank=0.008289
-5. scripts/lib/learnings.mjs centrality=7 pagerank=0.010813
-6. scripts/lib/snapshot-core.mjs centrality=12 pagerank=0.002702
-7. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.006845
-8. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.009835
-9. scripts/lib/graph.mjs centrality=4 pagerank=0.007732
-10. scripts/validate-work-item.mjs centrality=5 pagerank=0.005656
-11. scripts/agent/run-cycle.mjs centrality=6 pagerank=0.004045
-12. examples/demo-app/src/index.js centrality=6 pagerank=0.001896
-13. scripts/snapshot.mjs centrality=6 pagerank=0.001896
-14. scripts/agent/render-prompt.mjs centrality=3 pagerank=0.004904
-15. scripts/agent/resolve-role.mjs centrality=3 pagerank=0.004904
-16. scripts/verify-packet.mjs centrality=4 pagerank=0.002299
-17. tests/config.test.mjs centrality=4 pagerank=0.001896
-18. tests/packet-signing.test.mjs centrality=4 pagerank=0.001896
-19. scripts/migrate-config.mjs centrality=3 pagerank=0.003105
-20. scripts/lib/branch-name.mjs centrality=2 pagerank=0.004313
-21. scripts/lib/commit-identity.mjs centrality=2 pagerank=0.004313
-22. scripts/lib/run-gate-capped.mjs centrality=2 pagerank=0.004313
-23. scripts/lib/merkle.mjs centrality=3 pagerank=0.002394
-24. examples/demo-app/src/CartService.js centrality=2 pagerank=0.003776
-25. examples/demo-app/src/CheckoutService.js centrality=2 pagerank=0.003776
-26. examples/demo-app/src/InventoryService.js centrality=2 pagerank=0.003776
-27. examples/demo-app/src/NotificationService.js centrality=2 pagerank=0.003776
-28. examples/demo-app/src/OrderService.js centrality=2 pagerank=0.003776
-29. examples/demo-app/src/PaymentProcessor.js centrality=2 pagerank=0.003776
-30. scripts/lib/repo-detect.mjs centrality=2 pagerank=0.003737
-31. scripts/lib/lang-adapters/index.mjs centrality=3 pagerank=0.002126
-32. bin/modonome.mjs centrality=2 pagerank=0.003508
-33. tests/chaos.test.mjs centrality=3 pagerank=0.001896
-34. tests/performance.test.mjs centrality=3 pagerank=0.001896
-35. tests/snapshot-incremental.test.mjs centrality=3 pagerank=0.001896
-36. tests/ws-b-harness.test.mjs centrality=3 pagerank=0.001896
-37. tests/ws-h-config.test.mjs centrality=3 pagerank=0.001896
-38. scripts/lib/snapshot-cache.mjs centrality=2 pagerank=0.002702
-39. scripts/lib/snapshot-walk.mjs centrality=2 pagerank=0.002394
-40. scripts/lib/packet-id.mjs centrality=2 pagerank=0.002299
-41. scripts/sign-packet.mjs centrality=2 pagerank=0.002299
-42. scripts/lib/snapshot-graph.mjs centrality=2 pagerank=0.002126
-43. scripts/lib/snapshot-redact.mjs centrality=2 pagerank=0.002126
-44. scripts/install-hooks.mjs centrality=1 pagerank=0.003508
-45. scripts/transition-work-item.mjs centrality=1 pagerank=0.003508
-46. scripts/build-release-evidence.mjs centrality=2 pagerank=0.001896
-47. scripts/check-drift.mjs centrality=2 pagerank=0.001896
-48. scripts/check-repo-hygiene.mjs centrality=2 pagerank=0.001896
-49. scripts/check-self-application.mjs centrality=2 pagerank=0.001896
-50. scripts/check-work-items.mjs centrality=2 pagerank=0.001896
+1. scripts/lib/yaml-lite.mjs centrality=12 pagerank=0.014622
+2. scripts/lib/jsonschema.mjs centrality=7 pagerank=0.017362
+3. scripts/lib/canonical-json.mjs centrality=8 pagerank=0.00968
+4. scripts/validate-config.mjs centrality=9 pagerank=0.008192
+5. scripts/lib/learnings.mjs centrality=7 pagerank=0.010687
+6. scripts/lib/snapshot-core.mjs centrality=12 pagerank=0.002604
+7. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.006765
+8. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.009715
+9. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.003091
+10. scripts/snapshot.mjs centrality=8 pagerank=0.001874
+11. scripts/lib/graph.mjs centrality=4 pagerank=0.007637
+12. scripts/validate-work-item.mjs centrality=5 pagerank=0.00559
+13. scripts/agent/run-cycle.mjs centrality=6 pagerank=0.003998
+14. examples/demo-app/src/index.js centrality=6 pagerank=0.001874
+15. scripts/agent/render-prompt.mjs centrality=3 pagerank=0.004847
+16. scripts/agent/resolve-role.mjs centrality=3 pagerank=0.004847
+17. scripts/verify-packet.mjs centrality=4 pagerank=0.002272
+18. tests/config.test.mjs centrality=4 pagerank=0.001874
+19. tests/packet-signing.test.mjs centrality=4 pagerank=0.001874
+20. scripts/migrate-config.mjs centrality=3 pagerank=0.003068
+21. scripts/lib/branch-name.mjs centrality=2 pagerank=0.004263
+22. scripts/lib/commit-identity.mjs centrality=2 pagerank=0.004263
+23. scripts/lib/run-gate-capped.mjs centrality=2 pagerank=0.004263
+24. scripts/lib/merkle.mjs centrality=3 pagerank=0.002294
+25. examples/demo-app/src/CartService.js centrality=2 pagerank=0.003732
+26. examples/demo-app/src/CheckoutService.js centrality=2 pagerank=0.003732
+27. examples/demo-app/src/InventoryService.js centrality=2 pagerank=0.003732
+28. examples/demo-app/src/NotificationService.js centrality=2 pagerank=0.003732
+29. examples/demo-app/src/OrderService.js centrality=2 pagerank=0.003732
+30. examples/demo-app/src/PaymentProcessor.js centrality=2 pagerank=0.003732
+31. scripts/lib/repo-detect.mjs centrality=2 pagerank=0.003688
+32. bin/modonome.mjs centrality=2 pagerank=0.003467
+33. tests/chaos.test.mjs centrality=3 pagerank=0.001874
+34. tests/performance.test.mjs centrality=3 pagerank=0.001874
+35. tests/snapshot-incremental.test.mjs centrality=3 pagerank=0.001874
+36. tests/ws-b-harness.test.mjs centrality=3 pagerank=0.001874
+37. tests/ws-h-config.test.mjs centrality=3 pagerank=0.001874
+38. scripts/lib/lang-adapters/tree-sitter.mjs centrality=2 pagerank=0.002869
+39. scripts/lib/snapshot-cache.mjs centrality=2 pagerank=0.002604
+40. scripts/lib/snapshot-walk.mjs centrality=2 pagerank=0.002294
+41. scripts/lib/packet-id.mjs centrality=2 pagerank=0.002272
+42. scripts/sign-packet.mjs centrality=2 pagerank=0.002272
+43. scripts/lib/snapshot-graph.mjs centrality=2 pagerank=0.002095
+44. scripts/lib/snapshot-redact.mjs centrality=2 pagerank=0.002095
+45. scripts/install-hooks.mjs centrality=1 pagerank=0.003467
+46. scripts/transition-work-item.mjs centrality=1 pagerank=0.003467
+47. scripts/build-release-evidence.mjs centrality=2 pagerank=0.001874
+48. scripts/check-drift.mjs centrality=2 pagerank=0.001874
+49. scripts/check-repo-hygiene.mjs centrality=2 pagerank=0.001874
+50. scripts/check-self-application.mjs centrality=2 pagerank=0.001874
 

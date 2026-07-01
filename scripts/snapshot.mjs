@@ -22,6 +22,8 @@ import { buildSnapshot } from "./lib/snapshot-core.mjs";
 import { walkRepo, loadIgnore } from "./lib/snapshot-walk.mjs";
 import { hashFileContent, buildMerkleTree } from "./lib/merkle.mjs";
 import { loadCache, saveCache, changedPaths, gitHead } from "./lib/snapshot-cache.mjs";
+import { registerAdapter } from "./lib/lang-adapters/index.mjs";
+import { registerTreeSitter } from "./lib/lang-adapters/tree-sitter.mjs";
 
 function flagValue(argv, name) {
   const i = argv.indexOf(name);
@@ -138,8 +140,19 @@ function positional(argv) {
   return ".";
 }
 
-function main(argv) {
+// Register the tree-sitter parser when requested via --parser or config, with a
+// graceful fallback to the heuristic default when tree-sitter is not installed.
+async function maybeRegisterParser(root, argv) {
+  const cfg = readConfig(root);
+  const parser = flagValue(argv, "--parser") || (cfg.snapshot && cfg.snapshot.parser) || "heuristic";
+  if (parser !== "tree-sitter") return;
+  const ok = await registerTreeSitter(registerAdapter);
+  if (!ok) console.warn("[warn] tree-sitter not available; using the heuristic parser.");
+}
+
+async function main(argv) {
   const root = positional(argv);
+  await maybeRegisterParser(root, argv);
 
   // --since: print the file-level delta since a git ref. Writes nothing.
   const since = flagValue(argv, "--since");
