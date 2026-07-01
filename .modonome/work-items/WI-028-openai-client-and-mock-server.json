@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "id": "WI-028-openai-client-and-mock-server",
+  "state": "queued",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": true,
+  "allowed_edit_set": [
+    "scripts/agent/openai-client.mjs",
+    "tests/helpers/mock-openai-server.mjs",
+    "tests/openai-client.test.mjs"
+  ],
+  "gates": [
+    "node --test tests/openai-client.test.mjs",
+    "node scripts/check-style.mjs .",
+    "npm run verify"
+  ],
+  "queued_at": "2026-07-01"
+}

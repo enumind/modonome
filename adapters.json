@@ -1,0 +1,4 @@
+{
+  "comment": "Reused external OSS components and the boundary each runs behind (ADR-032). No tool is adopted until its integration PR lands, so this list ships empty. Every entry must be MIT-category permissive (Apache-2.0 needs an owner adr note) and run at a process, sidecar, or ci-native boundary. Never an npm runtime dependency.",
+  "adapters": []
+}

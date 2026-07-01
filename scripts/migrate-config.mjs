@@ -52,6 +52,10 @@ export const SAFE_DEFAULTS = {
     "claude-haiku-4-5": { provider: "anthropic" },
     "local-default": { provider: "local", base_url: "http://mac-mini.local:11434" },
   },
+  // Provider registry override/extension (WI-026). Empty by default: the built-in
+  // registry in scripts/agent/providers.mjs covers anthropic/local/github-models/
+  // openai-compatible without any config entry.
+  providers: {},
 };
 
 export function migrate(cfg) {

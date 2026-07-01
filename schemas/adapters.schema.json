@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://modonome.com/schemas/adapters.schema.json",
+  "title": "Modonome OSS adapter manifest",
+  "description": "Declares every reused external OSS component and the boundary it runs behind (ADR-032).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["adapters"],
+  "properties": {
+    "comment": { "type": "string" },
+    "adapters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "license", "boundary", "version"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "license": { "type": "string", "minLength": 1 },
+          "boundary": { "type": "string", "enum": ["process", "sidecar", "ci-native"] },
+          "version": { "type": "string", "minLength": 1 },
+          "url": { "type": "string" },
+          "adr": { "type": "string" }
+        }
+      }
+    }
+  }
+}

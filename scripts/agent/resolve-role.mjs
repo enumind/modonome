@@ -8,6 +8,8 @@
 //   model:  role-specific hosted Claude model
 //   All other fields fall back to the container runner or a no-op value.
 
+import { resolveProvider } from "./providers.mjs";
+
 const ROLE_DEFAULTS = {
   maker: { runner: "container", model: "claude-sonnet-4-6" },
   checker: { runner: "container", model: "claude-opus-4-8" },
@@ -25,7 +27,8 @@ const RUNNER_DEFAULTS = {
  * @param {object} cfg - Parsed config object (output of parseFlatYaml or loadConfig).
  * @param {string} role - One of "maker", "checker", "self-govern".
  * @returns {{ runner: string, runnerLabels: string[], cliPath: string,
- *             model: string, modelProvider: string, modelBaseUrl: string|undefined }}
+ *             model: string, modelProvider: string, modelBaseUrl: string|undefined,
+ *             transport: string, costClass: string, authEnv: string|null }}
  */
 export function resolveRole(cfg, role) {
   const roleDefaults = ROLE_DEFAULTS[role] ?? { runner: "container", model: "claude-sonnet-4-6" };
@@ -43,7 +46,11 @@ export function resolveRole(cfg, role) {
   const modelProvider = modelCfg.provider ?? "anthropic";
   const modelBaseUrl = modelCfg.base_url;
 
-  return { runner, runnerLabels, cliPath, model, modelProvider, modelBaseUrl };
+  // Cost classification: the registry decides transport and cost class, so the
+  // budget gate can be repriced by provider instead of a hard-coded "local" check.
+  const { transport, costClass, authEnv } = resolveProvider(modelProvider, cfg.providers);
+
+  return { runner, runnerLabels, cliPath, model, modelProvider, modelBaseUrl, transport, costClass, authEnv };
 }
 
 // Self-test: run with --self-test to verify basic behavior without external deps.
@@ -70,6 +77,8 @@ if (process.argv.includes("--self-test")) {
   console.assert(maker.model === "claude-sonnet-4-6", "maker model");
   console.assert(maker.modelProvider === "anthropic", "maker provider");
   console.assert(maker.modelBaseUrl === undefined, "maker no base_url");
+  console.assert(maker.costClass === "paid", "maker cost class");
+  console.assert(maker.transport === "anthropic-cli", "maker transport");
 
   const selfGovern = resolveRole(cfg, "self-govern");
   console.assert(selfGovern.runner === "local", "self-govern runner");
@@ -77,6 +86,7 @@ if (process.argv.includes("--self-test")) {
   console.assert(selfGovern.modelProvider === "local", "self-govern provider");
   console.assert(selfGovern.modelBaseUrl === "http://mac-mini.local:11434", "self-govern base_url");
   console.assert(selfGovern.runnerLabels.includes("mac-mini"), "self-govern labels");
+  console.assert(selfGovern.costClass === "local", "self-govern cost class");
 
   // Fallback when no config provided.
   const bare = resolveRole({}, "checker");

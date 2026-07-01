@@ -75,6 +75,18 @@ expand the engine's authority and attack surface.
 
 ---
 
+## Autonomy epic: governed autonomy on free models
+
+Tracked in `docs/autonomy-plan.md` as a session-independent plan, materialized into the
+work-item queue as `WI-026` through `WI-040`. The epic makes the self-govern loop run real,
+gated work on free or local models at zero spend by default, with frontier paid models as a
+configurable opt-in. It advances Milestone 2 (impact measurement), Milestone 5 (priority
+scoring and the envisioner path), and Milestone 6 (checker telemetry, prompt behavioral
+regression, and self-application). Each work item lands only when its own gates are green,
+and protected-path items stop at owner review.
+
+---
+
 ## Research Direction: Agentic Governance Mesh (Milestones 7+)
 
 **Status:** Exploratory research, not a committed roadmap. See `docs/research/agentic-governance-mesh/`
