@@ -2,13 +2,18 @@
 /**
  * Modonome MCP server (MCP 1.0, stdio transport).
  *
- * Exposes four tools so any MCP-compatible harness can call governance
- * controls directly without shelling out:
+ * Exposes governance and compliance tools so any MCP-compatible harness can call
+ * them directly without shelling out:
  *
  *   modonome_ratchet        : run the anti-gaming ratchet on a diff string
  *   modonome_validate_config : validate a config file or inline YAML/JSON
  *   modonome_validate_work_item : validate a work item JSON object
  *   modonome_status         : return the current governance posture of a repo
+ *   modonome_compliance     : return a read-only OpenSSF, SLSA, and NIST evidence pack
+ *   modonome_verify_attestation : verify a signed knowledge packet against the allowlist
+ *
+ * Tools are read-only or validation-only and inherit the caller's scope (ADR-009);
+ * none elevate privileges or arm the engine.
  *
  * Usage:
  *   node scripts/mcp-server.mjs
@@ -99,6 +104,43 @@ const TOOLS = [
         repo_path: {
           type: "string",
           description: "Absolute path to the repository root. Defaults to the current working directory.",
+        },
+      },
+    },
+  },
+  {
+    name: "modonome_compliance",
+    description:
+      "Return a read-only compliance evidence pack for a repository, mapping observed facts (license, security policy, CI, tests, coverage, provenance, dependency monitoring, and more) to OpenSSF Best Practices, SLSA, and NIST AI RMF criteria. Changes nothing.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        repo_path: {
+          type: "string",
+          description: "Absolute path to the repository root. Defaults to the current working directory.",
+        },
+      },
+    },
+  },
+  {
+    name: "modonome_verify_attestation",
+    description:
+      "Verify a signed knowledge packet against a peer-key allowlist. Returns ok and the signing alias on success, or a reason on failure. Fails closed when the signature is absent, the key is revoked or out of window, the embedded key does not match the allowlist, or the bytes do not verify.",
+    inputSchema: {
+      type: "object",
+      required: ["packet"],
+      properties: {
+        packet: {
+          type: "object",
+          description: "The knowledge packet object, including its signature.",
+        },
+        peer_keys: {
+          type: "object",
+          description: "The peer-key allowlist object. If omitted, .modonome/peer-keys.json under repo_path is used.",
+        },
+        repo_path: {
+          type: "string",
+          description: "Repository root used to locate .modonome/peer-keys.json when peer_keys is omitted.",
         },
       },
     },
@@ -259,6 +301,32 @@ async function toolStatus(args) {
   };
 }
 
+async function toolCompliance(args) {
+  const repoPath = resolve(String(args.repo_path || process.cwd()));
+  if (!existsSync(repoPath)) {
+    return { error: "repo_path does not exist." };
+  }
+  const { buildEvidence } = await import(join(here, "build-compliance-evidence.mjs"));
+  return buildEvidence(repoPath, new Date().toISOString());
+}
+
+async function toolVerifyAttestation(args) {
+  if (!args.packet || typeof args.packet !== "object") {
+    return { ok: false, reason: "packet object is required." };
+  }
+  let peerKeys = args.peer_keys;
+  if (!peerKeys) {
+    const repoPath = resolve(String(args.repo_path || process.cwd()));
+    const keysPath = join(repoPath, ".modonome", "peer-keys.json");
+    if (!existsSync(keysPath)) {
+      return { ok: false, reason: "no peer_keys provided and no .modonome/peer-keys.json found." };
+    }
+    peerKeys = JSON.parse(readFileSync(keysPath, "utf8"));
+  }
+  const { verifyPacket } = await import(join(here, "verify-packet.mjs"));
+  return verifyPacket(args.packet, peerKeys);
+}
+
 // ---------------------------------------------------------------------------
 // JSON-RPC 2.0 / MCP 1.0 protocol handler
 // ---------------------------------------------------------------------------
@@ -305,6 +373,8 @@ async function handleRequest(req) {
       else if (name === "modonome_validate_config") result = await toolValidateConfig(args);
       else if (name === "modonome_validate_work_item") result = await toolValidateWorkItem(args);
       else if (name === "modonome_status") result = await toolStatus(args);
+      else if (name === "modonome_compliance") result = await toolCompliance(args);
+      else if (name === "modonome_verify_attestation") result = await toolVerifyAttestation(args);
       else {
         errorResponse(id, -32601, `Unknown tool: ${name}`);
         return;
