@@ -20,11 +20,13 @@ import { fileURLToPath } from "node:url";
 import { dirname, join, basename, resolve } from "node:path";
 import { loadConfig } from "../validate-config.mjs";
 import { resolveRole } from "./resolve-role.mjs";
-import { isBillable } from "./providers.mjs";
+import { isBillable, resolveProvider } from "./providers.mjs";
 import { renderPrompt } from "./render-prompt.mjs";
 import { readPromotedLearnings } from "../lib/learnings.mjs";
 import { resolveExecutionTarget } from "./route-action.mjs";
 import { enqueue } from "./action-queue.mjs";
+import { chatCompletion } from "./openai-client.mjs";
+import { extractDiff, applyPatch } from "./apply-patch.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..", "..");
@@ -134,7 +136,9 @@ export function buildRunnerEnv(baseEnv, role) {
   return env;
 }
 
-function invokeRole(plan, role, env) {
+// Render the role prompt with the same variables regardless of transport:
+// identity/model placeholders, the run branch, and promoted learnings.
+function buildRolePrompt(plan, role, env) {
   const r = plan[role];
   const idKey = `${role.toUpperCase()}_ID`;
   const modelKey = `${role.toUpperCase()}_MODEL`;
@@ -142,22 +146,21 @@ function invokeRole(plan, role, env) {
   const promotedLearnings = learnings.length === 0
     ? "(none yet)"
     : learnings.map(l => `- ${l.id}: ${l.lesson} (gate: ${l.gate_location})`).join("\n");
-  const prompt = renderPrompt(role, {
+  return renderPrompt(role, {
     ...env,
     [idKey]: r.id,
     [modelKey]: r.model,
     RUN_BRANCH: env.RUN_BRANCH ?? `modonome/run-${plan.runId}`,
     PROMOTED_LEARNINGS: promotedLearnings,
   });
-  const res = spawnSync(r.cliPath, [
-    "--dangerously-skip-permissions",
-    "--model", r.model,
-    "--max-turns", String(plan.maxTurns),
-    "-p", prompt,
-  ], { cwd: resolve(root, plan.target), encoding: "utf8", env: buildRunnerEnv(env, r) });
-  writeFileSync(join(root, plan.transcriptDir, `${role}.log`), (res.stdout || "") + (res.stderr || ""));
+}
 
-  // Emit schema-conformant metrics with schema_version and correct field names
+// Write the transcript log and append the schema-conformant metric shared by
+// every transport. `extra` merges additional fields into the metric record
+// (for example whether an openai-http patch applied).
+function writeTranscriptAndMetric(plan, role, r, transcriptText, extra = {}) {
+  writeFileSync(join(root, plan.transcriptDir, `${role}.log`), transcriptText);
+
   const ts = new Date().toISOString();
   const event = role === "maker" ? "maker_run" : "checker_review";
   const idField = role === "maker" ? "maker_id" : "checker_id";
@@ -169,6 +172,7 @@ function invokeRole(plan, role, env) {
     item: "auto-generated",  // Will be set by the caller to match work item
     [idField]: r.id,
     [modelField]: r.model,
+    ...extra,
   };
   // For checker, add engagement metrics (parsed from transcript)
   if (role === "checker") {
@@ -176,12 +180,72 @@ function invokeRole(plan, role, env) {
     metric.checker_questions_raised = 0;
   }
   appendFileSync(join(root, plan.transcriptDir, "metrics.jsonl"), JSON.stringify(metric) + "\n");
+}
+
+function invokeRoleClaudeCli(plan, role, env) {
+  const r = plan[role];
+  const prompt = buildRolePrompt(plan, role, env);
+  const res = spawnSync(r.cliPath, [
+    "--dangerously-skip-permissions",
+    "--model", r.model,
+    "--max-turns", String(plan.maxTurns),
+    "-p", prompt,
+  ], { cwd: resolve(root, plan.target), encoding: "utf8", env: buildRunnerEnv(env, r) });
+  writeTranscriptAndMetric(plan, role, r, (res.stdout || "") + (res.stderr || ""));
   return res.status ?? 1;
+}
+
+// Provider-native single-shot execution: render the same prompt, call an
+// OpenAI-compatible chat-completions endpoint once, and turn the response
+// into file changes deterministically by extracting a unified diff and
+// applying it with git. A response with no diff, or a diff that does not
+// apply cleanly, is a clean no-op for that role: it is recorded in the
+// transcript and metric, and the run continues rather than failing.
+//
+// `deps.chatCompletionImpl` and `deps.applyPatchImpl` are injection seams for
+// tests, so no real network call is ever required to exercise this path.
+export async function invokeRoleOpenAI(plan, role, env, deps = {}) {
+  const chatCompletionImpl = deps.chatCompletionImpl ?? chatCompletion;
+  const applyPatchImpl = deps.applyPatchImpl ?? applyPatch;
+
+  const r = plan[role];
+  const prompt = buildRolePrompt(plan, role, env);
+  const baseUrl = r.modelBaseUrl ?? deps.defaultBaseUrl ?? resolveProvider(r.modelProvider).defaultBaseUrl;
+  const authToken = r.authEnv ? env[r.authEnv] : undefined;
+
+  const result = await chatCompletionImpl({
+    baseUrl,
+    authToken,
+    model: r.model,
+    messages: [{ role: "user", content: prompt }],
+    maxTokens: deps.maxTokens,
+    timeoutMs: deps.timeoutMs,
+  });
+
+  const diff = extractDiff(result.text);
+  const patch = diff
+    ? applyPatchImpl(diff, resolve(root, plan.target))
+    : { applied: false, reason: "no diff found in model response." };
+
+  const transcript = `${result.text}\n\n[patch applied: ${patch.applied}] ${patch.reason}\n`;
+  writeTranscriptAndMetric(plan, role, r, transcript, {
+    patch_applied: patch.applied,
+    patch_reason: patch.reason,
+  });
+  return 0;
+}
+
+function invokeRole(plan, role, env, deps) {
+  const r = plan[role];
+  if (r.transport === "openai-http") return invokeRoleOpenAI(plan, role, env, deps);
+  return invokeRoleClaudeCli(plan, role, env);
 }
 
 // Execute a plan. Refuses a hosted run when the budget is zero. Runs the maker, then
 // the checker, each as a distinct CLI invocation with its own model and identity.
-export function runCycle(opts, { execute, cfg, runId, env = process.env, queueDir }) {
+// `deps` (chatCompletionImpl/applyPatchImpl/maxTokens/timeoutMs/defaultBaseUrl) is an
+// injection seam for the openai-http transport, used by tests; production callers omit it.
+export function runCycle(opts, { execute, cfg, runId, env = process.env, queueDir, deps }) {
   const plan = planCycle(opts, cfg, runId);
   if (!execute) return { ...plan, mode: "dry-run" };
 
@@ -216,19 +280,39 @@ export function runCycle(opts, { execute, cfg, runId, env = process.env, queueDi
   }
 
   mkdirSync(join(root, plan.transcriptDir), { recursive: true });
-  for (const role of roles) {
-    const status = invokeRole(plan, role, env);
-    if (status !== 0) throw new Error(`${role} session exited with status ${status}. See ${plan.transcriptDir}/${role}.txt.`);
-  }
-  return { ...plan, mode: "executed" };
+  return runRoles(plan, roles, env, deps);
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+// Invoke each role in turn and produce the "executed" result. A role's
+// transport decides whether invokeRole returns a status number synchronously
+// (anthropic-cli) or a Promise (openai-http, which awaits the model call).
+// When every role in this plan is synchronous, this returns the plan object
+// directly, matching prior behavior exactly. When any role is async, this
+// returns a Promise that resolves to the same shape, so callers of the
+// openai-http path simply await runCycle's result.
+function runRoles(plan, roles, env, deps) {
+  const [role, ...rest] = roles;
+  if (!role) return { ...plan, mode: "executed" };
+
+  const status = invokeRole(plan, role, env, deps);
+  if (status && typeof status.then === "function") {
+    return status.then((resolved) => {
+      if (resolved !== 0) throw new Error(`${role} session exited with status ${resolved}. See ${plan.transcriptDir}/${role}.txt.`);
+      return runRoles(plan, rest, env, deps);
+    });
+  }
+  if (status !== 0) throw new Error(`${role} session exited with status ${status}. See ${plan.transcriptDir}/${role}.txt.`);
+  return runRoles(plan, rest, env, deps);
+}
+
+async function main() {
   const opts = parseArgs(process.argv.slice(2));
   const cfg = loadConfig(join(root, ".modonome", "config.yaml"));
   const runId = new Date().toISOString().replace(/[:.]/g, "-");
   try {
-    const result = runCycle(opts, { execute: opts.execute, cfg, runId });
+    // runCycle returns a plain object for dry-run/enqueue/anthropic-cli execution,
+    // or a Promise when the plan includes an openai-http role; await handles both.
+    const result = await runCycle(opts, { execute: opts.execute, cfg, runId });
     if (result.mode === "dry-run") {
       console.log("Dry run (no model called). Resolved cycle plan:");
       console.log(JSON.stringify({
@@ -248,4 +332,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     console.error(`run-cycle failed: ${e.message}`);
     process.exit(1);
   }
+}
+
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main();
 }
