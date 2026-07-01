@@ -48,19 +48,36 @@ jobs:
             echo "MAKER_MODEL and CHECKER_MODEL must differ (require_distinct_maker_checker_model)." >&2
             exit 1
           fi
+      - name: Resolve arming
+        id: arm
+        # The loop stays off unless armed. Resolve the secret to a step output so the
+        # session steps below are skipped (a clean no-op) when MODONOME_ARMED is unset,
+        # instead of running a session with no key and no rendered prompt.
+        env:
+          MODONOME_ARMED: ${{ secrets.MODONOME_ARMED }}
+        run: |
+          if [ "$MODONOME_ARMED" = "true" ]; then
+            echo "armed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "armed=false" >> "$GITHUB_OUTPUT"
+            echo "MODONOME_ARMED is not true: unarmed run, sessions skipped (idle no-op)."
+          fi
       - name: Install Claude Code CLI
+        if: steps.arm.outputs.armed == 'true'
         run: npm install -g @anthropic-ai/claude-code
       - name: Maker session
+        if: steps.arm.outputs.armed == 'true'
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           MODONOME_ARMED: ${{ secrets.MODONOME_ARMED }}
           MODONOME_ROLE: maker
           MAKER_ID: maker:${{ github.run_id }}:${{ env.MAKER_MODEL }}
+          PROMOTED_LEARNINGS: '(none yet)'
           GH_TOKEN: ${{ github.token }}
         run: |
           # The maker instructions live in prompts/roles/maker.txt (one CODEOWNER-protected
           # source shared with scripts/agent/run-cycle.mjs). render-prompt substitutes the
-          # MAKER_ID, MAKER_MODEL, and RUN_BRANCH placeholders from the environment.
+          # MAKER_ID, MAKER_MODEL, RUN_BRANCH, and PROMOTED_LEARNINGS placeholders from the environment.
           claude --dangerously-skip-permissions --model "$MAKER_MODEL" --max-turns 40 \
             -p "$(node scripts/agent/render-prompt.mjs maker)"
       - name: Detect whether the maker pushed a run branch
@@ -98,6 +115,7 @@ jobs:
           MODONOME_ARMED: ${{ secrets.MODONOME_ARMED }}
           MODONOME_ROLE: checker
           CHECKER_ID: checker:${{ github.run_id }}:${{ env.CHECKER_MODEL }}
+          PROMOTED_LEARNINGS: '(none yet)'
           GH_TOKEN: ${{ github.token }}
         run: |
           # The checker instructions live in prompts/roles/checker.txt (the same shared
