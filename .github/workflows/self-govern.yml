@@ -41,12 +41,18 @@ jobs:
           # pipefail ensures the harness exit status propagates through tee rather
           # than being masked by tee's own success.
           set -o pipefail
-          # Run harness end-to-end to produce real captured artifacts
+          # Default to a dry-run conformance pass: it validates the plan (roles,
+          # distinct models, budget gate) and makes no model call, so it is green in
+          # the off-by-default, zero-budget posture. A live run needs the owner to arm
+          # and fund it: set the SELF_GOVERN_EXECUTE repository variable to true and
+          # provide a budget and key. pipefail keeps a genuine harness failure visible.
+          MODE="--dry-run"
+          if [ "${{ vars.SELF_GOVERN_EXECUTE }}" = "true" ]; then MODE="--execute"; fi
           node scripts/agent/run-cycle.mjs \
             --target examples/demo-app \
             --maker-model "$SELF_GOVERN_MODEL" \
             --max-turns "$MAX_TURNS" \
-            --execute \
+            "$MODE" \
             2>&1 | tee self-govern-run.log
 
       - name: Capture self-govern metrics

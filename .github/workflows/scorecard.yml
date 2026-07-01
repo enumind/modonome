@@ -29,7 +29,7 @@ jobs:
       # ossf/scorecard-action and the actions below are tracked by Dependabot
       # (see .github/dependabot.yml) and may be pinned to a SHA later.
       - name: Run analysis
-        uses: ossf/scorecard-action@v2
+        uses: ossf/scorecard-action@v2.4.3
         with:
           results_file: results.sarif
           results_format: sarif
