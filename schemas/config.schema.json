@@ -70,7 +70,10 @@
           "additionalProperties": false,
           "properties": {
             "labels": { "type": "array", "items": { "type": "string" } },
-            "cli_path": { "type": "string", "minLength": 1 }
+            "cli_path": { "type": "string", "minLength": 1 },
+            "environment": { "type": "string", "minLength": 1 },
+            "reachable_providers": { "type": "array", "items": { "type": "string" } },
+            "reachable_endpoints": { "type": "array", "items": { "type": "string" } }
           }
         },
         "container": {
@@ -78,7 +81,10 @@
           "additionalProperties": false,
           "properties": {
             "labels": { "type": "array", "items": { "type": "string" } },
-            "cli_path": { "type": "string", "minLength": 1 }
+            "cli_path": { "type": "string", "minLength": 1 },
+            "environment": { "type": "string", "minLength": 1 },
+            "reachable_providers": { "type": "array", "items": { "type": "string" } },
+            "reachable_endpoints": { "type": "array", "items": { "type": "string" } }
           }
         }
       }

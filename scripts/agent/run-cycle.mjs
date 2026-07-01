@@ -23,6 +23,8 @@ import { resolveRole } from "./resolve-role.mjs";
 import { isBillable } from "./providers.mjs";
 import { renderPrompt } from "./render-prompt.mjs";
 import { readPromotedLearnings } from "../lib/learnings.mjs";
+import { resolveExecutionTarget } from "./route-action.mjs";
+import { enqueue } from "./action-queue.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..", "..");
@@ -41,8 +43,18 @@ export function parseArgs(argv) {
     else if (a === "--max-turns") opts.maxTurns = Number(argv[++i]);
     else if (a === "--execute") opts.execute = true;
     else if (a === "--dry-run") opts.execute = false;
+    else if (a === "--enqueue") opts.enqueue = true;
+    else if (a === "--worker-env") opts.workerEnv = argv[++i];
   }
   return opts;
+}
+
+// The execution environment this process is running in. Routing compares each
+// role's required target against this to decide inline vs enqueue. Precedence:
+// an explicit --worker-env flag, then MODONOME_WORKER_ENV, then unset (which
+// makes every role inline, preserving single-environment behavior).
+function localEnv(opts, env) {
+  return opts.workerEnv ?? env.MODONOME_WORKER_ENV ?? null;
 }
 
 // Resolve and validate a full cycle plan without calling any model. Pure: it reads
@@ -88,12 +100,18 @@ export function planCycle(opts, cfg, runId) {
   const usesRemote = isBillable(maker.costClass) || isBillable(checker.costClass);
   const remoteAllowed = budget > 0;
 
+  // Execution-target routing: resolve where each role's model endpoint can run.
+  // This throws fail-closed when a role's endpoint has no reachable runner target,
+  // so an unreachable combination is caught during planning (including dry-run).
+  const makerRoute = resolveExecutionTarget(maker, cfg);
+  const checkerRoute = resolveExecutionTarget(checker, cfg);
+
   return {
     appName,
     target: opts.target,
     runId,
-    maker: { ...maker, id: `maker:${appName}:${runId}:${maker.model}` },
-    checker: { ...checker, id: `checker:${appName}:${runId}:${checker.model}` },
+    maker: { ...maker, id: `maker:${appName}:${runId}:${maker.model}`, route: makerRoute },
+    checker: { ...checker, id: `checker:${appName}:${runId}:${checker.model}`, route: checkerRoute },
     maxTurns,
     transcriptDir: join(opts.target, "runs", runId),
     budget,
@@ -163,15 +181,42 @@ function invokeRole(plan, role, env) {
 
 // Execute a plan. Refuses a hosted run when the budget is zero. Runs the maker, then
 // the checker, each as a distinct CLI invocation with its own model and identity.
-export function runCycle(opts, { execute, cfg, runId, env = process.env }) {
+export function runCycle(opts, { execute, cfg, runId, env = process.env, queueDir }) {
   const plan = planCycle(opts, cfg, runId);
   if (!execute) return { ...plan, mode: "dry-run" };
 
   if (plan.usesRemote && !plan.remoteAllowed) {
     throw new Error("A hosted model is selected but remote_model_budget_usd_per_day is 0. Raise the budget or select a local model.");
   }
+
+  // Routed execution. A role runs inline when the local environment already is
+  // its resolved target (the default single-environment case). When a role's
+  // target is another environment, or --enqueue is set, the action is written to
+  // the durable queue for a worker in that environment to claim, and the cycle
+  // returns without a model call. planCycle has already failed closed on any
+  // unreachable combination.
+  const here = localEnv(opts, env);
+  const roles = ["maker", "checker"];
+  const needsEnqueue = roles.some((role) => plan[role].route.target !== here);
+  if (opts.enqueue || (here !== null && needsEnqueue)) {
+    const enqueued = [];
+    for (const role of roles) {
+      const r = plan[role];
+      const record = enqueue({
+        id: r.id,
+        target: r.route.target,
+        role,
+        model: r.model,
+        transport: r.transport,
+        payload: { runId, appName: plan.appName, maxTurns: plan.maxTurns },
+      }, queueDir);
+      enqueued.push({ id: record.id, target: record.target, role });
+    }
+    return { ...plan, mode: "enqueued", enqueued };
+  }
+
   mkdirSync(join(root, plan.transcriptDir), { recursive: true });
-  for (const role of ["maker", "checker"]) {
+  for (const role of roles) {
     const status = invokeRole(plan, role, env);
     if (status !== 0) throw new Error(`${role} session exited with status ${status}. See ${plan.transcriptDir}/${role}.txt.`);
   }
@@ -188,8 +233,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       console.log("Dry run (no model called). Resolved cycle plan:");
       console.log(JSON.stringify({
         target: result.target,
-        maker: { id: result.maker.id, model: result.maker.model, runner: result.maker.runner },
-        checker: { id: result.checker.id, model: result.checker.model, runner: result.checker.runner },
+        maker: { id: result.maker.id, model: result.maker.model, runner: result.maker.runner, route: result.maker.route.target },
+        checker: { id: result.checker.id, model: result.checker.model, runner: result.checker.runner, route: result.checker.route.target },
         maxTurns: result.maxTurns,
         transcriptDir: result.transcriptDir,
         remoteBudgetUsdPerDay: result.budget,
