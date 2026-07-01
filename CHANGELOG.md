@@ -9,6 +9,18 @@ or CVE identifier where one exists.
 
 ## Unreleased
 
+### Repo snapshot utility
+
+- Added `modonome snapshot`, a dependency-free utility that reads any repo and writes a
+  tiered, Merkle-verified artifact under `.modonome/snapshot/` for LLM context: Tier 0
+  `signature.json` (fingerprint), Tier 1 `map.json` and `map.md` (modules, public API
+  signatures, import edges, PageRank attention ranking). It emits a root `llms.txt`, supports
+  `--check`, `--verify`, `--tier`, `--since`, and `--pack`, redacts secrets before writing,
+  and is deterministic. New config levers live under `snapshot` (`ci_mode` warn by default,
+  `sign` false, `parser` heuristic, `token_budget`, `strict_redact`). Discovery is layered
+  through `llms.txt`, an `AGENTS.md` pointer, `prompts/modules/snapshot.md`, and the
+  `modonome_snapshot` MCP tool. See ADR-032.
+
 ### AgentProof expanded to 25 scenarios (HARDENED)
 
 - Grew the AgentProof suite from 16 to 25 governance scenarios. Nine new scenarios cover

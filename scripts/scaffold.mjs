@@ -76,6 +76,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   console.log(write ? "Scaffold applied." : "Scaffold preview (no files written). Pass --write to apply.");
   for (const p of planned) console.log(`  ${p.action === "create" ? (write ? "created" : "would create") : "kept"}: ${p.rel}`);
   console.log("\nThe engine stays disabled and dry-run until an owner arms it.");
+  console.log("Next: run `npx modonome snapshot .` to write .modonome/snapshot/ and llms.txt,");
+  console.log("then point your agent instructions (AGENTS.md or CLAUDE.md) at .modonome/snapshot/map.md.");
   writeRunLog(join(target, ".modonome", "runs"), "scaffold", {
     argv: process.argv.slice(2),
     target,

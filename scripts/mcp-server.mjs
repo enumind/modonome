@@ -145,6 +145,19 @@ const TOOLS = [
       },
     },
   },
+  {
+    name: "modonome_snapshot",
+    description:
+      "Return a tiered repository snapshot for LLM context so an agent can understand a repo without reading every file. tier 0 is the small signature (Merkle root, stack, entrypoints, commands, governance posture); tier 1 is the map (modules, public API signatures, import edges, attention ranking). With verify set, it recomputes the Merkle root from disk and reports whether the committed snapshot still matches. Read-only.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        repo_path: { type: "string", description: "Repository root. Defaults to the current working directory." },
+        tier: { type: "integer", description: "Tier to return: 0 (signature) or 1 (map). Defaults to 0." },
+        verify: { type: "boolean", description: "When true, recompute the Merkle root from disk and report drift instead of returning a tier." },
+      },
+    },
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -327,6 +340,30 @@ async function toolVerifyAttestation(args) {
   return verifyPacket(args.packet, peerKeys);
 }
 
+async function toolSnapshot(args) {
+  const repoPath = resolve(String(args.repo_path || process.cwd()));
+  if (!existsSync(repoPath)) return { error: "repo_path does not exist." };
+  const tier = args.tier === 1 ? 1 : 0;
+
+  if (args.verify) {
+    const { walkRepo, loadIgnore } = await import(join(here, "lib", "snapshot-walk.mjs"));
+    const { hashFileContent, buildMerkleTree } = await import(join(here, "lib", "merkle.mjs"));
+    const sigPath = join(repoPath, ".modonome", "snapshot", "signature.json");
+    if (!existsSync(sigPath)) return { verified: false, reason: "no committed snapshot found." };
+    const committed = JSON.parse(readFileSync(sigPath, "utf8"));
+    const files = walkRepo(repoPath, { ignore: loadIgnore(repoPath) });
+    const entries = files.map((f) => ({ relPath: f.relPath, hash: hashFileContent(readFileSync(f.absPath)) }));
+    const { root } = buildMerkleTree(entries);
+    return { verified: root === committed.merkle_root, live_merkle_root: root, committed_merkle_root: committed.merkle_root };
+  }
+
+  const file = join(repoPath, ".modonome", "snapshot", tier === 0 ? "signature.json" : "map.json");
+  if (existsSync(file)) return JSON.parse(readFileSync(file, "utf8"));
+  const { buildSnapshot } = await import(join(here, "lib", "snapshot-core.mjs"));
+  const built = buildSnapshot(repoPath, {});
+  return tier === 0 ? built.signature : built.map;
+}
+
 // ---------------------------------------------------------------------------
 // JSON-RPC 2.0 / MCP 1.0 protocol handler
 // ---------------------------------------------------------------------------
@@ -375,6 +412,7 @@ async function handleRequest(req) {
       else if (name === "modonome_status") result = await toolStatus(args);
       else if (name === "modonome_compliance") result = await toolCompliance(args);
       else if (name === "modonome_verify_attestation") result = await toolVerifyAttestation(args);
+      else if (name === "modonome_snapshot") result = await toolSnapshot(args);
       else {
         errorResponse(id, -32601, `Unknown tool: ${name}`);
         return;

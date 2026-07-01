@@ -9,6 +9,9 @@ shift. Each item lands only when its own gates are green.
 - Core prompt, schemas, scripts, and templates at schema version 1.
 - Anti-gaming ratchet, config and packet validators, drift guard.
 - Two runnable examples with captured dry-run transcripts.
+- Repo snapshot utility: tiered, Merkle-verified, dependency-free repo map for LLM context
+  with a CI freshness check (ADR-032). Multi-language adapters, incremental diffing, Tier 2
+  deep shards, signed delta packets, and graph-backed queries follow in later milestones.
 - Safe defaults throughout. Cross-repo network ships off and advisory.
 
 ## Milestone 2 · Cross-repo knowledge network GA

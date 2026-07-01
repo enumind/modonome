@@ -48,6 +48,11 @@ jobs:
       - name: Run repo hygiene gate
         run: node scripts/check-repo-hygiene.mjs
 
+      # Snapshot freshness. Honors .modonome/config.yaml snapshot.ci_mode (warn by
+      # default, so a stale snapshot does not block; set fail to make it blocking).
+      - name: Run snapshot freshness gate
+        run: node scripts/snapshot.mjs . --check
+
       - name: Run markdown governance gate
         run: node scripts/check-md-governance.mjs
 

@@ -24,6 +24,10 @@ Usage:
   npx modonome status [dir]              print the effective arming posture for the target repo.
   npx modonome report [dir]              print governance activity summary and AgentProof score.
   npx modonome compliance <dir>          write a read-only OpenSSF, SLSA, and NIST evidence pack for the repo.
+  npx modonome snapshot <dir>            write a tiered, Merkle-verified repo snapshot for LLM context.
+  npx modonome snapshot <dir> --check   fail or warn (per config) if the committed snapshot is stale.
+  npx modonome snapshot <dir> --pack    write a single portable .msnap bundle for sharing.
+  npx modonome snapshot <dir> --since <ref>  print the file-level delta since a git ref.
   npx modonome agentproof                run the AgentProof adversarial benchmark suite (16 scenarios).
   npx modonome help                      show this message.
 
@@ -111,6 +115,9 @@ function main(argv) {
       break;
     case "compliance":
       run("build-compliance-evidence.mjs", rest);
+      break;
+    case "snapshot":
+      run("snapshot.mjs", rest);
       break;
     case "agentproof":
       process.exit(spawnSync("node", [join(here, "..", "agentproof", "runner.mjs"), ...rest], { stdio: "inherit" }).status ?? 1);

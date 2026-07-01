@@ -31,6 +31,17 @@
     "repo_network_dry_run": { "type": "boolean" },
     "share_raw_code_across_repos": { "type": "boolean" },
     "share_repo_identifiers_by_default": { "type": "boolean" },
+    "snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ci_mode": { "type": "string", "enum": ["warn", "fail", "off"] },
+        "sign": { "type": "boolean" },
+        "parser": { "type": "string" },
+        "token_budget": { "type": "integer", "minimum": 0 },
+        "strict_redact": { "type": "boolean" }
+      }
+    },
     "roles": {
       "type": "object",
       "additionalProperties": false,

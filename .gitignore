@@ -26,3 +26,6 @@ __pycache__/
 .claude_profile/
 CLAUDE.md
 runs/
+
+# Modonome snapshot portable pack (regenerate with: modonome snapshot --pack)
+*.msnap

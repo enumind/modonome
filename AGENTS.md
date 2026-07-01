@@ -16,6 +16,14 @@ This repo governs itself using its own engine. Before making any change:
 4. Run all gates listed in the work item before pushing. Push only when every gate passes.
 5. Modify `scripts/`, `bin/`, `schemas/`, `templates/`, `prompts/`, or `.github/` only after confirming the item has `touches_protected_path: true` and that a CODEOWNER review is required before merge.
 
+## Repo snapshot
+
+For fast context, read `.modonome/snapshot/map.md` before reading source files. It lists
+modules, public API signatures, import edges, and an attention ranking. Check
+`.modonome/snapshot/signature.json`: if `merkle_root` matches your last read, the repo has
+not changed. Cite the `F:` and `S:` anchors and open only the file and line you need. After
+changing files, run `node scripts/snapshot.mjs .` to refresh the snapshot.
+
 ## Style
 
 The project runs `node scripts/check-style.mjs .` on every PR. It rejects em dashes,

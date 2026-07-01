@@ -22,7 +22,10 @@ writeFileSync(
     "# Auto-regenerate RELEASE-EVIDENCE.md so CI freshness check never fails.",
     "node scripts/build-release-evidence.mjs",
     'git add RELEASE-EVIDENCE.md',
+    "# Auto-regenerate the repo snapshot so its freshness check stays green.",
+    "node scripts/snapshot.mjs .",
+    "git add .modonome/snapshot llms.txt",
   ].join("\n") + "\n"
 );
 chmodSync(preCommit, 0o755);
-console.log("Installed pre-commit hook → auto-regenerates RELEASE-EVIDENCE.md");
+console.log("Installed pre-commit hook that regenerates RELEASE-EVIDENCE.md and the repo snapshot");

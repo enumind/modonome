@@ -36,6 +36,15 @@ repo_network_dry_run: true
 share_raw_code_across_repos: false
 share_repo_identifiers_by_default: false
 
+# Snapshot utility levers. Host admins tune these. ci_mode warn keeps a stale
+# snapshot from failing CI; set fail to make the freshness gate blocking.
+snapshot:
+  ci_mode: warn
+  sign: false
+  parser: heuristic
+  token_budget: 120000
+  strict_redact: false
+
 # Runner and model assignment for cost-bearing agent roles (WS-H). Defaults keep
 # every paid role on the container runner with hosted Claude models, matching
 # current behavior. Flip a role to the local runner or a local model to move spend
