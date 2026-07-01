@@ -7,8 +7,6 @@
  * by hue alone; components always pair a token with an icon and a label.
  */
 
-@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap");
-
 :root {
   /* Ground surfaces */
   --mdn-bg: #0b1220;

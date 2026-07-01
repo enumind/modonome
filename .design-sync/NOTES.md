@@ -24,23 +24,34 @@ Repo-specific facts for future syncs. Read this before re-running.
 
 ## Fonts
 
-- Brand fonts (Space Grotesk, IBM Plex Sans, IBM Plex Mono) load from Google Fonts via an
-  `@import` at the top of `src/tokens/tokens.css`. Validate reports `[FONT_REMOTE]`, which is
-  informational, not a failure. This matches how modonome.com itself serves the fonts. The
-  render check is slower because each preview waits on the remote font fetch.
-- If a fully self-contained bundle is ever needed, download the woff2 files under
-  `design-system/fonts/`, add `@font-face` rules, and drop the remote `@import`.
+- Brand fonts (Space Grotesk, IBM Plex Sans, IBM Plex Mono) are SELF-HOSTED. The latin-subset
+  woff2 files live under `design-system/fonts/` with `fonts.css`, which `src/styles.css`
+  imports first. The esbuild CSS build copies them into `dist/fonts/` with stable names
+  (`assetNames: "fonts/[name]"`), and `cfg.extraFonts` copies them into `ds-bundle/fonts/`.
+  Validate no longer reports `[FONT_REMOTE]`, and renders are fast (no network round trip).
+- To refresh the fonts, re-run the vendoring: fetch the Google Fonts CSS with a browser user
+  agent, keep the `/* latin */` `@font-face` blocks, download their woff2 into
+  `design-system/fonts/`, and regenerate `fonts.css` (one `@font-face` per file, stable names).
+
+## Preview provider
+
+- The DS is dark-themed (light text on a dark ground), so previews render invisibly on a bare
+  white card without the `mdn-root` wrapper. `MdnRoot` (a thin wrapper that applies `mdn-root`
+  plus the dark background) is wired as `cfg.provider`, so every preview renders on the correct
+  ground. `MdnRoot` is excluded from the picker via `cfg.componentSrcMap` (it stays a bundle
+  export used only as the provider).
 
 ## Preview scope (current state)
 
-- This first pass ships FLOOR CARDS for all 44 components. They are honest and fully
-  functional: the bundle, tokens, and every component render, but the preview cards are the
-  typographic baseline rather than authored compositions.
-- To make the picker premium, author `.design-sync/previews/<Name>.tsx` for the hero
-  components (start with ArmingStateBadge, ActivationLadder, QueueBoard, WorkItemCard,
-  SafetyStrip, GatePanel, CostPanel, MetricTile, StatusPill, Card, Button, LearningCard,
-  DecisionCard, AuditTimeline), rebuild, capture, and grade per the non-storybook skill. The
-  app screens under `apps/control-panel/src/screens/` are the composition source to port from.
+- All 44 components have AUTHORED previews under `.design-sync/previews/`, graded good locally
+  against the absolute rubric (styled, complete, plausible). The render check is clean (0 bad,
+  0 thin, 0 floor cards). Overlay components (Drawer, Modal, ConfirmDialog, WorkItemDrawer) and
+  the full-screen AppShell use `cfg.overrides.<Name>.cardMode = "single"` with a viewport.
+- The app screens under `apps/control-panel/src/screens/` and the fixtures under
+  `apps/control-panel/src/state/fixtures/` are the composition source the previews port from.
+- Grades live in the gitignored `.cache/`; they become durable only via the upload's
+  `_ds_sync.json` anchor. Until the first authorized upload, a re-sync re-verifies from scratch,
+  which is fast now that fonts are local.
 
 ## Component groups
 

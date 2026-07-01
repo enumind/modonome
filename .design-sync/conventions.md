@@ -14,8 +14,9 @@ Without it, components fall back to browser defaults and look unstyled.
 
 There is no theme provider and no React context to set up: styling is plain CSS driven by
 custom properties, so any component works as long as `mdn-root` is an ancestor and the design
-system stylesheet is loaded. Brand fonts (Space Grotesk, IBM Plex Sans, IBM Plex Mono) load
-from a font host through an `@import` in the stylesheet, so they appear automatically.
+system stylesheet is loaded. Brand fonts (Space Grotesk, IBM Plex Sans, IBM Plex Mono) are
+bundled with the stylesheet (self-hosted woff2), so they appear automatically with no network
+round trip.
 
 ```jsx
 <AppShell

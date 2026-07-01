@@ -39,6 +39,7 @@ await build({
   outfile: join(dist, "styles.css"),
   bundle: true,
   loader: { ".woff2": "file", ".ttf": "file" },
+  assetNames: "fonts/[name]",
   logLevel: "info",
 });
 

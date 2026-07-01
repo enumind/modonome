@@ -22,6 +22,7 @@ export * from "./components/IdentityChip/index";
 export * from "./components/Input/index";
 export * from "./components/LearningCard/index";
 export * from "./components/LeaseTable/index";
+export * from "./components/MdnRoot/index";
 export * from "./components/MetricTile/index";
 export * from "./components/Modal/index";
 export * from "./components/ModeSwitcher/index";
