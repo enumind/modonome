@@ -1,6 +1,6 @@
 .mdn-shell {
   display: grid;
-  grid-template-columns: var(--mdn-shell-sidebar) 1fr;
+  grid-template-columns: var(--mdn-shell-sidebar) minmax(0, 1fr);
   min-height: 100vh;
 }
 
@@ -126,12 +126,14 @@
   max-width: var(--mdn-content-max);
   width: 100%;
   margin: 0 auto;
+  min-width: 0;
+  overflow-x: hidden;
 }
 
 /* Responsive: collapse the sidebar to a horizontal strip */
 @media (max-width: 900px) {
   .mdn-shell {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .mdn-shell__sidebar {
     position: static;
@@ -140,12 +142,14 @@
     gap: var(--mdn-space-3);
     border-right: 0;
     border-bottom: 1px solid var(--mdn-border);
+    min-width: 0;
   }
   .mdn-shell__nav {
     flex-direction: row;
     overflow-x: auto;
     gap: var(--mdn-space-2);
     padding-bottom: var(--mdn-space-1);
+    min-width: 0;
   }
   .mdn-shell__navitem {
     flex: 0 0 auto;

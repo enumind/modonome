@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Card, RoleBadge, Select, Table, StatusPill, Toggle, Button, IconButton, Input, Toast } from "@modonome/design-system";
+import { Card, RoleBadge, Select, Table, StatusPill, Toggle, Button, IconButton, Input, Tabs, Toast } from "@modonome/design-system";
 import type { ModonomeConfig, WriteActions } from "../state/types";
 import type { PanelState } from "../state/types";
 import { useConfirm } from "../lib/confirm";
@@ -11,6 +11,13 @@ const ROLE_BADGE: Record<string, "maker" | "checker" | "maintainer"> = {
   "self-govern": "maintainer",
 };
 
+const TABS = [
+  { id: "roles", label: "Roles & models", icon: "users" as const },
+  { id: "trust", label: "Trusted authors & paths", icon: "lock" as const },
+  { id: "network", label: "Cross-repo network", icon: "branch" as const },
+  { id: "market", label: "Market scan", icon: "activity" as const },
+];
+
 interface ModelRow {
   id: string;
   provider: string;
@@ -18,15 +25,15 @@ interface ModelRow {
 }
 
 /**
- * The advanced-configuration screen. Most operators rarely touch this: which runner
- * and model each governance role uses, the trusted-author and protected-path
- * boundaries, and the cross-repo and market-scan surfaces that are off by default
- * because they widen what the engine can see or share. Role and model assignment
- * (nested YAML) stays read-only from here; edit config.yaml directly for that. Every
- * other field is a local draft until "Save configuration" writes it to config.yaml.
+ * The advanced-configuration screen, one conceptual area per tab so nothing forces an
+ * operator to scroll past three unrelated subsystems to reach the one they came for.
+ * Role and model assignment (nested YAML) stays read-only from here; edit config.yaml
+ * directly for that. Every other field is a local draft until "Save configuration"
+ * writes it to config.yaml.
  */
 export function SettingsScreen({ state, write }: { state: PanelState; write: WriteActions }) {
   const confirm = useConfirm();
+  const [tab, setTab] = useState("roles");
   const [config, setConfig] = useState<ModonomeConfig>(state.config);
   const [newAuthor, setNewAuthor] = useState("");
   const [newPath, setNewPath] = useState("");
@@ -149,60 +156,62 @@ export function SettingsScreen({ state, write }: { state: PanelState; write: Wri
         />
       ) : null}
 
-      <div className="section">
-        <h2 className="section-title">Roles and models</h2>
-        <Card title="Governance roles" help="Each role runs a specific runner and model. Distinct maker and checker models are enforced separately in Arming &amp; Safety. This assignment lives in a nested part of config.yaml the panel does not write; edit the file directly to change it for real.">
-          {roleEntries.length === 0 ? (
-            <p className="mdn-faint">No roles are configured for this repo.</p>
-          ) : (
-            <div className="stack-lg">
-              {roleEntries.map(([role, assignment]) => (
-                <div
-                  key={role}
-                  style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}
-                >
-                  <div style={{ minWidth: 160 }}>
-                    <RoleBadge role={ROLE_BADGE[role] ?? "maintainer"} />
-                  </div>
-                  <span className="mdn-faint mdn-mono" style={{ minWidth: 90 }}>
-                    {assignment.runner}
-                  </span>
-                  <div style={{ flex: "1 1 220px", maxWidth: 320 }}>
-                    <Select
-                      label="Model"
-                      options={modelOptions}
-                      value={assignment.model}
-                      onValueChange={(v) => setRoleModel(role, v)}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </Card>
-        {modelRows.length > 0 ? (
-          <Card title="Models" help="Every model id available to assign to a role, its provider, and its base URL when one is configured.">
-            <Table<ModelRow>
-              columns={[
-                { key: "id", header: "Model", render: (row) => <span className="mdn-mono">{row.id}</span> },
-                { key: "provider", header: "Provider" },
-                {
-                  key: "base_url",
-                  header: "Base URL",
-                  render: (row) => (
-                    <span className="mdn-mono">{row.base_url ? row.base_url : <span className="mdn-faint">&mdash;</span>}</span>
-                  ),
-                },
-              ]}
-              rows={modelRows}
-              getRowKey={(row) => row.id}
-            />
-          </Card>
-        ) : null}
-      </div>
+      <Tabs tabs={TABS} active={tab} onChange={setTab} />
 
-      <div className="section">
-        <h2 className="section-title">Trusted authors and protected paths</h2>
+      {tab === "roles" ? (
+        <div className="stack-lg">
+          <Card title="Governance roles" help="Each role runs a specific runner and model. Distinct maker and checker models are enforced separately in Arming &amp; Safety. This assignment lives in a nested part of config.yaml the panel does not write; edit the file directly to change it for real.">
+            {roleEntries.length === 0 ? (
+              <p className="mdn-faint">No roles are configured for this repo.</p>
+            ) : (
+              <div className="stack-lg">
+                {roleEntries.map(([role, assignment]) => (
+                  <div
+                    key={role}
+                    style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}
+                  >
+                    <div style={{ minWidth: 160 }}>
+                      <RoleBadge role={ROLE_BADGE[role] ?? "maintainer"} />
+                    </div>
+                    <span className="mdn-faint mdn-mono" style={{ minWidth: 90 }}>
+                      {assignment.runner}
+                    </span>
+                    <div style={{ flex: "1 1 220px", maxWidth: 320 }}>
+                      <Select
+                        label="Model"
+                        options={modelOptions}
+                        value={assignment.model}
+                        onValueChange={(v) => setRoleModel(role, v)}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+          {modelRows.length > 0 ? (
+            <Card title="Models" help="Every model id available to assign to a role, its provider, and its base URL when one is configured.">
+              <Table<ModelRow>
+                columns={[
+                  { key: "id", header: "Model", render: (row) => <span className="mdn-mono">{row.id}</span> },
+                  { key: "provider", header: "Provider" },
+                  {
+                    key: "base_url",
+                    header: "Base URL",
+                    render: (row) => (
+                      <span className="mdn-mono">{row.base_url ? row.base_url : <span className="mdn-faint">&mdash;</span>}</span>
+                    ),
+                  },
+                ]}
+                rows={modelRows}
+                getRowKey={(row) => row.id}
+              />
+            </Card>
+          ) : null}
+        </div>
+      ) : null}
+
+      {tab === "trust" ? (
         <div className="grid grid-2">
           <Card title="Trusted author allowlist" help="Pull requests authored by these identities skip some friction. An empty list means every change parks for owner review.">
             <div className="stack-lg">
@@ -279,10 +288,9 @@ export function SettingsScreen({ state, write }: { state: PanelState; write: Wri
             </div>
           </Card>
         </div>
-      </div>
+      ) : null}
 
-      <div className="section">
-        <h2 className="section-title">Cross-repo network</h2>
+      {tab === "network" ? (
         <Card
           title="Cross-repo sharing"
           help="These levers let the engine see or share information across repositories. All four are off by default because each one expands the trust surface beyond a single repo."
@@ -323,10 +331,9 @@ export function SettingsScreen({ state, write }: { state: PanelState; write: Wri
             </div>
           </div>
         </Card>
-      </div>
+      ) : null}
 
-      <div className="section">
-        <h2 className="section-title">Market scan</h2>
+      {tab === "market" ? (
         <Card title="Market scan" help="Lets the engine scan for external claims worth acting on. New claims can still require explicit owner approval.">
           <div className="grid grid-2">
             <Toggle
@@ -344,7 +351,7 @@ export function SettingsScreen({ state, write }: { state: PanelState; write: Wri
             />
           </div>
         </Card>
-      </div>
+      ) : null}
     </div>
   );
 }

@@ -5,6 +5,7 @@
   gap: var(--mdn-space-3);
   overflow-x: auto;
   padding-bottom: var(--mdn-space-2);
+  min-width: 0;
 }
 
 .mdn-board__col {

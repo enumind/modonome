@@ -1,7 +1,9 @@
 /* App-level layout helpers. Screens compose design-system components inside these. */
 
+html,
 body {
   margin: 0;
+  overflow-x: hidden;
 }
 
 .page {
@@ -39,6 +41,7 @@ body {
 .page-head__actions {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: var(--mdn-space-3);
 }
 
@@ -64,13 +67,13 @@ body {
   gap: var(--mdn-space-4);
 }
 .grid-2 {
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 .grid-3 {
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 .grid-4 {
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .topbar-identity {
@@ -154,17 +157,17 @@ body {
 
 @media (max-width: 1024px) {
   .grid-4 {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .grid-3 {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 @media (max-width: 640px) {
   .grid-2,
   .grid-3,
   .grid-4 {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .page-title {
     font-size: var(--mdn-text-xl);

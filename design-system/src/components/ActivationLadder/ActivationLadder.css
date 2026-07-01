@@ -161,6 +161,25 @@
   color: var(--mdn-muted);
 }
 
+.mdn-ladder__kill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  padding: 6px 4px;
+  border: none;
+  background: none;
+  color: var(--mdn-faint);
+  font-family: var(--mdn-font-mono);
+  font-size: var(--mdn-text-xs);
+  cursor: pointer;
+  transition: color var(--mdn-dur) var(--mdn-ease);
+}
+.mdn-ladder__kill:hover,
+.mdn-ladder__kill:focus-visible {
+  color: var(--mdn-danger);
+}
+
 @media (max-width: 720px) {
   .mdn-ladder__rungs,
   .mdn-ladder__checks {

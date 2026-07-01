@@ -11,9 +11,13 @@ import {
   Icon,
   IconButton,
   Input,
+  Carousel,
+  ConceptTile,
+  HoverCard,
   formatUsd,
 } from "@modonome/design-system";
 import type { PanelState } from "../state/types";
+import { CONCEPTS } from "../content/concepts";
 
 /**
  * Mission control: the "is it safe, is it working" glance. Arming posture, the safety
@@ -180,6 +184,21 @@ export function OverviewScreen({
             <AuditTimeline events={audit} limit={5} />
           </Card>
         </div>
+      </div>
+
+      <div className="section">
+        <h2 className="section-title">Key concepts</h2>
+        <p className="mdn-faint" style={{ margin: 0 }}>
+          Hover or focus a card for a plain-language summary, sourced from this repo's own
+          documentation.
+        </p>
+        <Carousel label="Modonome key concepts">
+          {CONCEPTS.map((concept) => (
+            <HoverCard key={concept.id} title={concept.title} body={concept.body} source={concept.source}>
+              <ConceptTile icon={concept.icon} label={concept.label} tag={concept.tag} />
+            </HoverCard>
+          ))}
+        </Carousel>
       </div>
     </div>
   );

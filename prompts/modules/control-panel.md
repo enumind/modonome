@@ -31,3 +31,7 @@ UX requirements: operational and scannable, host tokens and components, accessib
 only signal), responsive from 375px up with no horizontal scroll, stable layout with no shift,
 explicit loading and empty and error and permission-denied states, subtle motion that respects
 reduced-motion, and confirmation on every destructive control.
+
+A reference implementation of this spec lives at `apps/control-panel/`, built against a
+`@modonome/design-system` component library at `design-system/`. Read
+`apps/control-panel/README.md` before building another one from scratch.

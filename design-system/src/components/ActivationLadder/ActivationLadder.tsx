@@ -25,6 +25,9 @@ export interface ActivationLadderProps {
   onArm?: () => void;
   /** Return the engine to dry-run. The panel should confirm before calling this. */
   onDisarm?: () => void;
+  /** The kill switch: turn autonomy off entirely, from any rung. The panel should
+   * confirm before calling this. Hidden once the engine is already disabled. */
+  onKillSwitch?: () => void;
 }
 
 const RUNGS: Array<{ mode: ArmingMode; label: string; blurb: string }> = [
@@ -40,7 +43,14 @@ const RUNGS: Array<{ mode: ArmingMode; label: string; blurb: string }> = [
  * MODONOME_ARMED CI secret is set out of band), so the ladder surfaces them as a
  * standing instruction rather than a button.
  */
-export function ActivationLadder({ mode, checklist, onDryRun, onArm, onDisarm }: ActivationLadderProps) {
+export function ActivationLadder({
+  mode,
+  checklist,
+  onDryRun,
+  onArm,
+  onDisarm,
+  onKillSwitch,
+}: ActivationLadderProps) {
   const activeIndex = RUNGS.findIndex((r) => r.mode === mode);
   const panelChecks = checklist.filter((c) => !c.ownerOnly);
   const ownerChecks = checklist.filter((c) => c.ownerOnly);
@@ -116,6 +126,12 @@ export function ActivationLadder({ mode, checklist, onDryRun, onArm, onDisarm }:
               ? "Clear the blocking prerequisites. Owner-only items are set in CI."
               : "Clear the blocking prerequisites to arm."}
           </span>
+        ) : null}
+        {mode !== "disabled" && onKillSwitch ? (
+          <button type="button" className="mdn-ladder__kill" onClick={onKillSwitch}>
+            <Icon name="power" size={13} />
+            Kill switch: disable autonomy entirely
+          </button>
         ) : null}
       </div>
     </div>
