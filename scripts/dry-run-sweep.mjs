@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 // Read a target repo, build an adoption summary, and print the work it would
 // propose. This mutates nothing. It is the safe first command.
-// Usage: node scripts/dry-run-sweep.mjs <targetDir>
+// Usage: node scripts/dry-run-sweep.mjs <targetDir> [--emit-work-item]
 import { existsSync, readFileSync, readdirSync, mkdirSync, writeFileSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 
-const target = process.argv[2] || ".";
+const args = process.argv.slice(2);
+const target = args[0] || ".";
+const emitWorkItem = args.includes("--emit-work-item");
 const has = (p) => existsSync(join(target, p));
 const read = (p) => { try { return readFileSync(join(target, p), "utf8"); } catch { return ""; } };
 const startMs = Date.now();
@@ -74,6 +76,14 @@ function detectHotFiles() {
     .map(([file, changes]) => ({ file, changes }));
 }
 
+function slug(text) {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .substring(0, 100);
+}
+
 function proposeWork(stack, hotFiles) {
   const top = hotFiles && hotFiles.length > 0 ? hotFiles[0] : null;
   const topLabel = top ? `${top.file} (${top.changes} changes in recent history)` : null;
@@ -102,36 +112,65 @@ function proposeWork(stack, hotFiles) {
   return generic.slice(0, 3);
 }
 
+export function proposalToWorkItem(proposal, opts = {}) {
+  const id = opts.id || `WI-auto-${slug(proposal)}`;
+  const queuedAt = opts.queuedAt || new Date().toISOString();
+  const allowedEditSet = opts.allowedEditSet || ["tests/"];
+  const gates = opts.gates || [
+    "node --test tests/*.test.mjs",
+    "node scripts/check-style.mjs .",
+  ];
+
+  return {
+    schema_version: 1,
+    id,
+    state: "queued",
+    attempts: 0,
+    max_attempts: 3,
+    touches_protected_path: false,
+    allowed_edit_set: allowedEditSet,
+    gates,
+    queued_at: queuedAt,
+  };
+}
+
 const stack = detectStack();
 const protectedPaths = detectProtected();
 const instructions = detectInstructions();
 const hotFiles = detectHotFiles();
 const adopted = has(".autonomy") ? ".autonomy (adopted)" : ".modonome";
 
-const lines = [];
-lines.push("Modonome dry-run sweep");
-lines.push("Mode: dry-run. This run changed nothing.\n");
-lines.push(`Target: ${target}`);
-lines.push(`State directory: ${adopted}`);
-lines.push(`Detected stack: ${stack.name} (${stack.pm})`);
-lines.push(`Repo instructions found: ${instructions.length ? instructions.join(", ") : "none"}`);
-lines.push("\nGates it would adopt:");
-for (const g of stack.gates) lines.push(`  - ${g}`);
-lines.push("\nProtected paths it would never auto-merge:");
-for (const p of (protectedPaths.length ? protectedPaths : ["none detected, ask the owner to confirm"])) lines.push(`  - ${p}`);
-lines.push("\nProposed bounded work (each becomes a small reviewable pull request):");
-proposeWork(stack, hotFiles).forEach((w, i) => lines.push(`  ${i + 1}. ${w}`));
-lines.push("\nRefused by default: autonomy off, no auto-merge, no protected-path edits, no remote spend, nothing shared across repos.");
-lines.push("Next safe step: review this output, then run `npx modonome scaffold .` to drop disabled, dry-run state files.");
+const proposals = proposeWork(stack, hotFiles);
 
-console.log(lines.join("\n"));
+if (emitWorkItem && proposals.length > 0) {
+  const workItem = proposalToWorkItem(proposals[0]);
+  console.log(JSON.stringify(workItem, null, 2));
+} else {
+  const lines = [];
+  lines.push("Modonome dry-run sweep");
+  lines.push("Mode: dry-run. This run changed nothing.\n");
+  lines.push(`Target: ${target}`);
+  lines.push(`State directory: ${adopted}`);
+  lines.push(`Detected stack: ${stack.name} (${stack.pm})`);
+  lines.push(`Repo instructions found: ${instructions.length ? instructions.join(", ") : "none"}`);
+  lines.push("\nGates it would adopt:");
+  for (const g of stack.gates) lines.push(`  - ${g}`);
+  lines.push("\nProtected paths it would never auto-merge:");
+  for (const p of (protectedPaths.length ? protectedPaths : ["none detected, ask the owner to confirm"])) lines.push(`  - ${p}`);
+  lines.push("\nProposed bounded work (each becomes a small reviewable pull request):");
+  proposals.forEach((w, i) => lines.push(`  ${i + 1}. ${w}`));
+  lines.push("\nRefused by default: autonomy off, no auto-merge, no protected-path edits, no remote spend, nothing shared across repos.");
+  lines.push("Next safe step: review this output, then run `npx modonome scaffold .` to drop disabled, dry-run state files.");
+
+  console.log(lines.join("\n"));
+}
 
 writeRunLog(join(target, ".modonome", "runs"), "dry-run", {
-  argv: process.argv.slice(2),
+  argv: args,
   target,
   detected_stack: { name: stack.name, pm: stack.pm },
   protected_paths: protectedPaths,
-  proposals: proposeWork(stack, hotFiles),
+  proposals,
   hot_files: hotFiles,
   exit_code: 0,
   duration_ms: Date.now() - startMs,
