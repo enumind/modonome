@@ -1,0 +1,121 @@
+/*
+ * Base layer. Every screen wraps its content in an element carrying the `mdn-root`
+ * class (the AppShell does this for you). That wrapper establishes the dark ground,
+ * the body font, and the default text color, and it is where the token custom
+ * properties are inherited from. Without it, components fall back to browser defaults.
+ */
+
+.mdn-root {
+  background: var(--mdn-bg);
+  color: var(--mdn-text);
+  font-family: var(--mdn-font-body);
+  font-size: var(--mdn-text-base);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.mdn-root *,
+.mdn-root *::before,
+.mdn-root *::after {
+  box-sizing: border-box;
+}
+
+/* Shared type helpers */
+.mdn-heading {
+  font-family: var(--mdn-font-heading);
+  color: var(--mdn-heading);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.mdn-mono {
+  font-family: var(--mdn-font-mono);
+}
+.mdn-label {
+  font-family: var(--mdn-font-mono);
+  font-size: var(--mdn-text-xs);
+  letter-spacing: var(--mdn-tracking-label);
+  text-transform: uppercase;
+  color: var(--mdn-text-3);
+}
+.mdn-eyebrow {
+  font-family: var(--mdn-font-mono);
+  font-size: var(--mdn-text-sm);
+  letter-spacing: var(--mdn-tracking-label);
+  text-transform: uppercase;
+  color: var(--mdn-primary);
+}
+.mdn-dim {
+  color: var(--mdn-text-3);
+}
+.mdn-faint {
+  color: var(--mdn-muted);
+}
+
+/* Layout helpers */
+.mdn-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mdn-space-3);
+}
+.mdn-row {
+  display: flex;
+  align-items: center;
+  gap: var(--mdn-space-3);
+}
+.mdn-row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mdn-space-3);
+}
+.mdn-grid {
+  display: grid;
+  gap: var(--mdn-space-4);
+}
+.mdn-spacer {
+  flex: 1 1 auto;
+}
+.mdn-divider {
+  height: 1px;
+  background: var(--mdn-border);
+  border: 0;
+  margin: 0;
+}
+
+/* Focus: always visible, teal ring, never removed */
+.mdn-root :focus-visible {
+  outline: 2px solid var(--mdn-border-focus);
+  outline-offset: 2px;
+  border-radius: var(--mdn-radius-xs);
+}
+
+/* Screen-reader-only text for icon-only affordances */
+.mdn-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Connective gradient line used between paired states */
+.mdn-gradient-line {
+  height: 2px;
+  background: var(--mdn-gradient-line);
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mdn-root *,
+  .mdn-root *::before,
+  .mdn-root *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

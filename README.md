@@ -21,7 +21,8 @@ structurally separate, enforced in CI. Off by default, and it runs without a cen
   <a href="GOVERNANCE.md">Governance</a> ·
   <a href="docs/compliance/compliance.md">Compliance</a> ·
   <a href="docs/specs/governed-autonomy-spec.md">Specification</a> ·
-  <a href="agentproof/README.md">AgentProof</a>
+  <a href="agentproof/README.md">AgentProof</a> ·
+  <a href="apps/control-panel/README.md">Control panel</a>
 </p>
 
 <p align="center">
@@ -80,6 +81,14 @@ npx modonome scaffold . --write
 - Protected paths (CI, secrets, schemas, migrations, lockfiles, auth) wait for owner review.
 - Model spend stays opt-in; local or already-paid models come first.
 - Cross-repo sharing stays off until you enable it.
+
+## Operator control panel
+
+A reference control panel lives at [`apps/control-panel/`](apps/control-panel/README.md):
+arm and disarm, tune caps and budget, watch the work queue and gates, approve protected-path
+changes, and promote or prune learnings, for a host repo or for modonome governing itself.
+It reads real `.modonome/` state and, opt-in, writes back to it. Status: in progress, tracked
+as [Milestone 3](ROADMAP.md#milestone-3--control-panel-and-metrics-dashboard).
 
 ## How it works
 

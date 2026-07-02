@@ -1,0 +1,191 @@
+.mdn-ladder {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mdn-space-6);
+}
+
+/* Rungs */
+.mdn-ladder__rungs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--mdn-space-3);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.mdn-ladder__rung {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: var(--mdn-space-4);
+  border: 1px solid var(--mdn-border);
+  border-radius: var(--mdn-radius-md);
+  background: var(--mdn-surface-1);
+  opacity: 0.6;
+}
+.mdn-ladder__rung.is-active {
+  opacity: 1;
+}
+.mdn-ladder__rung.is-passed {
+  opacity: 0.85;
+}
+.mdn-ladder__rung.is-active.mdn-ladder__rung--disabled {
+  border-color: var(--mdn-mode-disabled);
+}
+.mdn-ladder__rung.is-active.mdn-ladder__rung--dry-run {
+  border-color: var(--mdn-mode-dryrun);
+}
+.mdn-ladder__rung.is-active.mdn-ladder__rung--armed {
+  border-color: var(--mdn-mode-armed);
+  box-shadow: var(--mdn-shadow-glow);
+}
+.mdn-ladder__node {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--mdn-surface-3);
+  color: var(--mdn-text-3);
+}
+.mdn-ladder__rung.is-active .mdn-ladder__node {
+  background: var(--mdn-primary-soft);
+  color: var(--mdn-primary);
+}
+.mdn-ladder__rung.is-passed .mdn-ladder__node {
+  background: var(--mdn-primary-soft);
+  color: var(--mdn-primary);
+}
+.mdn-ladder__rung-label {
+  font-family: var(--mdn-font-heading);
+  font-weight: 600;
+  color: var(--mdn-heading);
+}
+.mdn-ladder__rung-blurb {
+  font-size: var(--mdn-text-sm);
+  color: var(--mdn-text-3);
+}
+.mdn-ladder__line {
+  position: absolute;
+  top: calc(var(--mdn-space-4) + 13px);
+  right: calc(var(--mdn-space-3) * -1);
+  width: var(--mdn-space-3);
+  height: 2px;
+  background: var(--mdn-border-strong);
+}
+
+/* Checklist */
+.mdn-ladder__checklist-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--mdn-space-3);
+}
+.mdn-ladder__count {
+  font-family: var(--mdn-font-mono);
+  font-size: var(--mdn-text-xs);
+  padding: 3px 10px;
+  border-radius: var(--mdn-radius-pill);
+}
+.mdn-ladder__count.is-ok {
+  color: var(--mdn-primary);
+  background: var(--mdn-primary-soft);
+}
+.mdn-ladder__count.is-blocked {
+  color: var(--mdn-owner);
+  background: var(--mdn-owner-soft);
+}
+.mdn-ladder__checks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--mdn-space-2);
+}
+.mdn-ladder__check {
+  display: flex;
+  gap: var(--mdn-space-2);
+  padding: var(--mdn-space-3);
+  border-radius: var(--mdn-radius-sm);
+  background: var(--mdn-surface-1);
+  border: 1px solid var(--mdn-border);
+}
+.mdn-ladder__check.is-ok {
+  color: var(--mdn-primary);
+}
+.mdn-ladder__check.is-blocked {
+  color: var(--mdn-owner);
+  border-color: rgba(245, 177, 74, 0.28);
+}
+.mdn-ladder__check-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.mdn-ladder__check-label {
+  display: flex;
+  align-items: center;
+  gap: var(--mdn-space-2);
+  font-weight: 600;
+  font-size: var(--mdn-text-md);
+  color: var(--mdn-heading);
+}
+.mdn-ladder__owner-tag {
+  font-family: var(--mdn-font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--mdn-owner);
+  background: var(--mdn-owner-soft);
+  padding: 1px 6px;
+  border-radius: var(--mdn-radius-pill);
+}
+.mdn-ladder__check-reason {
+  font-size: var(--mdn-text-sm);
+  color: var(--mdn-text-3);
+}
+
+/* Actions */
+.mdn-ladder__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--mdn-space-3);
+}
+.mdn-ladder__hint {
+  font-size: var(--mdn-text-sm);
+  color: var(--mdn-muted);
+}
+
+.mdn-ladder__kill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  padding: 6px 4px;
+  border: none;
+  background: none;
+  color: var(--mdn-faint);
+  font-family: var(--mdn-font-mono);
+  font-size: var(--mdn-text-xs);
+  cursor: pointer;
+  transition: color var(--mdn-dur) var(--mdn-ease);
+}
+.mdn-ladder__kill:hover,
+.mdn-ladder__kill:focus-visible {
+  color: var(--mdn-danger);
+}
+
+@media (max-width: 720px) {
+  .mdn-ladder__rungs,
+  .mdn-ladder__checks {
+    grid-template-columns: 1fr;
+  }
+  .mdn-ladder__line {
+    display: none;
+  }
+}

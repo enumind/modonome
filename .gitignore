@@ -29,6 +29,17 @@ __pycache__/
 CLAUDE.md
 runs/
 
+# Design-sync converter scratch, staged scripts, and generated upload bundle
+.ds-sync/
+ds-bundle/
+.design-sync/.cache/
+.design-sync/learnings/
+.design-sync/node_modules
+
+# Frontend build output and local caches (dist/ already ignored above)
+.vite/
+*.tsbuildinfo
+
 # Modonome snapshot portable pack (regenerate with: modonome snapshot --pack)
 *.msnap
 

@@ -1,0 +1,20 @@
+.mdn-helphint {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--mdn-faint);
+  cursor: help;
+  transition: color var(--mdn-dur-fast) var(--mdn-ease), background var(--mdn-dur-fast) var(--mdn-ease);
+}
+
+.mdn-helphint:hover,
+.mdn-helphint:focus-visible {
+  color: var(--mdn-text-2);
+  background: var(--mdn-surface-2);
+}

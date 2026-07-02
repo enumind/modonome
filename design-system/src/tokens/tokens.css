@@ -1,0 +1,137 @@
+/*
+ * Modonome design tokens.
+ * Palette, type, spacing, radius, shadow, and motion derived from the modonome.com
+ * brand. Every value is a CSS custom property so a host app can retheme by overriding
+ * the ones it cares about. Semantic status tokens map the governance vocabulary
+ * (arming modes, work-item states, risk actors) to color so status is never carried
+ * by hue alone; components always pair a token with an icon and a label.
+ */
+
+:root {
+  /* Ground surfaces */
+  --mdn-bg: #0b1220;
+  --mdn-bg-alt: #091020;
+  --mdn-bg-deep: #070d1a;
+  --mdn-surface-1: rgba(159, 201, 180, 0.04);
+  --mdn-surface-2: rgba(159, 201, 180, 0.07);
+  --mdn-surface-3: rgba(159, 201, 180, 0.12);
+  --mdn-scrim: rgba(7, 13, 26, 0.72);
+
+  /* Brand accents */
+  --mdn-primary: #5dd4ab;
+  --mdn-primary-strong: #3ec98a;
+  --mdn-primary-ink: #0b1220;
+  --mdn-primary-soft: rgba(93, 212, 171, 0.12);
+  --mdn-primary-glow: rgba(93, 212, 171, 0.32);
+  --mdn-info: #7cc4ff;
+  --mdn-info-soft: rgba(124, 196, 255, 0.12);
+  --mdn-owner: #f5b14a;
+  --mdn-owner-soft: rgba(245, 177, 74, 0.13);
+  --mdn-danger: #f2685f;
+  --mdn-danger-soft: rgba(242, 104, 95, 0.13);
+  --mdn-warning: #f5b14a;
+
+  /* Text */
+  --mdn-heading: #f6f4ee;
+  --mdn-text: #e8ebf0;
+  --mdn-text-2: #aeb9c8;
+  --mdn-text-3: #9fabbc;
+  --mdn-muted: #7c8aa0;
+  --mdn-faint: #54627a;
+  --mdn-fainter: #3a4658;
+
+  /* Borders and dividers */
+  --mdn-border: rgba(159, 201, 180, 0.12);
+  --mdn-border-strong: rgba(159, 201, 180, 0.22);
+  --mdn-border-teal: rgba(93, 212, 171, 0.3);
+  --mdn-border-focus: rgba(93, 212, 171, 0.6);
+
+  /* Feature gradient (teal to CI blue), used for connective lines */
+  --mdn-gradient-line: linear-gradient(90deg, #5dd4ab, #7cc4ff);
+  --mdn-gradient-halo: radial-gradient(ellipse at center, rgba(62, 201, 138, 0.13), transparent 64%);
+
+  /* Type families */
+  --mdn-font-heading: "Space Grotesk", system-ui, sans-serif;
+  --mdn-font-body: "IBM Plex Sans", system-ui, sans-serif;
+  --mdn-font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  /* Type scale */
+  --mdn-text-xs: 11.5px;
+  --mdn-text-sm: 12.5px;
+  --mdn-text-md: 13.5px;
+  --mdn-text-base: 15px;
+  --mdn-text-lg: 17px;
+  --mdn-text-xl: 20px;
+  --mdn-text-2xl: 26px;
+  --mdn-text-3xl: 34px;
+  --mdn-tracking-label: 0.2em;
+
+  /* Spacing scale */
+  --mdn-space-1: 4px;
+  --mdn-space-2: 8px;
+  --mdn-space-3: 12px;
+  --mdn-space-4: 16px;
+  --mdn-space-5: 20px;
+  --mdn-space-6: 24px;
+  --mdn-space-7: 32px;
+  --mdn-space-8: 44px;
+
+  /* Radius */
+  --mdn-radius-xs: 6px;
+  --mdn-radius-sm: 9px;
+  --mdn-radius-md: 11px;
+  --mdn-radius-lg: 14px;
+  --mdn-radius-xl: 20px;
+  --mdn-radius-pill: 999px;
+
+  /* Elevation */
+  --mdn-shadow-glow: 0 10px 26px rgba(93, 212, 171, 0.32);
+  --mdn-shadow-card: 0 18px 44px rgba(0, 0, 0, 0.4);
+  --mdn-shadow-pop: 0 30px 70px rgba(0, 0, 0, 0.45);
+
+  /* Motion */
+  --mdn-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --mdn-dur-fast: 0.15s;
+  --mdn-dur: 0.2s;
+  --mdn-dur-slow: 0.35s;
+
+  /* Layout */
+  --mdn-shell-sidebar: 244px;
+  --mdn-shell-topbar: 60px;
+  --mdn-content-max: 1180px;
+
+  /* Z-index */
+  --mdn-z-nav: 50;
+  --mdn-z-drawer: 80;
+  --mdn-z-modal: 100;
+  --mdn-z-toast: 120;
+  --mdn-z-tooltip: 140;
+
+  /* Semantic status: arming modes */
+  --mdn-mode-disabled: #7c8aa0;
+  --mdn-mode-dryrun: #7cc4ff;
+  --mdn-mode-armed: #5dd4ab;
+
+  /* Semantic status: work-item states */
+  --mdn-state-queued: #7c8aa0;
+  --mdn-state-claimed: #9fabbc;
+  --mdn-state-making: #7cc4ff;
+  --mdn-state-checking: #5dd4ab;
+  --mdn-state-rework: #f5b14a;
+  --mdn-state-merge_ready: #5dd4ab;
+  --mdn-state-merging: #3ec98a;
+  --mdn-state-done: #6fdcb4;
+  --mdn-state-escalated: #f2685f;
+
+  /* Semantic status: generic signal */
+  --mdn-ok: #5dd4ab;
+  --mdn-pending: #7cc4ff;
+  --mdn-attention: #f5b14a;
+  --mdn-blocked: #f2685f;
+
+  /* Risk tiers */
+  --mdn-tier-1: #5dd4ab;
+  --mdn-tier-2: #7cc4ff;
+  --mdn-tier-3: #f5b14a;
+  --mdn-tier-4: #f2685f;
+}

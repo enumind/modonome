@@ -1,0 +1,97 @@
+.mdn-arming {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mdn-space-3);
+  border-radius: var(--mdn-radius-pill);
+  border: 1px solid var(--mdn-border-strong);
+  background: var(--mdn-surface-1);
+  color: var(--mdn-text);
+}
+.mdn-arming--sm {
+  padding: 5px 12px 5px 5px;
+  gap: var(--mdn-space-2);
+}
+.mdn-arming--md {
+  padding: 7px 16px 7px 7px;
+}
+.mdn-arming--lg {
+  padding: 10px 22px 10px 10px;
+  gap: var(--mdn-space-4);
+}
+
+.mdn-arming__dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+.mdn-arming--lg .mdn-arming__dot {
+  width: 40px;
+  height: 40px;
+}
+.mdn-arming--sm .mdn-arming__dot {
+  width: 24px;
+  height: 24px;
+}
+
+.mdn-arming__text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.mdn-arming__label {
+  font-family: var(--mdn-font-heading);
+  font-weight: 600;
+  color: var(--mdn-heading);
+  font-size: var(--mdn-text-base);
+}
+.mdn-arming--lg .mdn-arming__label {
+  font-size: var(--mdn-text-xl);
+}
+.mdn-arming__blurb {
+  font-size: var(--mdn-text-sm);
+  color: var(--mdn-text-3);
+}
+.mdn-arming__env {
+  font-family: var(--mdn-font-mono);
+  font-size: var(--mdn-text-xs);
+  color: var(--mdn-muted);
+  padding-left: var(--mdn-space-3);
+  border-left: 1px solid var(--mdn-border);
+}
+.mdn-arming__env.is-on {
+  color: var(--mdn-primary);
+}
+
+/* Mode coloring */
+.mdn-arming--disabled .mdn-arming__dot {
+  background: rgba(124, 138, 160, 0.14);
+  color: var(--mdn-mode-disabled);
+}
+.mdn-arming--dry-run .mdn-arming__dot {
+  background: var(--mdn-info-soft);
+  color: var(--mdn-mode-dryrun);
+}
+.mdn-arming--armed {
+  border-color: var(--mdn-border-teal);
+}
+.mdn-arming--armed .mdn-arming__dot {
+  background: var(--mdn-primary-soft);
+  color: var(--mdn-mode-armed);
+  animation: mdn-arming-pulse 2.4s var(--mdn-ease) infinite;
+}
+
+@keyframes mdn-arming-pulse {
+  0% {
+    box-shadow: 0 0 0 0 var(--mdn-primary-glow);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(93, 212, 171, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(93, 212, 171, 0);
+  }
+}

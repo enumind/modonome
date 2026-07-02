@@ -75,6 +75,18 @@ jobs:
       - name: Run checker engagement gate
         run: node scripts/check-checker-engagement.mjs
 
+      - name: Install control-panel frontend dependencies
+        run: npm install --prefix design-system && npm install --prefix apps/control-panel
+
+      - name: Run design-system build
+        run: npm run build --prefix design-system
+
+      - name: Run control-panel typecheck and build
+        run: npm run build --prefix apps/control-panel
+
+      - name: Run control-panel governance gates
+        run: npm run check:control-panel
+
       - name: Run tests gate
         run: node --test tests/*.test.mjs
 

@@ -1,0 +1,26 @@
+{
+  "name": "@modonome/control-panel",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Modonome operator control panel. Monitors and configures the governed-autonomy engine across a host repo (host mode) and modonome governing its own repo (product mode).",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "js-yaml": "^4.3.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11"
+  }
+}

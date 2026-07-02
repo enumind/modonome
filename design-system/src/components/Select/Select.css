@@ -1,0 +1,78 @@
+.mdn-select-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mdn-space-2);
+}
+
+.mdn-select-field--disabled {
+  opacity: 0.55;
+}
+
+.mdn-select-field__label-row {
+  display: flex;
+  align-items: center;
+  gap: var(--mdn-space-2);
+}
+
+.mdn-select-field__label {
+  margin: 0;
+}
+
+.mdn-select-field__error {
+  margin: 0;
+  font-family: var(--mdn-font-mono);
+  font-size: var(--mdn-text-xs);
+  color: var(--mdn-danger);
+}
+
+.mdn-select {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--mdn-surface-1);
+  border: 1px solid var(--mdn-border);
+  border-radius: var(--mdn-radius-sm);
+  transition: border-color var(--mdn-dur) var(--mdn-ease);
+}
+
+.mdn-select:hover {
+  border-color: var(--mdn-border-strong);
+}
+
+.mdn-select:focus-within {
+  border-color: var(--mdn-border-teal);
+}
+
+.mdn-select--error {
+  border-color: rgba(242, 104, 95, 0.5);
+}
+
+.mdn-select__control {
+  flex: 1 1 auto;
+  width: 100%;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  outline: none;
+  color: var(--mdn-text);
+  font-family: var(--mdn-font-body);
+  font-size: var(--mdn-text-md);
+  padding: 9px var(--mdn-space-7) 9px var(--mdn-space-3);
+  cursor: pointer;
+}
+
+.mdn-select__control:disabled {
+  cursor: not-allowed;
+}
+
+.mdn-select__control option {
+  background: var(--mdn-bg-alt);
+  color: var(--mdn-text);
+}
+
+.mdn-select__chevron {
+  position: absolute;
+  right: var(--mdn-space-3);
+  pointer-events: none;
+  color: var(--mdn-text-3);
+}
