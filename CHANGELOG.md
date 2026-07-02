@@ -9,6 +9,42 @@ or CVE identifier where one exists.
 
 ## Unreleased
 
+### Governed Remediation Phase 2: armed metadata-only commit-history remediator
+
+- Added `scripts/lib/remediate.mjs` (pure planner) and `scripts/remediate.mjs` (CLI,
+  also `modonome remediate plan|apply`). This completes the loop Phase 1 left open:
+  `hygiene` detects attribution signatures and prints the commit-identity and
+  commit-message remedies but defers applying them to "the armed, gated remediator
+  (later phase)". `remediate plan` is a tokenless, read-only proposal (no model, no
+  network) that prints a deterministic fingerprint; `remediate apply` performs the
+  rewrite.
+- The applier is metadata-only and provably so: it replays the branch-unique range
+  with `git commit-tree`, reusing each commit's original tree object, and verifies
+  every rewritten commit's tree SHA is unchanged (and the top tree is unchanged)
+  before moving the branch ref, resetting hard to the saved head on any mismatch. It
+  is deterministic, re-runnable, and idempotent (a second run is a no-op), and it
+  never touches published history: the range is `origin/main..HEAD`, and it refuses on
+  the default branch, on a dirty tracked working tree, on a merge in range, and when
+  `origin/main` is absent.
+- Gated apply behind a new capability flag `remediation_apply_enabled`, default off,
+  added to the config schema, both `config.yaml` files, `migrate-config` safe defaults,
+  and the prompt core. Following ADR-004 and ADR-024, apply requires
+  `autonomy_enabled` and not `dry_run` and the capability flag in config AND the
+  authoritative `MODONOME_ARMED=true` in the environment, so a config the agent can
+  write can never arm it, and even a fully armed engine will not rewrite history until
+  an owner turns this one capability on. `check-promotion-readiness.mjs` now tracks the
+  flag, so it cannot reach default-on in a shipped config without a promotion ADR.
+- Extended the determinism boundary in `check-gate-dag.mjs`: the strict detectors are
+  now proven to reach neither the near-miss widener nor the new applier through their
+  import graph, so the detection kernel stays a pure, side-effect-free, base-pinnable
+  trust root while the applier depends on the detectors and never the reverse.
+- Registered the flag in `apps/control-panel/exposure.json` as a documented exemption:
+  its owner-facing lever family (a proposal queue plus an approve action) is the Phase 2
+  control-panel follow-up, so apply is CLI-only and owner-gated until then.
+- Recorded the trust boundary and the default-off-until-evidence promotion path in
+  `docs/adr/ADR-035-metadata-remediator.md`. The lever is additive and off by default,
+  so it is backward compatible and needs no schema version bump.
+
 ### Governed Remediation Phase 1: near-miss widener and human-only promotion path
 
 - Added `scripts/lib/near-miss.mjs`, a deterministic near-miss widener that flags
