@@ -17,23 +17,13 @@
  * destructive operation reserved for the armed, gated remediator (later phase).
  */
 
-import { spawnSync } from "node:child_process";
 import {
   detectBranch,
   detectCommits,
   detectText,
   formatRemedy,
 } from "./lib/detect-attribution.mjs";
-
-function git(args, opts = {}) {
-  const res = spawnSync("git", args, { encoding: "utf8", ...opts });
-  return { status: res.status ?? 1, out: (res.stdout || "").trim(), err: (res.stderr || "").trim() };
-}
-
-function currentBranch() {
-  const r = git(["rev-parse", "--abbrev-ref", "HEAD"]);
-  return r.status === 0 ? r.out : "";
-}
+import { git, currentBranch, commitsInRange } from "./lib/git-scope.mjs";
 
 // Collect findings for the current branch, the commits unique to it, and the
 // PR-body-shaped surfaces we can see locally (the commit bodies themselves).
@@ -46,19 +36,10 @@ function collectFindings() {
     if (f) findings.push(f);
   }
 
-  // Commits unique to this branch relative to origin/main (fall back to last commit).
-  let range = "origin/main..HEAD";
-  if (git(["rev-parse", "--verify", "--quiet", "origin/main"]).status !== 0) range = "HEAD~20..HEAD";
-  const log = git(["log", range, "--no-merges", "--format=%an%x09%ae%x09%cn%x09%ce%x09%h"]);
-  const shas = git(["log", range, "--no-merges", "--format=%h"]);
-  const bodies = [];
-  if (shas.status === 0 && shas.out) {
-    for (const sha of shas.out.split("\n").filter(Boolean)) {
-      const body = git(["log", "-1", "--format=%B", sha]);
-      bodies.push({ sha, body: body.out });
-    }
-  }
-  if (log.status === 0) findings.push(...detectCommits(log.out, bodies));
+  // Commits unique to this branch relative to origin/main (fall back to last commits).
+  const { logOutput, commits } = commitsInRange();
+  const bodies = commits.map((c) => ({ sha: c.sha, body: c.body }));
+  if (logOutput) findings.push(...detectCommits(logOutput, bodies));
 
   return { branch, findings };
 }

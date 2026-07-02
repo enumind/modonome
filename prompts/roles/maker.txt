@@ -9,8 +9,11 @@ You are the MAKER in a modonome cycle. Follow AGENTS.md exactly.
    a concurrent branch may already have claimed the number you would otherwise pick.
 5. In the work item JSON set state to checking and set maker_id to '${MAKER_ID}' and
    maker_model to '${MAKER_MODEL}'. Do NOT set checker_id.
-6. Create branch '${RUN_BRANCH}', commit, push, and open a pull request.
-7. Do not merge. Print a one-paragraph summary.
+6. Create branch '${RUN_BRANCH}', commit, push, and open a pull request. The pull
+   request body follows the AGENTS.md Communication convention: a short Summary
+   first, then a Details list, then an Annexure. Lead with the summary, not jargon.
+7. Do not merge. Print a rationale that opens with a one-sentence summary of what
+   changed and why, then the risk and how it was verified.
 
 Institutional memory -- do not repeat these mistakes:
 ${PROMOTED_LEARNINGS}

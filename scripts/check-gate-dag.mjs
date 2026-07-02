@@ -5,14 +5,85 @@
 // gates it depends on, so an edge gate -> dependency means "gate needs
 // dependency first". On success the topological order is printed with each
 // gate's dependencies ahead of it.
+//
+// It also proves a second, orthogonal graph property: the determinism boundary.
+// The deterministic detectors must never import the near-miss widener, so
+// "fuzzy can only tighten, never override" is a checked import-graph property,
+// not a convention. Both checks share one exit code; either failing fails CI.
 // Usage: node scripts/check-gate-dag.mjs [path/to/gate-graph.json]
-import { readFileSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { dirname, resolve } from "node:path";
-import { isCyclic, topoSort } from "./lib/graph.mjs";
+import { dirname, resolve, relative, sep } from "node:path";
+import { isCyclic, topoSort, reachableFrom } from "./lib/graph.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const DEFAULT_PATH = resolve(here, "../schemas/gate-graph.json");
+const REPO_ROOT = resolve(here, "..");
+
+// The deterministic detectors and the two orchestrators that consume them. A
+// promotion may only TIGHTEN these by editing their own literals; none of them
+// may import the fuzzy widener, directly or through any relative-import hop.
+const DETERMINISTIC_ENTRY_FILES = [
+  "scripts/guard-ratchet.mjs",
+  "scripts/check-repo-hygiene.mjs",
+  "scripts/lib/branch-name.mjs",
+  "scripts/lib/commit-identity.mjs",
+  "scripts/lib/detect-attribution.mjs",
+];
+// The widener. The reverse edge is required and allowed: near-miss.mjs imports the
+// strict predicates so it can suppress anything strict already catches. Only the
+// forbidden direction (detector -> widener) is checked here.
+const FORBIDDEN_IMPORT = "scripts/lib/near-miss.mjs";
+
+// Extract the relative import specifiers from one module's source: static
+// `from "..."`, side-effect `import "..."`, and dynamic `import("...")`. A
+// regex scan (no AST dependency) matches this repo's house style.
+function relativeImportsOf(absFile) {
+  const src = readFileSync(absFile, "utf8");
+  const specs = [];
+  for (const m of src.matchAll(/\bfrom\s*["']([^"']+)["']/g)) specs.push(m[1]);
+  for (const m of src.matchAll(/\bimport\s*\(\s*["']([^"']+)["']/g)) specs.push(m[1]);
+  for (const m of src.matchAll(/\bimport\s+["']([^"']+)["']/g)) specs.push(m[1]);
+  return specs.filter((s) => s.startsWith("."));
+}
+
+// Build a transitive {repoRelativeFile: [importedFiles]} adjacency map by walking
+// relative imports out from the entry files, then assert FORBIDDEN_IMPORT is
+// unreachable from every entry. Reads files from disk (this branch's own copy),
+// which is why ci.yml runs this before the base-branch checkout on a PR.
+export function determinismBoundaryErrors(root = REPO_ROOT) {
+  const adjacency = {};
+  const visited = new Set();
+  const walk = (relFile) => {
+    if (visited.has(relFile)) return;
+    visited.add(relFile);
+    const absFile = resolve(root, relFile);
+    if (!existsSync(absFile)) {
+      adjacency[relFile] = [];
+      return;
+    }
+    const neighbours = [];
+    for (const spec of relativeImportsOf(absFile)) {
+      const absTarget = resolve(dirname(absFile), spec);
+      const relTarget = relative(root, absTarget).split(sep).join("/");
+      neighbours.push(relTarget);
+      walk(relTarget);
+    }
+    adjacency[relFile] = neighbours;
+  };
+  for (const entry of DETERMINISTIC_ENTRY_FILES) walk(entry);
+
+  const errors = [];
+  for (const entry of DETERMINISTIC_ENTRY_FILES) {
+    if (reachableFrom(adjacency, entry).has(FORBIDDEN_IMPORT)) {
+      errors.push(
+        `${entry} can reach ${FORBIDDEN_IMPORT} through its import graph. A deterministic ` +
+          `detector must never import the near-miss widener (fuzzy may only tighten, never override).`,
+      );
+    }
+  }
+  return errors;
+}
 
 // gateGraphErrors(graph) -> { errors: [...], order: [...] }
 // `errors` lists every defect (dangling edge or cycle); when it is empty,
@@ -51,12 +122,20 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const path = process.argv[2] || DEFAULT_PATH;
   const graph = JSON.parse(readFileSync(path, "utf8"));
   const { errors, order } = gateGraphErrors(graph);
-  if (errors.length > 0) {
-    console.error(`Gate graph invalid: ${path}`);
-    for (const e of errors) console.error("  - " + e);
+  const boundaryErrors = determinismBoundaryErrors();
+  if (errors.length > 0 || boundaryErrors.length > 0) {
+    if (errors.length > 0) {
+      console.error(`Gate graph invalid: ${path}`);
+      for (const e of errors) console.error("  - " + e);
+    }
+    if (boundaryErrors.length > 0) {
+      console.error("Determinism boundary violated:");
+      for (const e of boundaryErrors) console.error("  - " + e);
+    }
     process.exit(1);
   }
   console.log(`Gate graph valid: ${path}`);
   console.log("Topological order (dependencies first):");
   for (const gate of order) console.log("  " + gate);
+  console.log("Determinism boundary: deterministic detectors do not import the near-miss widener.");
 }

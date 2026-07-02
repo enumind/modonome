@@ -37,6 +37,11 @@ jobs:
       - run: node scripts/check-architecture-drift.mjs
       - run: node scripts/check-self-application.mjs
       - run: node scripts/snapshot.mjs . --check
+      - run: node --test tests/branch-name.test.mjs tests/commit-identity.test.mjs tests/detect-attribution.test.mjs tests/near-miss.test.mjs
+      - run: node scripts/check-attribution-fp-corpus.mjs
+      - run: node scripts/check-regex-safety.mjs
+      - run: node scripts/check-gate-dag.mjs
+      - run: node scripts/detect-near-miss.mjs
       - run: git checkout "origin/\${{ github.base_ref }}" -- scripts/guard-ratchet.mjs
       - run: git checkout "origin/\${{ github.base_ref }}" -- scripts/check-style.mjs
       - run: git checkout "origin/\${{ github.base_ref }}" -- scripts/check-repo-hygiene.mjs

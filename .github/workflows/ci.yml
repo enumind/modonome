@@ -28,6 +28,27 @@ jobs:
       - name: Run snapshot freshness gate
         run: node scripts/snapshot.mjs . --check
 
+      # Promotion-safety gates (Governed Remediation Phase 1). These judge THIS
+      # branch's own proposed changes to the deterministic detectors, so they must
+      # run BEFORE the base-branch checkout below overwrites those files with the
+      # base copy, in the same pre-checkout position (and for the same reason) as the
+      # snapshot freshness gate above. On a promotion PR the detector kernel, its own
+      # unit tests, the false-positive corpus, the regex-safety lint, and the
+      # determinism-boundary rule all must see the PR's code, not the base copy.
+      - name: Run detector-kernel unit tests against this branch's own code
+        run: node --test tests/branch-name.test.mjs tests/commit-identity.test.mjs tests/detect-attribution.test.mjs tests/near-miss.test.mjs
+      - name: Run attribution false-positive corpus gate
+        run: node scripts/check-attribution-fp-corpus.mjs
+      - name: Run regex safety gate
+        run: node scripts/check-regex-safety.mjs
+      - name: Run gate DAG and determinism boundary gate
+        run: node scripts/check-gate-dag.mjs
+      # Advisory only: surfaces near-miss attribution tokens as LEARNINGS.md
+      # proposals for human review. It never blocks CI (always exits 0 on a finding);
+      # promotion into the deterministic denylist stays human-only.
+      - name: Run near-miss widener (advisory)
+        run: node scripts/detect-near-miss.mjs
+
       # Mandatory Base-Branch Checkouts matching check-self-application.mjs criteria
       # NOTE: These steps only run on pull requests where github.base_ref is defined.
       # On push events, github.base_ref is empty, so these are skipped to prevent
