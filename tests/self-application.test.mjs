@@ -36,6 +36,7 @@ jobs:
       - run: node scripts/check-md-governance.mjs
       - run: node scripts/check-architecture-drift.mjs
       - run: node scripts/check-self-application.mjs
+      - run: node bin/modonome.mjs hygiene check --pr 1
       - run: node scripts/snapshot.mjs . --check
       - run: node --test tests/branch-name.test.mjs tests/commit-identity.test.mjs tests/detect-attribution.test.mjs tests/near-miss.test.mjs
       - run: node scripts/check-attribution-fp-corpus.mjs

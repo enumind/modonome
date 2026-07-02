@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:18290b0d64d5a601380b3ff02b923197d7517cecd6910ea5d76457a769c4093b
-Files: 781  Bytes: 2567686  Map tokens: 93262/120000
+Merkle root: sha256:9d8b179cede06b1c40e7afa9ec903d28a8e095bf55ce6a11a4e4b169f74c6ce7
+Files: 785  Bytes: 2586268  Map tokens: 94394/120000
 
 ## Modules
 
@@ -287,6 +287,7 @@ Files: 781  Bytes: 2567686  Map tokens: 93262/120000
 - scripts/lib/detect-attribution.mjs [F:4a7eaceb5c]: True when any path segment of a branch name exactly equals a denylisted token. * This is a strict superset of isModelIdentifierBranch (which checks only the fir
 - scripts/lib/ed25519.mjs [F:0cacf66a3b]: Raw 32-byte public key as base64, accepting either a public or private KeyObject.
 - scripts/lib/git-scope.mjs [F:ff2c4a08a4]: The commit range unique to this branch: origin/main..HEAD, falling back to the * last 20 commits when origin/main is not available (a fresh clone or local repo)
+- scripts/lib/github-api.mjs [F:cdbe769ed3]: Resolve the owner/repo, preferring the GITHUB_REPOSITORY env, then git origin.
 - scripts/lib/graph.mjs [F:f51cba9beb]: isCyclic(adjacency) -> { cyclic: bool, cycle: [...] } Detects whether the graph contains a cycle. When a cycle is found, `cycle` holds the nodes involved in the
 - scripts/lib/jsonschema.mjs [F:34cb2b6c48]: A small, dependency-free JSON Schema validator.
 - scripts/lib/lang-adapters/generic.mjs [F:594f505f11]: Fallback extractor for languages without a dedicated adapter. It captures common
@@ -349,7 +350,9 @@ Files: 781  Bytes: 2567686  Map tokens: 93262/120000
 - tests/dry-run.test.mjs [F:778c33cdc0]: function dryRun
 - tests/e2e.test.mjs [F:9cbe9238f8]: function tmp
 - tests/embedding-safety.test.mjs [F:cc65dd1342]: Run preflight in --json mode against a fixture. Returns { code, report, raw }. A clean environment is used so the host's own MODONOME_* shell does not leak into
+- tests/helpers/mock-github-server.mjs [F:4dabd020df]: Start a mock GitHub API server. * * @param {object} [options] * @param {object} [options.pr] - The PR object returned by the pulls endpoint (title, body). * @pa
 - tests/helpers/mock-openai-server.mjs [F:eb14a0bdeb]: Start a mock OpenAI chat-completions server. * * @param {object} [options] * @param {"success"|"retry-then-success"|"delay"|"malformed"|"error"} [options.mode] 
+- tests/hygiene.test.mjs [F:9bb94e1b40]: function cli
 - tests/learnings.test.mjs [F:54a3c626d9]: function run
 - tests/maker-checker.test.mjs [F:5994385869]: function run
 - tests/mcp-compliance.test.mjs [F:a167609a41]: Send requests to a fresh server process and resolve once every expected id has replied. The child is killed as soon as the responses arrive, which avoids the st
@@ -691,7 +694,7 @@ Files: 781  Bytes: 2567686  Map tokens: 93262/120000
 - S:64de4c98b6 function makeRepoOnce `function makeRepoOnce()` L91 : Helper reused by the mapping test.
 ### scripts/check-self-application.mjs [F:4096620673]
 - S:91c42b4f27 function read `function read(rel)` L21
-- S:87c8d03eb8 function dirsFromCodeowners `function dirsFromCodeowners()` L103 : 4. The two protected-path surfaces must agree. CODEOWNERS is what GitHub enforces; protected_paths_extra is what the engine reads. If they disagree, a path is protected in name only (the bin/ gap that
+- S:87c8d03eb8 function dirsFromCodeowners `function dirsFromCodeowners()` L106 : 4. The two protected-path surfaces must agree. CODEOWNERS is what GitHub enforces; protected_paths_extra is what the engine reads. If they disagree, a path is protected in name only (the bin/ gap that
 ### tests/cli-dispatch.test.mjs [F:40e4f39b59]
 - S:daac1f172a function cli `function cli(...args)` L12
 - S:1c82a73570 function tmp `function tmp()` L19
@@ -708,9 +711,9 @@ Files: 781  Bytes: 2567686  Map tokens: 93262/120000
 ### scripts/check-architecture-drift.mjs [F:4749cc43a0]
 - S:fd2e16186e function escapeRegExp `function escapeRegExp(s)` L67 : Escape regex metacharacters so an unexpected schema value (e.g. containing "." or "+") cannot produce an invalid pattern or change what the word-boundary match means. schemas/work-item.schema.json is 
 ### tests/self-application.test.mjs [F:48355ccf4d]
-- S:e3c36060ec function makeMinimalRepo `function makeMinimalRepo()` L88 : Build a minimal passing temp repo and return the path. Caller must rmSync(tmp, {recursive:true}).
-- S:7c9eb8f22d function runScript `function runScript(tmp)` L106
-- S:43cc2b28a1 function withStubRunner `function withStubRunner(tmp, score, extendedScore, totalScore)` L220
+- S:e3c36060ec function makeMinimalRepo `function makeMinimalRepo()` L89 : Build a minimal passing temp repo and return the path. Caller must rmSync(tmp, {recursive:true}).
+- S:7c9eb8f22d function runScript `function runScript(tmp)` L107
+- S:43cc2b28a1 function withStubRunner `function withStubRunner(tmp, score, extendedScore, totalScore)` L221
 ### scripts/lib/detect-attribution.mjs [F:4a7eaceb5c]
 - S:bb570e99d8 const AI_SIGNATURE_RE `export const AI_SIGNATURE_RE = new RegExp(P, "iu");` L40
 - S:ba4cb77f9c function branchHasModelSegment `export function branchHasModelSegment(name)` L51 : True when any path segment of a branch name exactly equals a denylisted token. * This is a strict superset of isModelIdentifierBranch (which checks only the first * segment): it also catches evasions 
@@ -722,6 +725,9 @@ Files: 781  Bytes: 2567686  Map tokens: 93262/120000
 - S:af6abeace9 function formatRemedy `export function formatRemedy(findings)` L159 : Render a precomputed, actionable remedy so a blocked violation is never a dead end. * The message names the exact fix and, where applicable, the literal git commands to * apply it, so a reviewer paste
 ### scripts/lib/snapshot-redact.mjs [F:4b91a9f65b]
 - S:3ef15e4c1b function redactText `export function redactText(text, { strict = false } = {})` L13 : Mask every matching secret in `text`. Returns { text, redactions } where each redaction records the pattern name and how many matches it masked.
+### tests/helpers/mock-github-server.mjs [F:4dabd020df]
+- S:5e08a11ce4 function startMockGitHubServer `export function startMockGitHubServer(options = {})` L19 : Start a mock GitHub API server. * * @param {object} [options] * @param {object} [options.pr] - The PR object returned by the pulls endpoint (title, body). * @param {Array<object>} [options.comments] -
+- S:2ea6241ebd function writeJson `function writeJson(res, status, body)` L68
 ### scripts/lib/learnings.mjs [F:4ebb5aa8a0]
 - S:72cb0b7406 const REQUIRED_FIELDS `export const REQUIRED_FIELDS = [` L9
 - S:005abb5200 const MAX_STAGED_ENTRIES `export const MAX_STAGED_ENTRIES = 20;` L24 : The Staged section is capped so it stays a short review queue, never a dumping ground. LEARNINGS.md documents this as "Cap at 20 staged entries... Never auto-evict." Until now nothing enforced it; app
@@ -1010,9 +1016,11 @@ Files: 781  Bytes: 2567686  Map tokens: 93262/120000
 - S:8041c36b7b function noThrow `function noThrow(fn)` L18 : Chaos test helper: any call must either return errors cleanly OR not throw. A crash or hang is a failure.
 - S:856f3a5bea function ratchetWithTimeout `function ratchetWithTimeout(content)` L28 : Wrap guard-ratchet call with a hard 5-second timeout.
 ### scripts/hygiene.mjs [F:90e1fd2fd9]
-- S:fc3bb4bc24 function collectFindings `function collectFindings()` L30 : Collect findings for the current branch, the commits unique to it, and the PR-body-shaped surfaces we can see locally (the commit bodies themselves).
-- S:400a8c02c3 function applyFix `function applyFix(branch, findings)` L47
-- S:c546f7913f function main `function main(argv)` L66
+- S:fc3bb4bc24 function collectFindings `function collectFindings()` L38 : Collect findings for the current branch, the commits unique to it, and the PR-body-shaped surfaces we can see locally (the commit bodies themselves).
+- S:400a8c02c3 function applyFix `function applyFix(branch, findings)` L55
+- S:6fab505fa4 function parsePrNumber `function parsePrNumber(rest)` L76 : Parse an optional `--pr <n>` flag. Returns the positive integer PR number, or null when absent. Throws on a malformed value so the caller can report it.
+- S:cde4a28e06 function collectPrFindings `async function collectPrFindings(prNumber, client = createGitHubClient())` L91 : Fetch the PR title, body, and conversation comments and scan them with the strict detector. Uses the same AI_SIGNATURE_RE as every other surface, so this is a hard detection gate, not the advisory nea
+- S:c546f7913f function main `async function main(argv)` L102
 ### fixtures/portability/prompt-injection-host/src/main.js [F:90f0999521]
 - S:d75c32ea9c function add `export function add(a, b)` L11
 - S:d7d594dd8d function multiply `export function multiply(a, b)` L15
@@ -1061,6 +1069,8 @@ Files: 781  Bytes: 2567686  Map tokens: 93262/120000
 - S:fa71aef711 function formatStagedLine `export function formatStagedLine(finding, { date, evidence })` L169 : Render one LEARNINGS.md Staged line from a finding. The line is a PROPOSED denylist * addition for human review, never an applied change. The (signal: review) tag marks * it as a review-surfaced candi
 ### apps/control-panel/src/screens/WorkQueueScreen.tsx [F:9b3f18856e]
 - S:84220fc054 function WorkQueueScreen `export function WorkQueueScreen({ state, write }: { state: PanelState; write: WriteActions })` L15 : The durable work-item state machine, laid out as a board: queued, claimed, making, * checking, merge ready, done, and escalated. Selecting a card opens a read-only * inspector drawer with the item's i
+### tests/hygiene.test.mjs [F:9bb94e1b40]
+- S:700d752004 function cli `function cli(...args)` L11
 ### .design-sync/previews/AuditTimeline.tsx [F:9c9edea0c9]
 - S:46d90cc86e function Timeline `export const Timeline = () => <AuditTimeline events={events} />;` L13
 ### tests/e2e.test.mjs [F:9cbe9238f8]
@@ -1243,6 +1253,13 @@ Files: 781  Bytes: 2567686  Map tokens: 93262/120000
 - S:298b204d13 function runPreflight `function runPreflight(fixtureName)` L22 : Run preflight in --json mode against a fixture. Returns { code, report, raw }. A clean environment is used so the host's own MODONOME_* shell does not leak into the env-pollution check.
 - S:c73cab5b60 function ids `function ids(report)` L42
 - S:2ca7aeeeaf function findingsBySeverity `function findingsBySeverity(report, severity)` L46
+### scripts/lib/github-api.mjs [F:cdbe769ed3]
+- S:83ad315769 function resolveRepo `export function resolveRepo(env = process.env, originUrl = null)` L25 : Resolve the owner/repo, preferring the GITHUB_REPOSITORY env, then git origin.
+- S:4d35869e55 function readOriginUrl `function readOriginUrl()` L37
+- S:fc28898c78 function resolveToken `export function resolveToken(env = process.env)` L43 : The credential, from GITHUB_TOKEN or GH_TOKEN. Empty string means unauthenticated.
+- S:a4e7d71500 function isRetryableStatus `function isRetryableStatus(status)` L47
+- S:95e22729ee function sleep `function sleep(ms)` L51
+- S:de0b2dc0df function createGitHubClient `export function createGitHubClient(` L59 : Build a read-only client bound to one repository. All inputs are injectable so * tests drive it against a local mock server with no real network call.
 ### design-system/src/components/CostPanel/CostPanel.tsx [F:ce1173e176]
 - S:66b4da1ed7 type ModelCostClass `export type ModelCostClass = "paid" | "free" | "local";` L6
 - S:2e3ac2ba9f interface ModelCostRow `export interface ModelCostRow` L8
@@ -1515,6 +1532,8 @@ Files: 781  Bytes: 2567686  Map tokens: 93262/120000
 - design-system/src/components/LearningCard/LearningCard.tsx -> design-system/src/components/Button/Button.tsx
 - design-system/src/components/Tabs/Tabs.tsx -> design-system/src/lib/cx.ts
 - design-system/src/components/Tabs/Tabs.tsx -> design-system/src/components/Icon/Icon.tsx
+- tests/github-api.test.mjs -> tests/helpers/mock-github-server.mjs
+- tests/github-api.test.mjs -> scripts/lib/github-api.mjs
 - design-system/src/components/Toggle/Toggle.tsx -> design-system/src/lib/cx.ts
 - design-system/src/components/Toggle/Toggle.tsx -> design-system/src/components/HelpHint/HelpHint.tsx
 - apps/control-panel/server/modonomeWriter.mjs -> apps/control-panel/server/learningsFormat.mjs
@@ -1662,6 +1681,7 @@ Files: 781  Bytes: 2567686  Map tokens: 93262/120000
 - tests/chaos.test.mjs -> scripts/validate-knowledge-packet.mjs
 - tests/chaos.test.mjs -> scripts/validate-config.mjs
 - design-system/src/components/States/index.ts -> design-system/src/components/States/States.tsx
+- scripts/hygiene.mjs -> scripts/lib/github-api.mjs
 - scripts/hygiene.mjs -> scripts/lib/git-scope.mjs
 - design-system/src/components/MdnRoot/MdnRoot.tsx -> design-system/src/lib/cx.ts
 - design-system/src/components/MetricTile/index.ts -> design-system/src/components/MetricTile/MetricTile.tsx
@@ -1681,6 +1701,7 @@ Files: 781  Bytes: 2567686  Map tokens: 93262/120000
 - apps/control-panel/src/state/adapter.ts -> apps/control-panel/src/state/liveClient.ts
 - apps/control-panel/src/screens/WorkQueueScreen.tsx -> apps/control-panel/src/state/types.ts
 - apps/control-panel/src/screens/WorkQueueScreen.tsx -> apps/control-panel/src/lib/confirm.tsx
+- tests/hygiene.test.mjs -> scripts/hygiene.mjs
 - scripts/migrate-config.mjs -> scripts/lib/yaml-lite.mjs
 - design-system/src/components/ProgressMeter/ProgressMeter.tsx -> design-system/src/lib/cx.ts
 - design-system/src/components/MetricTile/MetricTile.tsx -> design-system/src/lib/cx.ts
@@ -1861,54 +1882,54 @@ Files: 781  Bytes: 2567686  Map tokens: 93262/120000
 
 ## Attention (centrality + pagerank)
 
-1. design-system/src/lib/cx.ts centrality=32 pagerank=0.037287
-2. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.024172
-3. design-system/src/index.ts centrality=48 pagerank=0.00098
-4. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.008226
-5. apps/control-panel/src/state/types.ts centrality=12 pagerank=0.008217
-6. scripts/lib/yaml-lite.mjs centrality=12 pagerank=0.007812
-7. scripts/agent/run-cycle.mjs centrality=17 pagerank=0.003689
-8. scripts/lib/jsonschema.mjs centrality=8 pagerank=0.010652
-9. scripts/lib/learnings.mjs centrality=10 pagerank=0.007869
-10. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.005864
-11. scripts/validate-config.mjs centrality=11 pagerank=0.004612
-12. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.00164
-13. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.004729
-14. scripts/lib/canonical-json.mjs centrality=8 pagerank=0.005108
-15. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.005487
-16. apps/control-panel/src/App.tsx centrality=11 pagerank=0.001397
-17. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002864
-18. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.003539
-19. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.005103
-20. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.003427
-21. scripts/validate-work-item.mjs centrality=6 pagerank=0.003341
-22. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001641
-23. scripts/lib/graph.mjs centrality=4 pagerank=0.004724
-24. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.003123
-25. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.005324
-26. scripts/agent/resolve-role.mjs centrality=6 pagerank=0.002862
-27. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001828
-28. scripts/snapshot.mjs centrality=8 pagerank=0.00098
-29. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002864
-30. design-system/src/lib/format.ts centrality=5 pagerank=0.002863
-31. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001828
-32. scripts/agent/providers.mjs centrality=3 pagerank=0.003907
-33. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.001099
-34. design-system/src/components/Modal/Modal.tsx centrality=4 pagerank=0.002605
-35. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001828
-36. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001828
-37. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.001828
-38. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.001828
-39. design-system/src/components/TierBadge/TierBadge.tsx centrality=4 pagerank=0.002574
-40. examples/demo-app/src/index.js centrality=6 pagerank=0.00098
-41. design-system/src/components/Table/Table.tsx centrality=4 pagerank=0.002528
-42. scripts/lib/branch-name.mjs centrality=3 pagerank=0.003253
-43. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.003253
-44. scripts/lib/detect-attribution.mjs centrality=4 pagerank=0.002407
-45. apps/control-panel/server/learningsFormat.mjs centrality=2 pagerank=0.003957
-46. design-system/src/components/IdentityChip/IdentityChip.tsx centrality=4 pagerank=0.002398
-47. scripts/lib/control-panel-audit.mjs centrality=3 pagerank=0.003043
-48. design-system/src/components/ArmingStateBadge/ArmingStateBadge.tsx centrality=4 pagerank=0.001828
-49. design-system/src/components/Checkbox/Checkbox.tsx centrality=4 pagerank=0.001828
-50. design-system/src/components/DecisionCard/DecisionCard.tsx centrality=4 pagerank=0.001828
+1. design-system/src/lib/cx.ts centrality=32 pagerank=0.037053
+2. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.024021
+3. design-system/src/index.ts centrality=48 pagerank=0.000974
+4. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.008175
+5. apps/control-panel/src/state/types.ts centrality=12 pagerank=0.008166
+6. scripts/lib/yaml-lite.mjs centrality=12 pagerank=0.007763
+7. scripts/agent/run-cycle.mjs centrality=17 pagerank=0.003665
+8. scripts/lib/jsonschema.mjs centrality=8 pagerank=0.010585
+9. scripts/lib/learnings.mjs centrality=10 pagerank=0.00782
+10. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.005827
+11. scripts/validate-config.mjs centrality=11 pagerank=0.004584
+12. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.00163
+13. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.0047
+14. scripts/lib/canonical-json.mjs centrality=8 pagerank=0.005076
+15. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.005453
+16. apps/control-panel/src/App.tsx centrality=11 pagerank=0.001388
+17. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002847
+18. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.003517
+19. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.005071
+20. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.003406
+21. scripts/validate-work-item.mjs centrality=6 pagerank=0.00332
+22. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.00163
+23. scripts/lib/graph.mjs centrality=4 pagerank=0.004694
+24. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.003104
+25. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.005291
+26. scripts/agent/resolve-role.mjs centrality=6 pagerank=0.002845
+27. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001817
+28. scripts/snapshot.mjs centrality=8 pagerank=0.000974
+29. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002847
+30. design-system/src/lib/format.ts centrality=5 pagerank=0.002845
+31. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001817
+32. scripts/agent/providers.mjs centrality=3 pagerank=0.003882
+33. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.001092
+34. design-system/src/components/Modal/Modal.tsx centrality=4 pagerank=0.002589
+35. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001817
+36. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001817
+37. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.001817
+38. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.001817
+39. design-system/src/components/TierBadge/TierBadge.tsx centrality=4 pagerank=0.002558
+40. examples/demo-app/src/index.js centrality=6 pagerank=0.000974
+41. design-system/src/components/Table/Table.tsx centrality=4 pagerank=0.002512
+42. scripts/lib/branch-name.mjs centrality=3 pagerank=0.003233
+43. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.003233
+44. scripts/lib/detect-attribution.mjs centrality=4 pagerank=0.002392
+45. apps/control-panel/server/learningsFormat.mjs centrality=2 pagerank=0.003932
+46. design-system/src/components/IdentityChip/IdentityChip.tsx centrality=4 pagerank=0.002383
+47. scripts/lib/control-panel-audit.mjs centrality=3 pagerank=0.003024
+48. design-system/src/components/ArmingStateBadge/ArmingStateBadge.tsx centrality=4 pagerank=0.001817
+49. design-system/src/components/Checkbox/Checkbox.tsx centrality=4 pagerank=0.001817
+50. design-system/src/components/DecisionCard/DecisionCard.tsx centrality=4 pagerank=0.001817
 

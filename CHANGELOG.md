@@ -42,6 +42,28 @@ or CVE identifier where one exists.
   PR bodies, comments, and agent-authored documents lead with a Summary, then
   Details, then an Annexure. Enforced by the checker, not a machine gate.
 
+### Governed Remediation Phase 1: PR body and comment hygiene
+
+- Added `scripts/lib/github-api.mjs`, a minimal read-only GitHub REST client (global
+  fetch, injectable for tests, no network at import time, fixed-backoff retry on
+  429/5xx), and a `--pr <n>` flag on `modonome hygiene check`/`explain`. It fetches
+  the pull request title, body, and conversation comments and scans them with the
+  existing strict `detectText`. This closes the one attribution surface no
+  tracked-file gate can see: the hosted coding-agent web UI appends a session-URL
+  footer to a PR body at creation time, which slipped past every gate on both prior
+  merged PRs and had to be cleaned by hand. `--pr` is rejected for `fix`, since
+  editing a PR body or comment through the API is a mutating, non-local operation.
+- Wired the scan into CI as a `pull_request`-only step using the standard
+  `GITHUB_TOKEN` (no new secret), registered in `check-self-application.mjs`.
+- Accepted residual risk, documented here for honesty: `hygiene.mjs` and
+  `github-api.mjs` are not base-pinned, so a PR could in the same diff neuter the
+  `--pr` handler and CI would run the neutered copy. This matches the trade-off
+  already accepted for `check-drift.mjs` (it runs the PR's own scripts, relying on
+  CODEOWNERS review). Unlike Phase 1's promotion-safety gates, which supplement a
+  review a Tier-2 change gets anyway, this `--pr` check is the primary mechanism for
+  a gap that had none, so its defeasibility is noted for a future hardening pass that
+  base-pins these two files.
+
 ### Documentation coherence, SME accuracy, and diagram consistency
 
 - Corrected `docs/compliance/compliance.md` and `docs/specs/governed-autonomy-spec.md`:
