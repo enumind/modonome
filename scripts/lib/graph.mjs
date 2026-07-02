@@ -71,6 +71,24 @@ export function topoSort(adjacency, nodes) {
   return { order };
 }
 
+// reachableFrom(adjacency, start) -> Set of nodes reachable from `start` by
+// following directed edges (breadth-first). `start` itself is not included unless
+// the graph has a path back to it. Used by the determinism-boundary check to prove
+// a detector never reaches the near-miss widener through its import graph.
+export function reachableFrom(adjacency, start) {
+  const seen = new Set();
+  const queue = [...(adjacency[start] || [])];
+  while (queue.length) {
+    const node = queue.shift();
+    if (seen.has(node)) continue;
+    seen.add(node);
+    for (const next of (adjacency[node] || [])) {
+      if (!seen.has(next)) queue.push(next);
+    }
+  }
+  return seen;
+}
+
 // Collect every node mentioned either as a key or as a neighbour value.
 function collectNodes(adjacency) {
   const nodes = new Set(Object.keys(adjacency));

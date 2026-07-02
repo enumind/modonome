@@ -125,9 +125,9 @@ export function matchNearMissIdentity(name, email) {
   return null;
 }
 
-// An attribution cue: a word that signals a line is crediting authorship, not just
-// mentioning a vendor. Requiring a cue keeps the widener from firing on ordinary
-// prose that happens to name a model ("we evaluated mistral for the adapter").
+// An attribution cue: a word that signals a line is crediting authorship rather than
+// merely mentioning a vendor. Requiring a cue keeps the widener from firing on
+// ordinary prose that names a model ("we evaluated mistral for the adapter").
 const ATTRIBUTION_CUE_RE =
   /\b(generated|authored|coauthored|assisted|written|created|powered|signed|committed)\b/i;
 
