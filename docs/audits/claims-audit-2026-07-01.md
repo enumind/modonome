@@ -1,3 +1,10 @@
+---
+status: active
+owner: "@nateshpp"
+last_reviewed: 2026-07-01
+supersedes: docs/audits/claims-audit-2026-06-25.md
+---
+
 # Claims audit, 2026-07-01
 
 A re-verification of [claims-audit-2026-06-25.md](claims-audit-2026-06-25.md) against

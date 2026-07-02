@@ -7,6 +7,7 @@
 //
 // Usage: node scripts/check-self-application.mjs
 import { readFileSync, existsSync, readdirSync } from "node:fs";
+import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { validate } from "./lib/jsonschema.mjs";
@@ -42,6 +43,11 @@ const REQUIRED_GATES = [
   { name: "license and adapter boundary", needle: "check-licenses.mjs" },
   { name: "prompt behavioral regression", needle: "test-prompt-behavior.mjs" },
   { name: "markdown governance", needle: "check-md-governance.mjs" },
+  { name: "architecture drift", needle: "check-architecture-drift.mjs" },
+  // This script checking for its own name is not circular: it is a text search over
+  // ci.yml, not a re-invocation. It exists because this exact gate went unwired into
+  // CI for a period with nothing catching it.
+  { name: "self-application conformance", needle: "check-self-application.mjs" },
 ];
 for (const g of REQUIRED_GATES) {
   if (!activeCI.includes(g.needle)) problems.push(`ci.yml does not run the ${g.name} gate (${g.needle}).`);
@@ -109,6 +115,39 @@ if (existsSync(stateDir)) {
       const errs = validate(metricsSchema, obj);
       if (errs.length) problems.push(`.modonome/${f}:${i + 1}: ${errs[0]}`);
     });
+  }
+}
+
+// 7. Badge consistency. The AgentProof normative score is hand-typed as prose in three
+//    files (README.md, agentproof/README.md, agentproof/SPEC.md) instead of generated
+//    from one source. Rather than build a generation step for a handful of badges, this
+//    asserts they agree with the runner's own computed score, so a scenario-count change
+//    that updates the runner but not all three copies fails CI instead of shipping quietly.
+//    Skipped entirely for a fixture or host repo with no agentproof/ directory: this
+//    invariant is specific to this repository, not a requirement for every adopter.
+if (existsSync(join(root, "agentproof/runner.mjs"))) {
+  const runnerResult = spawnSync("node", [join(root, "agentproof/runner.mjs"), "--json"], {
+    encoding: "utf8",
+    timeout: 60000,
+  });
+  let scoreLine = null;
+  try {
+    scoreLine = JSON.parse(runnerResult.stdout).score;
+  } catch {
+    problems.push("agentproof/runner.mjs --json did not print parseable JSON.");
+  }
+  if (scoreLine) {
+    const BADGE_FILES = ["README.md", "agentproof/README.md", "agentproof/SPEC.md"];
+    for (const rel of BADGE_FILES) {
+      if (!existsSync(join(root, rel))) continue; // not every fixture ships every badge file
+      const text = read(rel);
+      if (!text.includes(scoreLine)) {
+        problems.push(
+          `${rel} does not contain the current AgentProof score "${scoreLine}" ` +
+            `(agentproof/runner.mjs --json is the source of truth).`
+        );
+      }
+    }
   }
 }
 

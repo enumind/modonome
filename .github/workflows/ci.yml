@@ -57,6 +57,12 @@ jobs:
       - name: Run markdown governance gate
         run: node scripts/check-md-governance.mjs
 
+      - name: Run architecture drift gate
+        run: node scripts/check-architecture-drift.mjs
+
+      - name: Run self-application conformance gate
+        run: node scripts/check-self-application.mjs
+
       - name: Run license and adapter boundary gate
         run: node scripts/check-licenses.mjs
 

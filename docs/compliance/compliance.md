@@ -1,3 +1,10 @@
+---
+status: active
+owner: "@nateshpp"
+last_reviewed: 2026-07-01
+canonical: [compliance-control-mapping]
+---
+
 # Compliance
 
 This document maps Modonome's controls to two widely-adopted frameworks: the OWASP Top 10

@@ -1,3 +1,10 @@
+---
+status: active
+owner: "@nateshpp"
+last_reviewed: 2026-07-01
+canonical: [eu-ai-act-classification]
+---
+
 # EU AI Act Classification
 
 **Date:** 2026-06-23  
