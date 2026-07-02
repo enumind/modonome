@@ -25,11 +25,23 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      # Snapshot freshness runs BEFORE the base-branch checkouts below, which
-      # overwrite guard-ratchet.mjs and check-style.mjs with base versions. Hashing
-      # must see this branch's real files. Honors snapshot.ci_mode (warn by default).
+      # Snapshot freshness, the test suite, and AgentProof all run BEFORE the
+      # base-branch checkouts below, which overwrite guard-ratchet.mjs and
+      # check-style.mjs with base versions. All three need to see this branch's
+      # real files: snapshot hashing needs the real tree, and both the test
+      # suite (tests/ratchet.test.mjs, tests/portability.test.mjs, etc.) and
+      # AgentProof's ratchet scenarios spawn scripts/guard-ratchet.mjs by path
+      # to test its own behavior, not to check this diff -- running them after
+      # the base-branch checkout would silently test main's guard-ratchet.mjs
+      # instead of this PR's.
       - name: Run snapshot freshness gate
         run: node scripts/snapshot.mjs . --check
+
+      - name: Run tests gate
+        run: node --test tests/*.test.mjs
+
+      - name: Run AgentProof gate
+        run: node agentproof/runner.mjs
 
       # Mandatory Base-Branch Checkouts matching check-self-application.mjs criteria
       # NOTE: These steps only run on pull requests where github.base_ref is defined.
@@ -108,12 +120,6 @@ jobs:
 
       - name: Run control-panel governance gates
         run: npm run check:control-panel
-
-      - name: Run tests gate
-        run: node --test tests/*.test.mjs
-
-      - name: Run AgentProof gate
-        run: node agentproof/runner.mjs
 
       - name: Run anti-gaming ratchet gate
         run: node scripts/guard-ratchet.mjs origin/main
