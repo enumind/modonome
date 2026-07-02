@@ -43,9 +43,19 @@ jobs:
         if: github.event_name == 'pull_request'
         run: git checkout "origin/${{ github.base_ref }}" -- scripts/check-style.mjs
 
+      # Unlike guard-ratchet.mjs and check-style.mjs above, this gate is new: the
+      # first PR that introduces it has no prior version on the base branch to
+      # load, so the checkout is skipped (not failed) when the base branch
+      # doesn't have the file yet. Every PR after this one merges will find it
+      # there and get the same trust-isolation the other two gates get.
       - name: Load check-decisions-authority.mjs from the base branch
         if: github.event_name == 'pull_request'
-        run: git checkout "origin/${{ github.base_ref }}" -- scripts/check-decisions-authority.mjs
+        run: |
+          if git cat-file -e "origin/${{ github.base_ref }}:scripts/check-decisions-authority.mjs" 2>/dev/null; then
+            git checkout "origin/${{ github.base_ref }}" -- scripts/check-decisions-authority.mjs
+          else
+            echo "scripts/check-decisions-authority.mjs not yet on base branch; skipping trust-isolation checkout (first introduction)."
+          fi
 
       # Governance-relevant change assertion matching tests/ws-d-governed-change.test.mjs criteria
       - name: Governance-relevant change assertion
