@@ -270,6 +270,10 @@ learnings, and a `metrics.example.jsonl` sample (the live `metrics.jsonl` is wri
 engine at runtime and is not committed). Adopters should run `npx modonome scaffold . --write`
 to start fresh with their own config and empty state.
 
+## Development practice
+
+This project is developed with AI assistance, governed by the same autonomy loop it ships. The governance process (CI gates, independent checker, anti-gaming ratchet) is the trust signal, not the identity of any tool involved.
+
 ## License
 
 MIT. See [LICENSE](LICENSE).
