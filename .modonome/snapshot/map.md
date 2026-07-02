@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:f986352a9432c71fba22df7e0a4205c742846379144f2973f59566f2f4b01968
-Files: 528  Bytes: 1718452  Map tokens: 51543/120000
+Merkle root: sha256:1ca31baaad8ff6e9aa33b6cd8951adf9789da50cbc9dae5baff7dec1fac18b85
+Files: 529  Bytes: 1736399  Map tokens: 51884/120000
 
 ## Modules
 
@@ -68,6 +68,7 @@ Files: 528  Bytes: 1718452  Map tokens: 51543/120000
 - docs/adr/ADR-031-markdown-governance.md [F:627afb27fd]: ADR-031: Markdown governance
 - docs/adr/ADR-032-oss-adapter-boundary.md [F:3a70dc66ea]: ADR-032: OSS adapter boundary
 - docs/adr/ADR-033-repo-snapshot.md [F:b5f5700e4d]: ADR-033: Repo snapshot
+- docs/adr/ADR-034-compliance-audit-staleness-gate.md [F:21752cf61a]: ADR-034: Compliance and audit doc staleness gate
 - docs/audits/claims-audit-2026-06-25.md [F:8a7591db62]: Claims audit, 2026-06-25
 - docs/audits/claims-audit-2026-07-01.md [F:6a3a98df8c]: Claims audit, 2026-07-01
 - docs/autonomy-plan.md [F:3dcdfa18c0]: Autonomy plan: governed autonomy on free models
@@ -140,6 +141,7 @@ Files: 528  Bytes: 1718452  Map tokens: 51543/120000
 - scripts/build-compliance-evidence.mjs [F:2e327963ed]: Observe concrete facts about a repository. Pure with respect to its inputs: it only reads the filesystem under root and returns a plain object.
 - scripts/build-prompt.mjs [F:c4395c3023]: !/usr/bin/env node
 - scripts/build-release-evidence.mjs [F:9344d335a6]: Sample-app captures: real maker and checker runs recorded under examples/<app>/runs/. These directories are committed (unlike the gitignored .modonome/runs/), s
+- scripts/check-architecture-drift.mjs [F:4749cc43a0]: Escape regex metacharacters so an unexpected schema value (e.g. containing "." or "+") cannot produce an invalid pattern or change what the word-boundary match 
 - scripts/check-checker-engagement.mjs [F:fc5d887ff6]: !/usr/bin/env node
 - scripts/check-drift.mjs [F:87c30bdb4c]: !/usr/bin/env node
 - scripts/check-edit-set-compliance.mjs [F:9427d264e6]: !/usr/bin/env node
@@ -272,6 +274,7 @@ Files: 528  Bytes: 1718452  Map tokens: 51543/120000
 - S:0ab594146c function runScript `function runScript(tmp)` L33
 - S:689125598d function makeMinimalGitRepo `function makeMinimalGitRepo()` L43 : A git-init'd variant of makeMinimalRepo(), for the staleness check, which shells out to `git log` and needs a real repository to query.
 - S:bac2ebbef5 function gitCommit `function gitCommit(tmp, message)` L53
+- S:cd2e7eba8f function gitCommitAt `function gitCommitAt(tmp, message, isoDate)` L61 : Commit with an explicit, backdated timestamp, so staleness tests do not depend on same-day wall-clock ordering between setup commits and a `last_reviewed` stamp (git's `--since` treats a bare date as 
 ### examples/demo-app/tests/OrderService.test.js [F:044b762a79]
 - S:949f988c9e function makeDb `function makeDb(orders = new Map())` L10
 ### scripts/verify-packet.mjs [F:0c1c5ad5d9]
@@ -417,10 +420,12 @@ Files: 528  Bytes: 1718452  Map tokens: 51543/120000
 - S:1c82a73570 function tmp `function tmp()` L19
 ### tests/snapshot-incremental.test.mjs [F:4637e1fecb]
 - S:48356203e2 function repo `function repo()` L13
+### scripts/check-architecture-drift.mjs [F:4749cc43a0]
+- S:fd2e16186e function escapeRegExp `function escapeRegExp(s)` L67 : Escape regex metacharacters so an unexpected schema value (e.g. containing "." or "+") cannot produce an invalid pattern or change what the word-boundary match means. schemas/work-item.schema.json is 
 ### tests/self-application.test.mjs [F:48355ccf4d]
 - S:e3c36060ec function makeMinimalRepo `function makeMinimalRepo()` L79 : Build a minimal passing temp repo and return the path. Caller must rmSync(tmp, {recursive:true}).
 - S:7c9eb8f22d function runScript `function runScript(tmp)` L97
-- S:43cc2b28a1 function withStubRunner `function withStubRunner(tmp, score)` L193
+- S:43cc2b28a1 function withStubRunner `function withStubRunner(tmp, score, extendedScore, totalScore)` L193
 ### scripts/lib/snapshot-redact.mjs [F:4b91a9f65b]
 - S:3ef15e4c1b function redactText `export function redactText(text, { strict = false } = {})` L13 : Mask every matching secret in `text`. Returns { text, redactions } where each redaction records the pattern name and how many matches it masked.
 ### scripts/lib/learnings.mjs [F:4ebb5aa8a0]
@@ -810,8 +815,8 @@ Files: 528  Bytes: 1718452  Map tokens: 51543/120000
 - S:575af01d8c function checkTarget `function checkTarget(fileDir, rawTarget, srcFile)` L112
 - S:bc1fd2c5b3 function adrNumbers `function adrNumbers(dir)` L148 : 4. ADR number uniqueness within docs/adr, and across docs/adr and docs/research.
 - S:24c6a3dc6c function parseFrontMatter `function parseFrontMatter(text)` L198 : Front-matter parsing for canonical uniqueness and advisory presence.
-- S:6647a4e550 function extractCitedPaths `function extractCitedPaths(text)` L229 : Backtick-quoted repo paths a doc cites as evidence, e.g. `scripts/check-drift.mjs` or the bare `check-drift.mjs`. Only paths that resolve to a real file count: prose can backtick-quote all sorts of th
-- S:38b734e681 function commitsSince `function commitsSince(paths, sinceDate)` L246 : Commits touching any of `paths` since `sinceDate` (a YYYY-MM-DD string already validated by the caller). Returns 0 (fail open, warn-free) if this is not a git checkout, e.g. an npm-installed copy of t
+- S:6647a4e550 function extractCitedPaths `function extractCitedPaths(text)` L246
+- S:38b734e681 function commitsSince `function commitsSince(paths, sinceDate)` L271 : Commits touching any of `paths` since `sinceDate` (a YYYY-MM-DD string already validated by the caller). Returns 0 (fail open, warn-free) if this is not a git checkout, e.g. an npm-installed copy of t
 ### scripts/agent/render-prompt.mjs [F:fd660a117b]
 - S:22e3bba95f function snapshotContext `export function snapshotContext(root = process.cwd())` L23 : Build a compact repository-snapshot context block from the committed Tier 0 signature, so every rendered role prompt starts pre-oriented and an agent can read the map instead of scanning the whole tre
 - S:2b5847c683 function renderPrompt `export function renderPrompt(role, env = process.env)` L58 : Substitute every ${VAR} from env. Throw if a referenced variable is unset, so a missing identity or branch fails loudly instead of rendering an empty value into a model prompt.
@@ -979,54 +984,54 @@ Files: 528  Bytes: 1718452  Map tokens: 51543/120000
 
 ## Attention (centrality + pagerank)
 
-1. scripts/lib/jsonschema.mjs centrality=8 pagerank=0.017946
-2. scripts/lib/yaml-lite.mjs centrality=12 pagerank=0.013162
-3. scripts/agent/run-cycle.mjs centrality=17 pagerank=0.006214
-4. scripts/lib/learnings.mjs centrality=9 pagerank=0.011959
-5. scripts/validate-config.mjs centrality=11 pagerank=0.007771
-6. scripts/lib/canonical-json.mjs centrality=8 pagerank=0.008605
-7. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.002763
-8. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.005963
-9. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.008597
-10. scripts/validate-work-item.mjs centrality=6 pagerank=0.005629
-11. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.002764
-12. scripts/agent/resolve-role.mjs centrality=6 pagerank=0.004823
-13. scripts/lib/graph.mjs centrality=4 pagerank=0.006765
-14. scripts/snapshot.mjs centrality=8 pagerank=0.001652
-15. scripts/agent/providers.mjs centrality=3 pagerank=0.006582
-16. examples/demo-app/src/index.js centrality=6 pagerank=0.001652
-17. scripts/agent/render-prompt.mjs centrality=3 pagerank=0.004004
-18. scripts/verify-packet.mjs centrality=4 pagerank=0.002003
-19. scripts/lib/snapshot-cache.mjs centrality=3 pagerank=0.002763
-20. tests/config.test.mjs centrality=4 pagerank=0.001652
-21. tests/packet-signing.test.mjs centrality=4 pagerank=0.001652
-22. tests/providers.test.mjs centrality=4 pagerank=0.001652
-23. scripts/migrate-config.mjs centrality=3 pagerank=0.002705
-24. scripts/lib/branch-name.mjs centrality=2 pagerank=0.003757
-25. scripts/lib/commit-identity.mjs centrality=2 pagerank=0.003757
-26. scripts/lib/run-gate-capped.mjs centrality=2 pagerank=0.003757
-27. scripts/lib/snapshot-walk.mjs centrality=3 pagerank=0.00253
-28. tests/helpers/mock-openai-server.mjs centrality=2 pagerank=0.003524
-29. scripts/dry-run-sweep.mjs centrality=3 pagerank=0.002354
-30. examples/demo-app/src/CartService.js centrality=2 pagerank=0.00329
-31. examples/demo-app/src/CheckoutService.js centrality=2 pagerank=0.00329
-32. examples/demo-app/src/InventoryService.js centrality=2 pagerank=0.00329
-33. examples/demo-app/src/NotificationService.js centrality=2 pagerank=0.00329
-34. examples/demo-app/src/OrderService.js centrality=2 pagerank=0.00329
-35. examples/demo-app/src/PaymentProcessor.js centrality=2 pagerank=0.00329
-36. scripts/lib/merkle.mjs centrality=3 pagerank=0.002062
-37. bin/modonome.mjs centrality=2 pagerank=0.003056
-38. scripts/lib/repo-detect.mjs centrality=2 pagerank=0.002887
-39. tests/chaos.test.mjs centrality=3 pagerank=0.001652
-40. tests/performance.test.mjs centrality=3 pagerank=0.001652
-41. tests/role-registry.test.mjs centrality=3 pagerank=0.001652
-42. tests/run-cycle-openai.test.mjs centrality=3 pagerank=0.001652
-43. tests/snapshot-incremental.test.mjs centrality=3 pagerank=0.001652
-44. tests/snapshot-security.test.mjs centrality=3 pagerank=0.001652
-45. tests/ws-b-harness.test.mjs centrality=3 pagerank=0.001652
-46. tests/ws-h-config.test.mjs centrality=3 pagerank=0.001652
-47. scripts/agent/apply-patch.mjs centrality=2 pagerank=0.0026
-48. scripts/lib/lang-adapters/tree-sitter.mjs centrality=2 pagerank=0.002529
-49. scripts/agent/action-queue.mjs centrality=2 pagerank=0.002132
-50. scripts/lib/packet-id.mjs centrality=2 pagerank=0.002003
+1. scripts/lib/jsonschema.mjs centrality=8 pagerank=0.017917
+2. scripts/lib/yaml-lite.mjs centrality=12 pagerank=0.01314
+3. scripts/agent/run-cycle.mjs centrality=17 pagerank=0.006204
+4. scripts/lib/learnings.mjs centrality=9 pagerank=0.011939
+5. scripts/validate-config.mjs centrality=11 pagerank=0.007758
+6. scripts/lib/canonical-json.mjs centrality=8 pagerank=0.008591
+7. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.002759
+8. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.005953
+9. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.008583
+10. scripts/validate-work-item.mjs centrality=6 pagerank=0.00562
+11. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.002759
+12. scripts/agent/resolve-role.mjs centrality=6 pagerank=0.004815
+13. scripts/lib/graph.mjs centrality=4 pagerank=0.006754
+14. scripts/snapshot.mjs centrality=8 pagerank=0.001649
+15. scripts/agent/providers.mjs centrality=3 pagerank=0.006571
+16. examples/demo-app/src/index.js centrality=6 pagerank=0.001649
+17. scripts/agent/render-prompt.mjs centrality=3 pagerank=0.003997
+18. scripts/verify-packet.mjs centrality=4 pagerank=0.001999
+19. scripts/lib/snapshot-cache.mjs centrality=3 pagerank=0.002759
+20. tests/config.test.mjs centrality=4 pagerank=0.001649
+21. tests/packet-signing.test.mjs centrality=4 pagerank=0.001649
+22. tests/providers.test.mjs centrality=4 pagerank=0.001649
+23. scripts/migrate-config.mjs centrality=3 pagerank=0.0027
+24. scripts/lib/branch-name.mjs centrality=2 pagerank=0.003751
+25. scripts/lib/commit-identity.mjs centrality=2 pagerank=0.003751
+26. scripts/lib/run-gate-capped.mjs centrality=2 pagerank=0.003751
+27. scripts/lib/snapshot-walk.mjs centrality=3 pagerank=0.002526
+28. tests/helpers/mock-openai-server.mjs centrality=2 pagerank=0.003518
+29. scripts/dry-run-sweep.mjs centrality=3 pagerank=0.00235
+30. examples/demo-app/src/CartService.js centrality=2 pagerank=0.003284
+31. examples/demo-app/src/CheckoutService.js centrality=2 pagerank=0.003284
+32. examples/demo-app/src/InventoryService.js centrality=2 pagerank=0.003284
+33. examples/demo-app/src/NotificationService.js centrality=2 pagerank=0.003284
+34. examples/demo-app/src/OrderService.js centrality=2 pagerank=0.003284
+35. examples/demo-app/src/PaymentProcessor.js centrality=2 pagerank=0.003284
+36. scripts/lib/merkle.mjs centrality=3 pagerank=0.002059
+37. bin/modonome.mjs centrality=2 pagerank=0.003051
+38. scripts/lib/repo-detect.mjs centrality=2 pagerank=0.002882
+39. tests/chaos.test.mjs centrality=3 pagerank=0.001649
+40. tests/performance.test.mjs centrality=3 pagerank=0.001649
+41. tests/role-registry.test.mjs centrality=3 pagerank=0.001649
+42. tests/run-cycle-openai.test.mjs centrality=3 pagerank=0.001649
+43. tests/snapshot-incremental.test.mjs centrality=3 pagerank=0.001649
+44. tests/snapshot-security.test.mjs centrality=3 pagerank=0.001649
+45. tests/ws-b-harness.test.mjs centrality=3 pagerank=0.001649
+46. tests/ws-h-config.test.mjs centrality=3 pagerank=0.001649
+47. scripts/agent/apply-patch.mjs centrality=2 pagerank=0.002596
+48. scripts/lib/lang-adapters/tree-sitter.mjs centrality=2 pagerank=0.002525
+49. scripts/agent/action-queue.mjs centrality=2 pagerank=0.002128
+50. scripts/lib/packet-id.mjs centrality=2 pagerank=0.001999
 

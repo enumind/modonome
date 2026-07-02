@@ -60,6 +60,14 @@ while ((m = citedScriptRe.exec(arch)) !== null) {
   }
 }
 
+// Escape regex metacharacters so an unexpected schema value (e.g. containing "." or
+// "+") cannot produce an invalid pattern or change what the word-boundary match means.
+// schemas/work-item.schema.json is not in the protected-file manifest, so a future PR
+// could add a state value this script has never seen.
+function escapeRegExp(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 // 3. Every work-item state must appear in the agent-loop section's own text.
 const schemaPath = join(root, "schemas", "work-item.schema.json");
 if (existsSync(schemaPath)) {
@@ -72,7 +80,7 @@ if (existsSync(schemaPath)) {
     const nextHeading = arch.indexOf("\n## ", sectionStart + 1);
     const section = nextHeading === -1 ? arch.slice(sectionStart) : arch.slice(sectionStart, nextHeading);
     for (const state of states) {
-      const wordBoundary = new RegExp(`\\b${state}\\b`);
+      const wordBoundary = new RegExp(`\\b${escapeRegExp(String(state))}\\b`);
       if (!wordBoundary.test(section)) {
         problems.push(
           `[unmentioned-state] work-item state "${state}" (schemas/work-item.schema.json) is not named ` +

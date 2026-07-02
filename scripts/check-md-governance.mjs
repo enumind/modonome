@@ -221,18 +221,38 @@ function parseFrontMatter(text) {
 
 // 7. Staleness helpers, scoped to docs/compliance/ and docs/audits/.
 const STALENESS_DIRS = new Set(["compliance", "audits"]);
+// The commit-threshold check applies only to docs/compliance/: it makes an ongoing claim
+// ("this is how the system behaves now") that should track code changes. docs/audits/
+// files are point-in-time snapshots by design, already dated in their filename and
+// chained by `supersedes` front-matter to whatever superseded them; requiring them to
+// also track every commit touching the paths they cite would flag nearly every audit
+// as stale within the same day it is written, since an audit's whole purpose is citing
+// the most actively-changing code. Both directories still require last_reviewed to exist.
+const STALENESS_COMMIT_CHECK_DIRS = new Set(["compliance"]);
 const STALENESS_COMMIT_THRESHOLD = 15;
 
 // Backtick-quoted repo paths a doc cites as evidence, e.g. `scripts/check-drift.mjs` or
 // the bare `check-drift.mjs`. Only paths that resolve to a real file count: prose can
 // backtick-quote all sorts of things that are not paths.
+// Directories a bare (no-slash) filename is likely to live in, keyed by extension.
+// Without this, a citation like `publish.yml` (meaning .github/workflows/publish.yml)
+// never resolves to a real file and silently drops out of staleness tracking.
+const BARE_FILENAME_DIRS = {
+  ".mjs": ["scripts"],
+  ".yml": [".github/workflows"],
+  ".yaml": [".github/workflows"],
+};
+
 function extractCitedPaths(text) {
   const found = new Set();
   const re = /`([a-zA-Z0-9_.\/-]+\.(?:mjs|yml|yaml|json|md))`/g;
   let m;
   while ((m = re.exec(text)) !== null) {
     const raw = m[1];
-    const candidates = raw.endsWith(".mjs") && !raw.includes("/") ? [raw, `scripts/${raw}`] : [raw];
+    const ext = extname(raw);
+    const candidates = !raw.includes("/") && BARE_FILENAME_DIRS[ext]
+      ? [raw, ...BARE_FILENAME_DIRS[ext].map((dir) => `${dir}/${raw}`)]
+      : [raw];
     for (const c of candidates) {
       if (existsSync(join(root, c))) { found.add(c); break; }
     }
@@ -243,10 +263,15 @@ function extractCitedPaths(text) {
 // Commits touching any of `paths` since `sinceDate` (a YYYY-MM-DD string already
 // validated by the caller). Returns 0 (fail open, warn-free) if this is not a git
 // checkout, e.g. an npm-installed copy of the package with no .git directory.
+//
+// A bare YYYY-MM-DD is not enough: git's approxidate parser resolves a date with no
+// time-of-day using the current wall-clock time, not midnight, so `--since` on the
+// exact calendar day of `sinceDate` would silently miss commits made earlier that same
+// day. Pinning the time to 00:00:00 makes the comparison depend only on the date.
 function commitsSince(paths, sinceDate) {
   if (paths.length === 0) return 0;
   try {
-    const out = execFileSync("git", ["log", "--since", sinceDate, "--oneline", "--", ...paths], {
+    const out = execFileSync("git", ["log", "--since", `${sinceDate} 00:00:00`, "--oneline", "--", ...paths], {
       cwd: root,
       encoding: "utf8",
     });
@@ -289,13 +314,17 @@ for (const file of docsFiles) {
     }
   }
 
-  // Blocking: staleness, for docs/compliance/ and docs/audits/ only. A doc whose
-  // last_reviewed predates a meaningful number of commits to the paths it cites may be
-  // describing behavior that has since changed.
+  // Blocking: last_reviewed date format, for docs/compliance/ and docs/audits/ both.
+  // The commit-threshold count below is compliance-only, but a malformed date is worth
+  // catching everywhere last_reviewed is required.
   if (fm && fm.last_reviewed && STALENESS_DIRS.has(parentDir) && fm.status !== "superseded" && fm.status !== "deprecated") {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(fm.last_reviewed)) {
       violations.push(`[staleness] ${relPath}: last_reviewed "${fm.last_reviewed}" is not a YYYY-MM-DD date.`);
-    } else {
+    } else if (STALENESS_COMMIT_CHECK_DIRS.has(parentDir)) {
+      // Blocking: commit-threshold staleness, for docs/compliance/ only (see the
+      // constant's comment above for why docs/audits/ is excluded). A doc whose
+      // last_reviewed predates a meaningful number of commits to the paths it cites
+      // may describe behavior that has since changed.
       const cited = extractCitedPaths(text);
       const n = commitsSince(cited, fm.last_reviewed);
       if (n > STALENESS_COMMIT_THRESHOLD) {

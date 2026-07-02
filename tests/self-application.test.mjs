@@ -190,9 +190,10 @@ test("negative: exits 1 when CODEOWNERS and protected_paths_extra disagree", () 
 // and isolated from the real 35-scenario suite.
 // ---------------------------------------------------------------------------
 
-function withStubRunner(tmp, score) {
+function withStubRunner(tmp, score, extendedScore, totalScore) {
   mkdirSync(join(tmp, "agentproof"), { recursive: true });
-  writeFileSync(join(tmp, "agentproof", "runner.mjs"), `console.log(JSON.stringify({ score: "${score}" }));\n`);
+  const json = JSON.stringify({ score, extended_score: extendedScore, total_score: totalScore });
+  writeFileSync(join(tmp, "agentproof", "runner.mjs"), `console.log(${JSON.stringify(json)});\n`);
 }
 
 test("negative: exits 1 when README.md's badge does not match the runner's computed score", () => {
@@ -213,6 +214,42 @@ test("positive: passes when README.md's badge matches the runner's computed scor
   try {
     withStubRunner(tmp, "25/25");
     writeFileSync(join(tmp, "README.md"), "Score: 25/25 HARDENED\n");
+    const r = runScript(tmp);
+    assert.strictEqual(r.status, 0, `expected exit 0 but got ${r.status}:\n${r.stdout}\n${r.stderr}`);
+  } finally {
+    rmSync(tmp, { recursive: true, force: true });
+  }
+});
+
+test("negative: exits 1 when agentproof/SPEC.md's extended/total count is stale, even though the normative score still matches", () => {
+  // Regression test: the normative score alone is nearly invariant by design (ADR-027
+  // fixes it at 25/25), so a check that only compares `score` can never catch the
+  // scenario-count drift it exists to catch. This reproduces exactly that: the
+  // normative score matches, but the extended/total counts do not.
+  const tmp = makeMinimalRepo();
+  try {
+    withStubRunner(tmp, "25/25", "10/10", "35/35");
+    writeFileSync(join(tmp, "README.md"), "Score: 25/25 HARDENED\n");
+    mkdirSync(join(tmp, "agentproof"), { recursive: true });
+    writeFileSync(join(tmp, "agentproof", "README.md"), "Score: 25/25 normative | 9/9 extended (34/34 total)\n");
+    writeFileSync(join(tmp, "agentproof", "SPEC.md"), "Score: 25/25 normative | 9/9 extended (34/34 total)\n");
+    const r = runScript(tmp);
+    assert.strictEqual(r.status, 1, `expected exit 1 but got ${r.status}:\n${r.stdout}\n${r.stderr}`);
+    assert.match(r.stdout + r.stderr, /agentproof\/README\.md does not contain the current AgentProof score "10\/10"/);
+    assert.match(r.stdout + r.stderr, /agentproof\/SPEC\.md does not contain the current AgentProof score "35\/35"/);
+  } finally {
+    rmSync(tmp, { recursive: true, force: true });
+  }
+});
+
+test("positive: passes when README.md, agentproof/README.md, and agentproof/SPEC.md all agree with the runner", () => {
+  const tmp = makeMinimalRepo();
+  try {
+    withStubRunner(tmp, "25/25", "10/10", "35/35");
+    writeFileSync(join(tmp, "README.md"), "Score: 25/25 HARDENED\n");
+    mkdirSync(join(tmp, "agentproof"), { recursive: true });
+    writeFileSync(join(tmp, "agentproof", "README.md"), "Score: 25/25 normative | 10/10 extended (35/35 total)\n");
+    writeFileSync(join(tmp, "agentproof", "SPEC.md"), "Score: 25/25 normative | 10/10 extended (35/35 total)\n");
     const r = runScript(tmp);
     assert.strictEqual(r.status, 0, `expected exit 0 but got ${r.status}:\n${r.stdout}\n${r.stderr}`);
   } finally {

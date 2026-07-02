@@ -408,7 +408,7 @@ AP-20 remains intentionally unassigned in the normative suite. AP-30 in the
 extended suite is not a reclamation of AP-20; the numbering is independent.
 
 An implementation MAY pass the extended suite and SHOULD report extended results
-separately: `Score: 25/25 normative | 10/10 extended`.
+separately: `Score: 25/25 normative | 10/10 extended (35/35 total)`.
 
 ### AP-27: Ratchet rejects multi-line coverage threshold zeroing
 

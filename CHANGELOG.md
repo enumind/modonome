@@ -9,6 +9,40 @@ or CVE identifier where one exists.
 
 ## Unreleased
 
+### Documentation coherence, SME accuracy, and diagram consistency
+
+- Corrected `docs/compliance/compliance.md` and `docs/specs/governed-autonomy-spec.md`:
+  both presented an internal AG-numbered risk taxonomy as if it were a literal restatement
+  of the published OWASP Top 10 for Agentic Applications (ASI01 through ASI10). The two
+  lists do not correspond one-to-one; the AG numbering predates OWASP's December 2025
+  publication and is cited directly by AgentProof scenarios and the ratchet spec, so it is
+  relabeled honestly as Modonome's own taxonomy rather than renumbered to match OWASP's,
+  which would have broken those existing citations.
+- Corrected `docs/compliance/eu-ai-act-classification.md`: cited Annex III "Category 4"
+  for critical infrastructure (actually Category 2) and conflated "Category 8: Law
+  enforcement and administration of justice" (law enforcement is Category 6;
+  administration of justice and democratic processes is Category 8 on its own).
+- `GOVERNANCE.md` and `docs/compliance/eu-ai-act-classification.md` both presented
+  "Shadow" mode as a live activation-ladder rung with no qualifier, contradicting
+  `docs/adr/ADR-002-shadow-mode.md`'s finding that no implementation exists. Both now
+  note it is planned (WI-011), matching the caveat ADR-025 already carried.
+- `docs/guidelines/markdown-governance.md`'s root allow-list table was missing three
+  files the enforcing script actually permits (`CODEX.md`, `CLAUDE.md`,
+  `RATCHET-SPEC.md`). Added, with an honest note that `RATCHET-SPEC.md`'s content
+  does not match its name or the real ratchet spec and is flagged for owner review
+  rather than given an invented justification.
+- `docs/README.md` said "34 accepted ADRs"; 9 of the 34 carry `Status: Proposed`.
+  Corrected to state both counts.
+- Fixed a rendering bug in two Mermaid diagrams in `docs/specs/governed-autonomy-spec.md`:
+  edge and node labels used `\n` for line breaks, which Mermaid does not render as one;
+  every other diagram in the repository already uses `<br/>`. Also fixed a typo
+  ("fingerpinrted") and added color classes to the previously uncolored
+  Maker/Checker/Merger diagram, matching ARCHITECTURE.md's established palette.
+- In ARCHITECTURE.md's "Where Modonome fits in your pipeline" diagram, the anti-gaming
+  ratchet shared the engine's color class, visually equating the two even though the
+  document's own security argument rests on the ratchet being structurally independent
+  from the engine. Recolored to match the ratchet's identity in the other diagrams.
+
 ### Documentation drift prevention, phase two
 
 - Added `check-architecture-drift.mjs`: fails CI if a file under `scripts/agent/` or

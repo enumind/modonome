@@ -183,8 +183,8 @@ flowchart LR
 ```
 
 The diagram's roles and stages map onto the literal `state` field in
-`schemas/work-item.schema.json`: queue and packet are `queued`, the maker's turn is
-`making`, the checker's turn is `checking`, gates and merge cover `merge_ready` and
+`schemas/work-item.schema.json`: queue is `queued`, packet is `claimed`, the maker's turn
+is `making`, the checker's turn is `checking`, gates and merge cover `merge_ready` and
 `merging`, and a landed item is `done`. `rework` and `escalated` are named directly on the
 diagram. `prompts/modules/state-machine.md` is the normative source for the full transition
 table, including the `queued` reversion on an expired lease.
@@ -284,8 +284,9 @@ flowchart LR
   pr --> scan --> dep --> own --> bp --> rel
   rat -->|runs beside your other checks| bp
 
-  class eng,rat mod
+  class eng mod
   class pr,scan,dep,own,rel pipe
+  class rat,bp gate
   class bp gate
 ```
 

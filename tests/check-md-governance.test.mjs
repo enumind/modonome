@@ -55,6 +55,17 @@ function gitCommit(tmp, message) {
   spawnSync("git", ["commit", "-q", "-m", message], { cwd: tmp });
 }
 
+// Commit with an explicit, backdated timestamp, so staleness tests do not depend on
+// same-day wall-clock ordering between setup commits and a `last_reviewed` stamp (git's
+// `--since` treats a bare date as "since now" when it equals today; see commitsSince()).
+function gitCommitAt(tmp, message, isoDate) {
+  spawnSync("git", ["add", "-A"], { cwd: tmp });
+  spawnSync("git", ["commit", "-q", "-m", message], {
+    cwd: tmp,
+    env: { ...process.env, GIT_AUTHOR_DATE: isoDate, GIT_COMMITTER_DATE: isoDate },
+  });
+}
+
 test("markdown governance passes on this repo's own docs/adr", () => {
   const r = spawnSync("node", [join(root, "scripts/check-md-governance.mjs")], { encoding: "utf8", timeout: 30000 });
   // The live repo may carry pre-existing advisory warnings (front-matter migration is in
@@ -175,21 +186,48 @@ test("negative: many commits touching a cited path since last_reviewed trips the
 });
 
 test("positive: a recently-reviewed docs/compliance/ file with the same cited path does not trip staleness", () => {
+  // All setup activity is backdated to before last_reviewed, and nothing happens after
+  // it, so this does not depend on same-day wall-clock ordering (see gitCommitAt).
   const tmp = makeMinimalGitRepo();
   try {
     mkdirSync(join(tmp, "docs", "compliance"), { recursive: true });
     mkdirSync(join(tmp, "scripts"), { recursive: true });
     writeFileSync(join(tmp, "scripts", "cited.mjs"), "// v0\n");
-    gitCommit(tmp, "add cited script");
+    gitCommitAt(tmp, "add cited script", "2020-01-01T00:00:00");
+    for (let i = 1; i <= 16; i++) {
+      writeFileSync(join(tmp, "scripts", "cited.mjs"), `// v${i}\n`);
+      gitCommitAt(tmp, `touch ${i}`, "2020-01-01T00:00:00");
+    }
+    writeFileSync(
+      join(tmp, "docs", "compliance", "fresh-claim.md"),
+      "---\nstatus: active\nowner: \"@test\"\nlast_reviewed: 2020-01-02\n---\n\n# Fresh claim\n\nCites `scripts/cited.mjs`.\n"
+    );
+    gitCommitAt(tmp, "add fresh claim, reviewed the day after all setup activity", "2020-01-02T00:00:00");
+    const r = runScript(tmp);
+    assert.doesNotMatch(r.stdout + r.stderr, /\[staleness\]/, `unexpected staleness violation:\n${r.stdout}\n${r.stderr}`);
+  } finally {
+    rmSync(tmp, { recursive: true, force: true });
+  }
+});
+
+test("positive: a docs/audits/ file is exempt from the commit-threshold check, unlike docs/compliance/", () => {
+  // Same setup as the compliance negative test above (16 commits touching the cited
+  // path after last_reviewed), but under docs/audits/: must NOT trip staleness, because
+  // audits are point-in-time snapshots exempted from the commit-threshold check.
+  const tmp = makeMinimalGitRepo();
+  try {
+    mkdirSync(join(tmp, "docs", "audits"), { recursive: true });
+    mkdirSync(join(tmp, "scripts"), { recursive: true });
+    writeFileSync(join(tmp, "scripts", "cited.mjs"), "// v0\n");
+    writeFileSync(
+      join(tmp, "docs", "audits", "some-audit-2020-01-01.md"),
+      "---\nstatus: active\nowner: \"@test\"\nlast_reviewed: 2020-01-01\n---\n\n# Some audit\n\nCites `scripts/cited.mjs`.\n"
+    );
+    gitCommit(tmp, "add cited script and audit");
     for (let i = 1; i <= 16; i++) {
       writeFileSync(join(tmp, "scripts", "cited.mjs"), `// v${i}\n`);
       gitCommit(tmp, `touch ${i}`);
     }
-    writeFileSync(
-      join(tmp, "docs", "compliance", "fresh-claim.md"),
-      "---\nstatus: active\nowner: \"@test\"\nlast_reviewed: 2026-07-01\n---\n\n# Fresh claim\n\nCites `scripts/cited.mjs`.\n"
-    );
-    gitCommit(tmp, "add fresh claim, reviewed today");
     const r = runScript(tmp);
     assert.doesNotMatch(r.stdout + r.stderr, /\[staleness\]/, `unexpected staleness violation:\n${r.stdout}\n${r.stderr}`);
   } finally {

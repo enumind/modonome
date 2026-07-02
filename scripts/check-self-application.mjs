@@ -118,34 +118,42 @@ if (existsSync(stateDir)) {
   }
 }
 
-// 7. Badge consistency. The AgentProof normative score is hand-typed as prose in three
-//    files (README.md, agentproof/README.md, agentproof/SPEC.md) instead of generated
-//    from one source. Rather than build a generation step for a handful of badges, this
-//    asserts they agree with the runner's own computed score, so a scenario-count change
-//    that updates the runner but not all three copies fails CI instead of shipping quietly.
-//    Skipped entirely for a fixture or host repo with no agentproof/ directory: this
-//    invariant is specific to this repository, not a requirement for every adopter.
+// 7. Badge consistency. The AgentProof score is hand-typed as prose in three files
+//    instead of generated from one source. Rather than build a generation step for a
+//    handful of badges, this asserts they agree with the runner's own computed output.
+//    README.md states only the normative score; agentproof/README.md and SPEC.md also
+//    state the extended and total counts, the numbers that have actually changed three
+//    times (16, 25, 34, 35 scenarios) while the normative count has not, so checking
+//    only `score` would never catch the drift this exists to catch. Skipped entirely
+//    for a fixture or host repo with no agentproof/ directory: this invariant is
+//    specific to this repository, not a requirement for every adopter.
 if (existsSync(join(root, "agentproof/runner.mjs"))) {
   const runnerResult = spawnSync("node", [join(root, "agentproof/runner.mjs"), "--json"], {
     encoding: "utf8",
     timeout: 60000,
   });
-  let scoreLine = null;
+  let runnerJson = null;
   try {
-    scoreLine = JSON.parse(runnerResult.stdout).score;
+    runnerJson = JSON.parse(runnerResult.stdout);
   } catch {
     problems.push("agentproof/runner.mjs --json did not print parseable JSON.");
   }
-  if (scoreLine) {
-    const BADGE_FILES = ["README.md", "agentproof/README.md", "agentproof/SPEC.md"];
-    for (const rel of BADGE_FILES) {
+  if (runnerJson && runnerJson.score) {
+    const BADGE_FILES = [
+      { rel: "README.md", scores: [runnerJson.score] },
+      { rel: "agentproof/README.md", scores: [runnerJson.score, runnerJson.extended_score, runnerJson.total_score] },
+      { rel: "agentproof/SPEC.md", scores: [runnerJson.score, runnerJson.extended_score, runnerJson.total_score] },
+    ];
+    for (const { rel, scores } of BADGE_FILES) {
       if (!existsSync(join(root, rel))) continue; // not every fixture ships every badge file
       const text = read(rel);
-      if (!text.includes(scoreLine)) {
-        problems.push(
-          `${rel} does not contain the current AgentProof score "${scoreLine}" ` +
-            `(agentproof/runner.mjs --json is the source of truth).`
-        );
+      for (const score of scores.filter(Boolean)) {
+        if (!text.includes(score)) {
+          problems.push(
+            `${rel} does not contain the current AgentProof score "${score}" ` +
+              `(agentproof/runner.mjs --json is the source of truth).`
+          );
+        }
       }
     }
   }
