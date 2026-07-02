@@ -48,6 +48,15 @@ const REQUIRED_GATES = [
   // ci.yml, not a re-invocation. It exists because this exact gate went unwired into
   // CI for a period with nothing catching it.
   { name: "self-application conformance", needle: "check-self-application.mjs" },
+  // Governed Remediation Phase 1 promotion-safety gates. These run pre-base-checkout
+  // (they must judge a promotion PR's own detector changes, not the base copy).
+  { name: "attribution false-positive corpus", needle: "check-attribution-fp-corpus.mjs" },
+  { name: "regex safety", needle: "check-regex-safety.mjs" },
+  { name: "gate DAG and determinism boundary", needle: "check-gate-dag.mjs" },
+  { name: "detector-kernel pre-checkout tests", needle: "tests/near-miss.test.mjs" },
+  // Advisory, not blocking: this only proves the near-miss widener step is wired into
+  // CI at all. It never fails the build; promotion into the denylist stays human-only.
+  { name: "near-miss widener (advisory)", needle: "detect-near-miss.mjs" },
 ];
 for (const g of REQUIRED_GATES) {
   if (!activeCI.includes(g.needle)) problems.push(`ci.yml does not run the ${g.name} gate (${g.needle}).`);

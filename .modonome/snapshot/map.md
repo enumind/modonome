@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:158f061187b311b32fc82d6fa8fc3d20c0bcd49223c92a1962def679f0cab52a
-Files: 770  Bytes: 2506873  Map tokens: 88711/120000
+Merkle root: sha256:18290b0d64d5a601380b3ff02b923197d7517cecd6910ea5d76457a769c4093b
+Files: 781  Bytes: 2567686  Map tokens: 93262/120000
 
 ## Modules
 
@@ -259,29 +259,34 @@ Files: 770  Bytes: 2506873  Map tokens: 88711/120000
 - scripts/build-prompt.mjs [F:c4395c3023]: !/usr/bin/env node
 - scripts/build-release-evidence.mjs [F:9344d335a6]: Sample-app captures: real maker and checker runs recorded under examples/<app>/runs/. These directories are committed (unlike the gitignored .modonome/runs/), s
 - scripts/check-architecture-drift.mjs [F:4749cc43a0]: Escape regex metacharacters so an unexpected schema value (e.g. containing "." or "+") cannot produce an invalid pattern or change what the word-boundary match 
+- scripts/check-attribution-fp-corpus.mjs [F:e8676a18b7]: Run the corpus through the two layers. The detector predicates are injected so the * gate's own logic is testable with a deliberately over-broad matcher (provin
 - scripts/check-checker-engagement.mjs [F:fc5d887ff6]: !/usr/bin/env node
 - scripts/check-drift.mjs [F:87c30bdb4c]: !/usr/bin/env node
 - scripts/check-edit-set-compliance.mjs [F:9427d264e6]: !/usr/bin/env node
 - scripts/check-evidence-secrets.mjs [F:ace169adc4]: Resolve the list of files to scan. If a path argument is supplied use it directly; otherwise walk examples/runs/metrics.jsonl via readdirSync.
-- scripts/check-gate-dag.mjs [F:fc21812307]: gateGraphErrors(graph) -> { errors: [...], order: [...] } `errors` lists every defect (dangling edge or cycle); when it is empty, `order` holds a topological or
+- scripts/check-gate-dag.mjs [F:fc21812307]: Extract the relative import specifiers from one module's source: static `from "..."`, side-effect `import "..."`, and dynamic `import("...")`. A regex scan (no 
 - scripts/check-licenses.mjs [F:cc361bd05a]: Core check. Takes the parsed package.json and (optional) adapters manifest and returns a list of human-readable problem strings. Pure: no filesystem or network.
 - scripts/check-md-governance.mjs [F:fd08562f92]: 4. ADR number uniqueness within docs/adr, and across docs/adr and docs/research.
 - scripts/check-portability.mjs [F:2d4c555ba1]: !/usr/bin/env node
 - scripts/check-promotion-readiness.mjs [F:c5938c33fd]: Check that a section appears as a Markdown heading (h1-h6), so a one-line ADR with the section words buried in prose cannot game the gate.
+- scripts/check-regex-safety.mjs [F:e7380d1444]: Remove character classes [...] so a literal + or * inside a class ("[a+]") is not read as a quantifier. Escaped chars are skipped.
 - scripts/check-repo-hygiene.mjs [F:61296e720c]: Helper
 - scripts/check-self-application.mjs [F:4096620673]: 4. The two protected-path surfaces must agree. CODEOWNERS is what GitHub enforces; protected_paths_extra is what the engine reads. If they disagree, a path is p
 - scripts/check-state-machine-acyclic.mjs [F:8b8d3c46b3]: Build the adjacency map { state: [to, ...] } from the transition list. When includeCapGuard is false, cap_guard edges are dropped: those are the sanctioned boun
 - scripts/check-style.mjs [F:ca0833ac73]: !/usr/bin/env node
+- scripts/detect-near-miss.mjs [F:09ba331878]: Gather every near-miss across the branch name, commit identities, and commit bodies unique to this branch.
 - scripts/dry-run-sweep.mjs [F:6f247eb514]: Only fires when the swept repo actually has a control panel at apps/control-panel (auditCoverage/auditCoherence report `skipped: true` and this returns nothing 
 - scripts/guard-ratchet.mjs [F:8a10462927]: !/usr/bin/env node
 - scripts/hygiene.mjs [F:90e1fd2fd9]: Collect findings for the current branch, the commits unique to it, and the PR-body-shaped surfaces we can see locally (the commit bodies themselves).
 - scripts/install-hooks.mjs [F:a7ce0f6452]: Install the pre-commit hook into targetRoot. Returns "installed", "kept" (a host hook already existed and was preserved), or "no-git". self=true writes modonome
+- scripts/lib/attribution-fp-corpus.mjs [F:5a3543606b]: Branch names no layer may flag. These include descriptive names that merely contain a denylisted token as a substring of a longer word.
 - scripts/lib/branch-name.mjs [F:6e0bd62fa3]: True when the first path segment of a branch name equals a denylisted token. * Matching is case-insensitive. "feature/ai-adapter" is allowed because the * first
 - scripts/lib/canonical-json.mjs [F:245efb551c]: Domain separation tag binds a signature to this packet type and version so a signature over one structure cannot be replayed as another.
 - scripts/lib/commit-identity.mjs [F:e4ff19bbe2]: True when a name or email belongs to a denylisted agent or vendor identity. * Real automation such as dependabot is allowed; only coding-agent and model * vendo
 - scripts/lib/control-panel-audit.mjs [F:1a19f02364]: Today's real high-water mark is 7 (Arming & Safety, Caps & budget tab). The budget is set a few above that: a real ratchet against regression, not an arbitrary 
 - scripts/lib/detect-attribution.mjs [F:4a7eaceb5c]: True when any path segment of a branch name exactly equals a denylisted token. * This is a strict superset of isModelIdentifierBranch (which checks only the fir
 - scripts/lib/ed25519.mjs [F:0cacf66a3b]: Raw 32-byte public key as base64, accepting either a public or private KeyObject.
+- scripts/lib/git-scope.mjs [F:ff2c4a08a4]: The commit range unique to this branch: origin/main..HEAD, falling back to the * last 20 commits when origin/main is not available (a fresh clone or local repo)
 - scripts/lib/graph.mjs [F:f51cba9beb]: isCyclic(adjacency) -> { cyclic: bool, cycle: [...] } Detects whether the graph contains a cycle. When a cycle is found, `cycle` holds the nodes involved in the
 - scripts/lib/jsonschema.mjs [F:34cb2b6c48]: A small, dependency-free JSON Schema validator.
 - scripts/lib/lang-adapters/generic.mjs [F:594f505f11]: Fallback extractor for languages without a dedicated adapter. It captures common
@@ -291,8 +296,9 @@ Files: 770  Bytes: 2506873  Map tokens: 88711/120000
 - scripts/lib/lang-adapters/js-ts.mjs [F:36419aa427]: Dependency-free signature extractor for JavaScript and TypeScript. It scans top
 - scripts/lib/lang-adapters/python.mjs [F:3213d03b72]: Dependency-free signature extractor for Python. It captures top-level def and class declarations (async included), their leading triple-quoted docstring, and im
 - scripts/lib/lang-adapters/tree-sitter.mjs [F:cecdb96382]: Attempt to register tree-sitter adapters. `register` is the registry's registerAdapter. Returns true when at least one grammar was registered.
-- scripts/lib/learnings.mjs [F:4ebb5aa8a0]: Extract the first fenced json block that appears after the "## Promoted" heading.
+- scripts/lib/learnings.mjs [F:4ebb5aa8a0]: The Staged section is capped so it stays a short review queue, never a dumping ground. LEARNINGS.md documents this as "Cap at 20 staged entries... Never auto-ev
 - scripts/lib/merkle.mjs [F:2b9c43b0ca]: Hash raw file bytes (Buffer or string) into a prefixed digest.
+- scripts/lib/near-miss.mjs [F:9a3e8ed7d2]: Tier 1: distinctive vendor/product tokens with no ordinary-English or in-repo collision, so separator-normalized SUBSTRING matching on branch names and identiti
 - scripts/lib/packet-id.mjs [F:12c7a4e461]: Content-addressed packet identity (ADR-016). The id is sha256 over the JCS of the
 - scripts/lib/repo-detect.mjs [F:ae46bbab81]: Build the small file helpers a detector needs, bound to one target directory.
 - scripts/lib/run-gate-capped.mjs [F:b014028f57]: Thin wrapper around spawnSync with a hard timeout and output-size cap.
@@ -334,6 +340,7 @@ Files: 770  Bytes: 2506873  Map tokens: 88711/120000
 - tests/arming.test.mjs [F:60548316f5]: function tmpRepo
 - tests/chaos.test.mjs [F:8fe56e5618]: Chaos test helper: any call must either return errors cleanly OR not throw. A crash or hang is a failure.
 - tests/check-architecture-drift.test.mjs [F:564b053598]: function makeMinimalRepo
+- tests/check-gate-dag.test.mjs [F:df4b55ecef]: Build a temp repo whose detect-attribution.mjs imports whatever `daImports` says.
 - tests/check-md-governance.test.mjs [F:0391f3b249]: Build a minimal repo that satisfies the root allow-list, protected-file manifest, link integrity, and audit-naming checks, so only the ADR-number logic under te
 - tests/cli-dispatch.test.mjs [F:40e4f39b59]: function cli
 - tests/compliance-evidence.test.mjs [F:3ea503e7c0]: Helper reused by the mapping test.
@@ -411,6 +418,11 @@ Files: 770  Bytes: 2506873  Map tokens: 88711/120000
 - S:a10a756308 function sendJson `function sendJson(res, status, body)` L48
 - S:b06f3444be function stateWithSource `function stateWithSource(dir, mode, writable)` L55
 - S:5092562c12 function modonomeApiPlugin `export function modonomeApiPlugin()` L61
+### scripts/detect-near-miss.mjs [F:09ba331878]
+- S:7078ce1661 function today `function today()` L38
+- S:735c642c3a function collectNearMisses `export function collectNearMisses({ branch, commits })` L44 : Gather every near-miss across the branch name, commit identities, and commit bodies unique to this branch.
+- S:4358d9c393 function proposalsFrom `export function proposalsFrom(findings)` L65 : A denylist proposal is per unique (tier, surface, token): the widener proposes adding a token, not fixing N occurrences. Keep the first occurrence as evidence.
+- S:b89188d9e3 function main `function main(argv)` L74
 ### .design-sync/previews/ConfirmDialog.tsx [F:0a6a758e7d]
 - S:b29fc4b0d5 function ArmEngine `export const ArmEngine = () => (` L3
 ### apps/control-panel/src/state/types.ts [F:0a85f3b8e5]
@@ -679,7 +691,7 @@ Files: 770  Bytes: 2506873  Map tokens: 88711/120000
 - S:64de4c98b6 function makeRepoOnce `function makeRepoOnce()` L91 : Helper reused by the mapping test.
 ### scripts/check-self-application.mjs [F:4096620673]
 - S:91c42b4f27 function read `function read(rel)` L21
-- S:87c8d03eb8 function dirsFromCodeowners `function dirsFromCodeowners()` L94 : 4. The two protected-path surfaces must agree. CODEOWNERS is what GitHub enforces; protected_paths_extra is what the engine reads. If they disagree, a path is protected in name only (the bin/ gap that
+- S:87c8d03eb8 function dirsFromCodeowners `function dirsFromCodeowners()` L103 : 4. The two protected-path surfaces must agree. CODEOWNERS is what GitHub enforces; protected_paths_extra is what the engine reads. If they disagree, a path is protected in name only (the bin/ gap that
 ### tests/cli-dispatch.test.mjs [F:40e4f39b59]
 - S:daac1f172a function cli `function cli(...args)` L12
 - S:1c82a73570 function tmp `function tmp()` L19
@@ -696,9 +708,9 @@ Files: 770  Bytes: 2506873  Map tokens: 88711/120000
 ### scripts/check-architecture-drift.mjs [F:4749cc43a0]
 - S:fd2e16186e function escapeRegExp `function escapeRegExp(s)` L67 : Escape regex metacharacters so an unexpected schema value (e.g. containing "." or "+") cannot produce an invalid pattern or change what the word-boundary match means. schemas/work-item.schema.json is 
 ### tests/self-application.test.mjs [F:48355ccf4d]
-- S:e3c36060ec function makeMinimalRepo `function makeMinimalRepo()` L83 : Build a minimal passing temp repo and return the path. Caller must rmSync(tmp, {recursive:true}).
-- S:7c9eb8f22d function runScript `function runScript(tmp)` L101
-- S:43cc2b28a1 function withStubRunner `function withStubRunner(tmp, score, extendedScore, totalScore)` L215
+- S:e3c36060ec function makeMinimalRepo `function makeMinimalRepo()` L88 : Build a minimal passing temp repo and return the path. Caller must rmSync(tmp, {recursive:true}).
+- S:7c9eb8f22d function runScript `function runScript(tmp)` L106
+- S:43cc2b28a1 function withStubRunner `function withStubRunner(tmp, score, extendedScore, totalScore)` L220
 ### scripts/lib/detect-attribution.mjs [F:4a7eaceb5c]
 - S:bb570e99d8 const AI_SIGNATURE_RE `export const AI_SIGNATURE_RE = new RegExp(P, "iu");` L40
 - S:ba4cb77f9c function branchHasModelSegment `export function branchHasModelSegment(name)` L51 : True when any path segment of a branch name exactly equals a denylisted token. * This is a strict superset of isModelIdentifierBranch (which checks only the first * segment): it also catches evasions 
@@ -711,8 +723,13 @@ Files: 770  Bytes: 2506873  Map tokens: 88711/120000
 ### scripts/lib/snapshot-redact.mjs [F:4b91a9f65b]
 - S:3ef15e4c1b function redactText `export function redactText(text, { strict = false } = {})` L13 : Mask every matching secret in `text`. Returns { text, redactions } where each redaction records the pattern name and how many matches it masked.
 ### scripts/lib/learnings.mjs [F:4ebb5aa8a0]
-- S:72cb0b7406 const REQUIRED_FIELDS `export const REQUIRED_FIELDS = [` L7
-- S:6831eb78e0 function readPromotedLearnings `export function readPromotedLearnings(root)` L19 : Extract the first fenced json block that appears after the "## Promoted" heading.
+- S:72cb0b7406 const REQUIRED_FIELDS `export const REQUIRED_FIELDS = [` L9
+- S:005abb5200 const MAX_STAGED_ENTRIES `export const MAX_STAGED_ENTRIES = 20;` L24 : The Staged section is capped so it stays a short review queue, never a dumping ground. LEARNINGS.md documents this as "Cap at 20 staged entries... Never auto-evict." Until now nothing enforced it; app
+- S:2064ebd573 const STAGED_LINE_RE `export const STAGED_LINE_RE =` L28 : A staged line, per LEARNINGS.md's own "Staged format": - [YYYY-MM-DD] (signal: gate|review|incident|rework) lesson - evidence: ref
+- S:391a920cca function learningsPath `function learningsPath(root)` L31
+- S:6831eb78e0 function readPromotedLearnings `export function readPromotedLearnings(root)` L36 : Extract the first fenced json block that appears after the "## Promoted" heading.
+- S:dab0af7046 function readStagedEntries `export function readStagedEntries(root)` L51 : Return the staged bullet lines (the "- [date] ..." entries) between the "## Staged" and "## Promoted" headings. Lines that do not begin a bullet are ignored, so surrounding prose does not count agains
+- S:30e8b022de function appendStagedEntry `export function appendStagedEntry(root, line)` L63 : Append one staged candidate line to LEARNINGS.md, enforcing the format and the cap. Never evicts: a full section throws so a human promotes or prunes first. Idempotent on an exact-duplicate line. Retu
 ### apps/control-panel/src/screens/SettingsScreen.tsx [F:4ebf08705b]
 - S:6d2334f815 function SettingsScreen `export function SettingsScreen({ state, write }: { state: PanelState; write: WriteActions })` L40 : The advanced-configuration screen, one conceptual area per tab so nothing forces an * operator to scroll past three unrelated subsystems to reach the one they came for. * Role and model assignment (ne
 ### examples/demo-app/tests/CheckoutService.test.js [F:52caf3b287]
@@ -722,7 +739,8 @@ Files: 770  Bytes: 2506873  Map tokens: 88711/120000
 - S:2a04172292 function HostSelected `export const HostSelected = () => <ModeSwitcher mode="host" onModeChange={() => {}} />;` L4
 - S:2bd0a26c48 function ProductSelected `export const ProductSelected = () => <ModeSwitcher mode="product" onModeChange={() => {}} />;` L6
 ### tests/learnings.test.mjs [F:54a3c626d9]
-- S:5e3d6fa91f function run `function run(script, args = [], env = {})` L13
+- S:5e3d6fa91f function run `function run(script, args = [], env = {})` L20
+- S:2f1892a712 function makeStagedFixture `function makeStagedFixture(stagedLines = [])` L127
 ### examples/demo-app/src/CheckoutService.js [F:54c6928de9]
 - S:5ea90f5e50 class CheckoutService `export class CheckoutService` L3
 ### apps/control-panel/server/learningsFormat.mjs [F:54df44aadd]
@@ -751,6 +769,11 @@ Files: 770  Bytes: 2506873  Map tokens: 88711/120000
 - S:7d89fd8d95 function run `function run(script, args = [], env = {})` L13
 ### examples/demo-app/src/CartService.js [F:599f5b2f28]
 - S:1ef7d0ea53 class CartService `export class CartService` L3
+### scripts/lib/attribution-fp-corpus.mjs [F:5a3543606b]
+- S:e99608caf1 const SAFE_BRANCH_NAMES `export const SAFE_BRANCH_NAMES = [` L17 : Branch names no layer may flag. These include descriptive names that merely contain a denylisted token as a substring of a longer word.
+- S:59dcca7090 const SAFE_IDENTITIES `export const SAFE_IDENTITIES = [` L32 : Commit identities no layer may flag. dependabot is ordinary automation, allowed.
+- S:7bfb1bf049 const SAFE_TEXT_SNIPPETS `export const SAFE_TEXT_SNIPPETS = [` L46 : Free-text snippets (PR-body/commit-body shaped) no layer may flag. These exercise the ordinary-English and in-repo-vocabulary collisions that bare-word or substring matching would trip on.
+- S:9ef12b47d5 const DOCUMENTED_STRICT_OVERBLOCKS `export const DOCUMENTED_STRICT_OVERBLOCKS = [` L63 : Inputs the STRICT detector intentionally flags today. This is a documented, deliberate over-block, not a false positive: the corpus locks the current behavior so any future change to it is a conscious
 ### scripts/agent/action-queue.mjs [F:5b113a0914]
 - S:bfb04089fa const DEFAULT_QUEUE_DIR `export const DEFAULT_QUEUE_DIR = join(root, ".modonome", "queue");` L18
 - S:04f5060b44 const DEFAULT_LEASE_MINUTES `export const DEFAULT_LEASE_MINUTES = 30;` L19
@@ -987,11 +1010,9 @@ Files: 770  Bytes: 2506873  Map tokens: 88711/120000
 - S:8041c36b7b function noThrow `function noThrow(fn)` L18 : Chaos test helper: any call must either return errors cleanly OR not throw. A crash or hang is a failure.
 - S:856f3a5bea function ratchetWithTimeout `function ratchetWithTimeout(content)` L28 : Wrap guard-ratchet call with a hard 5-second timeout.
 ### scripts/hygiene.mjs [F:90e1fd2fd9]
-- S:2cb05d3887 function git `function git(args, opts = {})` L28
-- S:05ff801d3e function currentBranch `function currentBranch()` L33
-- S:fc3bb4bc24 function collectFindings `function collectFindings()` L40 : Collect findings for the current branch, the commits unique to it, and the PR-body-shaped surfaces we can see locally (the commit bodies themselves).
-- S:400a8c02c3 function applyFix `function applyFix(branch, findings)` L66
-- S:c546f7913f function main `function main(argv)` L85
+- S:fc3bb4bc24 function collectFindings `function collectFindings()` L30 : Collect findings for the current branch, the commits unique to it, and the PR-body-shaped surfaces we can see locally (the commit bodies themselves).
+- S:400a8c02c3 function applyFix `function applyFix(branch, findings)` L47
+- S:c546f7913f function main `function main(argv)` L66
 ### fixtures/portability/prompt-injection-host/src/main.js [F:90f0999521]
 - S:d75c32ea9c function add `export function add(a, b)` L11
 - S:d7d594dd8d function multiply `export function multiply(a, b)` L15
@@ -1025,6 +1046,19 @@ Files: 770  Bytes: 2506873  Map tokens: 88711/120000
 - S:559455c526 function loadPanelState `export async function loadPanelState(mode: PanelMode, dir?: string): Promise<PanelState>` L25
 ### .design-sync/previews/RoleBadge.tsx [F:973aaa9d86]
 - S:c38d35b211 function Roles `export const Roles = () => (` L4
+### scripts/lib/near-miss.mjs [F:9a3e8ed7d2]
+- S:5a7bfc5a1b const TIER1_TOKENS `export const TIER1_TOKENS = [` L34 : Tier 1: distinctive vendor/product tokens with no ordinary-English or in-repo collision, so separator-normalized SUBSTRING matching on branch names and identities is safe. The existing strict tokens a
+- S:f650b22681 const TIER2_TOKENS `export const TIER2_TOKENS = ["assistant", "grok", "cohere"];` L51 : Tier 2: generic or ambiguous words that would explode with false positives under substring or free-text matching ("assistant professor", "once you grok this", "the argument doesn't cohere"). Matched O
+- S:0c9de67184 const TEXT_TOKENS `export const TEXT_TOKENS = ["mistral", "deepseek", "qwen"];` L58 : Free text (commit bodies, PR text) is the noisiest surface: this repo legitimately names "claude"/"gpt" in prose, and "grok"/"cohere" are ordinary words there. So free-text scanning is limited to the 
+- S:680cec9dbd function clamp `function clamp(s)` L64
+- S:25a03d4ee2 function normalizeForMatch `export function normalizeForMatch(s)` L73 : Lowercase and strip separators (`/ - _ .` and whitespace) so "claude-code", * "claude_code", and "Claude Code" all normalize to a form containing "claudecode". * Used for Tier-1 substring matching on 
+- S:7b7ddcaa20 function segments `function segments(s)` L79 : Split a branch name or identity into its bare word segments for exact Tier-2 matching: "feature/grok-adapter" -> ["feature", "grok", "adapter"].
+- S:89065c6f4b function tier1Hit `function tier1Hit(normalized)` L86
+- S:7910b636e8 function tier2Hit `function tier2Hit(segs)` L90
+- S:a657233cd5 function matchNearMissBranch `export function matchNearMissBranch(name)` L98 : Near-miss on a branch name. Returns a finding, or null when clean or when the * strict segment check already catches it (so the widener never duplicates strict).
+- S:d92119a484 function matchNearMissIdentity `export function matchNearMissIdentity(name, email)` L113 : Near-miss on a commit author/committer identity. Checks the name (Tier 1 substring * and Tier 2 exact word) and the email (Tier 1 substring, catching vendor domains * such as "@mistral.ai"). Returns n
+- S:b121dfe1ec function matchNearMissText `export function matchNearMissText(where, text)` L141 : Near-miss on free text, scanned line by line. A line is a candidate only when it * both names a distinctive new-vendor TEXT_TOKEN (as a whole word) AND carries an * attribution cue, and the strict AI_
+- S:fa71aef711 function formatStagedLine `export function formatStagedLine(finding, { date, evidence })` L169 : Render one LEARNINGS.md Staged line from a finding. The line is a PROPOSED denylist * addition for human review, never an applied change. The (signal: review) tag marks * it as a review-surfaced candi
 ### apps/control-panel/src/screens/WorkQueueScreen.tsx [F:9b3f18856e]
 - S:84220fc054 function WorkQueueScreen `export function WorkQueueScreen({ state, write }: { state: PanelState; write: WriteActions })` L15 : The durable work-item state machine, laid out as a board: queued, claimed, making, * checking, merge ready, done, and escalated. Selecting a card opens a read-only * inspector drawer with the item's i
 ### .design-sync/previews/AuditTimeline.tsx [F:9c9edea0c9]
@@ -1284,6 +1318,8 @@ Files: 770  Bytes: 2506873  Map tokens: 88711/120000
 - S:60070857ec type IconName `export type IconName =` L9 : The curated Modonome icon set. Every glyph is a stroke path on a 24x24 grid and * inherits `currentColor`, so an icon takes the color of whatever text or control it * sits in. Icons are decorative by 
 - S:a0f5484b98 interface IconProps `export interface IconProps extends Omit<SVGProps<SVGSVGElement>, "name">` L77
 - S:abe6a83201 function Icon `export function Icon({ name, size = 16, title, strokeWidth = 1.8, ...rest }: IconProps)` L88
+### tests/check-gate-dag.test.mjs [F:df4b55ecef]
+- S:f2f7e716af function makeBoundaryFixture `function makeBoundaryFixture(daImports)` L50 : Build a temp repo whose detect-attribution.mjs imports whatever `daImports` says.
 ### scripts/score-proposals.mjs [F:e11f907cba]
 - S:73e4b1bbf9 const SIGNAL_MIN `export const SIGNAL_MIN = 0;` L31
 - S:ad1b93bd0c const SIGNAL_MAX `export const SIGNAL_MAX = 5;` L32
@@ -1308,6 +1344,16 @@ Files: 770  Bytes: 2506873  Map tokens: 88711/120000
 - S:ce5e964e25 function ArmingMode `export const ArmingMode = () => (` L4
 - S:8c65a8b2a2 function ActiveWork `export const ActiveWork = () => (` L15
 - S:dd37641bec function Spend `export const Spend = () => (` L27
+### scripts/check-regex-safety.mjs [F:e7380d1444]
+- S:17c9a6d377 function stripCharClasses `function stripCharClasses(src)` L43 : Remove character classes [...] so a literal + or * inside a class ("[a+]") is not read as a quantifier. Escaped chars are skipped.
+- S:be897872b9 function bodyHasUnbounded `function bodyHasUnbounded(body)` L62 : True when a group body contains a top-level unbounded quantifier.
+- S:ca3e7d6f59 function redosFindings `export function redosFindings(source)` L70 : Detect nested quantifiers: a group (...) that is itself quantified by an unbounded quantifier (+, *, or {n,}) AND whose body contains an unbounded quantifier. This is the catastrophic-backtracking cla
+- S:c52b041088 function exportedRegexSources `async function exportedRegexSources(absFile)` L100 : 1. Runtime: exported RegExp sources (including RegExps inside an exported array).
+- S:dcc6653dc4 function staticPatternSources `function staticPatternSources(src)` L112 : 2/3. Static: new RegExp("..."|`...`) string args (no interpolation) and /.../ literals.
+- S:979cd75d0e function regexSafetyProblems `export async function regexSafetyProblems(rootDir = root)` L142 : Collect every regex-safety problem across the target files. Exported (not run at import time) so the gate can be exercised without triggering process.exit.
+### scripts/check-attribution-fp-corpus.mjs [F:e8676a18b7]
+- S:42d4f014b5 function corpusProblems `export function corpusProblems({ strictBranch, fuzzyBranch, strictId, fuzzyId, strictText, fuzzyText })` L34 : Run the corpus through the two layers. The detector predicates are injected so the * gate's own logic is testable with a deliberately over-broad matcher (proving it * would catch a bad promotion). Eac
+- S:59f6d857da const LIVE_DETECTORS `export const LIVE_DETECTORS =` L68 : The real detectors, wired to the injectable checker.
 ### tests/helpers/mock-openai-server.mjs [F:eb14a0bdeb]
 - S:135fde5dfb function startMockServer `export function startMockServer(options = {})` L23 : Start a mock OpenAI chat-completions server. * * @param {object} [options] * @param {"success"|"retry-then-success"|"delay"|"malformed"|"error"} [options.mode] * - "success": always returns a normal c
 - S:b65916676a function successBody `function successBody(overrides)` L98
@@ -1342,7 +1388,8 @@ Files: 770  Bytes: 2506873  Map tokens: 88711/120000
 ### scripts/lib/graph.mjs [F:f51cba9beb]
 - S:3c3cd672a7 function isCyclic `export function isCyclic(adjacency)` L11 : isCyclic(adjacency) -> { cyclic: bool, cycle: [...] } Detects whether the graph contains a cycle. When a cycle is found, `cycle` holds the nodes involved in the order they were detected via DFS (the f
 - S:075e86ea7c function topoSort `export function topoSort(adjacency, nodes)` L48 : topoSort(adjacency, nodes) -> { order: [...], error?: string } Returns a topological ordering of `nodes` given the directed edges in `adjacency`. Nodes not present in `nodes` but reachable via edges a
-- S:9ec4198171 function collectNodes `function collectNodes(adjacency)` L75 : Collect every node mentioned either as a key or as a neighbour value.
+- S:cb1a5f81e0 function reachableFrom `export function reachableFrom(adjacency, start)` L78 : reachableFrom(adjacency, start) -> Set of nodes reachable from `start` by following directed edges (breadth-first). `start` itself is not included unless the graph has a path back to it. Used by the d
+- S:9ec4198171 function collectNodes `function collectNodes(adjacency)` L93 : Collect every node mentioned either as a key or as a neighbour value.
 ### .design-sync/previews/Button.tsx [F:f6e100ab45]
 - S:f988f356bd function Variants `export const Variants = () => (` L4
 - S:edacefac29 function Sizes `export const Sizes = () => (` L19
@@ -1376,7 +1423,9 @@ Files: 770  Bytes: 2506873  Map tokens: 88711/120000
 - S:8bff005013 function runReport `function runReport(targetDir)` L16
 - S:5919844321 function makeEvent `function makeEvent(event, extra = {})` L24 : Schema-conformant event line using "event" field (not "type").
 ### scripts/check-gate-dag.mjs [F:fc21812307]
-- S:9d42aeefd9 function gateGraphErrors `export function gateGraphErrors(graph)` L20 : gateGraphErrors(graph) -> { errors: [...], order: [...] } `errors` lists every defect (dangling edge or cycle); when it is empty, `order` holds a topological ordering with dependencies before dependen
+- S:54a007aa57 function relativeImportsOf `function relativeImportsOf(absFile)` L41 : Extract the relative import specifiers from one module's source: static `from "..."`, side-effect `import "..."`, and dynamic `import("...")`. A regex scan (no AST dependency) matches this repo's hous
+- S:f99cb9f35c function determinismBoundaryErrors `export function determinismBoundaryErrors(root = REPO_ROOT)` L54 : Build a transitive {repoRelativeFile: [importedFiles]} adjacency map by walking relative imports out from the entry files, then assert FORBIDDEN_IMPORT is unreachable from every entry. Reads files fro
+- S:9d42aeefd9 function gateGraphErrors `export function gateGraphErrors(graph)` L91 : gateGraphErrors(graph) -> { errors: [...], order: [...] } `errors` lists every defect (dangling edge or cycle); when it is empty, `order` holds a topological ordering with dependencies before dependen
 ### scripts/check-checker-engagement.mjs [F:fc5d887ff6]
 - S:aa00911a72 function readEvents `function readEvents(path)` L23
 ### scripts/check-md-governance.mjs [F:fd08562f92]
@@ -1395,6 +1444,11 @@ Files: 770  Bytes: 2506873  Map tokens: 88711/120000
 - S:cdac115f81 function runPortabilityCheck `function runPortabilityCheck(fixturePath, opts = {})` L46 : Run check-portability.mjs against a fixture directory.
 ### .design-sync/previews/TierBadge.tsx [F:fe5ec971f8]
 - S:7d8d2691e2 function Tiers `export const Tiers = () => (` L4
+### scripts/lib/git-scope.mjs [F:ff2c4a08a4]
+- S:23fbaa24ea function git `export function git(args, opts = {})` L13
+- S:a529342ccb function currentBranch `export function currentBranch()` L18
+- S:79b048583f function defaultRange `export function defaultRange()` L27 : The commit range unique to this branch: origin/main..HEAD, falling back to the * last 20 commits when origin/main is not available (a fresh clone or local repo).
+- S:7c3651a5ba function commitsInRange `export function commitsInRange(range = defaultRange())` L38 : Commits in `range` as structured records: { an, ae, cn, ce, sha, body }. Returns * the raw tab-delimited identity table too (the shape commit-identity.mjs parses). * Bodies are fetched one commit at a
 ### examples/demo-app/src/PaymentProcessor.js [F:ff3aef693f]
 - S:9dee57c7c2 class PaymentProcessor `export class PaymentProcessor` L5
 ### scripts/lib/lang-adapters/go.mjs [F:ffe5c1269b]
@@ -1417,6 +1471,8 @@ Files: 770  Bytes: 2506873  Map tokens: 88711/120000
 - tests/packet.test.mjs -> scripts/validate-knowledge-packet.mjs
 - apps/control-panel/server/api.mjs -> apps/control-panel/server/modonomeWriter.mjs
 - apps/control-panel/server/api.mjs -> apps/control-panel/server/modonomeReader.mjs
+- scripts/detect-near-miss.mjs -> scripts/lib/learnings.mjs
+- scripts/detect-near-miss.mjs -> scripts/lib/git-scope.mjs
 - design-system/src/components/DecisionCard/index.ts -> design-system/src/components/DecisionCard/DecisionCard.tsx
 - scripts/verify-packet.mjs -> scripts/lib/ed25519.mjs
 - scripts/verify-packet.mjs -> scripts/lib/canonical-json.mjs
@@ -1443,11 +1499,13 @@ Files: 770  Bytes: 2506873  Map tokens: 88711/120000
 - design-system/src/components/ActivationLadder/ActivationLadder.tsx -> design-system/src/components/Button/Button.tsx
 - design-system/src/components/ActivationLadder/ActivationLadder.tsx -> design-system/src/tokens/tokens.ts
 - design-system/src/components/ActivationLadder/ActivationLadder.tsx -> design-system/src/components/Icon/Icon.tsx
+- tests/detect-near-miss.test.mjs -> scripts/detect-near-miss.mjs
 - scripts/check-control-panel-coverage.mjs -> scripts/lib/control-panel-audit.mjs
 - design-system/src/components/MdnRoot/index.ts -> design-system/src/components/MdnRoot/MdnRoot.tsx
 - design-system/src/components/LeaseTable/index.ts -> design-system/src/components/LeaseTable/LeaseTable.tsx
 - design-system/src/components/ConceptTile/ConceptTile.tsx -> design-system/src/lib/cx.ts
 - design-system/src/components/ConceptTile/ConceptTile.tsx -> design-system/src/components/Icon/Icon.tsx
+- tests/check-regex-safety.test.mjs -> scripts/check-regex-safety.mjs
 - tests/ws-b-harness.test.mjs -> scripts/validate-config.mjs
 - tests/ws-b-harness.test.mjs -> scripts/agent/run-cycle.mjs
 - tests/ws-b-harness.test.mjs -> scripts/agent/render-prompt.mjs
@@ -1516,7 +1574,7 @@ Files: 770  Bytes: 2506873  Map tokens: 88711/120000
 - design-system/src/components/RoleBadge/index.ts -> design-system/src/components/RoleBadge/RoleBadge.tsx
 - tests/openai-client.test.mjs -> tests/helpers/mock-openai-server.mjs
 - examples/demo-app/tests/CheckoutService.test.js -> examples/demo-app/src/CheckoutService.js
-- tests/learnings.test.mjs -> scripts/lib/learnings.mjs
+- tests/near-miss.test.mjs -> scripts/lib/learnings.mjs
 - design-system/src/components/SafetyStrip/SafetyStrip.tsx -> design-system/src/components/StatusPill/StatusPill.tsx
 - design-system/src/components/SafetyStrip/SafetyStrip.tsx -> design-system/src/components/HelpHint/HelpHint.tsx
 - tests/run-cycle-openai.test.mjs -> scripts/agent/apply-patch.mjs
@@ -1555,6 +1613,8 @@ Files: 770  Bytes: 2506873  Map tokens: 88711/120000
 - design-system/src/components/Drawer/Drawer.tsx -> design-system/src/components/IconButton/IconButton.tsx
 - apps/control-panel/src/screens/LearningsScreen.tsx -> apps/control-panel/src/state/types.ts
 - apps/control-panel/src/screens/LearningsScreen.tsx -> apps/control-panel/src/lib/confirm.tsx
+- tests/check-attribution-fp-corpus.test.mjs -> scripts/lib/attribution-fp-corpus.mjs
+- tests/check-attribution-fp-corpus.test.mjs -> scripts/check-attribution-fp-corpus.mjs
 - design-system/src/components/Input/Input.tsx -> design-system/src/lib/cx.ts
 - design-system/src/components/Input/Input.tsx -> design-system/src/components/HelpHint/HelpHint.tsx
 - design-system/src/components/Input/Input.tsx -> design-system/src/components/Icon/Icon.tsx
@@ -1602,6 +1662,7 @@ Files: 770  Bytes: 2506873  Map tokens: 88711/120000
 - tests/chaos.test.mjs -> scripts/validate-knowledge-packet.mjs
 - tests/chaos.test.mjs -> scripts/validate-config.mjs
 - design-system/src/components/States/index.ts -> design-system/src/components/States/States.tsx
+- scripts/hygiene.mjs -> scripts/lib/git-scope.mjs
 - design-system/src/components/MdnRoot/MdnRoot.tsx -> design-system/src/lib/cx.ts
 - design-system/src/components/MetricTile/index.ts -> design-system/src/components/MetricTile/MetricTile.tsx
 - scripts/validate-config.mjs -> scripts/lib/yaml-lite.mjs
@@ -1764,6 +1825,7 @@ Files: 770  Bytes: 2506873  Map tokens: 88711/120000
 - scripts/agent/run-cycle.mjs -> scripts/agent/tool-loop-adapter.mjs
 - scripts/agent/run-cycle.mjs -> scripts/agent/render-prompt.mjs
 - design-system/src/components/AuditTimeline/index.ts -> design-system/src/components/AuditTimeline/AuditTimeline.tsx
+- tests/check-gate-dag.test.mjs -> scripts/check-gate-dag.mjs
 - tests/role-registry.test.mjs -> scripts/agent/resolve-role.mjs
 - tests/role-registry.test.mjs -> scripts/validate-config.mjs
 - tests/role-registry.test.mjs -> scripts/agent/run-cycle.mjs
@@ -1771,6 +1833,8 @@ Files: 770  Bytes: 2506873  Map tokens: 88711/120000
 - apps/control-panel/src/screens/ArmingScreen.tsx -> apps/control-panel/src/state/configDiff.ts
 - apps/control-panel/src/screens/ArmingScreen.tsx -> apps/control-panel/src/lib/confirm.tsx
 - tests/promote-learning.test.mjs -> scripts/lib/learnings.mjs
+- scripts/check-attribution-fp-corpus.mjs -> scripts/lib/detect-attribution.mjs
+- scripts/check-attribution-fp-corpus.mjs -> scripts/lib/near-miss.mjs
 - design-system/src/components/NumberField/index.ts -> design-system/src/components/NumberField/NumberField.tsx
 - apps/control-panel/src/state/liveClient.ts -> apps/control-panel/src/state/types.ts
 - tests/tool-loop-adapter.test.mjs -> scripts/agent/run-cycle.mjs
@@ -1797,54 +1861,54 @@ Files: 770  Bytes: 2506873  Map tokens: 88711/120000
 
 ## Attention (centrality + pagerank)
 
-1. design-system/src/lib/cx.ts centrality=32 pagerank=0.038004
-2. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.024637
-3. design-system/src/index.ts centrality=48 pagerank=0.000999
-4. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.008385
-5. apps/control-panel/src/state/types.ts centrality=12 pagerank=0.008375
-6. scripts/lib/yaml-lite.mjs centrality=12 pagerank=0.007963
-7. scripts/agent/run-cycle.mjs centrality=17 pagerank=0.00376
-8. scripts/lib/jsonschema.mjs centrality=8 pagerank=0.010857
-9. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.005977
-10. scripts/lib/learnings.mjs centrality=9 pagerank=0.007235
-11. scripts/validate-config.mjs centrality=11 pagerank=0.004701
-12. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001672
-13. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.00482
-14. scripts/lib/canonical-json.mjs centrality=8 pagerank=0.005206
-15. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.005593
-16. apps/control-panel/src/App.tsx centrality=11 pagerank=0.001424
-17. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.00292
-18. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.003607
-19. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.005201
-20. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.003493
-21. scripts/validate-work-item.mjs centrality=6 pagerank=0.003406
-22. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001672
-23. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.003183
-24. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.005427
-25. scripts/agent/resolve-role.mjs centrality=6 pagerank=0.002918
-26. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001864
-27. scripts/snapshot.mjs centrality=8 pagerank=0.000999
-28. scripts/lib/graph.mjs centrality=4 pagerank=0.004093
-29. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.00292
-30. design-system/src/lib/format.ts centrality=5 pagerank=0.002918
-31. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001864
-32. scripts/agent/providers.mjs centrality=3 pagerank=0.003982
-33. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.00112
-34. design-system/src/components/Modal/Modal.tsx centrality=4 pagerank=0.002656
-35. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001864
-36. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001864
-37. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.001864
-38. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.001864
-39. design-system/src/components/TierBadge/TierBadge.tsx centrality=4 pagerank=0.002624
-40. examples/demo-app/src/index.js centrality=6 pagerank=0.000999
-41. design-system/src/components/Table/Table.tsx centrality=4 pagerank=0.002576
-42. apps/control-panel/server/learningsFormat.mjs centrality=2 pagerank=0.004033
-43. design-system/src/components/IdentityChip/IdentityChip.tsx centrality=4 pagerank=0.002444
-44. scripts/lib/control-panel-audit.mjs centrality=3 pagerank=0.003101
-45. scripts/lib/branch-name.mjs centrality=3 pagerank=0.003059
-46. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.003059
-47. design-system/src/components/ArmingStateBadge/ArmingStateBadge.tsx centrality=4 pagerank=0.001864
-48. design-system/src/components/Checkbox/Checkbox.tsx centrality=4 pagerank=0.001864
-49. design-system/src/components/DecisionCard/DecisionCard.tsx centrality=4 pagerank=0.001864
-50. design-system/src/components/Input/Input.tsx centrality=4 pagerank=0.001864
+1. design-system/src/lib/cx.ts centrality=32 pagerank=0.037287
+2. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.024172
+3. design-system/src/index.ts centrality=48 pagerank=0.00098
+4. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.008226
+5. apps/control-panel/src/state/types.ts centrality=12 pagerank=0.008217
+6. scripts/lib/yaml-lite.mjs centrality=12 pagerank=0.007812
+7. scripts/agent/run-cycle.mjs centrality=17 pagerank=0.003689
+8. scripts/lib/jsonschema.mjs centrality=8 pagerank=0.010652
+9. scripts/lib/learnings.mjs centrality=10 pagerank=0.007869
+10. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.005864
+11. scripts/validate-config.mjs centrality=11 pagerank=0.004612
+12. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.00164
+13. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.004729
+14. scripts/lib/canonical-json.mjs centrality=8 pagerank=0.005108
+15. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.005487
+16. apps/control-panel/src/App.tsx centrality=11 pagerank=0.001397
+17. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002864
+18. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.003539
+19. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.005103
+20. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.003427
+21. scripts/validate-work-item.mjs centrality=6 pagerank=0.003341
+22. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001641
+23. scripts/lib/graph.mjs centrality=4 pagerank=0.004724
+24. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.003123
+25. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.005324
+26. scripts/agent/resolve-role.mjs centrality=6 pagerank=0.002862
+27. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001828
+28. scripts/snapshot.mjs centrality=8 pagerank=0.00098
+29. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002864
+30. design-system/src/lib/format.ts centrality=5 pagerank=0.002863
+31. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001828
+32. scripts/agent/providers.mjs centrality=3 pagerank=0.003907
+33. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.001099
+34. design-system/src/components/Modal/Modal.tsx centrality=4 pagerank=0.002605
+35. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001828
+36. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001828
+37. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.001828
+38. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.001828
+39. design-system/src/components/TierBadge/TierBadge.tsx centrality=4 pagerank=0.002574
+40. examples/demo-app/src/index.js centrality=6 pagerank=0.00098
+41. design-system/src/components/Table/Table.tsx centrality=4 pagerank=0.002528
+42. scripts/lib/branch-name.mjs centrality=3 pagerank=0.003253
+43. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.003253
+44. scripts/lib/detect-attribution.mjs centrality=4 pagerank=0.002407
+45. apps/control-panel/server/learningsFormat.mjs centrality=2 pagerank=0.003957
+46. design-system/src/components/IdentityChip/IdentityChip.tsx centrality=4 pagerank=0.002398
+47. scripts/lib/control-panel-audit.mjs centrality=3 pagerank=0.003043
+48. design-system/src/components/ArmingStateBadge/ArmingStateBadge.tsx centrality=4 pagerank=0.001828
+49. design-system/src/components/Checkbox/Checkbox.tsx centrality=4 pagerank=0.001828
+50. design-system/src/components/DecisionCard/DecisionCard.tsx centrality=4 pagerank=0.001828
 

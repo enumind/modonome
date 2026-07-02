@@ -32,6 +32,21 @@ The project runs `node scripts/check-style.mjs .` on every PR. It rejects em das
 weasel phrases, and AI authorship signatures in any tracked file. Write plainly.
 See `scripts/check-style.mjs` for the exact list of banned patterns.
 
+## Communication
+
+Every pull request body, pull request or review comment, and any document an agent
+produces (a maker rationale, a checker review, a design note, an audit) is organized
+the same way, so a reader gets the point before the detail:
+
+1. Summary: two or three sentences stating what changed and why, up front.
+2. Details: a scannable list of the specific changes, decisions, or findings.
+3. Annexure: the deep technical material (traces, long output, edge cases) at the end,
+   for the reader who needs it.
+
+Lead with the summary. Do not open with a page of technical jargon. Keep the language
+clear and crisp. This is a review convention, not a machine gate: the checker enforces
+it, because prose structure cannot be judged deterministically without false positives.
+
 ## Documentation
 
 Documentation placement, naming, coherence, and cleanup follow
