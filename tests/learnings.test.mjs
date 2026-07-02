@@ -5,7 +5,14 @@ import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { readPromotedLearnings, REQUIRED_FIELDS } from "../scripts/lib/learnings.mjs";
+import {
+  readPromotedLearnings,
+  REQUIRED_FIELDS,
+  readStagedEntries,
+  appendStagedEntry,
+  MAX_STAGED_ENTRIES,
+  STAGED_LINE_RE,
+} from "../scripts/lib/learnings.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
@@ -111,4 +118,71 @@ test("promotion readiness gate passes when a valid promotion ADR exists", () => 
   );
   assert.strictEqual(r.status, 0, `expected exit 0; got ${r.status}\n${r.stdout}\n${r.stderr}`);
   assert.match(r.stdout, /no capability ships default-on/);
+});
+
+// ---------------------------------------------------------------------------
+// Staged-section support (the near-miss widener's only writer path).
+// ---------------------------------------------------------------------------
+
+function makeStagedFixture(stagedLines = []) {
+  const tmpRoot = mkdtempSync(join(tmpdir(), "modonome-staged-"));
+  mkdirSync(join(tmpRoot, ".modonome"), { recursive: true });
+  const body = [
+    "# Learnings",
+    "",
+    "## Staged",
+    "",
+    ...stagedLines,
+    "",
+    "## Promoted",
+    "",
+    "```json",
+    "[]",
+    "```",
+    "",
+  ].join("\n");
+  writeFileSync(join(tmpRoot, ".modonome", "LEARNINGS.md"), body);
+  return tmpRoot;
+}
+
+const SAMPLE_LINE =
+  "- [2026-07-02] (signal: review) Near-miss vendor token mistral in a commit body - evidence: detect-near-miss run";
+
+test("this repo's own staged entries all match the staged line format", () => {
+  for (const line of readStagedEntries(root)) {
+    assert.match(line, STAGED_LINE_RE, `staged line does not match format: ${line}`);
+  }
+});
+
+test("readStagedEntries counts only bullet entries, ignoring prose", () => {
+  const tmpRoot = makeStagedFixture(["- [2026-06-28] (signal: gate) A lesson - evidence: ref"]);
+  assert.equal(readStagedEntries(tmpRoot).length, 1);
+});
+
+test("appendStagedEntry inserts before the Promoted block and is idempotent", () => {
+  const tmpRoot = makeStagedFixture([]);
+  assert.deepEqual(appendStagedEntry(tmpRoot, SAMPLE_LINE), { added: true, reason: "appended" });
+  assert.deepEqual(readStagedEntries(tmpRoot), [SAMPLE_LINE]);
+  // Promoted block still parses (insertion did not corrupt the fenced json).
+  assert.deepEqual(readPromotedLearnings(tmpRoot), []);
+  // Duplicate append is a no-op.
+  assert.deepEqual(appendStagedEntry(tmpRoot, SAMPLE_LINE), { added: false, reason: "duplicate" });
+  assert.equal(readStagedEntries(tmpRoot).length, 1);
+});
+
+test("appendStagedEntry rejects a malformed line", () => {
+  const tmpRoot = makeStagedFixture([]);
+  assert.throws(() => appendStagedEntry(tmpRoot, "not a staged line"), /staged format/);
+});
+
+test("appendStagedEntry refuses when the section is full, and never evicts", () => {
+  const full = Array.from(
+    { length: MAX_STAGED_ENTRIES },
+    (_, i) => `- [2026-06-0${(i % 9) + 1}] (signal: gate) Lesson number ${i} here - evidence: ref-${i}`,
+  );
+  const tmpRoot = makeStagedFixture(full);
+  assert.equal(readStagedEntries(tmpRoot).length, MAX_STAGED_ENTRIES);
+  assert.throws(() => appendStagedEntry(tmpRoot, SAMPLE_LINE), /full \(20\/20\)/);
+  // Nothing was evicted or added.
+  assert.equal(readStagedEntries(tmpRoot).length, MAX_STAGED_ENTRIES);
 });
