@@ -3,8 +3,10 @@
 ## Commit messages
 
 - Commit messages contain only the change description and, when relevant, a `Fixes #N` reference.
-- Keep attribution trailers, session links, and generated-by notices out of commit messages.
-- Specifically: no git trailers that credit AI tools, no session URLs, no authorship signatures.
+- Keep attribution trailers, session links, and generated-by notices out of commit messages and out of all GitHub-facing text (PR bodies, PR comments, review replies, inline comments).
+- Specifically: no git trailers that credit AI tools, no AI co-author entries, no session URLs, no authorship signatures, no model names in any artifact.
+- Branch names must be descriptive. No model-identifier prefixes (`claude/`, `gpt/`, `ai/`, etc.), enforced by `scripts/lib/branch-name.mjs`.
+- The author graph must reflect human ownership. AI participation is acknowledged at the architectural level (see `README.md`) rather than per-artifact, so that governance process integrity (not tool identity) remains the primary trust signal.
 
 ## Governed autonomy
 
