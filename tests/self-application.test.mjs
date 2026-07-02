@@ -39,6 +39,10 @@ jobs:
       - run: node scripts/snapshot.mjs . --check
       - run: git checkout "origin/\${{ github.base_ref }}" -- scripts/guard-ratchet.mjs
       - run: git checkout "origin/\${{ github.base_ref }}" -- scripts/check-style.mjs
+      - run: git checkout "origin/\${{ github.base_ref }}" -- scripts/check-repo-hygiene.mjs
+      - run: git checkout "origin/\${{ github.base_ref }}" -- scripts/lib/branch-name.mjs
+      - run: git checkout "origin/\${{ github.base_ref }}" -- scripts/lib/commit-identity.mjs
+      - run: git checkout "origin/\${{ github.base_ref }}" -- scripts/lib/detect-attribution.mjs
 `;
 
 // A minimal safe template config.yaml.
@@ -139,6 +143,24 @@ test("negative: exits 1 when ci.yml is missing a required gate needle", () => {
     writeFileSync(join(tmp, ".github", "workflows", "ci.yml"), badCI);
     const r = runScript(tmp);
     assert.strictEqual(r.status, 1, `expected exit 1 but got ${r.status}:\n${r.stdout}\n${r.stderr}`);
+  } finally {
+    rmSync(tmp, { recursive: true, force: true });
+  }
+});
+
+test("negative: exits 1 when a detector is not loaded from the base branch (trust-isolation kernel)", () => {
+  const tmp = makeMinimalRepo();
+  try {
+    // Drop the detect-attribution base-pin line: the attribution detector would then
+    // run from the PR's own copy, which is exactly the self-weakening this guards.
+    const badCI = VALID_CI_YML.replace(
+      '      - run: git checkout "origin/${{ github.base_ref }}" -- scripts/lib/detect-attribution.mjs\n',
+      "",
+    );
+    writeFileSync(join(tmp, ".github", "workflows", "ci.yml"), badCI);
+    const r = runScript(tmp);
+    assert.strictEqual(r.status, 1, `expected exit 1 but got ${r.status}:\n${r.stdout}\n${r.stderr}`);
+    assert.match(r.stdout + r.stderr, /detect-attribution\.mjs from the base branch/);
   } finally {
     rmSync(tmp, { recursive: true, force: true });
   }

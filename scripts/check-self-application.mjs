@@ -53,13 +53,28 @@ for (const g of REQUIRED_GATES) {
   if (!activeCI.includes(g.needle)) problems.push(`ci.yml does not run the ${g.name} gate (${g.needle}).`);
 }
 
-// 2. The ratchet and style linter must be loaded from the base branch on a PR, so
-//    a PR cannot weaken the gate that judges it. This is the trust-isolation claim.
-if (!/git checkout "origin\/\$\{\{ github\.base_ref \}\}" -- scripts\/guard-ratchet\.mjs/.test(activeCI)) {
-  problems.push("ci.yml does not load guard-ratchet.mjs from the base branch before running it.");
-}
-if (!/git checkout "origin\/\$\{\{ github\.base_ref \}\}" -- scripts\/check-style\.mjs/.test(activeCI)) {
-  problems.push("ci.yml does not load check-style.mjs from the base branch before running it.");
+// 2. The ratchet, style linter, and the attribution detector kernel must be loaded
+//    from the base branch on a PR, so a PR cannot weaken the gate that judges it.
+//    This is the trust-isolation claim, and it must cover EVERY deterministic
+//    detector the hygiene gate relies on: branch-name and commit-identity (and the
+//    consolidated detect-attribution that reuses them) run via check-repo-hygiene.mjs,
+//    so all four plus the hygiene gate itself must be base-pinned. A gate that judges
+//    branch/commit/attribution hygiene while running from the PR's own copy is not a
+//    trust boundary; it is a suggestion the PR can edit away.
+const BASE_PINNED = [
+  "scripts/guard-ratchet.mjs",
+  "scripts/check-style.mjs",
+  "scripts/check-repo-hygiene.mjs",
+  "scripts/lib/branch-name.mjs",
+  "scripts/lib/commit-identity.mjs",
+  "scripts/lib/detect-attribution.mjs",
+];
+for (const rel of BASE_PINNED) {
+  const escaped = rel.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const re = new RegExp(`git checkout "origin/\\$\\{\\{ github\\.base_ref \\}\\}" -- ${escaped}`);
+  if (!re.test(activeCI)) {
+    problems.push(`ci.yml does not load ${rel} from the base branch before running the gates (trust-isolation kernel).`);
+  }
 }
 
 // 3. Shipped defaults must be safe (off by default). The template is what new

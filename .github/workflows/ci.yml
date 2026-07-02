@@ -23,8 +23,8 @@ jobs:
         run: npm install
 
       # Snapshot freshness runs BEFORE the base-branch checkouts below, which
-      # overwrite guard-ratchet.mjs and check-style.mjs with base versions. Hashing
-      # must see this branch's real files. Honors snapshot.ci_mode (warn by default).
+      # overwrite the gate scripts and the attribution detector kernel with base
+      # versions. Hashing must see this branch's real files. Honors snapshot.ci_mode.
       - name: Run snapshot freshness gate
         run: node scripts/snapshot.mjs . --check
 
@@ -39,6 +39,19 @@ jobs:
       - name: Load check-style.mjs from the base branch
         if: github.event_name == 'pull_request'
         run: git checkout "origin/${{ github.base_ref }}" -- scripts/check-style.mjs
+
+      # The attribution detector kernel: the branch/commit hygiene gate and the
+      # detectors it consumes must also run from the base branch, so a PR cannot
+      # weaken the check that judges its own branch name, commit identity, or
+      # attribution signatures. detect-attribution.mjs uses bootstrap tolerance
+      # because a PR that introduces it has no copy of it on the base branch yet.
+      - name: Load repo-hygiene gate and detectors from the base branch
+        if: github.event_name == 'pull_request'
+        run: |
+          git checkout "origin/${{ github.base_ref }}" -- scripts/check-repo-hygiene.mjs
+          git checkout "origin/${{ github.base_ref }}" -- scripts/lib/branch-name.mjs
+          git checkout "origin/${{ github.base_ref }}" -- scripts/lib/commit-identity.mjs
+          git checkout "origin/${{ github.base_ref }}" -- scripts/lib/detect-attribution.mjs || echo "detect-attribution.mjs not on base yet (bootstrap PR)"
 
       # Governance-relevant change assertion matching tests/ws-d-governed-change.test.mjs criteria
       - name: Governance-relevant change assertion
