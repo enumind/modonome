@@ -1,0 +1,6 @@
+/*
+ * LeaseTable composes the shared Table, Button, IdentityChip, and StatusPill
+ * primitives directly, so it needs no bespoke layout rules of its own. This file
+ * exists to keep the one-directory-per-component convention consistent and is the
+ * place to add lease-specific styling if the table grows custom cells later.
+ */

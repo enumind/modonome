@@ -1,0 +1,6 @@
+{
+  "schema_version": "Internal schema version marker, not an operator lever. Shown implicitly by the panel working at all; a version the panel cannot read would fail to load.",
+  "state_dir": "Structural path to the durable-state directory, always .modonome in practice. Not something an operator changes per session.",
+  "providers": "Advanced provider-registry override (transport, cost class, auth env var per provider). Rare, expert-only edit. Extend Settings > Roles & models with a Providers table if this becomes a common need; until then, edit config.yaml directly.",
+  "snapshot": "Tuning for the repo-snapshot artifact generator (ADR-032): CI strictness, signing, parser choice, token budget, redaction strictness. A build-time context artifact, not an autonomy lever an operator adjusts per session. Surface it in Settings if hosts start asking to tune it; until then, edit config.yaml directly."
+}

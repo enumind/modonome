@@ -1,0 +1,71 @@
+.mdn-identitychip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mdn-space-2);
+}
+
+.mdn-identitychip__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  border-radius: 50%;
+  background: var(--mdn-surface-3);
+  border: 1.5px solid var(--mdn-border-strong);
+  color: var(--mdn-text);
+  font-family: var(--mdn-font-heading);
+  font-weight: 600;
+}
+
+.mdn-identitychip--sm .mdn-identitychip__avatar {
+  width: 22px;
+  height: 22px;
+  font-size: 9.5px;
+}
+.mdn-identitychip--md .mdn-identitychip__avatar {
+  width: 30px;
+  height: 30px;
+  font-size: var(--mdn-text-xs);
+}
+
+.mdn-identitychip__avatar--maker {
+  border-color: var(--mdn-info);
+  color: var(--mdn-info);
+  background: var(--mdn-info-soft);
+}
+
+.mdn-identitychip__avatar--checker {
+  border-color: var(--mdn-primary);
+  color: var(--mdn-primary);
+  background: var(--mdn-primary-soft);
+}
+
+.mdn-identitychip__text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.mdn-identitychip__name {
+  color: var(--mdn-text);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mdn-identitychip--sm .mdn-identitychip__name {
+  font-size: var(--mdn-text-sm);
+}
+.mdn-identitychip--md .mdn-identitychip__name {
+  font-size: var(--mdn-text-md);
+}
+
+.mdn-identitychip__model {
+  font-family: var(--mdn-font-mono);
+  font-size: var(--mdn-text-xs);
+  color: var(--mdn-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

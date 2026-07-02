@@ -1,0 +1,47 @@
+.mdn-costpanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mdn-space-5);
+  width: 100%;
+}
+
+.mdn-costpanel__budget {
+  width: 100%;
+}
+
+.mdn-costpanel__localonly {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mdn-space-2);
+}
+
+.mdn-costpanel__localonly-note {
+  font-family: var(--mdn-font-mono);
+  font-size: var(--mdn-text-sm);
+}
+
+.mdn-costpanel__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mdn-space-6);
+  padding: var(--mdn-space-4);
+  background: var(--mdn-surface-1);
+  border: 1px solid var(--mdn-border);
+  border-radius: var(--mdn-radius-md);
+}
+
+.mdn-costpanel__stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mdn-space-1);
+}
+
+.mdn-costpanel__stat-value {
+  font-size: var(--mdn-text-xl);
+  color: var(--mdn-heading);
+  font-weight: 600;
+}
+
+.mdn-costpanel__stat-label {
+  color: var(--mdn-text-3);
+}

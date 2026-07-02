@@ -2,11 +2,57 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:5b5cef2c75f307e86d19338cd2a4c5119480ec46c11d39646e43a42131b0605d
-Files: 523  Bytes: 1662349  Map tokens: 50390/120000
+Merkle root: sha256:6606c02cdca072fbebbd9c4a499a534fee6c1aa0d6e66d7f37a3dcf806342f04
+Files: 760  Bytes: 2409120  Map tokens: 85723/120000
 
 ## Modules
 
+- .design-sync/NOTES.md [F:94b941cbd6]: Design-sync notes for @modonome/design-system
+- .design-sync/conventions.md [F:e146bc5acb]: Modonome control-panel design system
+- .design-sync/previews/ActivationLadder.tsx [F:2207a6ebce]: @dsCard group="Governance"
+- .design-sync/previews/AppShell.tsx [F:2470e60179]: function Dashboard
+- .design-sync/previews/ArmingStateBadge.tsx [F:28b7af3c53]: @dsCard group="Governance"
+- .design-sync/previews/AuditTimeline.tsx [F:9c9edea0c9]: @dsCard group="Governance"
+- .design-sync/previews/Button.tsx [F:f6e100ab45]: @dsCard group="Governance"
+- .design-sync/previews/Card.tsx [F:3d505706cd]: @dsCard group="Governance"
+- .design-sync/previews/Checkbox.tsx [F:3b4065b679]: @dsCard group="Governance"
+- .design-sync/previews/ConfirmDialog.tsx [F:0a6a758e7d]: function ArmEngine
+- .design-sync/previews/CostPanel.tsx [F:c63a71fb57]: @dsCard group="Governance"
+- .design-sync/previews/DecisionCard.tsx [F:3ce0fd77eb]: @dsCard group="Governance"
+- .design-sync/previews/Drawer.tsx [F:41f5ffe77a]: function ItemDetail
+- .design-sync/previews/EmptyState.tsx [F:7a43bf4ce5]: function Queue
+- .design-sync/previews/ErrorState.tsx [F:79467a3153]: function Unreachable
+- .design-sync/previews/GatePanel.tsx [F:bb6a874d58]: @dsCard group="Governance"
+- .design-sync/previews/HelpHint.tsx [F:e19aab09cb]: @dsCard group="Governance"
+- .design-sync/previews/Icon.tsx [F:6bef3f93ab]: function Set
+- .design-sync/previews/IconButton.tsx [F:8972d37045]: function Row
+- .design-sync/previews/IdentityChip.tsx [F:7008a20b1c]: @dsCard group="Governance"
+- .design-sync/previews/Input.tsx [F:5e207f73c7]: @dsCard group="Governance"
+- .design-sync/previews/LearningCard.tsx [F:250c8a0d4a]: @dsCard group="Governance"
+- .design-sync/previews/LeaseTable.tsx [F:31658eff0b]: @dsCard group="Governance"
+- .design-sync/previews/LoadingState.tsx [F:eecc78e7e8]: function Reading
+- .design-sync/previews/MetricTile.tsx [F:e5e519f441]: @dsCard group="Governance"
+- .design-sync/previews/Modal.tsx [F:4387a44284]: function RaiseCap
+- .design-sync/previews/ModeSwitcher.tsx [F:545c0ccfeb]: @dsCard group="Governance"
+- .design-sync/previews/NumberField.tsx [F:84a5c32a4c]: @dsCard group="Governance"
+- .design-sync/previews/PermissionDeniedState.tsx [F:d590ca62b9]: function OwnerOnly
+- .design-sync/previews/ProgressMeter.tsx [F:a0abaf6a25]: @dsCard group="Governance"
+- .design-sync/previews/ProtectedPathRow.tsx [F:13d31b33ea]: @dsCard group="Governance"
+- .design-sync/previews/QueueBoard.tsx [F:dd1be2cd7b]: @dsCard group="Governance"
+- .design-sync/previews/RoleBadge.tsx [F:973aaa9d86]: @dsCard group="Governance"
+- .design-sync/previews/SafetyStrip.tsx [F:3319e5c923]: @dsCard group="Governance"
+- .design-sync/previews/Select.tsx [F:08577063d4]: @dsCard group="Governance"
+- .design-sync/previews/Slider.tsx [F:1f40b6eb6e]: @dsCard group="Governance"
+- .design-sync/previews/Sparkline.tsx [F:ca13fe2a5b]: @dsCard group="Governance"
+- .design-sync/previews/StatusPill.tsx [F:10e76cfcd3]: @dsCard group="Governance"
+- .design-sync/previews/Table.tsx [F:1aa7cf650d]: @dsCard group="Governance"
+- .design-sync/previews/Tabs.tsx [F:6c0919b64e]: @dsCard group="Governance"
+- .design-sync/previews/TierBadge.tsx [F:fe5ec971f8]: @dsCard group="Governance"
+- .design-sync/previews/Toast.tsx [F:7832db450f]: @dsCard group="Governance"
+- .design-sync/previews/Toggle.tsx [F:a0068c8817]: @dsCard group="Governance"
+- .design-sync/previews/Tooltip.tsx [F:dca643f34b]: @dsCard group="Governance"
+- .design-sync/previews/WorkItemCard.tsx [F:f9c98a8642]: @dsCard group="Governance"
+- .design-sync/previews/WorkItemDrawer.tsx [F:f0fbd8716f]: function Detail
 - .github/pull_request_template.md [F:b2496e8029]: What this PR does
 - .modonome/DECISIONS.md [F:88c38fbc0f]: Modonome decisions
 - .modonome/LEARNINGS.md [F:9a39dd0e8e]: Learnings, staged candidate conventions
@@ -32,7 +78,77 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 - agentproof/README.md [F:5621bc51b3]: AgentProof
 - agentproof/SPEC.md [F:2ec4f6540b]: AgentProof Specification
 - agentproof/scenarios/ap-33-config-env-override-inert.mjs [F:02a5f8fc55]: !/usr/bin/env node
+- apps/control-panel/README.md [F:3211d524ad]: Modonome control panel
+- apps/control-panel/server/api.mjs [F:08b7435c86]: A small Vite dev/preview-server middleware that exposes the real .modonome state
+- apps/control-panel/server/learningsFormat.mjs [F:54df44aadd]: Shared parsing for the "## Staged" bullet lines in .modonome/LEARNINGS.md, so the
+- apps/control-panel/server/modonomeReader.mjs [F:8a3dd6ccff]: A gate's status is implied by the state of every work item that declares it, never by a fabricated pass. A repo that has only ever run dry-run sweeps shows ever
+- apps/control-panel/server/modonomeWriter.mjs [F:22566cb46e]: A line-level patch, not a full YAML re-serialize, so every hand-written comment in config.yaml survives an edit made from the panel. Only top-level, zero-indent
+- apps/control-panel/src/App.tsx [F:113387361d]: function App
+- apps/control-panel/src/content/concepts.ts [F:f83d1100e9]: interface ConceptEntry
+- apps/control-panel/src/lib/confirm.tsx [F:3c479cac6e]: Provides an imperative confirm() that resolves true when the operator approves. * Every destructive control in the panel awaits this before it fires, satisfying
+- apps/control-panel/src/screens/ArmingScreen.tsx [F:e40ce1af48]: The control screen. Three tabs keep one conceptual area on screen at a time: the * activation ladder (the primary daily view), caps and budget, and the separati
+- apps/control-panel/src/screens/GatesScreen.tsx [F:304fa8ef33]: The integrity surface: the deterministic CI gates every change must pass, the * protected paths that require explicit owner approval, and the separation-of-duti
+- apps/control-panel/src/screens/LearningsScreen.tsx [F:757a70680a]: Where the engine's judgment surfaces for a human to check. Open decisions ask an * explicit question before the engine proceeds; the learning queue shows the le
+- apps/control-panel/src/screens/OverviewScreen.tsx [F:6627655633]: Mission control: the "is it safe, is it working" glance. Arming posture, the safety * strip, the live queue, spend to date, gate health, and the most recent act
+- apps/control-panel/src/screens/SettingsScreen.tsx [F:4ebf08705b]: The advanced-configuration screen, one conceptual area per tab so nothing forces an * operator to scroll past three unrelated subsystems to reach the one they c
+- apps/control-panel/src/screens/WorkQueueScreen.tsx [F:9b3f18856e]: The durable work-item state machine, laid out as a board: queued, claimed, making, * checking, merge ready, done, and escalated. Selecting a card opens a read-o
+- apps/control-panel/src/state/adapter.ts [F:95d4304133]: function finalizeState
+- apps/control-panel/src/state/arming.ts [F:0da05a2a05]: function deriveMode
+- apps/control-panel/src/state/configDiff.ts [F:25e649633c]: function diffConfig
+- apps/control-panel/src/state/fixtures/host.ts [F:7d236c9aa6]: const hostState
+- apps/control-panel/src/state/fixtures/product.ts [F:89aee72994]: function titleFromId
+- apps/control-panel/src/state/liveClient.ts [F:ec52ca3820]: class LiveApiError
+- apps/control-panel/src/state/types.ts [F:0a85f3b8e5]: The subject a mode points at: which repo the panel is reading.
 - bin/modonome.mjs [F:f90930c3c3]: The authoritative arming gate. A config file the agent can write can never arm the engine on its own: arming requires the MODONOME_ARMED=true environment variab
+- design-system/README.md [F:5253743405]: @modonome/design-system
+- design-system/src/components/ActivationLadder/ActivationLadder.tsx [F:14edab923f]: The activation ladder: the three-rung progression from Disabled to Dry-run to Armed, * paired with the armed-mode gate checklist. Arming is only allowed when ev
+- design-system/src/components/AppShell/AppShell.tsx [F:268769c4a6]: The Modonome brand mark: a teal ring with a check on the dark ground.
+- design-system/src/components/ArmingStateBadge/ArmingStateBadge.tsx [F:7a1f7d680b]: The single most important status in the panel: which of the three activation-ladder * rungs the engine is on right now. Disabled is gray, dry-run is CI blue, ar
+- design-system/src/components/AuditTimeline/AuditTimeline.tsx [F:76da13a8f7]: The kind of event recorded in the audit trail.
+- design-system/src/components/Button/Button.tsx [F:8b122c449e]: The standard action control. Use `primary` for the main action on a screen, * `secondary` for supporting actions, `ghost` for low-emphasis inline actions, and *
+- design-system/src/components/Card/Card.tsx [F:40eb542a82]: The standard container surface for the control panel. Renders an optional header * row (eyebrow, title, help hint, and right-aligned actions) above a divider, t
+- design-system/src/components/Carousel/Carousel.tsx [F:d20e4b6b91]: A horizontally scrolling row with scroll-snap and prev/next nav buttons. Items stay * in normal tab order (each is independently focusable, and the browser scro
+- design-system/src/components/Checkbox/Checkbox.tsx [F:7054844360]: A labeled checkbox for boolean choices in lists and forms, such as opting * into a rule or selecting an item in a batch action. Renders a native * `<input type=
+- design-system/src/components/ConceptTile/ConceptTile.tsx [F:1a137480ae]: A compact, focusable tile naming one engine concept: an icon, its name, and a short * category tag. Renders as a real button so it is keyboard-reachable on its 
+- design-system/src/components/ConfirmDialog/ConfirmDialog.tsx [F:63c1c23ccb]: A confirmation dialog for destructive or high-consequence controls. Every control * that arms the engine, releases a lease, approves a protected path, or prunes
+- design-system/src/components/CostPanel/CostPanel.tsx [F:ce1173e176]: A summary of model spend and call volume for a period: a budget meter for remote * USD spend, a small stat row of local calls, remote calls, and cache saves (fr
+- design-system/src/components/DecisionCard/DecisionCard.tsx [F:583edef643]: Lifecycle status of a decision: still open for input, or already resolved.
+- design-system/src/components/Drawer/Drawer.tsx [F:71f0bfb455]: A right-side sheet that slides in over a scrim, for focused tasks that need more * room than a popover but should not leave the current page's context (inspecti
+- design-system/src/components/GatePanel/GatePanel.tsx [F:8c6234a8cb]: A vertical list of CI gate rows, used to visualize the merge-blocking checks and * the anti-gaming ratchet on a work item or pipeline. Each row pairs an icon, a
+- design-system/src/components/HelpHint/HelpHint.tsx [F:d5b496b125]: A tiny circular help affordance: a `help` icon button that reveals its text in a * Tooltip on hover or keyboard focus. This is the pervasive "hover for context"
+- design-system/src/components/HoverCard/HoverCard.tsx [F:66264a042c]: A richer sibling of Tooltip: a small card (heading, body copy, source citation) for * reference content pulled from real documentation, rather than a one-line h
+- design-system/src/components/Icon/Icon.tsx [F:deab644e60]: The curated Modonome icon set. Every glyph is a stroke path on a 24x24 grid and * inherits `currentColor`, so an icon takes the color of whatever text or contro
+- design-system/src/components/IconButton/IconButton.tsx [F:a8cfe45d27]: A square, icon-only button. Always carries an `aria-label` built from the required * `label` prop so the control has an accessible name even though no text is v
+- design-system/src/components/IdentityChip/IdentityChip.tsx [F:f942e88a8f]: A compact identity marker: an initials avatar plus a name, with an optional model * string in muted mono beneath. When `role` is set the avatar ring is tinted (
+- design-system/src/components/Input/Input.tsx [F:763efdd51c]: A labeled single-line text input. Shares the labeled-field frame used by every * form control in the panel: an optional label, an optional hint bubble, and an *
+- design-system/src/components/LearningCard/LearningCard.tsx [F:1d03291691]: Lifecycle status of a learning: staged for review, or promoted into a permanent gate.
+- design-system/src/components/LeaseTable/LeaseTable.tsx [F:956332d4b5]: A single active claim lease on a work item, as shown in the lease table.
+- design-system/src/components/MdnRoot/MdnRoot.tsx [F:90fc20ddd8]: The design-system root. Establishes the dark ground, the body font, and the token * scope that every component inherits. Wrap an app or a screen in this (AppShe
+- design-system/src/components/MetricTile/MetricTile.tsx [F:9f0fb6ed8b]: A dashboard stat tile: an eyebrow label (with an optional HelpHint), a large value * with unit, and optional icon, trend slot, and sub text. This is the core bu
+- design-system/src/components/Modal/Modal.tsx [F:63351e350b]: The generic centered dialog: a panel over a scrim, closable by Escape, a scrim * click, or its own close button. Moves focus into the dialog on open. This is th
+- design-system/src/components/ModeSwitcher/ModeSwitcher.tsx [F:b3a2ad52bb]: The global context switch. Host mode reads the engine as installed in a customer * repo; product mode reads modonome governing its own repository (self-applicat
+- design-system/src/components/NumberField/NumberField.tsx [F:db651caf76]: A numeric field with decrement and increment stepper buttons and an optional * unit suffix. Used for caps and budget editors such as max open PRs, max diff * li
+- design-system/src/components/ProgressMeter/ProgressMeter.tsx [F:9deac13db0]: A horizontal meter for bounded quantities such as budget consumed or checker * coverage. Renders a label row (with a mono value/max readout) above a track, * wi
+- design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx [F:d8fb8339ce]: A single row describing one protected path's guard state: a lock icon, the path in * mono, and a status readout. When a change is awaiting approval, shows an * 
+- design-system/src/components/QueueBoard/QueueBoard.tsx [F:f8609bae0b]: The work queue as a board. Items are grouped into the columns of the durable state * machine (queued, claimed, making, checking, merge ready, done, escalated), 
+- design-system/src/components/RoleBadge/RoleBadge.tsx [F:35c6d59157]: A labeled chip identifying a governance actor or role, pairing an icon with the * human-readable name. The four core review actors (maker, checker, merge author
+- design-system/src/components/SafetyStrip/SafetyStrip.tsx [F:57ca5f1716]: A horizontal, wrapping strip of small labeled cells summarizing the safety-relevant * levers for a project at a glance: whether autonomy and auto-merge are on, 
+- design-system/src/components/Select/Select.tsx [F:819f72edf6]: A styled native `<select>` with a custom chevron. Keeps the real `<select>` * element for full assistive-tech and keyboard support while matching the dark * sur
+- design-system/src/components/Slider/Slider.tsx [F:81c495717c]: A styled range input. Keeps the native `<input type="range">` for full * keyboard and assistive-tech support (arrow keys, Home/End, screen reader * value announ
+- design-system/src/components/Sparkline/Sparkline.tsx [F:c0e80ca327]: A minimal inline trend chart: a single line normalized to fit the box, with an * optional soft area fill beneath it. No axes or gridlines, intended to sit inlin
+- design-system/src/components/States/States.tsx [F:2f6c42c5ee]: Calm, muted placeholder for a screen or panel that has no content yet. Use for * empty queues, empty search results, or a fresh workspace before any work items 
+- design-system/src/components/StatusPill/StatusPill.tsx [F:2fc610bd94]: A compact rounded status indicator. Pairs a tinted background and border with the * tone's color, and always renders its label text (plus an optional icon or do
+- design-system/src/components/Table/Table.tsx [F:a402d2f9ed]: A generic, semantic data table. Renders a real `<table>` with `<thead>`/`<tbody>` * so screen readers and browser table navigation work as expected. Rows highli
+- design-system/src/components/Tabs/Tabs.tsx [F:1db369d970]: An accessible horizontal tab list. Implements the WAI-ARIA tabs pattern: the * container carries `role="tablist"`, each tab carries `role="tab"` and * `aria-sel
+- design-system/src/components/TierBadge/TierBadge.tsx [F:da42f69531]: A small pill identifying a risk tier (1-4) by its dedicated tier color, with a * title tooltip summarizing what the tier permits. Used on work items, policies, 
+- design-system/src/components/Toast/Toast.tsx [F:ab334f34df]: A single notification card with a tone-colored left accent, an icon, a title and * optional message, and an optional dismiss control. Not a stacking provider: m
+- design-system/src/components/Toggle/Toggle.tsx [F:214cc0a5f4]: An accessible switch for boolean config such as dry_run, auto_merge, or * local_model_only_by_default. Implemented as a `role="switch"` button rather * than a c
+- design-system/src/components/Tooltip/Tooltip.tsx [F:8a9aff1529]: A small dark hint bubble anchored to a trigger element. Opens on mouse hover and on * keyboard focus of the trigger (never hover-only, so keyboard users see the
+- design-system/src/components/WorkItemCard/WorkItemCard.tsx [F:b5ae6ee133]: Plain data shape for a single work item as shown in a compact card. Components in * this package define their own shape rather than importing app-level types, s
+- design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx [F:08064e0c53]: Full detail for a single work item, as shown in the read-only inspector drawer. * Extends the card summary shape with the fields only needed once someone opens 
+- design-system/src/lib/cx.ts [F:7c8d518693]: Join class names, dropping falsy values. A tiny classnames helper.
+- design-system/src/lib/format.ts [F:86838d35ac]: Format an ISO timestamp as a short relative string, for example "3m ago" or "in 12m".
+- design-system/src/tokens/tokens.ts [F:c64c042051]: CSS custom-property name for an arming mode color.
 - docs/README.md [F:0b5ca119d2]: Modonome documentation
 - docs/adr/ADR-001-self-governance-pipeline.md [F:6e4b629d3c]: ADR-001: Self-Governance Pipeline
 - docs/adr/ADR-002-shadow-mode.md [F:64c5acf802]: ADR-002: Shadow Mode
@@ -134,6 +250,7 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 - scripts/agent/route-action.mjs [F:37f4a5c04e]: Classify a role's model endpoint into a coarse reachability descriptor: kind: "local" self-hosted / private-host endpoint (Ollama, llama.cpp) kind: "github" the
 - scripts/agent/run-cycle.mjs [F:ddeb486c49]: Derive the ordered list of roles the cycle executes. An explicit cfg.role_sequence (a non-empty array of role names) is honored so a crew role added in config r
 - scripts/agent/tool-loop-adapter.mjs [F:aa77f227a6]: Resolve the command the external adapter is invoked as. Precedence: an explicit * adapterEntry.command, then adapterEntry.name, then a bare fallback. The value 
+- scripts/assert-governed-change.mjs [F:fa49930755]: function gitDiff
 - scripts/audit-learnings.mjs [F:c9493b5275]: !/usr/bin/env node
 - scripts/build-compliance-evidence.mjs [F:2e327963ed]: Observe concrete facts about a repository. Pure with respect to its inputs: it only reads the filesystem under root and returns a plain object.
 - scripts/build-prompt.mjs [F:c4395c3023]: !/usr/bin/env node
@@ -151,12 +268,13 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 - scripts/check-self-application.mjs [F:4096620673]: 4. The two protected-path surfaces must agree. CODEOWNERS is what GitHub enforces; protected_paths_extra is what the engine reads. If they disagree, a path is p
 - scripts/check-state-machine-acyclic.mjs [F:8b8d3c46b3]: Build the adjacency map { state: [to, ...] } from the transition list. When includeCapGuard is false, cap_guard edges are dropped: those are the sanctioned boun
 - scripts/check-style.mjs [F:ca0833ac73]: !/usr/bin/env node
-- scripts/dry-run-sweep.mjs [F:6f247eb514]: Order proposals by descending deterministic priority score (highest-value, lowest-risk first). Signals are derived heuristically from each proposal's text and t
+- scripts/dry-run-sweep.mjs [F:6f247eb514]: Only fires when the swept repo actually has a control panel at apps/control-panel (auditCoverage/auditCoherence report `skipped: true` and this returns nothing 
 - scripts/guard-ratchet.mjs [F:8a10462927]: !/usr/bin/env node
 - scripts/install-hooks.mjs [F:a7ce0f6452]: Install the pre-commit hook into targetRoot. Returns "installed", "kept" (a host hook already existed and was preserved), or "no-git". self=true writes modonome
 - scripts/lib/branch-name.mjs [F:6e0bd62fa3]: True when the first path segment of a branch name equals a denylisted token. * Matching is case-insensitive. "feature/ai-adapter" is allowed because the * first
 - scripts/lib/canonical-json.mjs [F:245efb551c]: Domain separation tag binds a signature to this packet type and version so a signature over one structure cannot be replayed as another.
 - scripts/lib/commit-identity.mjs [F:e4ff19bbe2]: True when a name or email belongs to a denylisted agent or vendor identity. * Real automation such as dependabot is allowed; only coding-agent and model * vendo
+- scripts/lib/control-panel-audit.mjs [F:1a19f02364]: Today's real high-water mark is 7 (Arming & Safety, Caps & budget tab). The budget is set a few above that: a real ratchet against regression, not an arbitrary 
 - scripts/lib/ed25519.mjs [F:0cacf66a3b]: Raw 32-byte public key as base64, accepting either a public or private KeyObject.
 - scripts/lib/graph.mjs [F:f51cba9beb]: isCyclic(adjacency) -> { cyclic: bool, cycle: [...] } Detects whether the graph contains a cycle. When a cycle is found, `cycle` holds the nodes involved in the
 - scripts/lib/jsonschema.mjs [F:34cb2b6c48]: A small, dependency-free JSON Schema validator.
@@ -265,6 +383,45 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 - S:1e6749f65a function run `function run(env)` L31
 ### examples/demo-app/tests/OrderService.test.js [F:044b762a79]
 - S:949f988c9e function makeDb `function makeDb(orders = new Map())` L10
+### design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx [F:08064e0c53]
+- S:0a11409d06 interface WorkItemDetail `export interface WorkItemDetail extends WorkItemSummary` L14 : Full detail for a single work item, as shown in the read-only inspector drawer. * Extends the card summary shape with the fields only needed once someone opens the * item: identities, lease, allowed e
+- S:6a4d8aa30d interface WorkItemDrawerProps `export interface WorkItemDrawerProps` L31
+- S:1e67af68fc function Section `function Section({ label, children }: { label: string; children: ReactNode })` L52
+- S:fff471613b function WorkItemDrawer `export function WorkItemDrawer({ item, open, onClose }: WorkItemDrawerProps)` L68 : A read-only inspector for a single work item, presented in the shared `Drawer` * primitive. Lays out status, the maker and checker identities, lease and branch * info, attempt count, the allowed edit 
+### .design-sync/previews/Select.tsx [F:08577063d4]
+- S:9f9c07db7d function Model `export const Model = () => (` L10
+### apps/control-panel/server/api.mjs [F:08b7435c86]
+- S:02e2e85572 function resolveModonomeDir `function resolveModonomeDir(rawMode, dirParam)` L19
+- S:8097fe47fc function readBody `function readBody(req)` L29
+- S:a10a756308 function sendJson `function sendJson(res, status, body)` L48
+- S:b06f3444be function stateWithSource `function stateWithSource(dir, mode, writable)` L55
+- S:5092562c12 function modonomeApiPlugin `export function modonomeApiPlugin()` L61
+### .design-sync/previews/ConfirmDialog.tsx [F:0a6a758e7d]
+- S:b29fc4b0d5 function ArmEngine `export const ArmEngine = () => (` L3
+### apps/control-panel/src/state/types.ts [F:0a85f3b8e5]
+- S:8cd25e6f09 type PanelMode `export type PanelMode = "host" | "product";` L10
+- S:40a4170626 type ArmingMode `export type ArmingMode = "disabled" | "dry-run" | "armed";` L11
+- S:49f97badd7 type WorkState `export type WorkState =` L12
+- S:3e9158c80b type RiskTier `export type RiskTier = 1 | 2 | 3 | 4;` L22
+- S:86cb290127 interface Subject `export interface Subject` L25 : The subject a mode points at: which repo the panel is reading.
+- S:a337ae8f0b interface ModonomeConfig `export interface ModonomeConfig` L37 : The engine configuration (schemas/config.schema.json), the levers the panel edits.
+- S:d56c1854d7 interface ArmingCheck `export interface ArmingCheck` L71 : One prerequisite in the armed-mode gate checklist.
+- S:6bc87187a8 interface ArmingStatus `export interface ArmingStatus` L79
+- S:5a49db2766 interface WorkItemVM `export interface WorkItemVM` L86
+- S:f3e5c99141 interface LeaseVM `export interface LeaseVM` L108
+- S:dddb39652d type GateStatus `export type GateStatus = "pass" | "fail" | "flaky" | "running" | "pending";` L115
+- S:9bc07de53c interface GateVM `export interface GateVM` L117
+- S:126357e421 interface CostByModel `export interface CostByModel` L126
+- S:ebe2964819 interface CostVM `export interface CostVM` L134
+- S:72a5c214ac interface LearningVM `export interface LearningVM` L143
+- S:e03cf612ca interface DecisionVM `export interface DecisionVM` L153
+- S:3ad2d564a8 type AuditKind `export type AuditKind =` L162
+- S:7c6ba2a644 interface AuditEventVM `export interface AuditEventVM` L177
+- S:19226d4902 interface ProtectedPathVM `export interface ProtectedPathVM` L184
+- S:61e677ae40 interface TrendPoint `export interface TrendPoint` L191
+- S:cefb8c3f64 interface PanelSource `export interface PanelSource` L197 : Where a loaded PanelState actually came from, so the UI never presents demo data as real.
+- S:4a0171ecb5 interface PanelState `export interface PanelState` L206
+- S:a2d9480f78 interface WriteActions `export interface WriteActions` L231 : The write side of the panel, threaded down from App to the screens that mutate real * state. Every call here hits a real file on disk when `writable` is true; screens must * still confirm before calli
 ### scripts/verify-packet.mjs [F:0c1c5ad5d9]
 - S:6dd199eea1 function resolveActiveKey `export function resolveActiveKey(peerKeys, alias, now = new Date())` L18 : Resolve an alias to an active, in-window key entry in the allowlist.
 - S:f3b8628cdb function verifyPacket `export function verifyPacket(packet, peerKeys, { now = new Date(), skipContentGate = false } = {})` L34 : Full ordered verification. options.skipContentGate runs only the signature checks (steps 3 to 5), used when the caller already ran the schema and redaction gate.
@@ -277,6 +434,13 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 - S:1c7919b4ea function signMessage `export function signMessage(message, privateKeyObject)` L40
 - S:fb81ef11a3 function verifyMessage `export function verifyMessage(message, sigB64, publicKeyObject)` L44
 - S:4a08c48993 function fingerprint `export function fingerprint(pubB64)` L54 : Short fingerprint for out-of-band key comparison (ADR-017 enrollment): the first 16 hex characters of sha256 over the raw public key bytes.
+### apps/control-panel/src/state/arming.ts [F:0da05a2a05]
+- S:f2e1ea8458 function deriveMode `export function deriveMode(config: ModonomeConfig, envArmed: boolean): ArmingMode` L16
+- S:97bc3f0eb4 function deriveArming `export function deriveArming(` L22
+### .design-sync/previews/StatusPill.tsx [F:10e76cfcd3]
+- S:a3fb13b441 function Tones `export const Tones = () => (` L4
+### apps/control-panel/src/App.tsx [F:113387361d]
+- S:a1d4334d94 function App `export function App()` L36
 ### scripts/lib/snapshot-cache.mjs [F:119e3c0fce]
 - S:670e55d75a const CACHE_SCHEMA_VERSION `export const CACHE_SCHEMA_VERSION = 1;` L10
 - S:31032f0509 function isPlausibleRevision `export function isPlausibleRevision(value)` L17 : A value safe to pass as a git revision argument: a short-to-full hex SHA. Rejects anything else, in particular a leading "-", which git would parse as an option (some git options can read or write fil
@@ -291,6 +455,14 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 - S:9f7fa8d585 function packetContent `export function packetContent(packet)` L10
 - S:a0ea4d9d0f function computePacketId `export function computePacketId(packet)` L18
 - S:d2ef86c19f function packetIdMatches `export function packetIdMatches(packet)` L23
+### .design-sync/previews/ProtectedPathRow.tsx [F:13d31b33ea]
+- S:5708b6bd2b function PendingApproval `export const PendingApproval = () => (` L4
+- S:4f265e8008 function Approved `export const Approved = () => (` L8
+- S:93e0292f30 function Protected `export const Protected = () => <ProtectedPathRow path="prompts/" approvalNeeded={false} />;` L12
+### design-system/src/components/ActivationLadder/ActivationLadder.tsx [F:14edab923f]
+- S:e80517f20b interface ActivationCheck `export interface ActivationCheck` L6
+- S:30eded078f interface ActivationLadderProps `export interface ActivationLadderProps` L17
+- S:73a3da9f65 function ActivationLadder `export function ActivationLadder(` L46 : The activation ladder: the three-rung progression from Disabled to Dry-run to Armed, * paired with the armed-mode gate checklist. Arming is only allowed when every * prerequisite holds. Items marked o
 ### scripts/lib/yaml-lite.mjs [F:1575110130]
 - S:237d74cadf function parseScalar `function parseScalar(raw)` L15
 - S:299c43d83e function stripQuotes `function stripQuotes(s)` L33
@@ -301,6 +473,18 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 ### tests/action-queue.test.mjs [F:195e9217ca]
 - S:0064b473e6 function tmpQueue `function tmpQueue()` L14
 - S:d240732a9d function sampleAction `function sampleAction(id, target = "ci")` L18
+### design-system/src/components/ConceptTile/ConceptTile.tsx [F:1a137480ae]
+- S:05a5299b28 interface ConceptTileProps `export interface ConceptTileProps extends ButtonHTMLAttributes<HTMLButtonElement>` L5
+- S:14c08c7efc function ConceptTile `export function ConceptTile({ icon, label, tag, className, ...rest }: ConceptTileProps)` L20 : A compact, focusable tile naming one engine concept: an icon, its name, and a short * category tag. Renders as a real button so it is keyboard-reachable on its own, meant * to be wrapped in a HoverCar
+### scripts/lib/control-panel-audit.mjs [F:1a19f02364]
+- S:76d7b21daf const MAX_CONTROLS_PER_TAB `export const MAX_CONTROLS_PER_TAB = 10;` L18 : Today's real high-water mark is 7 (Arming & Safety, Caps & budget tab). The budget is set a few above that: a real ratchet against regression, not an arbitrary ceiling.
+- S:b840cddd67 function readScreens `function readScreens(root)` L20
+- S:7a05eaea5a function auditCoverage `export function auditCoverage(root)` L34 : Every field in config.schema.json must resolve to either a literal reference in a screen (a real control, or read-only display) or a documented exemption in exposure.json. A plain substring search, no
+- S:da2f845458 function splitByTabs `function splitByTabs(text)` L57 : Splits a screen's source into one segment per tab (by source order, using the `{tab === "id" ?` marker this codebase's tabbed screens consistently use), or a single whole-file segment for screens with
+- S:6a7737bb57 function extractTags `function extractTags(text, tagNames)` L66
+- S:0ac24bec51 function auditCoherence `export function auditCoherence(root)` L76 : Two checks, both numeric: a screen/tab must not exceed the control-density budget, and every value-entry control (Toggle, NumberField, Slider, Select) must carry a hint. Input is excluded from the hin
+### .design-sync/previews/Table.tsx [F:1aa7cf650d]
+- S:762b3eaf4a function Models `export const Models = () => (` L17
 ### tests/ws-b-harness.test.mjs [F:1bcaaff9eb]
 - S:fc01241f03 function cfg `function cfg(overrides = {})` L13 : A config fixture with distinct maker/checker models and a models registry.
 ### scripts/lib/snapshot-anchors.mjs [F:1cf31c4792]
@@ -309,8 +493,33 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 - S:00db09c5a8 function symbolAnchor `export function symbolAnchor(relPath, name)` L17
 - S:ab79b43633 function buildPathDictionary `export function buildPathDictionary(relPaths)` L24 : Build the path dictionary from walked files. Returns { paths, pathIdByPath } where `paths` is the serializable { id -> relPath } map and `pathIdByPath` is the reverse lookup callers use to reference p
 - S:63613c3a63 function buildSymbolDictionary `export function buildSymbolDictionary(apiEntries)` L37 : Build the symbol dictionary from API entries. Each entry carries its anchor, owning path id, name, and line, so an anchor resolves to an exact location.
+### design-system/src/components/LearningCard/LearningCard.tsx [F:1d03291691]
+- S:a3ca73d34c type LearningStatus `export type LearningStatus = "staged" | "promoted";` L6 : Lifecycle status of a learning: staged for review, or promoted into a permanent gate.
+- S:6cbed7ff26 interface LearningSummary `export interface LearningSummary` L13 : Plain data shape for a single learning surfaced by the system. Components in this * package define their own shape rather than importing app-level types, so this * interface is the contract a host app
+- S:8b9971d92a interface LearningCardProps `export interface LearningCardProps` L30
+- S:d293a69125 function LearningCard `export function LearningCard({ learning, onPromote, onPrune }: LearningCardProps)` L49 : A card summarizing a single learning the system has surfaced: the lesson learned, * how old it is, what signal or evidence produced it, and its lifecycle status. * Staged learnings offer Promote and P
+### design-system/src/components/Tabs/Tabs.tsx [F:1db369d970]
+- S:14850052c8 interface TabItem `export interface TabItem` L6
+- S:c68bb17ca2 interface TabsProps `export interface TabsProps` L17
+- S:bd1a0a35f8 function Tabs `export function Tabs({ tabs, active, onChange, className }: TabsProps)` L35 : An accessible horizontal tab list. Implements the WAI-ARIA tabs pattern: the * container carries `role="tablist"`, each tab carries `role="tab"` and * `aria-selected`, and only the active tab is in th
 ### examples/demo-app/src/OrderService.js [F:1ecd18c4b9]
 - S:5a6c3aef24 class OrderService `export class OrderService` L7
+### .design-sync/previews/Slider.tsx [F:1f40b6eb6e]
+- S:a2fef04067 function Budget `export const Budget = () => (` L4
+### design-system/src/components/Toggle/Toggle.tsx [F:214cc0a5f4]
+- S:537ea4dfe0 type ToggleTone `export type ToggleTone = "primary" | "info" | "owner";` L5
+- S:cd836c2fc7 interface ToggleProps `export interface ToggleProps` L7
+- S:84b00e90de function Toggle `export function Toggle(` L28 : An accessible switch for boolean config such as dry_run, auto_merge, or * local_model_only_by_default. Implemented as a `role="switch"` button rather * than a checkbox so the on/off semantics are anno
+### .design-sync/previews/ActivationLadder.tsx [F:2207a6ebce]
+- S:b919653baa function DryRun `export const DryRun = () => (` L44
+- S:ea5d04ea13 function Armed `export const Armed = () => (` L48
+### apps/control-panel/server/modonomeWriter.mjs [F:22566cb46e]
+- S:7cd45cbc03 function formatYamlScalar `function formatYamlScalar(value)` L35
+- S:1c5d801590 function patchYamlText `function patchYamlText(text, patch)` L43 : A line-level patch, not a full YAML re-serialize, so every hand-written comment in config.yaml survives an edit made from the panel. Only top-level, zero-indent keys are touched; nested maps (roles, m
+- S:b06714d9c5 function patchConfig `export function patchConfig(modonomeDir, patch)` L68
+- S:8b67ef3e8b function workItemFile `function workItemFile(modonomeDir, itemId)` L82
+- S:fd9d32de9a function releaseLease `export function releaseLease(modonomeDir, itemId)` L88
+- S:5b0e153cfb function pruneLearning `export function pruneLearning(modonomeDir, lesson)` L99
 ### scripts/test-prompt-behavior.mjs [F:23917c6197]
 - S:a931ad2e62 function resolvePromptText `export function resolvePromptText(root)` L44 : Concatenate the committed prompt source files into one searchable string. * @param {string} root repository root that contains the prompts directory * @returns {string} the concatenated committed prom
 - S:0a5fed1978 function loadFixtures `export function loadFixtures(dir)` L57 : Load every fixture JSON file from a directory. * @param {string} dir directory holding fixture *.json files * @returns {Array<object>} parsed fixture objects, sorted by file name for stable output
@@ -320,10 +529,27 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 - S:76171943e3 function canonicalize `export function canonicalize(value)` L7
 - S:781c4112a2 const PACKET_DOMAIN `export const PACKET_DOMAIN = 'modonome.knowledge-packet.v1\n';` L22 : Domain separation tag binds a signature to this packet type and version so a signature over one structure cannot be replayed as another.
 - S:210b0c6999 function signedBytes `export function signedBytes(packet)` L26 : The exact bytes a packet signature covers: the domain tag followed by the JCS of the packet with its signature object removed.
+### .design-sync/previews/AppShell.tsx [F:2470e60179]
+- S:c44da37a7d function Dashboard `export const Dashboard = () => (` L12
+### .design-sync/previews/LearningCard.tsx [F:250c8a0d4a]
+- S:7d5af2fca1 function Staged `export const Staged = () => (` L22
+- S:dd05df51d3 function Promoted `export const Promoted = () => <LearningCard learning={promotedLearning} />;` L26
 ### scripts/lib/lang-adapters/index.mjs [F:2554ddd30c]
 - S:4df7a92e8e function registerAdapter `export function registerAdapter(adapter)` L15
 - S:a07487517b function getAdapter `export function getAdapter(relPath)` L25 : Resolve the adapter for a path by extension, defaulting to the generic fallback.
 - S:ec18e42e1a function extractFile `export function extractFile(relPath, source)` L32 : Extract from one file, guarding against any adapter error so a single bad file never aborts a whole snapshot.
+### apps/control-panel/src/state/configDiff.ts [F:25e649633c]
+- S:ea841eb82d function diffConfig `export function diffConfig(base: ModonomeConfig, edited: ModonomeConfig): Partial<ModonomeConfig>` L35
+### design-system/src/components/AppShell/AppShell.tsx [F:268769c4a6]
+- S:4426823827 interface NavItem `export interface NavItem` L5
+- S:a4155f5067 interface AppShellProps `export interface AppShellProps` L16
+- S:24b854ce78 function BrandMark `function BrandMark()` L36 : The Modonome brand mark: a teal ring with a check on the dark ground.
+- S:5154763a93 function AppShell `export function AppShell(` L60 : The application frame: a fixed sidebar of primary navigation, a sticky top bar for * the mode switch and arming status, and a scrollable content column. It establishes * the mdn-root wrapper (the dark
+### .design-sync/previews/ArmingStateBadge.tsx [F:28b7af3c53]
+- S:df7e6c1db0 function Disabled `export const Disabled = () => <ArmingStateBadge mode="disabled" size="md" />;` L4
+- S:36be7c4ac5 function DryRun `export const DryRun = () => <ArmingStateBadge mode="dry-run" size="md" />;` L6
+- S:813f68335e function Armed `export const Armed = () => <ArmingStateBadge mode="armed" envArmed size="md" />;` L8
+- S:28578fa81a function Large `export const Large = () => <ArmingStateBadge mode="armed" envArmed size="lg" />;` L10
 ### tests/snapshot-golden.test.mjs [F:2a74ae3f05]
 - S:d595535449 function names `function names(result)` L9
 - S:a5baaff840 function modules `function modules(result)` L12
@@ -351,18 +577,44 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 - S:a0db477c6e function summarize `export function summarize(criteria)` L89
 - S:f93b3b8c7c function buildEvidence `export function buildEvidence(root, generatedAt)` L94
 - S:43f1c85009 function renderMarkdown `export function renderMarkdown(evidence)` L107
+### design-system/src/components/States/States.tsx [F:2f6c42c5ee]
+- S:c504685956 interface EmptyStateProps `export interface EmptyStateProps` L4
+- S:80e9a1f555 function EmptyState `export function EmptyState({ title, message, icon = "queue", action }: EmptyStateProps)` L20 : Calm, muted placeholder for a screen or panel that has no content yet. Use for * empty queues, empty search results, or a fresh workspace before any work items * exist. Centered and low-emphasis so it
+- S:baacff5701 interface LoadingStateProps `export interface LoadingStateProps` L33
+- S:0a9b63cb4b function LoadingState `export function LoadingState({ label = "Loading" }: LoadingStateProps)` L44 : Centered spinner with a label, used while a screen or panel is fetching data. * The spinner is a decorative rotating ring; the label carries the accessible * status via `role="status"` so assistive te
+- S:9382da6a24 interface ErrorStateProps `export interface ErrorStateProps` L53
+- S:78e9af551d function ErrorState `export function ErrorState({ title = "Something went wrong", message, action }: ErrorStateProps)` L68 : Danger-toned placeholder for a screen or panel that failed to load. Pairs the * danger color with an alert icon and text so the failure is never color-only. * Use `role="alert"` semantics are carried 
+- S:79676d74df interface PermissionDeniedStateProps `export interface PermissionDeniedStateProps` L81
+- S:3800b0c645 function PermissionDeniedState `export function PermissionDeniedState(` L95 : Owner-toned placeholder shown when the current actor lacks the role needed to * view or act on a screen. Pairs the owner color with a lock icon and text so the * restriction is never color-only.
+### design-system/src/components/StatusPill/StatusPill.tsx [F:2fc610bd94]
+- S:fc6f0e771f type StatusPillTone `export type StatusPillTone = "neutral" | "ok" | "info" | "attention" | "blocked";` L5
+- S:0518e5f603 type StatusPillSize `export type StatusPillSize = "sm" | "md";` L6
+- S:c850118bb2 interface StatusPillProps `export interface StatusPillProps extends HTMLAttributes<HTMLSpanElement>` L8
+- S:eb647d4678 function StatusPill `export function StatusPill(` L27 : A compact rounded status indicator. Pairs a tinted background and border with the * tone's color, and always renders its label text (plus an optional icon or dot) so * the status reads correctly even 
 ### scripts/agent/resolve-role.mjs [F:304ce7b89d]
 - S:0713a27a1f function resolveRole `export function resolveRole(cfg, role)` L41 : Resolve runner and model settings for a named role. * * @param {object} cfg - Parsed config object (output of parseFlatYaml or loadConfig). * @param {string} role - One of "maker", "checker", "self-go
+### apps/control-panel/src/screens/GatesScreen.tsx [F:304fa8ef33]
+- S:a2d5fcb920 function GatesScreen `export function GatesScreen({ state }: { state: PanelState })` L12 : The integrity surface: the deterministic CI gates every change must pass, the * protected paths that require explicit owner approval, and the separation-of-duties * contract (distinct maker, checker, 
+### .design-sync/previews/LeaseTable.tsx [F:31658eff0b]
+- S:6425f5a6c7 function WithLeases `export const WithLeases = () => <LeaseTable leases={leases} onRelease={() => {}} />;` L10
 ### scripts/lib/lang-adapters/python.mjs [F:3213d03b72]
 - S:618d055a7c function clean `function clean(text)` L5 : Dependency-free signature extractor for Python. It captures top-level def and class declarations (async included), their leading triple-quoted docstring, and import edges. Bodies are never included. e
 - S:37c1996b57 function signature `function signature(line)` L10
 - S:1bafda617f function docBelow `function docBelow(lines, defIndex)` L15 : The docstring is the first triple-quoted string on the line(s) after a def/class.
 - S:82727ee8e7 function collectImports `function collectImports(trimmed, lineNo, out)` L35
 - S:aaa1eac555 const adapter `export const adapter =` L47
+### .design-sync/previews/SafetyStrip.tsx [F:3319e5c923]
+- S:a63cef8ef8 function Armed `export const Armed = () => (` L4
+- S:e25d17a09c function SafeDefaults `export const SafeDefaults = () => (` L17
 ### scripts/lib/jsonschema.mjs [F:34cb2b6c48]
 - S:f794e6adf4 function typeOf `function typeOf(value)` L6
 - S:0768a4cf0f function matchesType `function matchesType(value, type)` L13
 - S:52913852e3 function validate `export function validate(schema, value, path = "$", errors = [])` L22
+### design-system/src/components/RoleBadge/RoleBadge.tsx [F:35c6d59157]
+- S:4b7a72e608 type Role `export type Role =` L4
+- S:fdc2a33d21 type RoleBadgeSize `export type RoleBadgeSize = "sm" | "md";` L16
+- S:e3f95000e0 interface RoleBadgeProps `export interface RoleBadgeProps` L60
+- S:301cb496d5 function RoleBadge `export function RoleBadge({ role, size = "md" }: RoleBadgeProps)` L72 : A labeled chip identifying a governance actor or role, pairing an icon with the * human-readable name. The four core review actors (maker, checker, merge authority, * owner) get distinct accent colors
 ### scripts/lib/lang-adapters/js-ts.mjs [F:36419aa427]
 - S:61ec9209fc function matchSymbol `function matchSymbol(trimmed)` L22
 - S:500f4c1cd3 function cleanSignature `function cleanSignature(trimmed)` L30
@@ -393,8 +645,18 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 - S:882efb23a5 function findPriorImpactSnapshot `export function findPriorImpactSnapshot(runsDir)` L196 : Reads the newest run log under runsDir that carries an `impact` field. Returns null if none exists (first run, no baseline).
 - S:d444b209b8 function computeImpactDelta `export function computeImpactDelta(current, prior)` L212 : Pure delta computation: current minus prior for each numeric field. When prior is null/undefined, returns a "first run, no baseline" marker instead of numeric deltas.
 - S:bafcfbb33c function formatDelta `function formatDelta(n)` L224
+### .design-sync/previews/Checkbox.tsx [F:3b4065b679]
+- S:b6eeacb415 function Requirement `export const Requirement = () => (` L4
+### apps/control-panel/src/lib/confirm.tsx [F:3c479cac6e]
+- S:efea80af4e function ConfirmProvider `export function ConfirmProvider({ children }: { children: ReactNode })` L20 : Provides an imperative confirm() that resolves true when the operator approves. * Every destructive control in the panel awaits this before it fires, satisfying the * control-panel requirement of a co
+- S:7989466d34 function useConfirm `export function useConfirm(): ConfirmFn` L59
 ### examples/demo-app/tests/CartService.test.js [F:3c53926ecd]
 - S:b908c74a11 function makeDb `function makeDb()` L5
+### .design-sync/previews/DecisionCard.tsx [F:3ce0fd77eb]
+- S:225c7a7d84 function Open `export const Open = () => <DecisionCard decision={openDecision} onResolve={() => {}} />;` L21
+- S:a2df9a5c24 function Resolved `export const Resolved = () => <DecisionCard decision={resolvedDecision} />;` L23
+### .design-sync/previews/Card.tsx [F:3d505706cd]
+- S:7c44412e8a function WithHeader `export const WithHeader = () => (` L4
 ### tests/packet-signing.test.mjs [F:3de9042953]
 - S:72d4f657d5 function setup `function setup()` L91
 ### tests/compliance-evidence.test.mjs [F:3ea503e7c0]
@@ -406,6 +668,14 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 ### tests/cli-dispatch.test.mjs [F:40e4f39b59]
 - S:daac1f172a function cli `function cli(...args)` L12
 - S:1c82a73570 function tmp `function tmp()` L19
+### design-system/src/components/Card/Card.tsx [F:40eb542a82]
+- S:586705c7a0 type CardTone `export type CardTone = "default" | "raised";` L5
+- S:1ae77ae47b interface CardProps `export interface CardProps extends HTMLAttributes<HTMLDivElement>` L7
+- S:555c013724 function Card `export function Card(` L31 : The standard container surface for the control panel. Renders an optional header * row (eyebrow, title, help hint, and right-aligned actions) above a divider, then the * body. When no title, eyebrow, 
+### .design-sync/previews/Drawer.tsx [F:41f5ffe77a]
+- S:b6fce3a5a9 function ItemDetail `export const ItemDetail = () => (` L3
+### .design-sync/previews/Modal.tsx [F:4387a44284]
+- S:afe9763761 function RaiseCap `export const RaiseCap = () => (` L3
 ### tests/snapshot-incremental.test.mjs [F:4637e1fecb]
 - S:48356203e2 function repo `function repo()` L13
 ### tests/self-application.test.mjs [F:48355ccf4d]
@@ -416,18 +686,34 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 ### scripts/lib/learnings.mjs [F:4ebb5aa8a0]
 - S:72cb0b7406 const REQUIRED_FIELDS `export const REQUIRED_FIELDS = [` L7
 - S:6831eb78e0 function readPromotedLearnings `export function readPromotedLearnings(root)` L19 : Extract the first fenced json block that appears after the "## Promoted" heading.
+### apps/control-panel/src/screens/SettingsScreen.tsx [F:4ebf08705b]
+- S:6d2334f815 function SettingsScreen `export function SettingsScreen({ state, write }: { state: PanelState; write: WriteActions })` L40 : The advanced-configuration screen, one conceptual area per tab so nothing forces an * operator to scroll past three unrelated subsystems to reach the one they came for. * Role and model assignment (ne
 ### examples/demo-app/tests/CheckoutService.test.js [F:52caf3b287]
 - S:ad302fbf54 function makeCartService `function makeCartService(cart)` L5
 - S:8d10c3ed6e function makeOrderService `function makeOrderService()` L13
+### .design-sync/previews/ModeSwitcher.tsx [F:545c0ccfeb]
+- S:2a04172292 function HostSelected `export const HostSelected = () => <ModeSwitcher mode="host" onModeChange={() => {}} />;` L4
+- S:2bd0a26c48 function ProductSelected `export const ProductSelected = () => <ModeSwitcher mode="product" onModeChange={() => {}} />;` L6
 ### tests/learnings.test.mjs [F:54a3c626d9]
 - S:5e3d6fa91f function run `function run(script, args = [], env = {})` L13
 ### examples/demo-app/src/CheckoutService.js [F:54c6928de9]
 - S:5ea90f5e50 class CheckoutService `export class CheckoutService` L3
+### apps/control-panel/server/learningsFormat.mjs [F:54df44aadd]
+- S:712330cf3e function parseStagedLine `export function parseStagedLine(line)` L6
+### design-system/src/components/SafetyStrip/SafetyStrip.tsx [F:57ca5f1716]
+- S:bbdb581d9d interface SafetyStripProps `export interface SafetyStripProps` L5
+- S:3f2874e2ce function SafetyStrip `export function SafetyStrip(` L43 : A horizontal, wrapping strip of small labeled cells summarizing the safety-relevant * levers for a project at a glance: whether autonomy and auto-merge are on, dry-run * status, merge and budget caps,
+- S:42b8608c58 function Cell `function Cell({ label, help, children }: CellProps)` L92
 ### tests/run-cycle-openai.test.mjs [F:580d11b514]
 - S:0f004d17fa function git `function git(args, cwd)` L24
 - S:4b391a8eee function makeGitFixture `function makeGitFixture()` L34 : Create a throwaway git repo with a single committed file, and return the repo dir plus a unified diff (produced by a real `git diff`, so it is guaranteed to be well-formed and to apply cleanly against
 - S:fd58589dfa function makePlan `function makePlan(role, roleDescriptor, transcriptSubdir)` L127 : Build a minimal plan shape invokeRoleOpenAI needs: plan[role] (a resolved role descriptor) plus runId/transcriptDir. transcriptDir is deliberately kept under the repo's gitignored runs/ prefix (see .g
 - S:b7db5f4d64 function cleanupTranscripts `function cleanupTranscripts()` L138
+### design-system/src/components/DecisionCard/DecisionCard.tsx [F:583edef643]
+- S:47cde5f81f type DecisionStatus `export type DecisionStatus = "open" | "resolved";` L6 : Lifecycle status of a decision: still open for input, or already resolved.
+- S:707883a645 interface DecisionSummary `export interface DecisionSummary` L14 : Plain data shape for a single decision awaiting (or having received) human input. * Components in this package define their own shape rather than importing app-level * types, so this interface is the 
+- S:6e1dfe647a interface DecisionCardProps `export interface DecisionCardProps` L29
+- S:5c69e2b109 function DecisionCard `export function DecisionCard({ decision, onResolve }: DecisionCardProps)` L45 : A card summarizing a single decision the system is asking a human to make: the * question, an optional recommendation in an info-tinted inset, and its lifecycle * status. Open decisions with a hold-by
 ### scripts/lib/lang-adapters/generic.mjs [F:594f505f11]
 - S:bd63b1e408 function cleanSignature `function cleanSignature(line)` L15
 - S:21635cbeda const adapter `export const adapter =` L19
@@ -449,6 +735,8 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 - S:6b0614bdf6 function claim `export function claim(workerEnv, dir = DEFAULT_QUEUE_DIR, now = new Date(), leaseMinutes = DEFAULT_LEASE_MINUTES)` L124 : Atomically lease the oldest queued action this worker environment can serve. * A record is servable when its target equals the worker env or appears in the * worker env's served set. Sets state to cla
 - S:194e854c70 function complete `export function complete(id, result, dir = DEFAULT_QUEUE_DIR, ok = true)` L153 : Mark a claimed action done or failed, attaching an optional result object. * * @param {string} id * @param {object|null} result * @param {string} [dir] * @param {boolean} [ok] - true marks done, false
 - S:ed1db0b6bb function reclaimStale `export function reclaimStale(dir = DEFAULT_QUEUE_DIR, now = new Date())` L173 : Revert every claimed record whose lease has expired back to queued, clearing * its owner and expiry. Returns the list of reclaimed records. * * @param {string} [dir] * @param {Date} [now] * @returns {
+### .design-sync/previews/Input.tsx [F:5e207f73c7]
+- S:ddfea151e8 function TrustedAuthor `export const TrustedAuthor = () => (` L4
 ### scripts/scaffold.mjs [F:5e450ff82c]
 - S:ea76c925e2 function enableSnapshot `function enableSnapshot(target, here)` L26 : Turn snapshot consumption on during adoption: generate the first snapshot, install a host pre-commit hook, and drop an AGENTS.md pointer when none exists. Skipped with --no-snapshot. Never overwrites 
 - S:8c6ccd3e8b function listTemplate `function listTemplate(dir, base = "")` L58
@@ -460,23 +748,52 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 ### scripts/check-repo-hygiene.mjs [F:61296e720c]
 - S:0cfad6d2cf function findSafeToDeleteFiles `function findSafeToDeleteFiles(dir)` L28
 - S:17985dad90 function execSync `function execSync(cmd, opts)` L235 : Helper
+### design-system/src/components/Modal/Modal.tsx [F:63351e350b]
+- S:5a2d3d98ce type ModalSize `export type ModalSize = "sm" | "md";` L6
+- S:b5d72ba60f interface ModalProps `export interface ModalProps` L8
+- S:5d9d040e28 function Modal `export function Modal({ open, onClose, title, children, footer, size = "md" }: ModalProps)` L30 : The generic centered dialog: a panel over a scrim, closable by Escape, a scrim * click, or its own close button. Moves focus into the dialog on open. This is the * base primitive that composed dialogs
+### design-system/src/components/ConfirmDialog/ConfirmDialog.tsx [F:63c1c23ccb]
+- S:1f19b07227 interface ConfirmDialogProps `export interface ConfirmDialogProps` L5
+- S:0a9885ca9d function ConfirmDialog `export function ConfirmDialog(` L30 : A confirmation dialog for destructive or high-consequence controls. Every control * that arms the engine, releases a lease, approves a protected path, or prunes a * learning routes through this so an 
 ### scripts/validate-knowledge-packet.mjs [F:65193a9799]
 - S:4abcc2a45b function redactionErrors `export function redactionErrors(packet)` L19
 - S:a8a643fda8 function validatePacket `export function validatePacket(packet)` L45
+### design-system/src/components/HoverCard/HoverCard.tsx [F:66264a042c]
+- S:489fa8bc67 type HoverCardSide `export type HoverCardSide = "top" | "bottom";` L14
+- S:551c7477f2 interface HoverCardSource `export interface HoverCardSource` L16
+- S:5ed8ee5c0a interface HoverCardProps `export interface HoverCardProps` L23
+- S:312c004ac1 function HoverCard `export function HoverCard({ title, body, source, children, side = "bottom" }: HoverCardProps)` L46 : A richer sibling of Tooltip: a small card (heading, body copy, source citation) for * reference content pulled from real documentation, rather than a one-line hint. Unlike * Tooltip, its content accep
+### apps/control-panel/src/screens/OverviewScreen.tsx [F:6627655633]
+- S:050ec6eff9 function OverviewScreen `export function OverviewScreen(` L26 : Mission control: the "is it safe, is it working" glance. Arming posture, the safety * strip, the live queue, spend to date, gate health, and the most recent activity.
 ### scripts/lib/secret-patterns.mjs [F:68c4da7fe8]
 - S:e95e85f904 const SECRET_PATTERNS `export const SECRET_PATTERNS = [` L5
 - S:9c4deaa396 function scanForSecrets `export function scanForSecrets(text)` L16 : Returns an array of { name } objects for every pattern that matches text.
+### .design-sync/previews/Icon.tsx [F:6bef3f93ab]
+- S:4eb76c8a83 function Set `export const Set = () => (` L9
+### .design-sync/previews/Tabs.tsx [F:6c0919b64e]
+- S:c16b3b7bbf function Board `export const Board = () => <Tabs tabs={tabs} active="board" onChange={() => {}} />;` L10
 ### scripts/lib/branch-name.mjs [F:6e0bd62fa3]
 - S:7698d9efeb function isModelIdentifierBranch `export function isModelIdentifierBranch(name)` L26 : True when the first path segment of a branch name equals a denylisted token. * Matching is case-insensitive. "feature/ai-adapter" is allowed because the * first segment is "feature"; only a leading "a
 - S:99c574f83d function resolveBranchName `export function resolveBranchName(env = process.env)` L37 : Resolve the branch under review from CI environment variables. Prefers the * pull request head ref, then the push ref name. Returns an empty string when * neither is set so callers can fall back to a 
 ### scripts/dry-run-sweep.mjs [F:6f247eb514]
-- S:bb800288d9 function writeRunLog `function writeRunLog(runsDir, command, payload)` L16
-- S:002c9f1daa function slug `function slug(text)` L29
-- S:3d6f7980b3 function proposeWork `function proposeWork(stack, hotFiles)` L37
-- S:24407449b3 function orderProposalsByScore `export function orderProposalsByScore(proposals, hotFiles)` L68 : Order proposals by descending deterministic priority score (highest-value, lowest-risk first). Signals are derived heuristically from each proposal's text and the hot-file churn count for the file it 
-- S:7fb0e9b59c function proposalToWorkItem `export function proposalToWorkItem(proposal, opts = {})` L77
+- S:bb800288d9 function writeRunLog `function writeRunLog(runsDir, command, payload)` L17
+- S:002c9f1daa function slug `function slug(text)` L30
+- S:3d6f7980b3 function proposeWork `function proposeWork(stack, hotFiles)` L38
+- S:e099520832 function proposeControlPanelWork `function proposeControlPanelWork(targetDir)` L71 : Only fires when the swept repo actually has a control panel at apps/control-panel (auditCoverage/auditCoherence report `skipped: true` and this returns nothing otherwise), so this stays safe and inert
+- S:24407449b3 function orderProposalsByScore `export function orderProposalsByScore(proposals, hotFiles)` L89 : Order proposals by descending deterministic priority score (highest-value, lowest-risk first). Signals are derived heuristically from each proposal's text and the hot-file churn count for the file it 
+- S:7fb0e9b59c function proposalToWorkItem `export function proposalToWorkItem(proposal, opts = {})` L98
+### .design-sync/previews/IdentityChip.tsx [F:7008a20b1c]
+- S:5fe0061772 function Maker `export const Maker = () => (` L4
+- S:93ab3c1c15 function Checker `export const Checker = () => (` L8
+- S:d4fd7f4ad3 function Pair `export const Pair = () => (` L12
 ### tests/route-action.test.mjs [F:704e42d42b]
 - S:ba7fe0b6d3 function routedConfig `function routedConfig()` L10 : A config where each runner declares its environment and reach.
+### design-system/src/components/Checkbox/Checkbox.tsx [F:7054844360]
+- S:435432f041 interface CheckboxProps `export interface CheckboxProps` L6
+- S:0b453b55b9 function Checkbox `export function Checkbox({ checked, onCheckedChange, label, hint, disabled }: CheckboxProps)` L25 : A labeled checkbox for boolean choices in lists and forms, such as opting * into a rule or selecting an item in a batch action. Renders a native * `<input type="checkbox">` visually replaced by a styl
+### design-system/src/components/Drawer/Drawer.tsx [F:71f0bfb455]
+- S:145586915d interface DrawerProps `export interface DrawerProps` L5
+- S:eb4b11fdf2 function Drawer `export function Drawer({ open, onClose, title, width = 480, children }: DrawerProps)` L25 : A right-side sheet that slides in over a scrim, for focused tasks that need more * room than a popover but should not leave the current page's context (inspecting a * work item, editing a policy). Tra
 ### scripts/preflight-embedding.mjs [F:7232ada2da]
 - S:eaba90daa0 function exists `async function exists(p)` L99
 - S:7b87285e6c function readTextSafe `async function readTextSafe(p)` L108
@@ -494,21 +811,61 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 - S:0dd1d1c53a function runPreflight `export async function runPreflight(targetDir)` L527
 - S:80ded7ba90 function renderHuman `function renderHuman(report)` L540
 - S:1ba042e0cf function main `async function main()` L563
+### apps/control-panel/src/screens/LearningsScreen.tsx [F:757a70680a]
+- S:4514b4c1f0 function LearningsScreen `export function LearningsScreen({ state, write }: { state: PanelState; write: WriteActions })` L18 : Where the engine's judgment surfaces for a human to check. Open decisions ask an * explicit question before the engine proceeds; the learning queue shows the lessons * the engine has staged from repea
+### design-system/src/components/Input/Input.tsx [F:763efdd51c]
+- S:e9fcedbe8f interface InputProps `export interface InputProps extends InputHTMLAttributes<HTMLInputElement>` L7
+- S:6981533501 function Input `export function Input(` L24 : A labeled single-line text input. Shares the labeled-field frame used by every * form control in the panel: an optional label, an optional hint bubble, and an * optional error message below. Use for f
+### design-system/src/components/AuditTimeline/AuditTimeline.tsx [F:76da13a8f7]
+- S:b4b12fd408 type AuditEventKind `export type AuditEventKind =` L5 : The kind of event recorded in the audit trail.
+- S:ee3edffdff interface AuditEvent `export interface AuditEvent` L25 : Plain data shape for a single audit-trail event. Components in this package define * their own shape rather than importing app-level types, so this interface is the * contract a host app maps its own 
+- S:62d1cf1f06 interface AuditTimelineProps `export interface AuditTimelineProps` L36
+- S:35ac020356 function AuditTimeline `export function AuditTimeline({ events, limit }: AuditTimelineProps)` L69 : A vertical audit trail with a connecting line down the left edge. Each event shows a * colored node carrying an icon for its kind (so the event type is never carried by * color alone), the relative ti
 ### tests/dry-run.test.mjs [F:778c33cdc0]
 - S:e15045d8a4 function dryRun `function dryRun(dir)` L13
+### .design-sync/previews/Toast.tsx [F:7832db450f]
+- S:67852685cf function Info `export const Info = () => <Toast tone="info" title="Dry-run sweep queued" />;` L4
+- S:96c461f8cd function Success `export const Success = () => <Toast tone="ok" title="Merged" message="PAY-402 merged by merge authority" />;` L6
+- S:21a4872ace function Blocked `export const Blocked = () => <Toast tone="blocked" title="Ratchet rejected" message="Removed a test assertion" />;` L8
 ### scripts/lib/token-estimate.mjs [F:7944059823]
 - S:59617d720e function estimateTokens `export function estimateTokens(text)` L5 : Dependency-free token accounting for snapshot tiers. The estimate is a heuristic (about four characters per token) that needs no tokenizer and no network, which keeps the utility portable. It is used 
 - S:a48d9e0b16 function budgetTier `export function budgetTier(items, maxTokens, sizeFn)` L13 : Greedily keep pre-ranked items until the token budget is spent. `sizeFn` returns the token cost of an item. A falsy or non-finite budget keeps everything. Returns { kept, dropped, tokens } so the call
+### .design-sync/previews/ErrorState.tsx [F:79467a3153]
+- S:3ed1d37c7b function Unreachable `export const Unreachable = () => (` L3
+### design-system/src/components/ArmingStateBadge/ArmingStateBadge.tsx [F:7a1f7d680b]
+- S:cec6405a03 interface ArmingStateBadgeProps `export interface ArmingStateBadgeProps` L5
+- S:3bae21fee6 function ArmingStateBadge `export function ArmingStateBadge({ mode, envArmed, size = "md" }: ArmingStateBadgeProps)` L26 : The single most important status in the panel: which of the three activation-ladder * rungs the engine is on right now. Disabled is gray, dry-run is CI blue, armed is * teal. The mode label always ren
+### .design-sync/previews/EmptyState.tsx [F:7a43bf4ce5]
+- S:130202d7f0 function Queue `export const Queue = () => (` L3
 ### scripts/sign-packet.mjs [F:7b3e38c9a6]
 - S:8ec4bd5dec function signPacket `export function signPacket(packet, privateKeyObject, { keyAlias, signedAt })` L19 : Pure: attach a signature object to a packet using the given private key.
+### design-system/src/lib/cx.ts [F:7c8d518693]
+- S:d732af6be5 type ClassValue `export type ClassValue = string | false | null | undefined;` L2 : Join class names, dropping falsy values. A tiny classnames helper.
+- S:deea6aabbd function cx `export function cx(...values: ClassValue[]): string` L4
 ### examples/python-service/app/orders.py [F:7ccad64380]
 - S:41443bba10 function total `def total(items)` L1
 - S:05fcfe1c5b function apply_discount `def apply_discount(items, discount_percent)` L5 : Apply a percentage discount to a list of items. Args: items: List of dicts with "price" key discount_percent: Discount percentage (0-100) Returns: Total after discount
+### apps/control-panel/src/state/fixtures/host.ts [F:7d236c9aa6]
+- S:90f1a56d4e const hostState `export const hostState: PanelState =` L178
+### design-system/src/components/Select/Select.tsx [F:819f72edf6]
+- S:64376e38db interface SelectOption `export interface SelectOption` L6
+- S:8af9c33a76 interface SelectProps `export interface SelectProps` L13
+- S:0b0e197734 function Select `export function Select(` L35 : A styled native `<select>` with a custom chevron. Keeps the real `<select>` * element for full assistive-tech and keyboard support while matching the dark * surface treatment of the other form control
+### design-system/src/components/Slider/Slider.tsx [F:81c495717c]
+- S:66cd7b74c6 interface SliderProps `export interface SliderProps` L5
+- S:a91334a377 function Slider `export function Slider(` L32 : A styled range input. Keeps the native `<input type="range">` for full * keyboard and assistive-tech support (arrow keys, Home/End, screen reader * value announcements) while the track and thumb pick 
+### .design-sync/previews/NumberField.tsx [F:84a5c32a4c]
+- S:74e8f23a0b function MergeCap `export const MergeCap = () => (` L4
+- S:14b57397ed function Budget `export const Budget = () => (` L14
 ### scripts/agent/parse-checker-telemetry.mjs [F:851f776227]
 - S:88bc43a62b const CHANGE_REQUEST_SIGNALS `export const CHANGE_REQUEST_SIGNALS = [` L20 : Case-insensitive signal phrases that mean the checker withheld approval or asked for changes. Matching any one sets checker_requested_changes = true.
 - S:90b86b1f26 function hasChangeRequestSignal `export function hasChangeRequestSignal(transcript)` L50 : True when the transcript contains any documented change-request signal * phrase (case-insensitive). Pure string search: no partial-word surprises * beyond what the phrase itself implies. * * @param {s
 - S:328dcdf4cc function countRaisedQuestions `export function countRaisedQuestions(transcript)` L76 : Count distinct raised concerns/questions in the transcript. * * Heuristic (documented, approximate, not semantic): * - Any line ending in "?" counts once. * - Any line starting with "concern:", "quest
 - S:cfe87f9141 function parseCheckerTelemetry `export function parseCheckerTelemetry(transcript)` L111 : Derive checker-engagement telemetry from a checker transcript. * * @param {string|undefined|null} transcript - Full checker transcript text. * @returns {{checker_requested_changes: boolean, checker_qu
+### design-system/src/lib/format.ts [F:86838d35ac]
+- S:6c778494b3 function relativeTime `export function relativeTime(iso: string, now: number = Date.parse("2026-07-01T09:45:00Z")): string` L7 : Format an ISO timestamp as a short relative string, for example "3m ago" or "in 12m".
+- S:8641765bb2 function formatDuration `export function formatDuration(ms?: number): string` L34 : Format a duration in milliseconds as a compact string, for example "1.2s" or "9s".
+- S:6cb93e992c function formatUsd `export function formatUsd(usd: number): string` L45 : Format a USD amount with two decimals.
 ### scripts/agent/apply-patch.mjs [F:872221b1da]
 - S:88426a3883 function looksLikeDiff `function looksLikeDiff(body)` L12 : A body looks like a unified diff when it has a "diff --git" header, or a paired "--- "/"+++ " file header, or an "@@ " hunk marker.
 - S:074c2b3c02 function extractDiff `export function extractDiff(text)` L28 : Pull a unified diff out of a model response. Prefers a fenced ```diff or * ```patch block; falls back to a bare fenced block whose body looks like a * diff; falls back to treating the whole text as a 
@@ -517,6 +874,11 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 - S:6b5288f35f function coreLevers `function coreLevers()` L16
 - S:b4e887ed4f function schemaLevers `function schemaLevers()` L25
 - S:e09a554f44 function templateLevers `function templateLevers()` L30
+### .design-sync/previews/IconButton.tsx [F:8972d37045]
+- S:5d118d4b60 function Row `export const Row = () => (` L3
+### apps/control-panel/src/state/fixtures/product.ts [F:89aee72994]
+- S:e89c164d25 function titleFromId `function titleFromId(id: string): string` L50
+- S:f0db7341e7 const productState `export const productState: PanelState =` L85
 ### scripts/guard-ratchet.mjs [F:8a10462927]
 - S:89e92655dd function normalizeLF `function normalizeLF(s)` L20
 - S:a34306cc67 function getDiff `function getDiff()` L24
@@ -529,12 +891,42 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 ### tests/report-impact.test.mjs [F:8a3433b070]
 - S:69f3537d3b function tmp `function tmp()` L13
 - S:1fe8548dac function fixture `function fixture()` L17
+### apps/control-panel/server/modonomeReader.mjs [F:8a3dd6ccff]
+- S:33534dd596 function readModonomeState `export function readModonomeState(modonomeDir, { mode })` L16
+- S:895b1937bd function readConfig `function readConfig(modonomeDir)` L50
+- S:9287ce102a function readWorkItems `function readWorkItems(modonomeDir)` L84
+- S:064519e650 function titleFromId `function titleFromId(id)` L100
+- S:ac0d90ea9c function toWorkItemVM `function toWorkItemVM(item)` L108
+- S:23afcde4ab function impliedGateStatus `function impliedGateStatus(state)` L134 : A gate's status is implied by the state of every work item that declares it, never by a fabricated pass. A repo that has only ever run dry-run sweeps shows every declared gate as "pending", which is t
+- S:639160c471 function buildGates `function buildGates(items)` L150
+- S:e41c3f2d61 function buildProtectedPaths `function buildProtectedPaths(config, items)` L178
+- S:4741feecf9 function buildCost `function buildCost(config, metrics)` L198 : modonome's own agent runner does not yet record a dollar cost per call (see scripts/agent/run-cycle.mjs), so real spend is honestly zero until that lands. Calls are still counted from the real maker_r
+- S:77031e48f4 function readLearnings `function readLearnings(modonomeDir)` L236
+- S:783d91f2ed function extractSection `function extractSection(text, heading)` L283
+- S:b02fc1cd06 function readDecisions `function readDecisions(modonomeDir)` L288
+- S:4350272f8a function readRuns `function readRuns(modonomeDir)` L321
+- S:d9c2336e09 function readMetrics `function readMetrics(modonomeDir)` L340 : Real telemetry only. metrics.example.jsonl documents the schema and must never be read here: the promoted learning L-001 in this repo's own LEARNINGS.md exists specifically because sample telemetry wa
+- S:409d8caf58 function describeMetric `function describeMetric(m, kind)` L356
+- S:b8469e1267 function buildAudit `function buildAudit(runs, metrics)` L375
+- S:a8971aba2c function buildTrends `function buildTrends(runs)` L414
+- S:b81af2dbe4 function latestAgentProofScore `function latestAgentProofScore(runs)` L426
+- S:baab120dbc function gitInfo `function gitInfo(repoRoot)` L432
+- S:4cd48cf92e function buildSubject `function buildSubject({ repoRoot, modonomeDir, mode, config, queue, runs })` L449
+### design-system/src/components/Tooltip/Tooltip.tsx [F:8a9aff1529]
+- S:77a4165d99 type TooltipSide `export type TooltipSide = "top" | "bottom" | "left" | "right";` L12
+- S:0b70780ca5 interface TooltipProps `export interface TooltipProps` L14
+- S:7bdca9af48 function Tooltip `export function Tooltip({ content, children, side = "top" }: TooltipProps)` L30 : A small dark hint bubble anchored to a trigger element. Opens on mouse hover and on * keyboard focus of the trigger (never hover-only, so keyboard users see the same * information), and closes on blur
 ### scripts/sync-site-data.mjs [F:8abf9e432a]
 - S:c44c6a3e42 function parseEvidence `function parseEvidence()` L18 : Parse RELEASE-EVIDENCE.md to extract gate counts and autonomy status
 - S:208ce5b839 function countWorkItems `function countWorkItems()` L48 : Count work items by state
 - S:370b67baf2 function readVersion `function readVersion()` L67 : Parse version from .modonome/version
 - S:ee17355d71 function updateSite `function updateSite(data)` L76 : Update site/index.html with live data
 - S:03b000e190 function verifySiteData `function verifySiteData(data)` L97 : Verify site data matches evidence (used in CI gate)
+### design-system/src/components/Button/Button.tsx [F:8b122c449e]
+- S:c0c2347579 type ButtonVariant `export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";` L5
+- S:05e617fb30 type ButtonSize `export type ButtonSize = "sm" | "md" | "lg";` L6
+- S:c928d805b5 interface ButtonProps `export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>` L8
+- S:b1bbb81b82 function Button `export function Button(` L30 : The standard action control. Use `primary` for the main action on a screen, * `secondary` for supporting actions, `ghost` for low-emphasis inline actions, and * `danger` for anything that arms, delete
 ### scripts/agent/providers.mjs [F:8b5a1f94c4]
 - S:542af83b15 const BUILTIN_PROVIDERS `export const BUILTIN_PROVIDERS =` L11 : Built-in providers. A config's `providers` map (see resolveProvider) is merged on top, so a host repo can add or override entries without a code change here.
 - S:6ee308cae0 function resolveProvider `export function resolveProvider(name, providersOverride)` L39 : Resolve a provider descriptor by name. Built-ins are merged with an optional * config-provided override map (cfg.providers), so a host repo can redefine or * add providers without touching this file. 
@@ -545,6 +937,11 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 - S:982b9fa62d function stateMachineErrors `export function stateMachineErrors(machine)` L39
 ### examples/demo-app/src/index.js [F:8bb1b57470]
 - S:a1828ef829 function main `async function main()` L59
+### design-system/src/components/GatePanel/GatePanel.tsx [F:8c6234a8cb]
+- S:796295afbe type GateStatus `export type GateStatus = "pass" | "fail" | "flaky" | "running" | "pending";` L6
+- S:0906a625c3 interface GateRow `export interface GateRow` L8
+- S:2db1222578 interface GatePanelProps `export interface GatePanelProps` L23
+- S:0d46d60d35 function GatePanel `export function GatePanel({ gates, title = "CI gates" }: GatePanelProps)` L63 : A vertical list of CI gate rows, used to visualize the merge-blocking checks and * the anti-gaming ratchet on a work item or pipeline. Each row pairs an icon, a color, * and a text label for its statu
 ### scripts/agent/openai-client.mjs [F:8d2cb93236]
 - S:aecf05317d function buildChatCompletionsUrl `export function buildChatCompletionsUrl(baseUrl)` L21 : Join a base URL with the chat-completions path, tolerating a trailing slash * or a base URL that already ends in "/chat/completions". * * @param {string} baseUrl * @returns {string}
 - S:b9ed6b7b01 function buildHeaders `export function buildHeaders(authToken, authScheme = "Bearer")` L37 : Build the request headers, including the Authorization header when a token * is supplied. No Authorization header is sent when authToken is falsy, which * suits local endpoints that need none. * * @pa
@@ -559,6 +956,9 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 ### fixtures/portability/prompt-injection-host/src/main.js [F:90f0999521]
 - S:d75c32ea9c function add `export function add(a, b)` L11
 - S:d7d594dd8d function multiply `export function multiply(a, b)` L15
+### design-system/src/components/MdnRoot/MdnRoot.tsx [F:90fc20ddd8]
+- S:7902cd38d0 interface MdnRootProps `export interface MdnRootProps extends HTMLAttributes<HTMLDivElement>` L4
+- S:f2642efdc2 function MdnRoot `export function MdnRoot({ children, className, style, ...rest }: MdnRootProps)` L14 : The design-system root. Establishes the dark ground, the body font, and the token * scope that every component inherits. Wrap an app or a screen in this (AppShell already * does). It is also the wrapp
 ### scripts/validate-config.mjs [F:932d33be00]
 - S:7c4655c6d7 function loadConfig `export function loadConfig(path)` L13
 - S:cfad347ef3 function safetyErrors `export function safetyErrors(cfg)` L27 : Safety rules beyond structural validation. These keep a config from claiming an armed posture without the controls that make arming safe. Note on arming levers: config values such as autonomy_enabled 
@@ -577,6 +977,19 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 - S:d47456131b function getChangedFiles `function getChangedFiles(diff)` L38
 - S:2f0240b93f function loadCurrentWorkItem `function loadCurrentWorkItem()` L50
 - S:56a4782fc2 function matchesPattern `function matchesPattern(path, patterns)` L75
+### design-system/src/components/LeaseTable/LeaseTable.tsx [F:956332d4b5]
+- S:636b7af50c interface LeaseRow `export interface LeaseRow` L10 : A single active claim lease on a work item, as shown in the lease table.
+- S:46ca0706e7 interface LeaseTableProps `export interface LeaseTableProps` L21
+- S:5eba6876fa function LeaseTable `export function LeaseTable({ leases, onRelease }: LeaseTableProps)` L36 : A table of active claim leases: which work item, who holds it, when it expires * (relative and exact), and whether it has gone stale. When `onRelease` is provided, * each row gets a danger "Release" b
+### apps/control-panel/src/state/adapter.ts [F:95d4304133]
+- S:7b984e047b function finalizeState `export function finalizeState(base: PanelState): PanelState` L18
+- S:559455c526 function loadPanelState `export async function loadPanelState(mode: PanelMode, dir?: string): Promise<PanelState>` L25
+### .design-sync/previews/RoleBadge.tsx [F:973aaa9d86]
+- S:c38d35b211 function Roles `export const Roles = () => (` L4
+### apps/control-panel/src/screens/WorkQueueScreen.tsx [F:9b3f18856e]
+- S:84220fc054 function WorkQueueScreen `export function WorkQueueScreen({ state, write }: { state: PanelState; write: WriteActions })` L15 : The durable work-item state machine, laid out as a board: queued, claimed, making, * checking, merge ready, done, and escalated. Selecting a card opens a read-only * inspector drawer with the item's i
+### .design-sync/previews/AuditTimeline.tsx [F:9c9edea0c9]
+- S:46d90cc86e function Timeline `export const Timeline = () => <AuditTimeline events={events} />;` L13
 ### tests/e2e.test.mjs [F:9cbe9238f8]
 - S:a1107105c3 function tmp `function tmp()` L26
 - S:641774928a function run `function run(script, ...args)` L30
@@ -585,9 +998,24 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 - S:3fd1032067 const CURRENT_SCHEMA_VERSION `export const CURRENT_SCHEMA_VERSION = 1;` L10
 - S:18c9f379c0 const SAFE_DEFAULTS `export const SAFE_DEFAULTS =` L13 : Safe defaults for every lever. Migration fills any missing key from here.
 - S:b8cdbe3fd3 function migrate `export function migrate(cfg)` L70
+### design-system/src/components/ProgressMeter/ProgressMeter.tsx [F:9deac13db0]
+- S:8822b8498d type ProgressMeterTone `export type ProgressMeterTone = "primary" | "info" | "owner" | "danger";` L4
+- S:c1667b970b interface ProgressMeterProps `export interface ProgressMeterProps` L6
+- S:8dfe0cf637 function ProgressMeter `export function ProgressMeter(` L27 : A horizontal meter for bounded quantities such as budget consumed or checker * coverage. Renders a label row (with a mono value/max readout) above a track, * with a filled bar sized to the current val
+- S:95871faa22 function formatNumber `function formatNumber(n: number): string` L75
+### design-system/src/components/MetricTile/MetricTile.tsx [F:9f0fb6ed8b]
+- S:5f8c0130c3 type MetricTileTone `export type MetricTileTone = "neutral" | "ok" | "info" | "attention" | "blocked";` L6
+- S:e15dbc7540 interface MetricTileProps `export interface MetricTileProps` L8
+- S:1beab0dc0c function MetricTile `export function MetricTile({ label, value, unit, hint, tone = "neutral", icon, trend, sub }: MetricTileProps)` L32 : A dashboard stat tile: an eyebrow label (with an optional HelpHint), a large value * with unit, and optional icon, trend slot, and sub text. This is the core building * block of the Overview screen's 
 ### tests/snapshot-cli.test.mjs [F:9f36b3ef29]
 - S:ad93bbf998 function run `function run(args, cwd)` L14
 - S:107eb40a1d function makeRepo `function makeRepo()` L18
+### .design-sync/previews/Toggle.tsx [F:a0068c8817]
+- S:e95adce358 function DryRun `export const DryRun = () => (` L4
+- S:9598b17b9e function AutoMerge `export const AutoMerge = () => (` L14
+### .design-sync/previews/ProgressMeter.tsx [F:a0abaf6a25]
+- S:c80f0936ea function Budget `export const Budget = () => (` L4
+- S:5115891196 function Coverage `export const Coverage = () => <ProgressMeter value={81} max={100} label="Coverage" unit="%" tone="primary" />;` L8
 ### scripts/snapshot.mjs [F:a0d489df6d]
 - S:996743005b function flagValue `function flagValue(argv, name)` L28
 - S:59ba63dbab function readConfig `function readConfig(root)` L33
@@ -609,14 +1037,28 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 - S:7369c62b84 class OrderServiceBroken `export class OrderServiceBroken` L5
 ### tests/mcp-compliance.test.mjs [F:a167609a41]
 - S:07a58ff928 function rpc `function rpc(requests, expectedIds)` L14 : Send requests to a fresh server process and resolve once every expected id has replied. The child is killed as soon as the responses arrive, which avoids the stdin-close race in batch mode.
+### design-system/src/components/Table/Table.tsx [F:a402d2f9ed]
+- S:dc4ac94e5b type TableColumnAlign `export type TableColumnAlign = "left" | "right" | "center";` L4
+- S:aabd2d1e55 interface TableColumn `export interface TableColumn<T>` L6
+- S:1d4c8df8c0 interface TableProps `export interface TableProps<T>` L19
+- S:9f9ed94a62 function Table `export function Table<T>({ columns, rows, getRowKey, onRowClick, empty, dense }: TableProps<T>)` L42 : A generic, semantic data table. Renders a real `<table>` with `<thead>`/`<tbody>` * so screen readers and browser table navigation work as expected. Rows highlight on * hover; when `onRowClick` is set
 ### scripts/install-hooks.mjs [F:a7ce0f6452]
 - S:2681abe2e5 function installHooks `export function installHooks(targetRoot, { self = false } = {})` L31 : Install the pre-commit hook into targetRoot. Returns "installed", "kept" (a host hook already existed and was preserved), or "no-git". self=true writes modonome's own dev hook and overwrites; a host i
+### design-system/src/components/IconButton/IconButton.tsx [F:a8cfe45d27]
+- S:0b4b18fb8a type IconButtonVariant `export type IconButtonVariant = "ghost" | "secondary" | "danger";` L5
+- S:49158af5a6 type IconButtonSize `export type IconButtonSize = "sm" | "md";` L6
+- S:b4354229d8 interface IconButtonProps `export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>` L8
+- S:8c83339acb function IconButton `export function IconButton(` L25 : A square, icon-only button. Always carries an `aria-label` built from the required * `label` prop so the control has an accessible name even though no text is visible. * Use for compact affordances su
 ### scripts/agent/tool-loop-adapter.mjs [F:aa77f227a6]
 - S:170dcaab55 function resolveAdapterCommand `export function resolveAdapterCommand(adapterEntry)` L28 : Resolve the command the external adapter is invoked as. Precedence: an explicit * adapterEntry.command, then adapterEntry.name, then a bare fallback. The value is * a bare command name resolved agains
 - S:d7a4f68100 function containedCwd `export function containedCwd(root, target)` L46 : Enforce ADR-009 path containment. The adapter's working directory must resolve * to exactly the target directory (resolve(root, plan.target)); a cwd outside the * target, reached via ".." or an absolu
 - S:5b2eae49a8 function sep `function sep()` L56
 - S:7ed39c68da function buildAdapterArgs `export function buildAdapterArgs(endpoint, maxTurns, adapterEntry)` L72 : Build the argument vector for the external CLI. Points it at the resolved * endpoint (base URL and model), forwards a bounded max-turns flag, and reads the * prompt from stdin (so no prompt text lands
 - S:bd7f311fdb function runToolLoopAdapter `export async function runToolLoopAdapter(` L98 : Run the external agentic CLI for one role. Never throws on a bounded/expected * failure (spawn error, non-zero exit, timeout, cap hit): returns a clean status * object mirroring the single-shot path's
+### design-system/src/components/Toast/Toast.tsx [F:ab334f34df]
+- S:2cd9cbf595 type ToastTone `export type ToastTone = "ok" | "info" | "attention" | "blocked";` L4
+- S:00c956ccf3 interface ToastProps `export interface ToastProps` L6
+- S:5eb8ce722f function Toast `export function Toast({ tone = "info", title, message, onDismiss }: ToastProps)` L31 : A single notification card with a tone-colored left accent, an icon, a title and * optional message, and an optional dismiss control. Not a stacking provider: mount * one `Toast` per visible notificat
 ### scripts/mcp-server.mjs [F:ab5077147a]
 - S:55a57d9fd6 function toolRatchet `async function toolRatchet(args)` L167
 - S:a4d0ce8fea function toolValidateConfig `async function toolValidateConfig(args)` L214
@@ -647,6 +1089,14 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 - S:6122b96d0b function runGateCapped `export function runGateCapped(cmdArray, { timeoutMs = 30000, maxBuffer = 67108864 } = {})` L11
 ### tests/performance.test.mjs [F:b28f13b600]
 - S:41ad75ea93 function buildLargeDiff `function buildLargeDiff(lines)` L17 : Build a synthetic 1000-line diff that is clean (no gaming patterns).
+### design-system/src/components/ModeSwitcher/ModeSwitcher.tsx [F:b3a2ad52bb]
+- S:3e2d44a335 type PanelMode `export type PanelMode = "host" | "product";` L4
+- S:0c7a33bcbe interface ModeSwitcherProps `export interface ModeSwitcherProps` L6
+- S:5b0828ff4b function ModeSwitcher `export function ModeSwitcher({ mode, onModeChange, hostLabel, productLabel }: ModeSwitcherProps)` L28 : The global context switch. Host mode reads the engine as installed in a customer * repo; product mode reads modonome governing its own repository (self-application). * The same screens serve either su
+### design-system/src/components/WorkItemCard/WorkItemCard.tsx [F:b5ae6ee133]
+- S:ea113218d1 interface WorkItemSummary `export interface WorkItemSummary` L12 : Plain data shape for a single work item as shown in a compact card. Components in * this package define their own shape rather than importing app-level types, so this * interface is the contract a hos
+- S:42d33f191a interface WorkItemCardProps `export interface WorkItemCardProps` L41
+- S:c7ef137e46 function WorkItemCard `export function WorkItemCard({ item, onClick }: WorkItemCardProps)` L69 : A compact, clickable summary card for a single work item: title with its id, * current-state pill, risk tier, a protected-path lock indicator, attempt count, and * pull request number. Used in queue b
 ### tests/dependency.test.mjs [F:b70824b13e]
 - S:18da5ae581 function listMjs `function listMjs(dir, recursive = false)` L13 : Read all .mjs files in a directory (non-recursive by default).
 - S:df7a91f366 function extractImportSpecifiers `function extractImportSpecifiers(source)` L29 : Extract import specifiers from a file's source text. Only matches actual import statements (not comments or JSDoc).
@@ -661,10 +1111,18 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 - S:77054cfc82 function makeItem `function makeItem(overrides = {})` L23
 - S:028a668f8e function writeItem `function writeItem(itemsDir, name, item)` L34
 - S:357942abbf function readItem `function readItem(itemsDir, name)` L38
+### .design-sync/previews/GatePanel.tsx [F:bb6a874d58]
+- S:b01ec1a6ac function Gates `export const Gates = () => <GatePanel gates={gates} />;` L25
 ### tests/ws-e-negative-controls.test.mjs [F:bbb6476d71]
 - S:f5a71d2ca6 function runScript `function runScript(script, args = [], env = {})` L19
 ### examples/demo-app/src/InventoryService.js [F:bd02b28f17]
 - S:c7db2cc29d class InventoryService `export class InventoryService` L3
+### design-system/src/components/Sparkline/Sparkline.tsx [F:c0e80ca327]
+- S:ac1ae69e0f type SparklineTone `export type SparklineTone = "primary" | "info" | "owner" | "danger";` L3
+- S:b27476e527 interface SparklineProps `export interface SparklineProps` L5
+- S:655f25fbed function Sparkline `export function Sparkline(` L33 : A minimal inline trend chart: a single line normalized to fit the box, with an * optional soft area fill beneath it. No axes or gridlines, intended to sit inline * next to a metric (cost trend, throug
+- S:a272c887e3 function toPoints `function toPoints(data: number[], innerW: number, innerH: number, padding: number): [number, number][]` L82
+- S:686192f35d function toLinePath `function toLinePath(points: [number, number][]): string` L97
 ### scripts/build-prompt.mjs [F:c4395c3023]
 - S:27005d8f20 function buildBundle `function buildBundle()` L25
 ### scripts/check-promotion-readiness.mjs [F:c5938c33fd]
@@ -676,10 +1134,27 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 - S:ec2e53ab2e function signature `function signature(line)` L12
 - S:ebdb053467 function docAbove `function docAbove(lines, index)` L17
 - S:df1c5c3628 const adapter `export const adapter =` L33
+### .design-sync/previews/CostPanel.tsx [F:c63a71fb57]
+- S:95e56b0a9c function Remote `export const Remote = () => <CostPanel cost={remoteCost} />;` L27
+- S:e5772fff07 function LocalOnly `export const LocalOnly = () => <CostPanel cost={localOnlyCost} />;` L29
+### design-system/src/tokens/tokens.ts [F:c64c042051]
+- S:749446c25e const armingModes `export const armingModes = ["disabled", "dry-run", "armed"] as const;` L8
+- S:fc7eb05498 type ArmingMode `export type ArmingMode = (typeof armingModes)[number];` L9
+- S:5465e6de42 const workStates `export const workStates = [` L11
+- S:725b07739e type WorkState `export type WorkState = (typeof workStates)[number];` L22
+- S:544b9ce58e const riskTiers `export const riskTiers = [1, 2, 3, 4] as const;` L24
+- S:dab833b9a8 type RiskTier `export type RiskTier = (typeof riskTiers)[number];` L25
+- S:8289602f81 function modeVar `export function modeVar(mode: ArmingMode): string` L28 : CSS custom-property name for an arming mode color.
+- S:583c8b60d3 function stateVar `export function stateVar(state: WorkState): string` L34 : CSS custom-property name for a work-item state color.
+- S:89566a4918 function tierVar `export function tierVar(tier: RiskTier): string` L39 : CSS custom-property name for a risk-tier color.
+- S:a26ee6eefd const workStateLabels `export const workStateLabels: Record<WorkState, string> =` L44 : Human labels for the work states, in flow order.
+- S:644e7adeef const tokens `export const tokens =` L56
 ### scripts/audit-learnings.mjs [F:c9493b5275]
 - S:9299cd9a70 function matches `function matches(l)` L29
 ### scripts/check-style.mjs [F:ca0833ac73]
 - S:ee9b2c90d1 function walk `function walk(dir, out = [])` L21
+### .design-sync/previews/Sparkline.tsx [F:ca13fe2a5b]
+- S:aa4de9995b function Trends `export const Trends = () => (` L4
 ### scripts/lib/snapshot-walk.mjs [F:cb66095cb4]
 - S:7c5c3a31a4 function compilePattern `function compilePattern(pattern)` L41 : Compile one gitignore-style pattern into a tester over a posix relative path. Supported: comments, negation (!), leading / (anchored), trailing / (directory), * (within a segment), ** (across segments
 - S:531cf59eb3 function loadIgnore `export function loadIgnore(root)` L86 : Build an ignore predicate for a repo root. The predicate takes a posix relative path and returns true when the path should be excluded. Later patterns win, so a negation can re-include a path a broad 
@@ -692,6 +1167,12 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 - S:298b204d13 function runPreflight `function runPreflight(fixtureName)` L22 : Run preflight in --json mode against a fixture. Returns { code, report, raw }. A clean environment is used so the host's own MODONOME_* shell does not leak into the env-pollution check.
 - S:c73cab5b60 function ids `function ids(report)` L42
 - S:2ca7aeeeaf function findingsBySeverity `function findingsBySeverity(report, severity)` L46
+### design-system/src/components/CostPanel/CostPanel.tsx [F:ce1173e176]
+- S:66b4da1ed7 type ModelCostClass `export type ModelCostClass = "paid" | "free" | "local";` L6
+- S:2e3ac2ba9f interface ModelCostRow `export interface ModelCostRow` L8
+- S:61579a6235 interface CostSummary `export interface CostSummary` L21
+- S:8cf2204c43 interface CostPanelProps `export interface CostPanelProps` L36
+- S:13f1b3c9c0 function CostPanel `export function CostPanel({ cost }: CostPanelProps)` L93 : A summary of model spend and call volume for a period: a budget meter for remote * USD spend, a small stat row of local calls, remote calls, and cache saves (framed * positively as retries avoided), a
 ### scripts/lib/lang-adapters/tree-sitter.mjs [F:cecdb96382]
 - S:ad7d7732a1 function makeExtract `function makeExtract(Parser, grammar)` L24
 - S:464c90cba5 function registerTreeSitter `export async function registerTreeSitter(register)` L71 : Attempt to register tree-sitter adapters. `register` is the registry's registerAdapter. Returns true when at least one grammar was registered.
@@ -699,9 +1180,28 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 - S:8d1ca74a54 function leaseHolder `function leaseHolder(item)` L22 : A lease is "live" if it has an owner and an unexpired lease_expires_at. The lease holder is recorded as lease_owner (the field this swap writes) or, for older items, the schema's `owner` field; either
 - S:87ca9c146a function leaseIsLive `function leaseIsLive(item, now)` L26
 - S:fd822bf451 function tryTransition `export function tryTransition(item, fromState, toState, writerId, now = new Date())` L38 : tryTransition(item, fromState, toState, writerId, now) -> result { ok: true, item } swap succeeded; item is a fresh copy { ok: false, conflict: "<reason>" } swap refused; item is left untouched `now` 
+### design-system/src/components/Carousel/Carousel.tsx [F:d20e4b6b91]
+- S:fa36ece453 interface CarouselProps `export interface CarouselProps` L5
+- S:36acbff697 function Carousel `export function Carousel({ children, label, className }: CarouselProps)` L21 : A horizontally scrolling row with scroll-snap and prev/next nav buttons. Items stay * in normal tab order (each is independently focusable, and the browser scrolls a * focused item into view automatic
+### .design-sync/previews/PermissionDeniedState.tsx [F:d590ca62b9]
+- S:655cf75cf0 function OwnerOnly `export const OwnerOnly = () => (` L3
+### design-system/src/components/HelpHint/HelpHint.tsx [F:d5b496b125]
+- S:733f5fd096 interface HelpHintProps `export interface HelpHintProps` L5
+- S:e44c445050 function HelpHint `export function HelpHint({ label, children, size = 13 }: HelpHintProps)` L21 : A tiny circular help affordance: a `help` icon button that reveals its text in a * Tooltip on hover or keyboard focus. This is the pervasive "hover for context" * control placed next to section labels
 ### tests/run-log.test.mjs [F:d7d4e8d2a9]
 - S:fe9c17eefa function tmp `function tmp()` L12
 - S:37a0d721be function run `function run(script, ...args)` L16
+### design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx [F:d8fb8339ce]
+- S:4f19353e16 interface ProtectedPathRowProps `export interface ProtectedPathRowProps` L6
+- S:e0eb326a77 function ProtectedPathRow `export function ProtectedPathRow(` L26 : A single row describing one protected path's guard state: a lock icon, the path in * mono, and a status readout. When a change is awaiting approval, shows an * attention-toned pill, notes who touched 
+### design-system/src/components/TierBadge/TierBadge.tsx [F:da42f69531]
+- S:1274d7cf4b type Tier `export type Tier = 1 | 2 | 3 | 4;` L3
+- S:fea88d42b6 interface TierBadgeProps `export interface TierBadgeProps` L5
+- S:f3d272846b function TierBadge `export function TierBadge({ tier, showLabel = true }: TierBadgeProps)` L24 : A small pill identifying a risk tier (1-4) by its dedicated tier color, with a * title tooltip summarizing what the tier permits. Used on work items, policies, and * anywhere a change's review require
+### design-system/src/components/NumberField/NumberField.tsx [F:db651caf76]
+- S:4eb7e87341 interface NumberFieldProps `export interface NumberFieldProps` L5
+- S:50b0879e24 function clamp `function clamp(n: number, min?: number, max?: number): number` L28
+- S:cfdd1d8a7f function NumberField `export function NumberField(` L40 : A numeric field with decrement and increment stepper buttons and an optional * unit suffix. Used for caps and budget editors such as max open PRs, max diff * lines, lease minutes, and the remote model
 ### scripts/lib/snapshot-core.mjs [F:dbb9c92ca1]
 - S:8d30c800e7 const SNAPSHOT_SCHEMA_VERSION `export const SNAPSHOT_SCHEMA_VERSION = 1;` L20
 - S:154918aa5a function isBinary `function isBinary(buffer)` L32 : Detect binary content by scanning a prefix for a null byte.
@@ -712,6 +1212,10 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 - S:45b2f146f0 function buildEdgeList `function buildEdgeList(adjacency, pathIdByPath)` L274 : Resolve adjacency into a sorted edge list of dictionary path ids.
 - S:dbf47f93d3 function renderMarkdown `function renderMarkdown({ generatedFor, merkleRoot, files, totalBytes, map })` L288
 - S:890a9e6691 function readGovernance `function readGovernance(root)` L339 : Read a light governance posture from the target config and environment. It never arms anything; it only reports posture so a snapshot can double as a status probe.
+### .design-sync/previews/Tooltip.tsx [F:dca643f34b]
+- S:73feb65706 function OnLabel `export const OnLabel = () => (` L4
+### .design-sync/previews/QueueBoard.tsx [F:dd1be2cd7b]
+- S:bd8806c490 function Board `export const Board = () => <QueueBoard items={items} />;` L13
 ### tests/promoted-learnings.test.mjs [F:ddd82fc886]
 - S:e0832e1baa function withRoot `function withRoot(learningsBody)` L8
 ### scripts/agent/run-cycle.mjs [F:ddeb486c49]
@@ -734,6 +1238,10 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 ### tests/scaffold-adoption.test.mjs [F:de5ebbf586]
 - S:fe07a3bcbc function gitRepo `function gitRepo()` L13
 - S:8579f519b1 function scaffold `function scaffold(dir, extra = [])` L25
+### design-system/src/components/Icon/Icon.tsx [F:deab644e60]
+- S:60070857ec type IconName `export type IconName =` L9 : The curated Modonome icon set. Every glyph is a stroke path on a 24x24 grid and * inherits `currentColor`, so an icon takes the color of whatever text or control it * sits in. Icons are decorative by 
+- S:a0f5484b98 interface IconProps `export interface IconProps extends Omit<SVGProps<SVGSVGElement>, "name">` L77
+- S:abe6a83201 function Icon `export function Icon({ name, size = 16, title, strokeWidth = 1.8, ...rest }: IconProps)` L88
 ### scripts/score-proposals.mjs [F:e11f907cba]
 - S:73e4b1bbf9 const SIGNAL_MIN `export const SIGNAL_MIN = 0;` L31
 - S:ad1b93bd0c const SIGNAL_MAX `export const SIGNAL_MAX = 5;` L32
@@ -743,17 +1251,32 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 - S:574c990b3f function scoreProposal `export function scoreProposal(signals = {})` L59 : Pure scoring function. Higher score means higher priority: more value and safety for less effort, risk, and uncertainty.
 - S:c53d33aa2a function scoreProposals `export function scoreProposals(proposalsWithSignals = [])` L71 : Sort proposals by descending score. Each entry may be a plain signals object or carry signals under an explicit `signals` key alongside other fields (for example `id` or `proposal` text), which are pr
 - S:3cceb8dc09 function deriveSignals `export function deriveSignals(proposalText, context = {})` L96 : Heuristic, deterministic signal derivation from a proposal string and a simple context object. This is a convenience default, not a source of truth: callers with better signals should pass them direct
+### .design-sync/previews/HelpHint.tsx [F:e19aab09cb]
+- S:ba347c9b77 function Beside `export const Beside = () => (` L4
 ### tests/role-registry.test.mjs [F:e2f1b5ac07]
 - S:e1813dcc71 function baseCfg `function baseCfg(extra = {})` L25 : A single-environment config with no runner reachability declared, so routing stays inline for every role (matching the shipped default posture). Crew roles are added by extending `roles`, `models`, an
+### apps/control-panel/src/screens/ArmingScreen.tsx [F:e40ce1af48]
+- S:870a14c796 function ArmingScreen `export function ArmingScreen({ state, write }: { state: PanelState; write: WriteActions })` L35 : The control screen. Three tabs keep one conceptual area on screen at a time: the * activation ladder (the primary daily view), caps and budget, and the separation-of- * duties governance rules. The la
 ### scripts/lib/commit-identity.mjs [F:e4ff19bbe2]
 - S:d7029fdff9 function isForbiddenIdentity `export function isForbiddenIdentity(name, email)` L26 : True when a name or email belongs to a denylisted agent or vendor identity. * Real automation such as dependabot is allowed; only coding-agent and model * vendor identities are rejected.
 - S:5c7ed4ab16 function findForbiddenCommits `export function findForbiddenCommits(logOutput)` L42 : Parse `git log` output where each commit is one line of * "authorName<TAB>authorEmail<TAB>committerName<TAB>committerEmail<TAB>shortSha". * Returns the commits whose author or committer is a forbidden
 ### tests/promote-learning.test.mjs [F:e540f7b669]
 - S:f040dfb6c9 function run `function run(script, args = [])` L15
+### .design-sync/previews/MetricTile.tsx [F:e5e519f441]
+- S:ce5e964e25 function ArmingMode `export const ArmingMode = () => (` L4
+- S:8c65a8b2a2 function ActiveWork `export const ActiveWork = () => (` L15
+- S:dd37641bec function Spend `export const Spend = () => (` L27
 ### tests/helpers/mock-openai-server.mjs [F:eb14a0bdeb]
 - S:135fde5dfb function startMockServer `export function startMockServer(options = {})` L23 : Start a mock OpenAI chat-completions server. * * @param {object} [options] * @param {"success"|"retry-then-success"|"delay"|"malformed"|"error"} [options.mode] * - "success": always returns a normal c
 - S:b65916676a function successBody `function successBody(overrides)` L98
 - S:ac31df31c0 function writeJson `function writeJson(res, status, body)` L113
+### apps/control-panel/src/state/liveClient.ts [F:ec52ca3820]
+- S:38948fee1c class LiveApiError `export class LiveApiError extends Error {}` L10
+- S:819d9d37ff function call `async function call<T>(path: string, init?: RequestInit): Promise<T>` L12
+- S:cab56da046 function fetchLiveState `export function fetchLiveState(mode: PanelMode, dir?: string): Promise<PanelState>` L26
+- S:18fce60dc6 function saveConfig `export function saveConfig(` L32
+- S:4124b7df92 function releaseLeaseLive `export function releaseLeaseLive(mode: PanelMode, itemId: string, dir?: string): Promise<PanelState>` L44
+- S:a4b6be1d49 function pruneLearningLive `export function pruneLearningLive(mode: PanelMode, lesson: string, dir?: string): Promise<PanelState>` L52
 ### tests/tool-loop-adapter.test.mjs [F:ed9c47feb2]
 - S:b1e3e516c3 function makeFakeSpawn `function makeFakeSpawn(script = {})` L27 : A scriptable fake child process. Captures the constructor call, emits the configured stdout/stderr, then closes (or hangs, when never told to close).
 ### scripts/run-gate-pipeline.mjs [F:edb11415f0]
@@ -764,23 +1287,48 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 - S:66bb927095 function run `function run(cmd, opts = {})` L9
 ### tests/providers.test.mjs [F:ee02e563c6]
 - S:c1e6062cfc function baseCfg `function baseCfg(overrides = {})` L109
+### .design-sync/previews/LoadingState.tsx [F:eecc78e7e8]
+- S:5bad105043 function Reading `export const Reading = () => <LoadingState label="Reading durable state" />;` L3
 ### scripts/validate-work-item.mjs [F:f07f8ebca9]
 - S:28736bfacf function modelFamily `function modelFamily(model)` L17 : Resolve a model name to its family by longest-matching prefix. Returns null when no prefix matches, so unrecognized models are treated as distinct families (they fall through the family check and are 
 - S:c3ace341b4 function governanceErrors `export function governanceErrors(item, config = {})` L30 : Governance rules that JSON Schema cannot express (cross-field invariants).
 - S:33100346b9 function validateWorkItem `export function validateWorkItem(item, config = {})` L88
+### .design-sync/previews/WorkItemDrawer.tsx [F:f0fbd8716f]
+- S:524aeb5cd6 function Detail `export const Detail = () => <WorkItemDrawer item={item} open onClose={() => {}} />;` L23
 ### tests/ratchet.test.mjs [F:f238d164c9]
 - S:2e93f745f3 function ratchet `function ratchet(diffPath)` L16
 ### scripts/lib/graph.mjs [F:f51cba9beb]
 - S:3c3cd672a7 function isCyclic `export function isCyclic(adjacency)` L11 : isCyclic(adjacency) -> { cyclic: bool, cycle: [...] } Detects whether the graph contains a cycle. When a cycle is found, `cycle` holds the nodes involved in the order they were detected via DFS (the f
 - S:075e86ea7c function topoSort `export function topoSort(adjacency, nodes)` L48 : topoSort(adjacency, nodes) -> { order: [...], error?: string } Returns a topological ordering of `nodes` given the directed edges in `adjacency`. Nodes not present in `nodes` but reachable via edges a
 - S:9ec4198171 function collectNodes `function collectNodes(adjacency)` L75 : Collect every node mentioned either as a key or as a neighbour value.
+### .design-sync/previews/Button.tsx [F:f6e100ab45]
+- S:f988f356bd function Variants `export const Variants = () => (` L4
+- S:edacefac29 function Sizes `export const Sizes = () => (` L19
 ### examples/demo-app/tests/InventoryService.test.js [F:f8168b956f]
 - S:af1e7a50ba function makeDb `function makeDb()` L5
+### apps/control-panel/src/content/concepts.ts [F:f83d1100e9]
+- S:cb8cdfa49f interface ConceptEntry `export interface ConceptEntry` L15
+- S:83deb081d9 const CONCEPTS `export const CONCEPTS: ConceptEntry[] = [` L25
+### design-system/src/components/QueueBoard/QueueBoard.tsx [F:f8609bae0b]
+- S:a3bf9f1833 interface QueueBoardProps `export interface QueueBoardProps` L4
+- S:16975f80af function QueueBoard `export function QueueBoard({ items, onSelect }: QueueBoardProps)` L18 : The work queue as a board. Items are grouped into the columns of the durable state * machine (queued, claimed, making, checking, merge ready, done, escalated), with * rework folded into making and mer
 ### bin/modonome.mjs [F:f90930c3c3]
 - S:5835c8b608 function resolveArming `export function resolveArming(targetDir, env = process.env)` L40 : The authoritative arming gate. A config file the agent can write can never arm the engine on its own: arming requires the MODONOME_ARMED=true environment variable, which lives in CI or operator scope,
 - S:53b9eda0f8 function run `function run(script, args)` L61
 - S:214691c25d function targetDirFrom `function targetDirFrom(rest)` L71
 - S:9249714b12 function main `function main(argv)` L75
+### design-system/src/components/IdentityChip/IdentityChip.tsx [F:f942e88a8f]
+- S:9b166b011e type IdentityChipRole `export type IdentityChipRole = "maker" | "checker";` L3
+- S:01b4ff4d73 type IdentityChipSize `export type IdentityChipSize = "sm" | "md";` L4
+- S:a06feb4e68 interface IdentityChipProps `export interface IdentityChipProps` L6
+- S:6797390adc function initialsFor `function initialsFor(name: string): string` L18
+- S:aaca852d2b function IdentityChip `export function IdentityChip({ name, model, role, size = "md" }: IdentityChipProps)` L31 : A compact identity marker: an initials avatar plus a name, with an optional model * string in muted mono beneath. When `role` is set the avatar ring is tinted (info for * maker, primary for checker) s
+### .design-sync/previews/WorkItemCard.tsx [F:f9c98a8642]
+- S:e173063c31 function Queued `export const Queued = () => (` L4
+- S:c7ebadadb9 function Checking `export const Checking = () => (` L19
+- S:dff1725e3b function Escalated `export const Escalated = () => (` L37
+### scripts/assert-governed-change.mjs [F:fa49930755]
+- S:13a8db3ab6 function gitDiff `function gitDiff(...args)` L5
 ### tests/metrics.test.mjs [F:fadcf390da]
 - S:c176253e9c function tmp `function tmp()` L12
 - S:8bff005013 function runReport `function runReport(targetDir)` L16
@@ -801,6 +1349,8 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 - S:cf03857559 function runValidateConfig `function runValidateConfig(configPath, opts = {})` L28 : Run validate-config.mjs against a given config path.
 - S:5daa909048 function runGuardRatchet `function runGuardRatchet(diffPath, opts = {})` L37 : Run guard-ratchet.mjs with a --diff fixture.
 - S:cdac115f81 function runPortabilityCheck `function runPortabilityCheck(fixturePath, opts = {})` L46 : Run check-portability.mjs against a fixture directory.
+### .design-sync/previews/TierBadge.tsx [F:fe5ec971f8]
+- S:7d8d2691e2 function Tiers `export const Tiers = () => (` L4
 ### examples/demo-app/src/PaymentProcessor.js [F:ff3aef693f]
 - S:9dee57c7c2 class PaymentProcessor `export class PaymentProcessor` L5
 ### scripts/lib/lang-adapters/go.mjs [F:ffe5c1269b]
@@ -814,71 +1364,183 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 - scripts/lib/snapshot-graph.mjs -> scripts/lib/graph.mjs
 - examples/demo-app/tests/OrderService.test.js -> examples/demo-app/src/OrderService.js
 - tests/check-licenses.test.mjs -> scripts/check-licenses.mjs
+- design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx -> design-system/src/components/StatusPill/StatusPill.tsx
+- design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx -> design-system/src/components/Drawer/Drawer.tsx
+- design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx -> design-system/src/components/WorkItemCard/WorkItemCard.tsx
+- design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx -> design-system/src/tokens/tokens.ts
+- design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx -> design-system/src/components/TierBadge/TierBadge.tsx
+- design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx -> design-system/src/components/IdentityChip/IdentityChip.tsx
 - tests/packet.test.mjs -> scripts/validate-knowledge-packet.mjs
+- apps/control-panel/server/api.mjs -> apps/control-panel/server/modonomeWriter.mjs
+- apps/control-panel/server/api.mjs -> apps/control-panel/server/modonomeReader.mjs
+- design-system/src/components/DecisionCard/index.ts -> design-system/src/components/DecisionCard/DecisionCard.tsx
 - scripts/verify-packet.mjs -> scripts/lib/ed25519.mjs
 - scripts/verify-packet.mjs -> scripts/lib/canonical-json.mjs
 - scripts/verify-packet.mjs -> scripts/validate-knowledge-packet.mjs
+- design-system/src/components/Input/index.ts -> design-system/src/components/Input/Input.tsx
+- design-system/src/components/Toast/index.ts -> design-system/src/components/Toast/Toast.tsx
+- apps/control-panel/src/App.tsx -> apps/control-panel/src/state/types.ts
+- apps/control-panel/src/App.tsx -> apps/control-panel/src/screens/GatesScreen.tsx
+- apps/control-panel/src/App.tsx -> apps/control-panel/src/lib/confirm.tsx
+- apps/control-panel/src/App.tsx -> apps/control-panel/src/screens/SettingsScreen.tsx
+- apps/control-panel/src/App.tsx -> apps/control-panel/src/screens/OverviewScreen.tsx
+- apps/control-panel/src/App.tsx -> apps/control-panel/src/screens/LearningsScreen.tsx
+- apps/control-panel/src/App.tsx -> apps/control-panel/src/state/adapter.ts
+- apps/control-panel/src/App.tsx -> apps/control-panel/src/screens/WorkQueueScreen.tsx
+- apps/control-panel/src/App.tsx -> apps/control-panel/src/screens/ArmingScreen.tsx
+- apps/control-panel/src/App.tsx -> apps/control-panel/src/state/liveClient.ts
 - tests/config.test.mjs -> scripts/lib/yaml-lite.mjs
 - tests/config.test.mjs -> scripts/lib/jsonschema.mjs
 - tests/config.test.mjs -> scripts/validate-config.mjs
 - tests/config.test.mjs -> scripts/migrate-config.mjs
 - scripts/lib/packet-id.mjs -> scripts/lib/canonical-json.mjs
+- design-system/src/components/Carousel/index.ts -> design-system/src/components/Carousel/Carousel.tsx
+- design-system/src/components/ActivationLadder/ActivationLadder.tsx -> design-system/src/lib/cx.ts
+- design-system/src/components/ActivationLadder/ActivationLadder.tsx -> design-system/src/components/Button/Button.tsx
+- design-system/src/components/ActivationLadder/ActivationLadder.tsx -> design-system/src/tokens/tokens.ts
+- design-system/src/components/ActivationLadder/ActivationLadder.tsx -> design-system/src/components/Icon/Icon.tsx
+- scripts/check-control-panel-coverage.mjs -> scripts/lib/control-panel-audit.mjs
+- design-system/src/components/MdnRoot/index.ts -> design-system/src/components/MdnRoot/MdnRoot.tsx
+- design-system/src/components/LeaseTable/index.ts -> design-system/src/components/LeaseTable/LeaseTable.tsx
+- design-system/src/components/ConceptTile/ConceptTile.tsx -> design-system/src/lib/cx.ts
+- design-system/src/components/ConceptTile/ConceptTile.tsx -> design-system/src/components/Icon/Icon.tsx
 - tests/ws-b-harness.test.mjs -> scripts/validate-config.mjs
 - tests/ws-b-harness.test.mjs -> scripts/agent/run-cycle.mjs
 - tests/ws-b-harness.test.mjs -> scripts/agent/render-prompt.mjs
+- design-system/src/components/Select/index.ts -> design-system/src/components/Select/Select.tsx
+- design-system/src/components/LearningCard/LearningCard.tsx -> design-system/src/components/StatusPill/StatusPill.tsx
+- design-system/src/components/LearningCard/LearningCard.tsx -> design-system/src/components/Card/Card.tsx
+- design-system/src/components/LearningCard/LearningCard.tsx -> design-system/src/components/Button/Button.tsx
+- design-system/src/components/Tabs/Tabs.tsx -> design-system/src/lib/cx.ts
+- design-system/src/components/Tabs/Tabs.tsx -> design-system/src/components/Icon/Icon.tsx
+- design-system/src/components/Toggle/Toggle.tsx -> design-system/src/lib/cx.ts
+- design-system/src/components/Toggle/Toggle.tsx -> design-system/src/components/HelpHint/HelpHint.tsx
+- apps/control-panel/server/modonomeWriter.mjs -> apps/control-panel/server/learningsFormat.mjs
 - scripts/lib/lang-adapters/index.mjs -> scripts/lib/lang-adapters/python.mjs
 - scripts/lib/lang-adapters/index.mjs -> scripts/lib/lang-adapters/js-ts.mjs
 - scripts/lib/lang-adapters/index.mjs -> scripts/lib/lang-adapters/generic.mjs
 - scripts/lib/lang-adapters/index.mjs -> scripts/lib/lang-adapters/java.mjs
 - scripts/lib/lang-adapters/index.mjs -> scripts/lib/lang-adapters/go.mjs
+- apps/control-panel/src/state/configDiff.ts -> apps/control-panel/src/state/types.ts
+- design-system/src/components/AppShell/AppShell.tsx -> design-system/src/lib/cx.ts
+- design-system/src/components/AppShell/AppShell.tsx -> design-system/src/components/Icon/Icon.tsx
 - tests/snapshot-golden.test.mjs -> scripts/lib/lang-adapters/index.mjs
 - tests/snapshot-golden.test.mjs -> scripts/lib/lang-adapters/tree-sitter.mjs
 - scripts/lib/merkle.mjs -> scripts/lib/canonical-json.mjs
+- scripts/check-control-panel-coherence.mjs -> scripts/lib/control-panel-audit.mjs
+- design-system/src/components/States/States.tsx -> design-system/src/components/Icon/Icon.tsx
+- design-system/src/components/StatusPill/StatusPill.tsx -> design-system/src/lib/cx.ts
+- design-system/src/components/StatusPill/StatusPill.tsx -> design-system/src/components/Icon/Icon.tsx
 - scripts/agent/resolve-role.mjs -> scripts/agent/providers.mjs
+- apps/control-panel/src/screens/GatesScreen.tsx -> apps/control-panel/src/state/types.ts
+- apps/control-panel/src/screens/GatesScreen.tsx -> apps/control-panel/src/lib/confirm.tsx
 - scripts/check-learning-traceability.mjs -> scripts/lib/learnings.mjs
+- design-system/src/components/RoleBadge/RoleBadge.tsx -> design-system/src/lib/cx.ts
+- design-system/src/components/RoleBadge/RoleBadge.tsx -> design-system/src/components/Icon/Icon.tsx
 - examples/demo-app/tests/PaymentProcessor.test.js -> examples/demo-app/src/PaymentProcessor.js
+- design-system/src/components/WorkItemDrawer/index.ts -> design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx
 - tests/ws-h-config.test.mjs -> scripts/lib/yaml-lite.mjs
 - tests/ws-h-config.test.mjs -> scripts/agent/resolve-role.mjs
 - tests/ws-h-config.test.mjs -> scripts/validate-config.mjs
 - tests/run-gate-capped-unit.test.mjs -> scripts/lib/run-gate-capped.mjs
 - examples/demo-app/tests/CartService.test.js -> examples/demo-app/src/CartService.js
 - tests/secret-patterns-unit.test.mjs -> scripts/lib/secret-patterns.mjs
+- design-system/src/components/QueueBoard/index.ts -> design-system/src/components/QueueBoard/QueueBoard.tsx
 - tests/packet-signing.test.mjs -> scripts/verify-packet.mjs
 - tests/packet-signing.test.mjs -> scripts/lib/packet-id.mjs
 - tests/packet-signing.test.mjs -> scripts/lib/canonical-json.mjs
 - tests/packet-signing.test.mjs -> scripts/sign-packet.mjs
+- design-system/src/components/HoverCard/index.ts -> design-system/src/components/HoverCard/HoverCard.tsx
 - scripts/check-self-application.mjs -> scripts/lib/yaml-lite.mjs
 - scripts/check-self-application.mjs -> scripts/lib/jsonschema.mjs
+- design-system/src/components/Card/Card.tsx -> design-system/src/lib/cx.ts
+- design-system/src/components/Card/Card.tsx -> design-system/src/components/HelpHint/HelpHint.tsx
 - tests/runner-env.test.mjs -> scripts/agent/run-cycle.mjs
 - tests/snapshot-incremental.test.mjs -> scripts/lib/snapshot-cache.mjs
 - tests/snapshot-incremental.test.mjs -> scripts/lib/canonical-json.mjs
 - tests/snapshot-incremental.test.mjs -> scripts/lib/snapshot-core.mjs
+- design-system/src/components/Card/index.ts -> design-system/src/components/Card/Card.tsx
 - tests/self-application.test.mjs -> scripts/lib/jsonschema.mjs
+- design-system/src/components/TierBadge/index.ts -> design-system/src/components/TierBadge/TierBadge.tsx
 - scripts/lib/snapshot-redact.mjs -> scripts/lib/secret-patterns.mjs
 - tests/branch-name.test.mjs -> scripts/lib/branch-name.mjs
+- apps/control-panel/src/screens/SettingsScreen.tsx -> apps/control-panel/src/state/types.ts
+- apps/control-panel/src/screens/SettingsScreen.tsx -> apps/control-panel/src/state/configDiff.ts
+- apps/control-panel/src/screens/SettingsScreen.tsx -> apps/control-panel/src/lib/confirm.tsx
+- design-system/src/components/RoleBadge/index.ts -> design-system/src/components/RoleBadge/RoleBadge.tsx
 - tests/openai-client.test.mjs -> tests/helpers/mock-openai-server.mjs
 - examples/demo-app/tests/CheckoutService.test.js -> examples/demo-app/src/CheckoutService.js
 - tests/learnings.test.mjs -> scripts/lib/learnings.mjs
+- design-system/src/components/SafetyStrip/SafetyStrip.tsx -> design-system/src/components/StatusPill/StatusPill.tsx
+- design-system/src/components/SafetyStrip/SafetyStrip.tsx -> design-system/src/components/HelpHint/HelpHint.tsx
 - tests/run-cycle-openai.test.mjs -> scripts/agent/apply-patch.mjs
 - tests/run-cycle-openai.test.mjs -> scripts/agent/run-cycle.mjs
 - tests/run-cycle-openai.test.mjs -> tests/helpers/mock-openai-server.mjs
+- design-system/src/components/DecisionCard/DecisionCard.tsx -> design-system/src/components/StatusPill/StatusPill.tsx
+- design-system/src/components/DecisionCard/DecisionCard.tsx -> design-system/src/components/Card/Card.tsx
+- design-system/src/components/DecisionCard/DecisionCard.tsx -> design-system/src/components/Button/Button.tsx
+- design-system/src/components/Modal/index.ts -> design-system/src/components/Modal/Modal.tsx
 - tests/maker-checker.test.mjs -> scripts/validate-work-item.mjs
 - scripts/agent/action-queue.mjs -> scripts/lib/jsonschema.mjs
 - scripts/scaffold.mjs -> scripts/install-hooks.mjs
+- design-system/src/components/LearningCard/index.ts -> design-system/src/components/LearningCard/LearningCard.tsx
 - tests/arming.test.mjs -> bin/modonome.mjs
 - scripts/check-repo-hygiene.mjs -> scripts/lib/branch-name.mjs
 - scripts/check-repo-hygiene.mjs -> scripts/lib/commit-identity.mjs
+- design-system/src/components/Modal/Modal.tsx -> design-system/src/lib/cx.ts
+- design-system/src/components/Modal/Modal.tsx -> design-system/src/components/IconButton/IconButton.tsx
+- design-system/src/components/ConfirmDialog/ConfirmDialog.tsx -> design-system/src/components/Modal/Modal.tsx
+- design-system/src/components/ConfirmDialog/ConfirmDialog.tsx -> design-system/src/components/Button/Button.tsx
 - scripts/validate-knowledge-packet.mjs -> scripts/lib/jsonschema.mjs
 - scripts/validate-knowledge-packet.mjs -> scripts/lib/secret-patterns.mjs
+- design-system/src/components/HoverCard/HoverCard.tsx -> design-system/src/lib/cx.ts
+- design-system/src/components/HoverCard/HoverCard.tsx -> design-system/src/components/Icon/Icon.tsx
+- apps/control-panel/src/screens/OverviewScreen.tsx -> apps/control-panel/src/state/types.ts
+- apps/control-panel/src/screens/OverviewScreen.tsx -> apps/control-panel/src/content/concepts.ts
+- design-system/src/components/ActivationLadder/index.ts -> design-system/src/components/ActivationLadder/ActivationLadder.tsx
+- design-system/src/components/StatusPill/index.ts -> design-system/src/components/StatusPill/StatusPill.tsx
+- scripts/dry-run-sweep.mjs -> scripts/lib/control-panel-audit.mjs
 - scripts/dry-run-sweep.mjs -> scripts/lib/repo-detect.mjs
 - scripts/dry-run-sweep.mjs -> scripts/score-proposals.mjs
+- design-system/src/components/Checkbox/Checkbox.tsx -> design-system/src/lib/cx.ts
+- design-system/src/components/Checkbox/Checkbox.tsx -> design-system/src/components/HelpHint/HelpHint.tsx
+- design-system/src/components/Checkbox/Checkbox.tsx -> design-system/src/components/Icon/Icon.tsx
+- design-system/src/components/ArmingStateBadge/index.ts -> design-system/src/components/ArmingStateBadge/ArmingStateBadge.tsx
+- design-system/src/components/Drawer/Drawer.tsx -> design-system/src/components/IconButton/IconButton.tsx
+- apps/control-panel/src/screens/LearningsScreen.tsx -> apps/control-panel/src/state/types.ts
+- apps/control-panel/src/screens/LearningsScreen.tsx -> apps/control-panel/src/lib/confirm.tsx
+- design-system/src/components/Input/Input.tsx -> design-system/src/lib/cx.ts
+- design-system/src/components/Input/Input.tsx -> design-system/src/components/HelpHint/HelpHint.tsx
+- design-system/src/components/Input/Input.tsx -> design-system/src/components/Icon/Icon.tsx
+- design-system/src/components/AuditTimeline/AuditTimeline.tsx -> design-system/src/lib/format.ts
+- design-system/src/components/AuditTimeline/AuditTimeline.tsx -> design-system/src/components/Icon/Icon.tsx
+- design-system/src/components/ArmingStateBadge/ArmingStateBadge.tsx -> design-system/src/lib/cx.ts
+- design-system/src/components/ArmingStateBadge/ArmingStateBadge.tsx -> design-system/src/tokens/tokens.ts
+- design-system/src/components/ArmingStateBadge/ArmingStateBadge.tsx -> design-system/src/components/Icon/Icon.tsx
 - scripts/sign-packet.mjs -> scripts/lib/canonical-json.mjs
+- apps/control-panel/src/state/fixtures/host.ts -> apps/control-panel/src/state/types.ts
+- design-system/src/components/ConfirmDialog/index.ts -> design-system/src/components/ConfirmDialog/ConfirmDialog.tsx
+- design-system/src/components/Select/Select.tsx -> design-system/src/lib/cx.ts
+- design-system/src/components/Select/Select.tsx -> design-system/src/components/HelpHint/HelpHint.tsx
+- design-system/src/components/Select/Select.tsx -> design-system/src/components/Icon/Icon.tsx
+- design-system/src/components/Slider/Slider.tsx -> design-system/src/lib/cx.ts
+- design-system/src/components/Slider/Slider.tsx -> design-system/src/components/HelpHint/HelpHint.tsx
 - tests/resolve-role.test.mjs -> scripts/agent/resolve-role.mjs
+- design-system/src/components/Table/index.ts -> design-system/src/components/Table/Table.tsx
+- design-system/src/components/Icon/index.ts -> design-system/src/components/Icon/Icon.tsx
 - scripts/check-work-items.mjs -> scripts/lib/yaml-lite.mjs
 - scripts/check-work-items.mjs -> scripts/validate-work-item.mjs
 - scripts/check-drift.mjs -> scripts/lib/yaml-lite.mjs
 - scripts/check-drift.mjs -> scripts/migrate-config.mjs
+- apps/control-panel/src/main.tsx -> apps/control-panel/src/App.tsx
+- apps/control-panel/src/main.tsx -> apps/control-panel/src/app.css
+- apps/control-panel/src/state/fixtures/product.ts -> apps/control-panel/src/state/types.ts
+- design-system/src/components/Tabs/index.ts -> design-system/src/components/Tabs/Tabs.tsx
+- apps/control-panel/server/modonomeReader.mjs -> apps/control-panel/server/learningsFormat.mjs
+- design-system/src/components/Tooltip/Tooltip.tsx -> design-system/src/lib/cx.ts
 - tests/transition-work-item-unit.test.mjs -> scripts/transition-work-item.mjs
+- design-system/src/components/Button/Button.tsx -> design-system/src/lib/cx.ts
+- design-system/src/components/Button/Button.tsx -> design-system/src/components/Icon/Icon.tsx
 - scripts/check-state-machine-acyclic.mjs -> scripts/lib/graph.mjs
 - examples/demo-app/src/index.js -> examples/demo-app/src/OrderService.js
 - examples/demo-app/src/index.js -> examples/demo-app/src/CheckoutService.js
@@ -886,14 +1548,37 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 - examples/demo-app/src/index.js -> examples/demo-app/src/NotificationService.js
 - examples/demo-app/src/index.js -> examples/demo-app/src/InventoryService.js
 - examples/demo-app/src/index.js -> examples/demo-app/src/PaymentProcessor.js
+- design-system/src/components/GatePanel/GatePanel.tsx -> design-system/src/components/StatusPill/StatusPill.tsx
+- design-system/src/components/GatePanel/GatePanel.tsx -> design-system/src/lib/cx.ts
+- design-system/src/components/GatePanel/GatePanel.tsx -> design-system/src/lib/format.ts
+- design-system/src/components/GatePanel/GatePanel.tsx -> design-system/src/components/Icon/Icon.tsx
 - tests/chaos.test.mjs -> scripts/lib/yaml-lite.mjs
 - tests/chaos.test.mjs -> scripts/validate-knowledge-packet.mjs
 - tests/chaos.test.mjs -> scripts/validate-config.mjs
+- design-system/src/components/States/index.ts -> design-system/src/components/States/States.tsx
+- design-system/src/components/MdnRoot/MdnRoot.tsx -> design-system/src/lib/cx.ts
+- design-system/src/components/MetricTile/index.ts -> design-system/src/components/MetricTile/MetricTile.tsx
 - scripts/validate-config.mjs -> scripts/lib/yaml-lite.mjs
 - scripts/validate-config.mjs -> scripts/lib/jsonschema.mjs
 - scripts/build-release-evidence.mjs -> scripts/lib/yaml-lite.mjs
 - scripts/build-release-evidence.mjs -> scripts/lib/learnings.mjs
+- design-system/src/components/LeaseTable/LeaseTable.tsx -> design-system/src/components/StatusPill/StatusPill.tsx
+- design-system/src/components/LeaseTable/LeaseTable.tsx -> design-system/src/lib/format.ts
+- design-system/src/components/LeaseTable/LeaseTable.tsx -> design-system/src/components/Button/Button.tsx
+- design-system/src/components/LeaseTable/LeaseTable.tsx -> design-system/src/components/Table/Table.tsx
+- design-system/src/components/LeaseTable/LeaseTable.tsx -> design-system/src/components/IdentityChip/IdentityChip.tsx
+- apps/control-panel/src/state/adapter.ts -> apps/control-panel/src/state/types.ts
+- apps/control-panel/src/state/adapter.ts -> apps/control-panel/src/state/arming.ts
+- apps/control-panel/src/state/adapter.ts -> apps/control-panel/src/state/fixtures/host.ts
+- apps/control-panel/src/state/adapter.ts -> apps/control-panel/src/state/fixtures/product.ts
+- apps/control-panel/src/state/adapter.ts -> apps/control-panel/src/state/liveClient.ts
+- apps/control-panel/src/screens/WorkQueueScreen.tsx -> apps/control-panel/src/state/types.ts
+- apps/control-panel/src/screens/WorkQueueScreen.tsx -> apps/control-panel/src/lib/confirm.tsx
 - scripts/migrate-config.mjs -> scripts/lib/yaml-lite.mjs
+- design-system/src/components/ProgressMeter/ProgressMeter.tsx -> design-system/src/lib/cx.ts
+- design-system/src/components/MetricTile/MetricTile.tsx -> design-system/src/lib/cx.ts
+- design-system/src/components/MetricTile/MetricTile.tsx -> design-system/src/components/HelpHint/HelpHint.tsx
+- design-system/src/components/MetricTile/MetricTile.tsx -> design-system/src/components/Icon/Icon.tsx
 - tests/snapshot-cli.test.mjs -> scripts/lib/jsonschema.mjs
 - scripts/snapshot.mjs -> scripts/lib/snapshot-cache.mjs
 - scripts/snapshot.mjs -> scripts/lib/yaml-lite.mjs
@@ -903,23 +1588,112 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 - scripts/snapshot.mjs -> scripts/lib/snapshot-walk.mjs
 - scripts/snapshot.mjs -> scripts/lib/lang-adapters/tree-sitter.mjs
 - scripts/snapshot.mjs -> scripts/lib/snapshot-core.mjs
+- design-system/src/components/Table/Table.tsx -> design-system/src/lib/cx.ts
+- design-system/src/components/ModeSwitcher/index.ts -> design-system/src/components/ModeSwitcher/ModeSwitcher.tsx
+- apps/control-panel/vite.config.ts -> apps/control-panel/server/api.mjs
+- design-system/src/components/ConceptTile/index.ts -> design-system/src/components/ConceptTile/ConceptTile.tsx
+- design-system/src/components/IconButton/IconButton.tsx -> design-system/src/lib/cx.ts
+- design-system/src/components/IconButton/IconButton.tsx -> design-system/src/components/Icon/Icon.tsx
+- design-system/src/components/Toast/Toast.tsx -> design-system/src/lib/cx.ts
+- design-system/src/components/Toast/Toast.tsx -> design-system/src/components/Icon/Icon.tsx
 - scripts/promote-learning.mjs -> scripts/lib/learnings.mjs
 - scripts/check-evidence-secrets.mjs -> scripts/lib/secret-patterns.mjs
+- design-system/src/index.ts -> design-system/src/components/DecisionCard/index.ts
+- design-system/src/index.ts -> design-system/src/components/Input/index.ts
+- design-system/src/index.ts -> design-system/src/components/Toast/index.ts
+- design-system/src/index.ts -> design-system/src/components/Carousel/index.ts
+- design-system/src/index.ts -> design-system/src/components/MdnRoot/index.ts
+- design-system/src/index.ts -> design-system/src/components/LeaseTable/index.ts
+- design-system/src/index.ts -> design-system/src/components/Select/index.ts
+- design-system/src/index.ts -> design-system/src/components/WorkItemDrawer/index.ts
+- design-system/src/index.ts -> design-system/src/components/QueueBoard/index.ts
+- design-system/src/index.ts -> design-system/src/components/HoverCard/index.ts
+- design-system/src/index.ts -> design-system/src/components/Card/index.ts
+- design-system/src/index.ts -> design-system/src/components/TierBadge/index.ts
+- design-system/src/index.ts -> design-system/src/components/RoleBadge/index.ts
+- design-system/src/index.ts -> design-system/src/components/Modal/index.ts
+- design-system/src/index.ts -> design-system/src/components/LearningCard/index.ts
+- design-system/src/index.ts -> design-system/src/components/ActivationLadder/index.ts
+- design-system/src/index.ts -> design-system/src/components/StatusPill/index.ts
+- design-system/src/index.ts -> design-system/src/components/ArmingStateBadge/index.ts
+- design-system/src/index.ts -> design-system/src/lib/cx.ts
+- design-system/src/index.ts -> design-system/src/components/ConfirmDialog/index.ts
+- design-system/src/index.ts -> design-system/src/components/Table/index.ts
+- design-system/src/index.ts -> design-system/src/components/Icon/index.ts
+- design-system/src/index.ts -> design-system/src/lib/format.ts
+- design-system/src/index.ts -> design-system/src/components/Tabs/index.ts
+- design-system/src/index.ts -> design-system/src/components/States/index.ts
+- design-system/src/index.ts -> design-system/src/components/MetricTile/index.ts
+- design-system/src/index.ts -> design-system/src/components/ModeSwitcher/index.ts
+- design-system/src/index.ts -> design-system/src/components/ConceptTile/index.ts
+- design-system/src/index.ts -> design-system/src/components/ProgressMeter/index.ts
+- design-system/src/index.ts -> design-system/src/components/WorkItemCard/index.ts
+- design-system/src/index.ts -> design-system/src/components/Checkbox/index.ts
+- design-system/src/index.ts -> design-system/src/components/IdentityChip/index.ts
+- design-system/src/index.ts -> design-system/src/components/Button/index.ts
+- design-system/src/index.ts -> design-system/src/components/AppShell/index.ts
+- design-system/src/index.ts -> design-system/src/components/SafetyStrip/index.ts
+- design-system/src/index.ts -> design-system/src/components/Sparkline/index.ts
+- design-system/src/index.ts -> design-system/src/tokens/tokens.ts
+- design-system/src/index.ts -> design-system/src/components/Drawer/index.ts
+- design-system/src/index.ts -> design-system/src/components/GatePanel/index.ts
+- design-system/src/index.ts -> design-system/src/components/HelpHint/index.ts
+- design-system/src/index.ts -> design-system/src/components/AuditTimeline/index.ts
+- design-system/src/index.ts -> design-system/src/components/NumberField/index.ts
+- design-system/src/index.ts -> design-system/src/components/Tooltip/index.ts
+- design-system/src/index.ts -> design-system/src/components/Toggle/index.ts
+- design-system/src/index.ts -> design-system/src/components/CostPanel/index.ts
+- design-system/src/index.ts -> design-system/src/components/Slider/index.ts
+- design-system/src/index.ts -> design-system/src/components/ProtectedPathRow/index.ts
+- design-system/src/index.ts -> design-system/src/components/IconButton/index.ts
 - tests/snapshot-security.test.mjs -> scripts/lib/snapshot-cache.mjs
 - tests/snapshot-security.test.mjs -> scripts/lib/snapshot-walk.mjs
 - tests/snapshot-security.test.mjs -> scripts/lib/snapshot-core.mjs
 - tests/performance.test.mjs -> scripts/validate-knowledge-packet.mjs
 - tests/performance.test.mjs -> scripts/validate-config.mjs
 - tests/performance.test.mjs -> scripts/validate-work-item.mjs
+- design-system/src/components/ProgressMeter/index.ts -> design-system/src/components/ProgressMeter/ProgressMeter.tsx
+- design-system/src/components/ModeSwitcher/ModeSwitcher.tsx -> design-system/src/lib/cx.ts
+- design-system/src/components/ModeSwitcher/ModeSwitcher.tsx -> design-system/src/components/Icon/Icon.tsx
+- design-system/src/components/WorkItemCard/index.ts -> design-system/src/components/WorkItemCard/WorkItemCard.tsx
+- design-system/src/components/WorkItemCard/WorkItemCard.tsx -> design-system/src/components/StatusPill/StatusPill.tsx
+- design-system/src/components/WorkItemCard/WorkItemCard.tsx -> design-system/src/lib/cx.ts
+- design-system/src/components/WorkItemCard/WorkItemCard.tsx -> design-system/src/tokens/tokens.ts
+- design-system/src/components/WorkItemCard/WorkItemCard.tsx -> design-system/src/components/TierBadge/TierBadge.tsx
+- design-system/src/components/WorkItemCard/WorkItemCard.tsx -> design-system/src/components/Icon/Icon.tsx
+- design-system/src/components/Checkbox/index.ts -> design-system/src/components/Checkbox/Checkbox.tsx
 - tests/provenance.test.mjs -> scripts/validate-knowledge-packet.mjs
+- design-system/src/components/IdentityChip/index.ts -> design-system/src/components/IdentityChip/IdentityChip.tsx
 - tests/ws-e-negative-controls.test.mjs -> scripts/lib/learnings.mjs
 - tests/ws-e-negative-controls.test.mjs -> scripts/validate-work-item.mjs
 - tests/sweep-to-work-item.test.mjs -> scripts/dry-run-sweep.mjs
 - tests/sweep-to-work-item.test.mjs -> scripts/validate-work-item.mjs
+- design-system/src/components/Button/index.ts -> design-system/src/components/Button/Button.tsx
+- design-system/src/components/AppShell/index.ts -> design-system/src/components/AppShell/AppShell.tsx
+- design-system/src/components/SafetyStrip/index.ts -> design-system/src/components/SafetyStrip/SafetyStrip.tsx
 - scripts/check-promotion-readiness.mjs -> scripts/lib/yaml-lite.mjs
+- design-system/src/components/Sparkline/index.ts -> design-system/src/components/Sparkline/Sparkline.tsx
 - scripts/audit-learnings.mjs -> scripts/lib/learnings.mjs
+- design-system/src/components/CostPanel/CostPanel.tsx -> design-system/src/components/StatusPill/StatusPill.tsx
+- design-system/src/components/CostPanel/CostPanel.tsx -> design-system/src/lib/format.ts
+- design-system/src/components/CostPanel/CostPanel.tsx -> design-system/src/components/ProgressMeter/ProgressMeter.tsx
+- design-system/src/components/CostPanel/CostPanel.tsx -> design-system/src/components/Table/Table.tsx
+- design-system/src/components/Drawer/index.ts -> design-system/src/components/Drawer/Drawer.tsx
+- design-system/src/components/GatePanel/index.ts -> design-system/src/components/GatePanel/GatePanel.tsx
+- design-system/src/components/HelpHint/index.ts -> design-system/src/components/HelpHint/HelpHint.tsx
 - examples/demo-app/tests/NotificationService.test.js -> examples/demo-app/src/NotificationService.js
+- design-system/src/components/Carousel/Carousel.tsx -> design-system/src/lib/cx.ts
+- design-system/src/components/Carousel/Carousel.tsx -> design-system/src/components/IconButton/IconButton.tsx
+- design-system/src/components/HelpHint/HelpHint.tsx -> design-system/src/components/Tooltip/Tooltip.tsx
+- design-system/src/components/HelpHint/HelpHint.tsx -> design-system/src/components/Icon/Icon.tsx
 - tests/render-prompt-unit.test.mjs -> scripts/agent/render-prompt.mjs
+- design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx -> design-system/src/components/StatusPill/StatusPill.tsx
+- design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx -> design-system/src/lib/cx.ts
+- design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx -> design-system/src/components/Button/Button.tsx
+- design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx -> design-system/src/components/Icon/Icon.tsx
+- design-system/src/components/TierBadge/TierBadge.tsx -> design-system/src/lib/cx.ts
+- design-system/src/components/NumberField/NumberField.tsx -> design-system/src/lib/cx.ts
+- design-system/src/components/NumberField/NumberField.tsx -> design-system/src/components/HelpHint/HelpHint.tsx
 - scripts/lib/snapshot-core.mjs -> scripts/lib/snapshot-graph.mjs
 - scripts/lib/snapshot-core.mjs -> scripts/lib/yaml-lite.mjs
 - scripts/lib/snapshot-core.mjs -> scripts/lib/snapshot-anchors.mjs
@@ -942,10 +1716,16 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 - scripts/agent/run-cycle.mjs -> scripts/validate-config.mjs
 - scripts/agent/run-cycle.mjs -> scripts/agent/tool-loop-adapter.mjs
 - scripts/agent/run-cycle.mjs -> scripts/agent/render-prompt.mjs
+- design-system/src/components/AuditTimeline/index.ts -> design-system/src/components/AuditTimeline/AuditTimeline.tsx
 - tests/role-registry.test.mjs -> scripts/agent/resolve-role.mjs
 - tests/role-registry.test.mjs -> scripts/validate-config.mjs
 - tests/role-registry.test.mjs -> scripts/agent/run-cycle.mjs
+- apps/control-panel/src/screens/ArmingScreen.tsx -> apps/control-panel/src/state/types.ts
+- apps/control-panel/src/screens/ArmingScreen.tsx -> apps/control-panel/src/state/configDiff.ts
+- apps/control-panel/src/screens/ArmingScreen.tsx -> apps/control-panel/src/lib/confirm.tsx
 - tests/promote-learning.test.mjs -> scripts/lib/learnings.mjs
+- design-system/src/components/NumberField/index.ts -> design-system/src/components/NumberField/NumberField.tsx
+- apps/control-panel/src/state/liveClient.ts -> apps/control-panel/src/state/types.ts
 - tests/tool-loop-adapter.test.mjs -> scripts/agent/run-cycle.mjs
 - scripts/run-gate-pipeline.mjs -> scripts/lib/run-gate-capped.mjs
 - scripts/run-gate-pipeline.mjs -> scripts/lib/graph.mjs
@@ -954,61 +1734,70 @@ Files: 523  Bytes: 1662349  Map tokens: 50390/120000
 - tests/providers.test.mjs -> scripts/validate-config.mjs
 - tests/providers.test.mjs -> scripts/agent/run-cycle.mjs
 - tests/commit-identity.test.mjs -> scripts/lib/commit-identity.mjs
+- design-system/src/components/Tooltip/index.ts -> design-system/src/components/Tooltip/Tooltip.tsx
 - scripts/validate-work-item.mjs -> scripts/lib/jsonschema.mjs
+- design-system/src/components/Toggle/index.ts -> design-system/src/components/Toggle/Toggle.tsx
+- design-system/src/components/CostPanel/index.ts -> design-system/src/components/CostPanel/CostPanel.tsx
+- design-system/src/components/Slider/index.ts -> design-system/src/components/Slider/Slider.tsx
 - examples/demo-app/tests/InventoryService.test.js -> examples/demo-app/src/InventoryService.js
+- design-system/src/components/QueueBoard/QueueBoard.tsx -> design-system/src/components/WorkItemCard/WorkItemCard.tsx
+- design-system/src/components/QueueBoard/QueueBoard.tsx -> design-system/src/tokens/tokens.ts
 - bin/modonome.mjs -> scripts/validate-config.mjs
+- design-system/src/components/IdentityChip/IdentityChip.tsx -> design-system/src/lib/cx.ts
+- design-system/src/components/ProtectedPathRow/index.ts -> design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx
 - scripts/check-gate-dag.mjs -> scripts/lib/graph.mjs
+- design-system/src/components/IconButton/index.ts -> design-system/src/components/IconButton/IconButton.tsx
 
 ## Attention (centrality + pagerank)
 
-1. scripts/lib/jsonschema.mjs centrality=8 pagerank=0.018096
-2. scripts/lib/yaml-lite.mjs centrality=12 pagerank=0.013272
-3. scripts/agent/run-cycle.mjs centrality=17 pagerank=0.006266
-4. scripts/lib/learnings.mjs centrality=9 pagerank=0.012059
-5. scripts/validate-config.mjs centrality=11 pagerank=0.007836
-6. scripts/lib/canonical-json.mjs centrality=8 pagerank=0.008677
-7. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.002786
-8. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.006012
-9. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.008669
-10. scripts/validate-work-item.mjs centrality=6 pagerank=0.005676
-11. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.002787
-12. scripts/agent/resolve-role.mjs centrality=6 pagerank=0.004863
-13. scripts/lib/graph.mjs centrality=4 pagerank=0.006821
-14. scripts/snapshot.mjs centrality=8 pagerank=0.001665
-15. scripts/agent/providers.mjs centrality=3 pagerank=0.006637
-16. examples/demo-app/src/index.js centrality=6 pagerank=0.001665
-17. scripts/agent/render-prompt.mjs centrality=3 pagerank=0.004037
-18. scripts/verify-packet.mjs centrality=4 pagerank=0.002019
-19. scripts/lib/snapshot-cache.mjs centrality=3 pagerank=0.002786
-20. tests/config.test.mjs centrality=4 pagerank=0.001665
-21. tests/packet-signing.test.mjs centrality=4 pagerank=0.001665
-22. tests/providers.test.mjs centrality=4 pagerank=0.001665
-23. scripts/migrate-config.mjs centrality=3 pagerank=0.002727
-24. scripts/lib/branch-name.mjs centrality=2 pagerank=0.003789
-25. scripts/lib/commit-identity.mjs centrality=2 pagerank=0.003789
-26. scripts/lib/run-gate-capped.mjs centrality=2 pagerank=0.003789
-27. scripts/lib/snapshot-walk.mjs centrality=3 pagerank=0.002551
-28. tests/helpers/mock-openai-server.mjs centrality=2 pagerank=0.003553
-29. scripts/dry-run-sweep.mjs centrality=3 pagerank=0.002373
-30. examples/demo-app/src/CartService.js centrality=2 pagerank=0.003317
-31. examples/demo-app/src/CheckoutService.js centrality=2 pagerank=0.003317
-32. examples/demo-app/src/InventoryService.js centrality=2 pagerank=0.003317
-33. examples/demo-app/src/NotificationService.js centrality=2 pagerank=0.003317
-34. examples/demo-app/src/OrderService.js centrality=2 pagerank=0.003317
-35. examples/demo-app/src/PaymentProcessor.js centrality=2 pagerank=0.003317
-36. scripts/lib/merkle.mjs centrality=3 pagerank=0.002079
-37. bin/modonome.mjs centrality=2 pagerank=0.003081
-38. scripts/lib/repo-detect.mjs centrality=2 pagerank=0.002911
-39. tests/chaos.test.mjs centrality=3 pagerank=0.001665
-40. tests/performance.test.mjs centrality=3 pagerank=0.001665
-41. tests/role-registry.test.mjs centrality=3 pagerank=0.001665
-42. tests/run-cycle-openai.test.mjs centrality=3 pagerank=0.001665
-43. tests/snapshot-incremental.test.mjs centrality=3 pagerank=0.001665
-44. tests/snapshot-security.test.mjs centrality=3 pagerank=0.001665
-45. tests/ws-b-harness.test.mjs centrality=3 pagerank=0.001665
-46. tests/ws-h-config.test.mjs centrality=3 pagerank=0.001665
-47. scripts/agent/apply-patch.mjs centrality=2 pagerank=0.002621
-48. scripts/lib/lang-adapters/tree-sitter.mjs centrality=2 pagerank=0.00255
-49. scripts/agent/action-queue.mjs centrality=2 pagerank=0.00215
-50. scripts/lib/packet-id.mjs centrality=2 pagerank=0.002019
+1. design-system/src/lib/cx.ts centrality=32 pagerank=0.038482
+2. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.024947
+3. design-system/src/index.ts centrality=48 pagerank=0.001012
+4. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.00849
+5. apps/control-panel/src/state/types.ts centrality=12 pagerank=0.008481
+6. scripts/lib/yaml-lite.mjs centrality=12 pagerank=0.008063
+7. scripts/agent/run-cycle.mjs centrality=17 pagerank=0.003807
+8. scripts/lib/jsonschema.mjs centrality=8 pagerank=0.010994
+9. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.006052
+10. scripts/lib/learnings.mjs centrality=9 pagerank=0.007326
+11. scripts/validate-config.mjs centrality=11 pagerank=0.00476
+12. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001693
+13. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.004881
+14. scripts/lib/canonical-json.mjs centrality=8 pagerank=0.005272
+15. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.005663
+16. apps/control-panel/src/App.tsx centrality=11 pagerank=0.001442
+17. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002956
+18. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.003653
+19. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.005266
+20. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.003537
+21. scripts/validate-work-item.mjs centrality=6 pagerank=0.003448
+22. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001693
+23. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.003223
+24. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.005495
+25. scripts/agent/resolve-role.mjs centrality=6 pagerank=0.002954
+26. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001887
+27. scripts/snapshot.mjs centrality=8 pagerank=0.001012
+28. scripts/lib/graph.mjs centrality=4 pagerank=0.004144
+29. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002956
+30. design-system/src/lib/format.ts centrality=5 pagerank=0.002954
+31. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001887
+32. scripts/agent/providers.mjs centrality=3 pagerank=0.004032
+33. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.001134
+34. design-system/src/components/Modal/Modal.tsx centrality=4 pagerank=0.002689
+35. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001887
+36. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001887
+37. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.001887
+38. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.001887
+39. design-system/src/components/TierBadge/TierBadge.tsx centrality=4 pagerank=0.002657
+40. examples/demo-app/src/index.js centrality=6 pagerank=0.001012
+41. design-system/src/components/Table/Table.tsx centrality=4 pagerank=0.002609
+42. apps/control-panel/server/learningsFormat.mjs centrality=2 pagerank=0.004084
+43. design-system/src/components/IdentityChip/IdentityChip.tsx centrality=4 pagerank=0.002475
+44. scripts/lib/control-panel-audit.mjs centrality=3 pagerank=0.00314
+45. design-system/src/components/ArmingStateBadge/ArmingStateBadge.tsx centrality=4 pagerank=0.001887
+46. design-system/src/components/Checkbox/Checkbox.tsx centrality=4 pagerank=0.001887
+47. design-system/src/components/DecisionCard/DecisionCard.tsx centrality=4 pagerank=0.001887
+48. design-system/src/components/Input/Input.tsx centrality=4 pagerank=0.001887
+49. design-system/src/components/LearningCard/LearningCard.tsx centrality=4 pagerank=0.001887
+50. design-system/src/components/MetricTile/MetricTile.tsx centrality=4 pagerank=0.001887
 

@@ -1,0 +1,10 @@
+/*
+ * Stylesheet entry for the Modonome design system. This is the file the design-sync
+ * converter treats as the CSS closure: everything a rendered design needs must be
+ * reachable from here. Order matters. Tokens first (custom properties), then the base
+ * layer (the mdn-root wrapper), then every component sheet.
+ */
+@import "../fonts/fonts.css";
+@import "./tokens/tokens.css";
+@import "./base.css";
+@import "./components.gen.css";

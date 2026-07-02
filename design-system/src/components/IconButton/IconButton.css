@@ -1,0 +1,53 @@
+.mdn-iconbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  border: 1px solid transparent;
+  border-radius: var(--mdn-radius-sm);
+  cursor: pointer;
+  color: var(--mdn-text-2);
+  background: transparent;
+  transition: transform var(--mdn-dur) var(--mdn-ease), box-shadow var(--mdn-dur) var(--mdn-ease),
+    background var(--mdn-dur) var(--mdn-ease), border-color var(--mdn-dur) var(--mdn-ease),
+    color var(--mdn-dur) var(--mdn-ease);
+}
+
+.mdn-iconbtn--sm {
+  width: 28px;
+  height: 28px;
+}
+.mdn-iconbtn--md {
+  width: 34px;
+  height: 34px;
+}
+
+.mdn-iconbtn--ghost:hover:not(:disabled) {
+  background: var(--mdn-surface-2);
+  color: var(--mdn-heading);
+}
+
+.mdn-iconbtn--secondary {
+  background: var(--mdn-surface-2);
+  border-color: var(--mdn-border-strong);
+  color: var(--mdn-text);
+}
+.mdn-iconbtn--secondary:hover:not(:disabled) {
+  border-color: var(--mdn-border-teal);
+  background: var(--mdn-surface-3);
+  color: var(--mdn-heading);
+}
+
+.mdn-iconbtn--danger {
+  background: transparent;
+  color: var(--mdn-danger);
+}
+.mdn-iconbtn--danger:hover:not(:disabled) {
+  background: var(--mdn-danger-soft);
+  border-color: rgba(242, 104, 95, 0.4);
+}
+
+.mdn-iconbtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

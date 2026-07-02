@@ -1,0 +1,105 @@
+.mdn-metrictile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mdn-space-2);
+  padding: var(--mdn-space-5);
+  border: 1px solid var(--mdn-border);
+  border-radius: var(--mdn-radius-lg);
+  background: var(--mdn-surface-1);
+  transition: border-color var(--mdn-dur) var(--mdn-ease), transform var(--mdn-dur) var(--mdn-ease);
+}
+
+.mdn-metrictile:hover {
+  border-color: var(--mdn-border-strong);
+  transform: translateY(-1px);
+}
+
+.mdn-metrictile__head {
+  display: flex;
+  align-items: center;
+  gap: var(--mdn-space-1);
+}
+
+.mdn-metrictile__label {
+  flex: 1 1 auto;
+}
+
+.mdn-metrictile__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--mdn-radius-xs);
+  background: var(--mdn-surface-2);
+  color: var(--mdn-muted);
+  flex: none;
+}
+
+.mdn-metrictile__body {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--mdn-space-3);
+}
+
+.mdn-metrictile__value {
+  font-family: var(--mdn-font-heading);
+  font-size: var(--mdn-text-2xl);
+  font-weight: 600;
+  color: var(--mdn-heading);
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+.mdn-metrictile__unit {
+  margin-left: 4px;
+  font-family: var(--mdn-font-mono);
+  font-size: var(--mdn-text-sm);
+  font-weight: 500;
+  color: var(--mdn-text-3);
+}
+
+.mdn-metrictile__trend {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.mdn-metrictile__sub {
+  font-family: var(--mdn-font-mono);
+  font-size: var(--mdn-text-xs);
+  color: var(--mdn-muted);
+}
+
+.mdn-metrictile--ok .mdn-metrictile__icon {
+  color: var(--mdn-primary);
+  background: var(--mdn-primary-soft);
+}
+.mdn-metrictile--ok .mdn-metrictile__value {
+  color: var(--mdn-primary);
+}
+
+.mdn-metrictile--info .mdn-metrictile__icon {
+  color: var(--mdn-info);
+  background: var(--mdn-info-soft);
+}
+.mdn-metrictile--info .mdn-metrictile__value {
+  color: var(--mdn-info);
+}
+
+.mdn-metrictile--attention .mdn-metrictile__icon {
+  color: var(--mdn-owner);
+  background: var(--mdn-owner-soft);
+}
+.mdn-metrictile--attention .mdn-metrictile__value {
+  color: var(--mdn-owner);
+}
+
+.mdn-metrictile--blocked .mdn-metrictile__icon {
+  color: var(--mdn-danger);
+  background: var(--mdn-danger-soft);
+}
+.mdn-metrictile--blocked .mdn-metrictile__value {
+  color: var(--mdn-danger);
+}

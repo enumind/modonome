@@ -1,0 +1,118 @@
+.mdn-number-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mdn-space-2);
+}
+
+.mdn-number-field--disabled {
+  opacity: 0.55;
+}
+
+.mdn-number-field__label-row {
+  display: flex;
+  align-items: center;
+  gap: var(--mdn-space-2);
+}
+
+.mdn-number-field__label {
+  margin: 0;
+}
+
+.mdn-number-field__error {
+  margin: 0;
+  font-family: var(--mdn-font-mono);
+  font-size: var(--mdn-text-xs);
+  color: var(--mdn-danger);
+}
+
+.mdn-number {
+  display: flex;
+  align-items: stretch;
+  background: var(--mdn-surface-1);
+  border: 1px solid var(--mdn-border);
+  border-radius: var(--mdn-radius-sm);
+  overflow: hidden;
+  transition: border-color var(--mdn-dur) var(--mdn-ease);
+}
+
+.mdn-number:hover {
+  border-color: var(--mdn-border-strong);
+}
+
+.mdn-number:focus-within {
+  border-color: var(--mdn-border-teal);
+}
+
+.mdn-number--error {
+  border-color: rgba(242, 104, 95, 0.5);
+}
+
+.mdn-number__step {
+  flex: none;
+  width: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 0;
+  color: var(--mdn-text-2);
+  font-family: var(--mdn-font-mono);
+  font-size: var(--mdn-text-lg);
+  line-height: 1;
+  cursor: pointer;
+  transition: background var(--mdn-dur) var(--mdn-ease), color var(--mdn-dur) var(--mdn-ease);
+}
+
+.mdn-number__step:first-child {
+  border-right: 1px solid var(--mdn-border);
+}
+
+.mdn-number__step:last-child {
+  border-left: 1px solid var(--mdn-border);
+}
+
+.mdn-number__step:hover:not(:disabled) {
+  background: var(--mdn-surface-3);
+  color: var(--mdn-heading);
+}
+
+.mdn-number__step:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.mdn-number__control {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  outline: none;
+  text-align: center;
+  color: var(--mdn-text);
+  font-family: var(--mdn-font-mono);
+  font-size: var(--mdn-text-md);
+  padding: 9px var(--mdn-space-2);
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.mdn-number__control::-webkit-outer-spin-button,
+.mdn-number__control::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.mdn-number__control:disabled {
+  cursor: not-allowed;
+}
+
+.mdn-number__unit {
+  flex: none;
+  display: flex;
+  align-items: center;
+  padding-right: var(--mdn-space-2);
+  color: var(--mdn-text-3);
+  font-size: var(--mdn-text-xs);
+  white-space: nowrap;
+}

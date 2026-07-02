@@ -1,0 +1,18 @@
+{
+  "pkg": "@modonome/design-system",
+  "globalName": "ModonomeDS",
+  "shape": "package",
+  "buildCmd": "npm --prefix design-system run build",
+  "cssEntry": "dist/styles.css",
+  "extraFonts": ["fonts/fonts.css"],
+  "provider": { "component": "MdnRoot" },
+  "componentSrcMap": { "MdnRoot": null },
+  "overrides": {
+    "Drawer": { "cardMode": "single", "viewport": "560x420" },
+    "Modal": { "cardMode": "single", "viewport": "560x420" },
+    "ConfirmDialog": { "cardMode": "single", "viewport": "560x420" },
+    "WorkItemDrawer": { "cardMode": "single", "viewport": "560x460" },
+    "AppShell": { "cardMode": "single", "viewport": "900x520" }
+  },
+  "readmeHeader": ".design-sync/conventions.md"
+}

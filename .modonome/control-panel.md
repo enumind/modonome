@@ -1,29 +1,24 @@
 # Modonome control panel
 
-This page renders durable state. It is not a second source of truth.
+This page renders durable state. It is not a second source of truth, and the sections below
+are not hand-maintained: use the real control panel at `apps/control-panel/` for current
+values, since a markdown snapshot here would drift out of sync with the live queue, gates,
+and audit trail the moment anything changes.
 
-## Header
-- Repo:
-- Branch:
-- Mode: disabled
-- Last sweep:
-- Required owner action: none
+Run it: `npm install --prefix design-system && cd apps/control-panel && npm install && npm
+run dev`, then open `http://localhost:5180` in product mode. See
+[`apps/control-panel/README.md`](../apps/control-panel/README.md) for prerequisites, live
+versus demo data, and write mode.
 
-## Safety strip
-- autonomy_enabled: false
-- dry_run: true
-- auto_merge: false
-- merge cap: 0
-- remote budget: 0
-- branch protection: unknown
-- code owners: unknown
-- trusted author: none
+## What it shows
 
-## Queue board
-queued: 0 | claimed: 0 | making: 0 | checking: 0 | escalated: 0 | merge-ready: 0 | done: 0
+- Header: repo, branch, mode, last sweep, required owner action.
+- Safety strip: autonomy, dry-run, auto-merge, merge cap, budget, branch protection, code
+  owners, trusted authors.
+- Queue board and lease table: every work item by state, and active claims.
+- Gate panel and protected-path panel.
+- Cost panel: local versus remote calls, budget consumed.
+- Learning queue and decision queue, with promote, prune, and resolve actions.
+- Audit timeline.
 
-## Gates
-
-## Decisions and learnings
-
-## Audit timeline
+Full information architecture: [`prompts/modules/control-panel.md`](../prompts/modules/control-panel.md).

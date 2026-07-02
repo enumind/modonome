@@ -1,0 +1,39 @@
+{
+  "name": "@modonome/design-system",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Modonome control-panel design system. Brand tokens, primitives, and governance-domain React components that render the durable state of the governed-autonomy engine.",
+  "type": "module",
+  "module": "./dist/index.es.js",
+  "main": "./dist/index.es.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.es.js"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "files": [
+    "dist",
+    "fonts"
+  ],
+  "sideEffects": [
+    "*.css"
+  ],
+  "scripts": {
+    "build": "node build.mjs",
+    "build:types": "tsc --emitDeclarationOnly",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.6.3"
+  }
+}

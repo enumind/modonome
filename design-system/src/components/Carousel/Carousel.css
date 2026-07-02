@@ -1,0 +1,34 @@
+.mdn-carousel {
+  display: flex;
+  align-items: center;
+  gap: var(--mdn-space-3);
+  width: 100%;
+}
+
+.mdn-carousel__nav {
+  flex: none;
+}
+
+.mdn-carousel__track {
+  display: flex;
+  gap: var(--mdn-space-4);
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: var(--mdn-space-2);
+  padding: var(--mdn-space-2) 0 var(--mdn-space-3);
+  flex: 1 1 auto;
+  min-width: 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--mdn-border-strong) transparent;
+}
+
+.mdn-carousel__slot {
+  flex: none;
+  scroll-snap-align: start;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mdn-carousel__track {
+    scroll-behavior: auto;
+  }
+}

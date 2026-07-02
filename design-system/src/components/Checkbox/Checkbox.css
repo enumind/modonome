@@ -1,0 +1,69 @@
+.mdn-checkbox-field {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mdn-space-3);
+}
+
+.mdn-checkbox-field--disabled {
+  opacity: 0.55;
+}
+
+.mdn-checkbox-field__label-row {
+  display: flex;
+  align-items: center;
+  gap: var(--mdn-space-2);
+}
+
+.mdn-checkbox-field__label {
+  font-family: var(--mdn-font-body);
+  font-size: var(--mdn-text-md);
+  color: var(--mdn-text);
+  cursor: pointer;
+}
+
+.mdn-checkbox {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+}
+
+.mdn-checkbox__input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.mdn-checkbox__input:disabled {
+  cursor: not-allowed;
+}
+
+.mdn-checkbox__box {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--mdn-surface-1);
+  border: 1px solid var(--mdn-border);
+  border-radius: var(--mdn-radius-xs);
+  color: var(--mdn-primary-ink);
+  transition: background var(--mdn-dur) var(--mdn-ease), border-color var(--mdn-dur) var(--mdn-ease);
+}
+
+.mdn-checkbox__input:hover ~ .mdn-checkbox__box {
+  border-color: var(--mdn-border-strong);
+}
+
+.mdn-checkbox__input:checked ~ .mdn-checkbox__box {
+  background: var(--mdn-primary);
+  border-color: var(--mdn-primary);
+}
+
+.mdn-checkbox__input:focus-visible ~ .mdn-checkbox__box {
+  outline: 2px solid var(--mdn-border-focus);
+  outline-offset: 2px;
+}

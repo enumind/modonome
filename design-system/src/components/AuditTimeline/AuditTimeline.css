@@ -1,0 +1,107 @@
+.mdn-audittimeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.mdn-audittimeline__row {
+  position: relative;
+  display: flex;
+  gap: var(--mdn-space-3);
+  padding-bottom: var(--mdn-space-5);
+}
+
+.mdn-audittimeline__row::before {
+  content: "";
+  position: absolute;
+  left: 11px;
+  top: 24px;
+  bottom: 0;
+  width: 1px;
+  background: var(--mdn-border);
+}
+
+.mdn-audittimeline__row:last-child::before {
+  display: none;
+}
+
+.mdn-audittimeline__row:last-child {
+  padding-bottom: 0;
+}
+
+.mdn-audittimeline__node {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  z-index: 1;
+  background: var(--mdn-surface-2);
+}
+
+.mdn-audittimeline__node--ok {
+  color: var(--mdn-primary);
+  background: var(--mdn-primary-soft);
+  border-color: var(--mdn-border-teal);
+}
+.mdn-audittimeline__node--info {
+  color: var(--mdn-info);
+  background: var(--mdn-info-soft);
+  border-color: rgba(124, 196, 255, 0.3);
+}
+.mdn-audittimeline__node--attention {
+  color: var(--mdn-owner);
+  background: var(--mdn-owner-soft);
+  border-color: rgba(245, 177, 74, 0.32);
+}
+.mdn-audittimeline__node--blocked {
+  color: var(--mdn-danger);
+  background: var(--mdn-danger-soft);
+  border-color: rgba(242, 104, 95, 0.32);
+}
+.mdn-audittimeline__node--neutral {
+  color: var(--mdn-muted);
+  background: var(--mdn-surface-2);
+  border-color: var(--mdn-border);
+}
+
+.mdn-audittimeline__content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 2px;
+  min-width: 0;
+}
+
+.mdn-audittimeline__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--mdn-space-2);
+}
+
+.mdn-audittimeline__time {
+  font-size: var(--mdn-text-xs);
+  color: var(--mdn-muted);
+}
+
+.mdn-audittimeline__item {
+  font-size: var(--mdn-text-xs);
+  color: var(--mdn-text-3);
+}
+
+.mdn-audittimeline__detail {
+  margin: 0;
+  color: var(--mdn-text);
+  font-size: var(--mdn-text-md);
+  line-height: 1.5;
+}
+
+.mdn-audittimeline__empty {
+  color: var(--mdn-muted);
+  font-size: var(--mdn-text-sm);
+}

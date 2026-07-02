@@ -513,6 +513,35 @@ only signal), responsive from 375px up with no horizontal scroll, stable layout 
 explicit loading and empty and error and permission-denied states, subtle motion that respects
 reduced-motion, and confirmation on every destructive control.
 
+A reference implementation of this spec lives at `apps/control-panel/`, built against a
+`@modonome/design-system` component library at `design-system/`. Read
+`apps/control-panel/README.md` before building another one from scratch.
+
+Placing a new lever or concept: every field added to `schemas/config.schema.json` needs
+either a real control or a documented reason it stays unexposed
+(`apps/control-panel/exposure.json`); `npm run check:control-panel` fails the build otherwise.
+That gate cannot judge *where* something belongs, so decide by intent, not by which screen
+happens to be open:
+
+- View, configure, or trigger: a status is VIEW-only, a value the operator sets is CONFIGURE,
+  an action the operator invokes once is TRIGGER. Group same-kind controls together.
+- Daily or expert: something every operator checks routinely belongs on a primary screen
+  (Overview, Arming, Work Queue, Gates, Learnings); something touched rarely belongs in
+  Settings, in its own tab by subsystem, not appended to the nearest existing one.
+- Live control or reference only: a concept with no single value to set, or one that is
+  deliberately not editable from the panel (a CODEOWNERS-gated trust root, a security
+  boundary), belongs in the Overview "Key concepts" carousel as reference material, sourced
+  from a real file, not as a disabled or fake control.
+- Coherence budget: `npm run check:control-panel` also caps controls per screen tab and
+  requires a hint on every value-entry control (`scripts/lib/control-panel-audit.mjs` has the
+  current numbers). A tab at the cap is a signal to split by intent, not to raise the cap.
+
+When a checker or owner catches an IA problem neither gate catches (the wrong tab, a confusing
+grouping, a control that reads unclearly), that is a normal correction signal: stage it in
+`LEARNINGS.md` like any other gate failure or review fix. A lesson promoted from repeated
+friction here becomes a new check in `control-panel-audit.mjs`, the same way any other
+promoted learning becomes a new deterministic gate.
+
 <!-- modonome:module network -->
 ## Cross-repo knowledge network
 

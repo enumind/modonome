@@ -1,0 +1,92 @@
+.mdn-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--mdn-space-2);
+  font-family: var(--mdn-font-body);
+  font-weight: 600;
+  border: 1px solid transparent;
+  border-radius: var(--mdn-radius-sm);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform var(--mdn-dur) var(--mdn-ease), box-shadow var(--mdn-dur) var(--mdn-ease),
+    background var(--mdn-dur) var(--mdn-ease), border-color var(--mdn-dur) var(--mdn-ease),
+    color var(--mdn-dur) var(--mdn-ease);
+}
+
+.mdn-btn--sm {
+  font-size: var(--mdn-text-sm);
+  padding: 6px 12px;
+}
+.mdn-btn--md {
+  font-size: var(--mdn-text-md);
+  padding: 9px 17px;
+}
+.mdn-btn--lg {
+  font-size: var(--mdn-text-base);
+  padding: 13px 24px;
+  border-radius: var(--mdn-radius-md);
+}
+.mdn-btn--block {
+  width: 100%;
+}
+
+.mdn-btn--primary {
+  background: var(--mdn-primary);
+  color: var(--mdn-primary-ink);
+}
+.mdn-btn--primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--mdn-shadow-glow);
+}
+
+.mdn-btn--secondary {
+  background: var(--mdn-surface-2);
+  border-color: var(--mdn-border-strong);
+  color: var(--mdn-text);
+}
+.mdn-btn--secondary:hover:not(:disabled) {
+  border-color: var(--mdn-border-teal);
+  background: var(--mdn-surface-3);
+  color: var(--mdn-heading);
+}
+
+.mdn-btn--ghost {
+  background: transparent;
+  color: var(--mdn-text-2);
+}
+.mdn-btn--ghost:hover:not(:disabled) {
+  background: var(--mdn-surface-2);
+  color: var(--mdn-heading);
+}
+
+.mdn-btn--danger {
+  background: var(--mdn-danger-soft);
+  border-color: rgba(242, 104, 95, 0.4);
+  color: var(--mdn-danger);
+}
+.mdn-btn--danger:hover:not(:disabled) {
+  background: var(--mdn-danger);
+  color: #2a0b0a;
+  border-color: transparent;
+}
+
+.mdn-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mdn-btn__spinner {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  animation: mdn-spin 0.7s linear infinite;
+}
+
+@keyframes mdn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

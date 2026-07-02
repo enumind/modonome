@@ -6,6 +6,7 @@ import { existsSync, readdirSync, mkdirSync, writeFileSync, unlinkSync } from "n
 import { join } from "node:path";
 import { detectStack, detectProtected, detectInstructions, detectHotFiles } from "./lib/repo-detect.mjs";
 import { deriveSignals, scoreProposals } from "./score-proposals.mjs";
+import { auditCoverage, auditCoherence } from "./lib/control-panel-audit.mjs";
 
 const args = process.argv.slice(2);
 const target = args[0] || ".";
@@ -62,6 +63,26 @@ function proposeWork(stack, hotFiles) {
   return generic.slice(0, 3);
 }
 
+// Only fires when the swept repo actually has a control panel at apps/control-panel
+// (auditCoverage/auditCoherence report `skipped: true` and this returns nothing
+// otherwise), so this stays safe and inert for the vast majority of host repos this
+// same sweep runs against. Reuses the exact detection logic the coverage and coherence
+// CI gates run, so a proposal here and a gate failure always agree.
+function proposeControlPanelWork(targetDir) {
+  const coverage = auditCoverage(targetDir);
+  const coherence = auditCoherence(targetDir);
+  if (coverage.skipped) return { proposals: [], omitted: 0 };
+
+  const candidates = [
+    ...coverage.missing.map(
+      (field) =>
+        `Wire the config lever \`${field}\` into a control-panel screen (apps/control-panel/src/screens/), or document why it stays unexposed in apps/control-panel/exposure.json.`
+    ),
+    ...coherence.violations.map((v) => `Control panel ${v.file}: ${v.detail}`),
+  ];
+  return { proposals: candidates.slice(0, 3), omitted: Math.max(0, candidates.length - 3) };
+}
+
 // Order proposals by descending deterministic priority score (highest-value,
 // lowest-risk first). Signals are derived heuristically from each proposal's
 // text and the hot-file churn count for the file it names, if any.
@@ -102,7 +123,8 @@ const instructions = detectInstructions(target);
 const hotFiles = detectHotFiles(target);
 const adopted = has(".autonomy") ? ".autonomy (adopted)" : ".modonome";
 
-const proposals = proposeWork(stack, hotFiles);
+const controlPanelWork = proposeControlPanelWork(target);
+const proposals = [...proposeWork(stack, hotFiles), ...controlPanelWork.proposals];
 const scored = orderProposalsByScore(proposals, hotFiles);
 
 if (emitWorkItem && scored.length > 0) {
@@ -123,6 +145,9 @@ if (emitWorkItem && scored.length > 0) {
   for (const p of (protectedPaths.length ? protectedPaths : ["none detected, ask the owner to confirm"])) lines.push(`  - ${p}`);
   lines.push("\nProposed bounded work (each becomes a small reviewable pull request, ordered by priority score):");
   scored.forEach((s, i) => lines.push(`  ${i + 1}. [score ${s.score.toFixed(1)}] ${s.proposal}`));
+  if (controlPanelWork.omitted > 0) {
+    lines.push(`  ...and ${controlPanelWork.omitted} more control-panel finding(s); run npm run check:control-panel for the full list.`);
+  }
   lines.push("\nRefused by default: autonomy off, no auto-merge, no protected-path edits, no remote spend, nothing shared across repos.");
   lines.push("Next safe step: review this output, then run `npx modonome scaffold .` to drop disabled, dry-run state files.");
 
