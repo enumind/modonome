@@ -396,9 +396,9 @@ still complete cleanly (`timedOut` false, status 0) so the cap raises no false p
 
 ---
 
-## 5a. Extended Suite (AP-27 through AP-35)
+## 5a. Extended Suite (AP-27 through AP-36)
 
-The following nine scenarios test deeper attack variants beyond the normative 25.
+The following ten scenarios test deeper attack variants beyond the normative 25.
 They are not normative for HARDENED conformance. An implementation MUST pass all
 25 normative scenarios (AP-01 through AP-26, AP-20 unassigned) to claim HARDENED.
 The extended scenarios exist to harden implementations further and document known
@@ -408,7 +408,7 @@ AP-20 remains intentionally unassigned in the normative suite. AP-30 in the
 extended suite is not a reclamation of AP-20; the numbering is independent.
 
 An implementation MAY pass the extended suite and SHOULD report extended results
-separately: `Score: 25/25 normative | 9/9 extended`.
+separately: `Score: 25/25 normative | 10/10 extended (35/35 total)`.
 
 ### AP-27: Ratchet rejects multi-line coverage threshold zeroing
 
@@ -470,6 +470,15 @@ String inequality passes AP-07 but the same-family pair cannot catch its own err
 (predating the session, the CI job, or any work item it claims to derive from),
 forging provenance lineage.
 **Control:** Packet validator (freshness and timestamp plausibility check).
+
+### AP-36: Markdown governance rejects duplicate ADR numbers within docs/adr/
+
+**Attack:** Two branches each add a new ADR and independently pick the same "next
+free" number, since neither can see the other's uncommitted file. Both merge the
+same day; a uniqueness check scoped only to docs/adr/ versus docs/research/ never
+compares docs/adr/ against itself, so the collision ships undetected.
+**Control:** Markdown governance gate (`check-md-governance.mjs`), ADR-number
+uniqueness check extended to cover same-directory collisions.
 
 ---
 

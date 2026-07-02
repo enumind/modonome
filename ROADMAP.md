@@ -12,7 +12,7 @@ shift. Each item lands only when its own gates are green.
 - Repo snapshot utility: tiered, Merkle-verified, dependency-free repo map for LLM context
   with a CI freshness check, incremental regeneration, adoption-default consumption, heuristic
   adapters for JavaScript/TypeScript, Python, Go, and Java, and an optional tree-sitter parser
-  (ADR-032). Tier 2 deep shards, signed delta packets, and graph-backed queries follow in
+  (ADR-033). Tier 2 deep shards, signed delta packets, and graph-backed queries follow in
   later milestones.
 - Safe defaults throughout. Cross-repo network ships off and advisory.
 

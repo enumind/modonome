@@ -1,3 +1,10 @@
+---
+status: active
+owner: "@nateshpp"
+last_reviewed: 2026-07-01
+canonical: [openssf-badge-evidence]
+---
+
 # OpenSSF Best Practices badge evidence
 
 This document maps the OpenSSF Best Practices badge criteria to concrete artifacts in

@@ -26,14 +26,29 @@ Machine-enforced (CI fails the build):
 - Root allow-list.
 - Protected-file manifest (agent-critical files must exist at their declared path).
 - Link integrity (every relative Markdown link resolves to a real file).
-- ADR number uniqueness (no `ADR-NNN` used in both `docs/adr/` and research).
+- ADR number uniqueness: no `ADR-NNN` reused within `docs/adr/` itself, and no `ADR-NNN`
+  reused across `docs/adr/` and `docs/research/`. (Two files in `docs/adr/` sharing a
+  number went undetected before this check covered the same-directory case; see
+  `docs/audits/claims-audit-2026-07-01.md`.)
 - Audit file naming pattern.
 - Canonical uniqueness (no two active docs claim the same `canonical` topic key).
+- Staleness (`docs/adr/ADR-034-compliance-audit-staleness-gate.md`), for
+  `docs/compliance/` and `docs/audits/` only: `last_reviewed`
+  front-matter is required in both. In `docs/compliance/` it additionally must not
+  predate more than 15 commits to the paths a doc cites in backticks, since those docs
+  make an ongoing claim that should track code changes. `docs/audits/` files are
+  point-in-time snapshots, already dated in their filename and chained by `supersedes`
+  front-matter, so they are exempt from the commit-threshold check specifically (it
+  would flag nearly every audit as stale within the day it is written, since citing
+  the most actively-changing code is the point of an audit). This is the small,
+  externally-facing trust surface; everywhere else under `docs/`, front-matter stays in
+  the advisory tier below until the back-catalog is migrated (see the next section).
 
 Advisory (CI warns, does not fail) during the migration window:
 
 - `lowercase-kebab-case` naming inside `docs/`.
-- Front-matter presence and completeness on existing docs.
+- Front-matter presence and completeness on existing docs, outside `docs/compliance/`
+  and `docs/audits/`, which are blocking per above.
 - Docs index coverage (every top-level doc listed in `docs/README.md`).
 - Near-duplicate titles and absolute self-links.
 
@@ -53,11 +68,14 @@ These Markdown files may live at the repository root. No others.
 | `SECURITY.md` | GitHub vulnerability-reporting flow. |
 | `GOVERNANCE.md` | GitHub community profile governance surface. |
 | `AGENTS.md` | AI agent discovery; read by `scripts/dry-run-sweep.mjs` at a root path. |
+| `CODEX.md` | Codex-specific agent instructions; points to `AGENTS.md` as the source of truth. |
+| `CLAUDE.md` | Claude-specific analog to `CODEX.md`; permitted at root but not currently present in this repo. |
 | `RELEASE-EVIDENCE.md` | Generated data file; written by `scripts/build-release-evidence.mjs` at a root path. |
 | `QUICKSTART.md` | High-traffic first-visit doc; bookmarked and forked externally. |
 | `ADOPTION-GUIDE.md` | High-traffic onboarding companion to the quickstart. |
 | `ARCHITECTURE.md` | High-traffic explanation entry point. |
 | `ROADMAP.md` | High-traffic public milestone doc; read by `scripts/check-repo-hygiene.mjs`. |
+| `RATCHET-SPEC.md` | Legacy root file. Its current content does not match its name or the real ratchet spec at `docs/specs/ratchet-spec.md`; flagged for owner review rather than silently justified here. |
 
 Any other root Markdown file fails the build. To add one, justify it here and add it to
 the allow-list in `scripts/check-md-governance.mjs`.

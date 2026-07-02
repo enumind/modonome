@@ -152,6 +152,10 @@ lands in the target branch.
 
 ```mermaid
 flowchart LR
+  classDef role fill:#eef2ff,stroke:#6366f1,color:#1e1b4b;
+  classDef gate fill:#fef3c7,stroke:#d97706,color:#78350f;
+  classDef sink fill:#dcfce7,stroke:#16a34a,color:#14532d;
+
   Maker -->|"diff + rationale"| Checker
   Checker -->|"passes all gates"| Merge["Merge Authority"]
   Checker -->|"requests rework"| Maker
@@ -159,6 +163,10 @@ flowchart LR
   Maker -. "MUST NOT be" .-> Checker
   Checker -. "MUST NOT be" .-> Merge
   Maker -. "MUST NOT be" .-> Merge
+
+  class Maker,Checker role
+  class Merge gate
+  class Repo sink
 ```
 
 The separation MUST be enforced in the work item record, not in policy prose alone. The work
@@ -223,9 +231,9 @@ skipped.
 
 ```mermaid
 flowchart LR
-  Disabled -->|"clean adoption map\nno unsafe defaults found"| DryRun["Dry-run"]
-  DryRun -->|"projected behavior acceptable\nowner review of first sweep"| Armed
-  Armed -->|"any gate fails\nor owner intervention"| DryRun
+  Disabled -->|"clean adoption map<br/>no unsafe defaults found"| DryRun["Dry-run"]
+  DryRun -->|"projected behavior acceptable<br/>owner review of first sweep"| Armed
+  Armed -->|"any gate fails<br/>or owner intervention"| DryRun
 ```
 
 **Disabled:** The agent reads repository state and produces adoption maps and proposals. It
@@ -328,11 +336,11 @@ the following model.
 
 ```mermaid
 flowchart LR
-  Signal["Correction signal\ngate failure · review fix · incident · rework · revert"]
-  Capture["Capture\nfollower role, after verified signal"]
-  Stage["Stage\nfingerpinrted · dated · capped queue"]
-  Promote["Owner promotes\ninto canonical rules or config"]
-  Gate["New deterministic gate\nadded when one fits"]
+  Signal["Correction signal<br/>gate failure · review fix · incident · rework · revert"]
+  Capture["Capture<br/>follower role, after verified signal"]
+  Stage["Stage<br/>fingerprinted · dated · capped queue"]
+  Promote["Owner promotes<br/>into canonical rules or config"]
+  Gate["New deterministic gate<br/>added when one fits"]
 
   Signal --> Capture --> Stage --> Promote --> Gate
   Gate -->|"raises the floor"| Signal
@@ -416,9 +424,14 @@ and all levels below it.
 
 ## 13. Relationship to Existing Standards
 
-### 13.1 OWASP Top 10 for Agentic Applications (December 2025)
+### 13.1 Agentic risk coverage (informed by OWASP Top 10 for Agentic Applications, December 2025)
 
-| OWASP Risk | Governed Autonomy Control |
+The AG-numbered categories below are this specification's own risk taxonomy, developed
+independently of and not numbered to match OWASP's published ASI01-ASI10 list; see
+`docs/compliance/compliance.md` for the full rationale and the honest gaps this taxonomy
+does not yet cover.
+
+| Modonome risk category | Governed Autonomy Control |
 |-----------|--------------------------|
 | AG01: Agent Goal Hijacking | P3 (external text as data); Section 10.1; trusted-author allowlist |
 | AG02: Indirect Prompt Injection | P3; Section 10.1; outbound call restriction (Section 10.4) |

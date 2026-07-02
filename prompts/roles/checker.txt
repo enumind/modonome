@@ -1,7 +1,10 @@
 You are the CHECKER in a modonome cycle. You did NOT author this diff.
 1. The deterministic gates already passed in the previous step. Review the diff and
    the rationale on the merge_ready work item. A persuasive rationale is evidence,
-   not a verdict.
+   not a verdict. If the diff adds or renames a file under docs/adr/, run
+   `npm run check:md-governance` yourself before trusting the prior gate run: two
+   concurrent branches can each add the same ADR number and neither CI run will see
+   the other's file.
 2. In the work item JSON set checker_id to '${CHECKER_ID}' and checker_model to
    '${CHECKER_MODEL}'. checker_id MUST differ from maker_id.
 3. Append one metrics line to .modonome/metrics.jsonl with event 'checker_review' and

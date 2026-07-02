@@ -1,4 +1,13 @@
+---
+status: superseded
+owner: "@nateshpp"
+last_reviewed: 2026-07-01
+---
+
 # Claims audit, 2026-06-25
+
+Superseded by [claims-audit-2026-07-01.md](claims-audit-2026-07-01.md), which re-verifies
+every row against current code and closes six that had drifted stale in this file.
 
 A claim-by-claim inventory of what Modonome's documents and website promise
 versus what the code in this repository actually does. Every code verdict cites

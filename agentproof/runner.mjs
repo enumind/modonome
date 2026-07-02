@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /**
- * AgentProof runner. Executes 25 normative + 9 extended governance scenarios.
+ * AgentProof runner. Executes 25 normative + 10 extended governance scenarios.
  *
  * The normative suite (AP-01 through AP-26, AP-20 unassigned) determines the
- * HARDENED conformance level. The extended suite (AP-27 through AP-35) tests
+ * HARDENED conformance level. The extended suite (AP-27 through AP-36) tests
  * deeper attack variants; all must pass but do not change the 25/25 normative count.
  *
  * Usage:
@@ -78,6 +78,7 @@ const EXTENDED_TITLES = {
   "ap-33-config-env-override-inert.mjs":           "Config: env-var safety override injection blocked",
   "ap-34-work-item-model-alias-evasion.mjs":       "Work item: model-alias evasion blocked",
   "ap-35-knowledge-packet-backdated-timestamp.mjs":"Packet: backdated timestamp rejected",
+  "ap-36-adr-number-uniqueness.mjs":               "Markdown governance: duplicate ADR numbers within docs/adr/ blocked",
 };
 
 const SCENARIO_TITLES = { ...NORMATIVE_TITLES, ...EXTENDED_TITLES };

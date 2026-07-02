@@ -25,7 +25,8 @@ without evidence that Modonome itself meets them.
 1. **Modonome runs its own loop** under the same activation ladder as a host repo:
    - Disabled in dev/WIP
    - Dry-run by default in CI
-   - Shadow mode in a scheduled job (daily or weekly)
+   - Shadow mode in a scheduled job (daily or weekly). This rung assumes WI-011
+     (ADR-002) has shipped; until then, treat it as a planned step, not a current one
    - Armed mode on this repo *only after* Milestone 6 ships and the team is confident
    - Armed mode is optional and owner-gated, but if offered, Modonome must use it
 
@@ -78,3 +79,7 @@ without evidence that Modonome itself meets them.
 - GOVERNANCE.md: the rules Modonome asks users to adopt.
 - ADR-025 ensures Modonome follows those rules visibly.
 - Milestone 3 (Control Panel): visualizes self-application.
+- ADR-002 (Shadow Mode): removed shadow-mode references from user-facing docs pending
+  implementation and filed the feature as WI-011 for v0.2. This ADR's activation ladder
+  uses the same term for the same unimplemented feature; it is a target state for
+  Modonome's own repo, not a claim that shadow mode exists today.
