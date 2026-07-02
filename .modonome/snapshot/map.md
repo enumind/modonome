@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:1eb1efff5e5bd0b3e35a01f1bc7064a25a361b10de986c21a6aa0692d1c4df16
-Files: 528  Bytes: 1688065  Map tokens: 51655/120000
+Merkle root: sha256:00c964f2a80a512e1af57dc08e848668a2dc4c5219b8e03746f70ad7249375cd
+Files: 529  Bytes: 1696837  Map tokens: 51784/120000
 
 ## Modules
 
@@ -218,6 +218,7 @@ Files: 528  Bytes: 1688065  Map tokens: 51655/120000
 - tests/e2e.test.mjs [F:9cbe9238f8]: function tmp
 - tests/embedding-safety.test.mjs [F:cc65dd1342]: Run preflight in --json mode against a fixture. Returns { code, report, raw }. A clean environment is used so the host's own MODONOME_* shell does not leak into
 - tests/helpers/mock-openai-server.mjs [F:eb14a0bdeb]: Start a mock OpenAI chat-completions server. * * @param {object} [options] * @param {"success"|"retry-then-success"|"delay"|"malformed"|"error"} [options.mode] 
+- tests/install-hooks.test.mjs [F:cba8f1d03b]: function tempRepo
 - tests/learnings.test.mjs [F:54a3c626d9]: function run
 - tests/maker-checker.test.mjs [F:5994385869]: function run
 - tests/mcp-compliance.test.mjs [F:a167609a41]: Send requests to a fresh server process and resolve once every expected id has replied. The child is killed as soon as the responses arrive, which avoids the st
@@ -520,14 +521,14 @@ Files: 528  Bytes: 1688065  Map tokens: 51655/120000
 - S:b4e887ed4f function schemaLevers `function schemaLevers()` L25
 - S:e09a554f44 function templateLevers `function templateLevers()` L30
 ### scripts/guard-ratchet.mjs [F:8a10462927]
-- S:89e92655dd function normalizeLF `function normalizeLF(s)` L20
-- S:a34306cc67 function getDiff `function getDiff()` L24
-- S:974654287c function count `function count(lines, re)` L258
-- S:fd230402e2 function deconfuse `function deconfuse(line)` L277
-- S:457528354e function stripInlineComment `function stripInlineComment(line)` L285
-- S:a4c389d72a function isVacuousAssertion `function isVacuousAssertion(line)` L290
-- S:17945c542e function countBareAsserts `function countBareAsserts(lines)` L300
-- S:4d3ac94b7c function isVacuousPyAssert `function isVacuousPyAssert(line)` L308
+- S:89e92655dd function normalizeLF `function normalizeLF(s)` L21
+- S:a34306cc67 function getDiff `function getDiff()` L25
+- S:974654287c function count `function count(lines, re)` L272
+- S:fd230402e2 function deconfuse `function deconfuse(line)` L291
+- S:457528354e function stripInlineComment `function stripInlineComment(line)` L299
+- S:a4c389d72a function isVacuousAssertion `function isVacuousAssertion(line)` L304
+- S:17945c542e function countBareAsserts `function countBareAsserts(lines)` L314
+- S:4d3ac94b7c function isVacuousPyAssert `function isVacuousPyAssert(line)` L322
 ### tests/report-impact.test.mjs [F:8a3433b070]
 - S:69f3537d3b function tmp `function tmp()` L13
 - S:1fe8548dac function fixture `function fixture()` L17
@@ -695,6 +696,8 @@ Files: 528  Bytes: 1688065  Map tokens: 51655/120000
 - S:7c5c3a31a4 function compilePattern `function compilePattern(pattern)` L41 : Compile one gitignore-style pattern into a tester over a posix relative path. Supported: comments, negation (!), leading / (anchored), trailing / (directory), * (within a segment), ** (across segments
 - S:531cf59eb3 function loadIgnore `export function loadIgnore(root)` L86 : Build an ignore predicate for a repo root. The predicate takes a posix relative path and returns true when the path should be excluded. Later patterns win, so a negation can re-include a path a broad 
 - S:d4e650f5ae function walkRepo `export function walkRepo(root, { ignore = () => false, maxDepth = 12 } = {})` L110 : Walk a repository into a sorted list of files. Symlinks are skipped to avoid cycles and escapes. Returns [{ relPath, absPath, size }] ordered by relPath.
+### tests/install-hooks.test.mjs [F:cba8f1d03b]
+- S:e6e23439bf function tempRepo `function tempRepo({ withGit = true, pkgName = "some-host" } = {})` L8
 ### scripts/check-licenses.mjs [F:cc361bd05a]
 - S:25117f5b1d function normalizeLicense `function normalizeLicense(raw)` L22
 - S:cb3211f3c2 function checkLicenses `export function checkLicenses(pkg, manifest)` L28 : Core check. Takes the parsed package.json and (optional) adapters manifest and returns a list of human-readable problem strings. Pure: no filesystem or network.
@@ -780,7 +783,7 @@ Files: 528  Bytes: 1688065  Map tokens: 51655/120000
 - S:c3ace341b4 function governanceErrors `export function governanceErrors(item, config = {})` L30 : Governance rules that JSON Schema cannot express (cross-field invariants).
 - S:33100346b9 function validateWorkItem `export function validateWorkItem(item, config = {})` L88
 ### tests/ratchet.test.mjs [F:f238d164c9]
-- S:2e93f745f3 function ratchet `function ratchet(diffPath)` L16
+- S:2e93f745f3 function ratchet `function ratchet(diffPath)` L17
 ### scripts/lib/graph.mjs [F:f51cba9beb]
 - S:3c3cd672a7 function isCyclic `export function isCyclic(adjacency)` L11 : isCyclic(adjacency) -> { cyclic: bool, cycle: [...] } Detects whether the graph contains a cycle. When a cycle is found, `cycle` holds the nodes involved in the order they were detected via DFS (the f
 - S:075e86ea7c function topoSort `export function topoSort(adjacency, nodes)` L48 : topoSort(adjacency, nodes) -> { order: [...], error?: string } Returns a topological ordering of `nodes` given the directed edges in `adjacency`. Nodes not present in `nodes` but reachable via edges a
@@ -936,6 +939,7 @@ Files: 528  Bytes: 1688065  Map tokens: 51655/120000
 - tests/sweep-to-work-item.test.mjs -> scripts/validate-work-item.mjs
 - scripts/check-promotion-readiness.mjs -> scripts/lib/yaml-lite.mjs
 - scripts/audit-learnings.mjs -> scripts/lib/learnings.mjs
+- tests/install-hooks.test.mjs -> scripts/install-hooks.mjs
 - examples/demo-app/tests/NotificationService.test.js -> examples/demo-app/src/NotificationService.js
 - tests/render-prompt-unit.test.mjs -> scripts/agent/render-prompt.mjs
 - scripts/lib/snapshot-core.mjs -> scripts/lib/snapshot-graph.mjs
@@ -980,54 +984,54 @@ Files: 528  Bytes: 1688065  Map tokens: 51655/120000
 
 ## Attention (centrality + pagerank)
 
-1. scripts/lib/jsonschema.mjs centrality=8 pagerank=0.017921
-2. scripts/lib/yaml-lite.mjs centrality=12 pagerank=0.013144
-3. scripts/agent/run-cycle.mjs centrality=17 pagerank=0.006206
-4. scripts/lib/learnings.mjs centrality=9 pagerank=0.011942
-5. scripts/validate-config.mjs centrality=11 pagerank=0.00776
-6. scripts/lib/canonical-json.mjs centrality=8 pagerank=0.008593
-7. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.002759
-8. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.005954
-9. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.008585
-10. scripts/validate-work-item.mjs centrality=6 pagerank=0.005621
-11. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.00276
-12. scripts/agent/resolve-role.mjs centrality=6 pagerank=0.004816
-13. scripts/lib/graph.mjs centrality=4 pagerank=0.006755
-14. scripts/snapshot.mjs centrality=8 pagerank=0.001649
-15. scripts/agent/providers.mjs centrality=3 pagerank=0.006573
-16. examples/demo-app/src/index.js centrality=6 pagerank=0.001649
-17. scripts/agent/render-prompt.mjs centrality=3 pagerank=0.003998
-18. scripts/verify-packet.mjs centrality=4 pagerank=0.002
-19. scripts/lib/snapshot-cache.mjs centrality=3 pagerank=0.002759
-20. tests/config.test.mjs centrality=4 pagerank=0.001649
-21. tests/packet-signing.test.mjs centrality=4 pagerank=0.001649
-22. tests/providers.test.mjs centrality=4 pagerank=0.001649
-23. scripts/migrate-config.mjs centrality=3 pagerank=0.002701
-24. scripts/lib/branch-name.mjs centrality=2 pagerank=0.003752
-25. scripts/lib/commit-identity.mjs centrality=2 pagerank=0.003752
-26. scripts/lib/run-gate-capped.mjs centrality=2 pagerank=0.003752
-27. scripts/lib/snapshot-walk.mjs centrality=3 pagerank=0.002526
-28. tests/helpers/mock-openai-server.mjs centrality=2 pagerank=0.003519
-29. scripts/dry-run-sweep.mjs centrality=3 pagerank=0.00235
-30. examples/demo-app/src/CartService.js centrality=2 pagerank=0.003285
-31. examples/demo-app/src/CheckoutService.js centrality=2 pagerank=0.003285
-32. examples/demo-app/src/InventoryService.js centrality=2 pagerank=0.003285
-33. examples/demo-app/src/NotificationService.js centrality=2 pagerank=0.003285
-34. examples/demo-app/src/OrderService.js centrality=2 pagerank=0.003285
-35. examples/demo-app/src/PaymentProcessor.js centrality=2 pagerank=0.003285
-36. scripts/lib/merkle.mjs centrality=3 pagerank=0.002059
-37. bin/modonome.mjs centrality=2 pagerank=0.003051
-38. scripts/lib/repo-detect.mjs centrality=2 pagerank=0.002883
-39. tests/chaos.test.mjs centrality=3 pagerank=0.001649
-40. tests/performance.test.mjs centrality=3 pagerank=0.001649
-41. tests/role-registry.test.mjs centrality=3 pagerank=0.001649
-42. tests/run-cycle-openai.test.mjs centrality=3 pagerank=0.001649
-43. tests/snapshot-incremental.test.mjs centrality=3 pagerank=0.001649
-44. tests/snapshot-security.test.mjs centrality=3 pagerank=0.001649
-45. tests/ws-b-harness.test.mjs centrality=3 pagerank=0.001649
-46. tests/ws-h-config.test.mjs centrality=3 pagerank=0.001649
-47. scripts/agent/apply-patch.mjs centrality=2 pagerank=0.002596
-48. scripts/lib/lang-adapters/tree-sitter.mjs centrality=2 pagerank=0.002526
-49. scripts/agent/action-queue.mjs centrality=2 pagerank=0.002129
-50. scripts/lib/packet-id.mjs centrality=2 pagerank=0.002
+1. scripts/lib/jsonschema.mjs centrality=8 pagerank=0.017866
+2. scripts/lib/yaml-lite.mjs centrality=12 pagerank=0.013104
+3. scripts/agent/run-cycle.mjs centrality=17 pagerank=0.006187
+4. scripts/lib/learnings.mjs centrality=9 pagerank=0.011906
+5. scripts/validate-config.mjs centrality=11 pagerank=0.007736
+6. scripts/lib/canonical-json.mjs centrality=8 pagerank=0.008567
+7. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.002751
+8. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.005936
+9. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.008559
+10. scripts/validate-work-item.mjs centrality=6 pagerank=0.005604
+11. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.002752
+12. scripts/agent/resolve-role.mjs centrality=6 pagerank=0.004801
+13. scripts/lib/graph.mjs centrality=4 pagerank=0.006735
+14. scripts/snapshot.mjs centrality=8 pagerank=0.001644
+15. scripts/agent/providers.mjs centrality=3 pagerank=0.006553
+16. examples/demo-app/src/index.js centrality=6 pagerank=0.001644
+17. scripts/agent/render-prompt.mjs centrality=3 pagerank=0.003986
+18. scripts/install-hooks.mjs centrality=2 pagerank=0.00444
+19. scripts/verify-packet.mjs centrality=4 pagerank=0.001994
+20. scripts/lib/snapshot-cache.mjs centrality=3 pagerank=0.002751
+21. tests/config.test.mjs centrality=4 pagerank=0.001644
+22. tests/packet-signing.test.mjs centrality=4 pagerank=0.001644
+23. tests/providers.test.mjs centrality=4 pagerank=0.001644
+24. scripts/migrate-config.mjs centrality=3 pagerank=0.002693
+25. scripts/lib/branch-name.mjs centrality=2 pagerank=0.003741
+26. scripts/lib/commit-identity.mjs centrality=2 pagerank=0.003741
+27. scripts/lib/run-gate-capped.mjs centrality=2 pagerank=0.003741
+28. scripts/lib/snapshot-walk.mjs centrality=3 pagerank=0.002519
+29. tests/helpers/mock-openai-server.mjs centrality=2 pagerank=0.003508
+30. scripts/dry-run-sweep.mjs centrality=3 pagerank=0.002343
+31. examples/demo-app/src/CartService.js centrality=2 pagerank=0.003275
+32. examples/demo-app/src/CheckoutService.js centrality=2 pagerank=0.003275
+33. examples/demo-app/src/InventoryService.js centrality=2 pagerank=0.003275
+34. examples/demo-app/src/NotificationService.js centrality=2 pagerank=0.003275
+35. examples/demo-app/src/OrderService.js centrality=2 pagerank=0.003275
+36. examples/demo-app/src/PaymentProcessor.js centrality=2 pagerank=0.003275
+37. scripts/lib/merkle.mjs centrality=3 pagerank=0.002053
+38. bin/modonome.mjs centrality=2 pagerank=0.003042
+39. scripts/lib/repo-detect.mjs centrality=2 pagerank=0.002874
+40. tests/chaos.test.mjs centrality=3 pagerank=0.001644
+41. tests/performance.test.mjs centrality=3 pagerank=0.001644
+42. tests/role-registry.test.mjs centrality=3 pagerank=0.001644
+43. tests/run-cycle-openai.test.mjs centrality=3 pagerank=0.001644
+44. tests/snapshot-incremental.test.mjs centrality=3 pagerank=0.001644
+45. tests/snapshot-security.test.mjs centrality=3 pagerank=0.001644
+46. tests/ws-b-harness.test.mjs centrality=3 pagerank=0.001644
+47. tests/ws-h-config.test.mjs centrality=3 pagerank=0.001644
+48. scripts/agent/apply-patch.mjs centrality=2 pagerank=0.002588
+49. scripts/lib/lang-adapters/tree-sitter.mjs centrality=2 pagerank=0.002518
+50. scripts/agent/action-queue.mjs centrality=2 pagerank=0.002122
 

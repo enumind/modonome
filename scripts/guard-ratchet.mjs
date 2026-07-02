@@ -9,6 +9,7 @@
 // Usage:
 //   node scripts/guard-ratchet.mjs <baseRef>     compare working tree to a git ref
 //   node scripts/guard-ratchet.mjs --diff <file> check a saved unified diff (for fixtures)
+//   node scripts/guard-ratchet.mjs --staged      check the index against HEAD (pre-commit hooks)
 import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 
@@ -25,6 +26,19 @@ function getDiff() {
   const arg = process.argv[2];
   if (arg === "--diff") {
     return normalizeLF(readFileSync(process.argv[3], "utf8"));
+  }
+  if (arg === "--staged") {
+    // A pre-commit hook runs before the commit exists: HEAD is still the parent,
+    // so the change under review is the index against HEAD, not a ref...HEAD range.
+    const result = spawnSync("git", ["diff", "--cached"], {
+      encoding: "utf8",
+      maxBuffer: 64 * 1024 * 1024,
+    });
+    if (result.error) throw result.error;
+    if (result.status !== 0) {
+      throw new Error(result.stderr || "git diff --cached failed");
+    }
+    return normalizeLF(result.stdout);
   }
   const base = arg || "origin/main";
   if (!SAFE_REF.test(base)) {

@@ -1,9 +1,10 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readdirSync, writeFileSync } from "node:fs";
+import { readdirSync, writeFileSync, mkdtempSync, rmSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { spawnSync } from "node:child_process";
+import { tmpdir } from "node:os";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
@@ -138,4 +139,29 @@ test("A7: commenting out a strong assertion while adding an existence check is a
   const r = ratchet(join(fx, "ratchet-diffs", "gaming", "comment-out-strength-downgrade.diff"));
   assert.equal(r.status, 1, `commented-out strong assertion must be rejected:\n${r.stdout}`);
   assert.match(r.stderr, /downgrades assertion strength/, "must report the strength downgrade");
+});
+
+test("--staged checks the index against HEAD, for pre-commit hook use", () => {
+  const dir = mkdtempSync(join(tmpdir(), "ratchet-staged-"));
+  try {
+    spawnSync("git", ["init", "-q"], { cwd: dir });
+    spawnSync("git", ["config", "user.email", "t@e.com"], { cwd: dir });
+    spawnSync("git", ["config", "user.name", "t"], { cwd: dir });
+    writeFileSync(
+      join(dir, "checkout.test.ts"),
+      'expect(charge(card)).toBe("ok");\nexpect(receipt(card)).toBeDefined();\n'
+    );
+    spawnSync("git", ["add", "-A"], { cwd: dir });
+    spawnSync("git", ["commit", "-qm", "init"], { cwd: dir });
+
+    // Stage a gaming change: delete the strong assertion, keep only the weak one.
+    writeFileSync(join(dir, "checkout.test.ts"), 'expect(receipt(card)).toBeDefined();\n');
+    spawnSync("git", ["add", "-A"], { cwd: dir });
+
+    const r = spawnSync("node", [guard, "--staged"], { cwd: dir, encoding: "utf8" });
+    assert.equal(r.status, 1, `staged assertion removal must be rejected:\n${r.stdout}\n${r.stderr}`);
+    assert.match(r.stderr, /removes more test assertions/, "must report the net assertion drop");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
 });

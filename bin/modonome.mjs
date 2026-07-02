@@ -15,6 +15,7 @@ const HELP = `Modonome, governed autonomy for any repo.
 Usage:
   npx modonome dry-run <dir>              read the repo and print proposed work. Changes nothing.
   npx modonome scaffold <dir>             drop .modonome state files. Disabled and dry-run. Add --write to apply.
+  npx modonome scaffold <dir> --write --ratchet   non-agent adoption: install only the anti-gaming pre-commit hook.
   npx modonome adopt <dir>               alias for dry-run, writes an adoption summary to stdout.
   npx modonome validate <file>           validate a config or knowledge packet (type inferred from filename).
   npx modonome validate <file> --type config   explicitly validate as a config file.
@@ -29,6 +30,8 @@ Usage:
   npx modonome snapshot <dir> --pack    write a single portable .msnap bundle for sharing.
   npx modonome snapshot <dir> --since <ref>  print the file-level delta since a git ref.
   npx modonome agentproof                run the AgentProof adversarial benchmark suite (16 scenarios).
+  npx modonome ratchet [baseRef]         anti-gaming gate: reject a diff that weakens tests or gates.
+  npx modonome ratchet --staged          same, but check the index against HEAD (for a pre-commit hook).
   npx modonome help                      show this message.
 
 Modonome stays off until an owner arms it through the environment or CI.`;
@@ -137,6 +140,9 @@ function main(argv) {
       break;
     case "agentproof":
       process.exit(spawnSync("node", [join(here, "..", "agentproof", "runner.mjs"), ...rest], { stdio: "inherit" }).status ?? 1);
+      break;
+    case "ratchet":
+      run("guard-ratchet.mjs", rest);
       break;
     case "migrate":
       run("migrate-config.mjs", rest);
