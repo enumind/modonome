@@ -32,6 +32,8 @@ works within them, rather than adding a parallel approval path.
 1. Disabled. Read state and produce plans, read-only.
 2. Dry-run. Project actions and record metrics, read-only.
 3. Shadow. Run against live state read-only, compare decisions against human outcomes.
+   Planned, not yet implemented (`docs/adr/ADR-002-shadow-mode.md` tracks it as WI-011);
+   treat this rung as a roadmap step until that ships.
 4. Armed. Allowed only when every gate below passes.
 
 Each rung is earned by a clean record on the rung before it.

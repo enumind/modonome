@@ -20,7 +20,7 @@ be added here once the owner arms the loop on this repo.
 | Drift guard | FAIL |
 | Style check | pass |
 | Repo hygiene | pass |
-| Self-application conformance | pass |
+| Self-application conformance | FAIL |
 | Learning traceability | pass |
 | Capability promotion readiness | pass |
 | Work item validation | pass |

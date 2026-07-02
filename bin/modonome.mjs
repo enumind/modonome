@@ -30,8 +30,14 @@ Usage:
   npx modonome snapshot <dir> --pack    write a single portable .msnap bundle for sharing.
   npx modonome snapshot <dir> --since <ref>  print the file-level delta since a git ref.
   npx modonome agentproof                run the AgentProof adversarial benchmark suite (16 scenarios).
+<<<<<<< HEAD
   npx modonome ratchet [baseRef]         anti-gaming gate: reject a diff that weakens tests or gates.
   npx modonome ratchet --staged          same, but check the index against HEAD (for a pre-commit hook).
+=======
+  npx modonome hygiene check <dir>       find AI-participation signatures in the branch and commits. Exit 1 if any.
+  npx modonome hygiene explain <dir>     same as check, with the reason and pattern for each finding.
+  npx modonome hygiene fix <dir>         apply the safe, local, metadata-only remedy (branch rename).
+>>>>>>> origin/main
   npx modonome help                      show this message.
 
 Modonome stays off until an owner arms it through the environment or CI.`;
@@ -149,6 +155,9 @@ function main(argv) {
       break;
     case "tick":
       run("tick.mjs", rest);
+      break;
+    case "hygiene":
+      run("hygiene.mjs", rest);
       break;
     case "help":
     case "--help":

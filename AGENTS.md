@@ -3,8 +3,10 @@
 ## Commit messages
 
 - Commit messages contain only the change description and, when relevant, a `Fixes #N` reference.
-- Keep attribution trailers, session links, and generated-by notices out of commit messages.
-- Specifically: no git trailers that credit AI tools, no session URLs, no authorship signatures.
+- Keep attribution trailers, session links, and generated-by notices out of commit messages and out of all GitHub-facing text (PR bodies, PR comments, review replies, inline comments).
+- Specifically: no git trailers that credit AI tools, no AI co-author entries, no session URLs, no authorship signatures, no model names in any artifact.
+- Branch names must be descriptive. No model-identifier prefixes (`claude/`, `gpt/`, `ai/`, etc.), enforced by `scripts/lib/branch-name.mjs`.
+- The author graph must reflect human ownership. AI participation is acknowledged at the architectural level (see `README.md`) rather than per-artifact, so that governance process integrity (not tool identity) remains the primary trust signal.
 
 ## Governed autonomy
 
@@ -36,7 +38,11 @@ Documentation placement, naming, coherence, and cleanup follow
 `docs/guidelines/markdown-governance.md` (ADR-031). Before adding, moving, or deleting a
 Markdown file, read that policy and run `node scripts/check-md-governance.mjs`. Markdown
 deletion is deny-by-default: it requires an owner-approved work item and a `DECISIONS.md`
-entry. Keep each topic to one source of truth and cross-link rather than copy.
+entry. Keep each topic to one source of truth and cross-link rather than copy. Before
+adding a new file under `docs/adr/`, fetch the latest base branch and pick a number one
+past its highest existing ADR: a concurrent branch you cannot see may already hold the
+number your local checkout would otherwise suggest, and `check-md-governance.mjs` only
+catches the collision after both land, not before either does.
 
 ## Session artifacts
 

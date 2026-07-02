@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:c35bad51ec032e7a443a10a0fb187a7a7365fdb2072d8d6569e48942b1f40940
-Files: 765  Bytes: 2452404  Map tokens: 87066/120000
+Merkle root: sha256:4d4c1f5ca05b44b09af4b9da45bbc6c6a9e322eb66dd3dd0af50a3d5c66ecd89
+Files: 1186  Bytes: 3884500  Map tokens: 116312/120000
 
 ## Modules
 
@@ -77,6 +77,7 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - agentproof/README.md [F:5621bc51b3]: AgentProof
 - agentproof/SPEC.md [F:2ec4f6540b]: AgentProof Specification
 - agentproof/scenarios/ap-33-config-env-override-inert.mjs [F:02a5f8fc55]: !/usr/bin/env node
+- agentproof/scenarios/ap-36-adr-number-uniqueness.mjs [F:a6d2bd3021]: A minimal repo that satisfies every check other than the one under test, so a failure can only come from the ADR-number logic being exercised.
 - apps/control-panel/README.md [F:3211d524ad]: Modonome control panel
 - apps/control-panel/server/api.mjs [F:08b7435c86]: A small Vite dev/preview-server middleware that exposes the real .modonome state
 - apps/control-panel/server/learningsFormat.mjs [F:54df44aadd]: Shared parsing for the "## Staged" bullet lines in .modonome/LEARNINGS.md, so the
@@ -181,8 +182,10 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - docs/adr/ADR-030-embedding-safety.md [F:5a04bfa7a4]: ADR-030: Embedding Safety Framework
 - docs/adr/ADR-031-markdown-governance.md [F:627afb27fd]: ADR-031: Markdown governance
 - docs/adr/ADR-032-oss-adapter-boundary.md [F:3a70dc66ea]: ADR-032: OSS adapter boundary
-- docs/adr/ADR-032-repo-snapshot.md [F:105d90c489]: ADR-032: Repo snapshot
+- docs/adr/ADR-033-repo-snapshot.md [F:b5f5700e4d]: ADR-033: Repo snapshot
+- docs/adr/ADR-034-compliance-audit-staleness-gate.md [F:21752cf61a]: ADR-034: Compliance and audit doc staleness gate
 - docs/audits/claims-audit-2026-06-25.md [F:8a7591db62]: Claims audit, 2026-06-25
+- docs/audits/claims-audit-2026-07-01.md [F:6a3a98df8c]: Claims audit, 2026-07-01
 - docs/autonomy-plan.md [F:3dcdfa18c0]: Autonomy plan: governed autonomy on free models
 - docs/compliance/compliance.md [F:95e51a604d]: Compliance
 - docs/compliance/eu-ai-act-classification.md [F:5fa0ad758b]: EU AI Act Classification
@@ -230,6 +233,182 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - fixtures/portability/prompt-injection-host/docs/guide.md [F:6fdd929a92]: Host Documentation
 - fixtures/portability/prompt-injection-host/src/main.js [F:90f0999521]: This file contains adversarial content in comments that should not affect Modonome.
 - fixtures/portability/schema-collision/README.md [F:7fcbf6b32d]: Schema Collision Fixture
+- modonome/.github/pull_request_template.md [F:ec1210d980]: What this PR does
+- modonome/.modonome/DECISIONS.md [F:06ab678869]: Modonome decisions
+- modonome/.modonome/LEARNINGS.md [F:bbc07794ff]: Learnings, staged candidate conventions
+- modonome/.modonome/NETWORK.md [F:9f5281721a]: Cross-repo network
+- modonome/.modonome/STATUS.md [F:e3a94f4662]: Modonome Status
+- modonome/.modonome/control-panel.md [F:555a34c1c3]: Modonome control panel
+- modonome/ADOPTION-GUIDE.md [F:ecf39a7b9e]: Adoption guide
+- modonome/AGENTS.md [F:5e04c161ab]: Agent instructions for modonome
+- modonome/ARCHITECTURE.md [F:cf6c06215b]: Architecture
+- modonome/CHANGELOG.md [F:897de8e7f4]: Changelog
+- modonome/CODE_OF_CONDUCT.md [F:dc12ec7b96]: Contributor Covenant Code of Conduct
+- modonome/CONTRIBUTING.md [F:993632242e]: Contributing to Modonome
+- modonome/GOVERNANCE.md [F:df4e26e354]: Governance
+- modonome/QUICKSTART.md [F:2e6582f48e]: Quickstart
+- modonome/README.md [F:18a5f2feaf]: Why businesses adopt Modonome
+- modonome/RELEASE-EVIDENCE.md [F:c7ec56f63f]: Release evidence
+- modonome/ROADMAP.md [F:e3af1ec37a]: Roadmap
+- modonome/SECURITY.md [F:e0e4e5047e]: Security model
+- modonome/agentproof/CONFORMANCE-INTERFACE.md [F:a578fbeda7]: AgentProof Conformance Interface
+- modonome/agentproof/CONTRIBUTING.md [F:ecc9bc282f]: Contributing to AgentProof
+- modonome/agentproof/README.md [F:cdcd0c29fc]: AgentProof
+- modonome/agentproof/SPEC.md [F:705acee7ae]: AgentProof Specification
+- modonome/agentproof/scenarios/ap-33-config-env-override-inert.mjs [F:9c7aa5a694]: !/usr/bin/env node
+- modonome/bin/modonome.mjs [F:0bcdaa56a9]: The authoritative arming gate. A config file the agent can write can never arm the engine on its own: arming requires the MODONOME_ARMED=true environment variab
+- modonome/docs/README.md [F:3f39d17e21]: Modonome documentation
+- modonome/docs/adr/ADR-001-self-governance-pipeline.md [F:6e1de548d5]: ADR-001: Self-Governance Pipeline
+- modonome/docs/adr/ADR-002-shadow-mode.md [F:f0e1956b85]: ADR-002: Shadow Mode
+- modonome/docs/adr/ADR-003-agentproof-portability.md [F:f0300817bd]: ADR-003: AgentProof Portability
+- modonome/docs/adr/ADR-004-arming-isolation-enforcement.md [F:9d2cb0ef23]: ADR-004: Arming Isolation Enforcement
+- modonome/docs/adr/ADR-005-run-observability.md [F:b4315c7150]: ADR-005: Run Observability
+- modonome/docs/adr/ADR-006-checker-independence.md [F:8884d798fb]: ADR-006: Checker Independence
+- modonome/docs/adr/ADR-007-claim-atomicity.md [F:837e21e377]: ADR-007: Claim Atomicity
+- modonome/docs/adr/ADR-008-trusted-author-allowlist.md [F:e637410324]: ADR-008: Trusted Author Allowlist
+- modonome/docs/adr/ADR-009-mcp-tool-auth-scope.md [F:35445bf1c4]: ADR-009: MCP Tool Authentication and Scope
+- modonome/docs/adr/ADR-010-knowledge-packet-trust.md [F:f7a7c7f53f]: ADR-010: Knowledge Packet Trust and Promotion
+- modonome/docs/adr/ADR-011-ci-env-var-trust-scope.md [F:4d6c849823]: ADR-011: CI Environment Variable Trust Scope
+- modonome/docs/adr/ADR-012-harness-prompt-integrity.md [F:22f65b4226]: ADR-012: Harness Prompt Integrity
+- modonome/docs/adr/ADR-013-config-downgrade-and-migration.md [F:42ee19c661]: ADR-013: Config Downgrade and State Migration
+- modonome/docs/adr/ADR-014-knowledge-network-transport.md [F:ecf57f35a8]: ADR-014: Knowledge Network Transport and Sync Model
+- modonome/docs/adr/ADR-015-knowledge-network-catalog.md [F:55f393ac95]: ADR-015: Knowledge Network Catalog Design
+- modonome/docs/adr/ADR-016-knowledge-network-packet-identity.md [F:6384dde9d4]: ADR-016: Knowledge Network Packet Identity, Lineage, and Dedup
+- modonome/docs/adr/ADR-017-knowledge-network-packet-signing.md [F:e6cabece9c]: ADR-017: Knowledge Network Packet Signing and Key Management
+- modonome/docs/adr/ADR-018-knowledge-network-import-ratchet.md [F:5bf56c32ed]: ADR-018: Knowledge Network Import Pipeline and Local Re-Validation Ratchet
+- modonome/docs/adr/ADR-019-knowledge-network-execution-scope.md [F:64ad4b0e38]: ADR-019: Knowledge Network Scripts Run in Base-Branch CI Scope
+- modonome/docs/adr/ADR-020-prompt-complexity-budget.md [F:eb40b9df67]: ADR-020: Prompt Complexity Budget
+- modonome/docs/adr/ADR-021-prompt-behavioral-regression-suite.md [F:7a46d60106]: ADR-021: Prompt Behavioral Regression Suite
+- modonome/docs/adr/ADR-022-anti-rubber-stamp-checker-telemetry.md [F:2a9dc83f65]: ADR-022: Anti-Rubber-Stamp Checker Telemetry
+- modonome/docs/adr/ADR-023-config-schema-migration-contract.md [F:fd657a9f14]: ADR-023: Config Schema Migration Contract
+- modonome/docs/adr/ADR-024-capability-promotion-gate.md [F:58b68ffdb5]: ADR-024: Capability Promotion Gate
+- modonome/docs/adr/ADR-025-self-application-conformance.md [F:29f9f46514]: ADR-025: Self-Application Conformance
+- modonome/docs/adr/ADR-026-learning-promotion-audit-trail.md [F:63e0be9f1b]: ADR-026: Learning Promotion Audit Trail
+- modonome/docs/adr/ADR-027-agentproof-25-scenario-expansion.md [F:c35497d003]: ADR-027: AgentProof Suite Expansion to 25 Scenarios
+- modonome/docs/adr/ADR-028-portability.md [F:55fbe512d2]: ADR-028: Portability Validation Strategy
+- modonome/docs/adr/ADR-029-adversarial-test-design.md [F:3547e6904f]: ADR-029: Adversarial Test Design Principles
+- modonome/docs/adr/ADR-030-embedding-safety.md [F:baca1dd8a1]: ADR-030: Embedding Safety Framework
+- modonome/docs/adr/ADR-031-markdown-governance.md [F:557a75f59f]: ADR-031: Markdown governance
+- modonome/docs/audits/claims-audit-2026-06-25.md [F:1d271ac9a0]: Claims audit, 2026-06-25
+- modonome/docs/compliance/compliance.md [F:e50b085c0c]: Compliance
+- modonome/docs/compliance/eu-ai-act-classification.md [F:e8e47b4070]: EU AI Act Classification
+- modonome/docs/enterprise.md [F:93b814d922]: Enterprise estates
+- modonome/docs/guidelines/markdown-governance.md [F:3a3a27ad91]: Markdown governance policy
+- modonome/docs/knowledge-network-architecture.md [F:5c37b9bc84]: Cross-Repo Knowledge Network: v0.2 Architecture
+- modonome/docs/ops/merge-governance-setup.md [F:9d29ecd9ed]: Merge governance setup (owner action)
+- modonome/docs/ops/runner-model-config.md [F:e61c5a2894]: Runner and Model Configuration (WS-H)
+- modonome/docs/research/README.md [F:e26867ea58]: Modonome Research Directions
+- modonome/docs/research/agentic-governance-mesh/00-RESEARCH-PLAN.md [F:5d9dcf888d]: Agentic Governance Mesh: Research Direction
+- modonome/docs/research/agentic-governance-mesh/RD-027-governance-packet-protocol.md [F:3f5b261465]: RD-027: Governance Packet Protocol
+- modonome/docs/research/agentic-governance-mesh/RD-028-trust-network-and-discovery.md [F:f5893baf3a]: RD-028: Trust Network & Discovery
+- modonome/docs/research/agentic-governance-mesh/RD-029-packet-lifecycle-and-versioning.md [F:648f790738]: RD-029: Packet Lifecycle & Versioning
+- modonome/docs/research/agentic-governance-mesh/RD-030-cross-repo-governance-feedback.md [F:ae47d99e42]: RD-030: Cross-Repo Governance Feedback
+- modonome/docs/research/agentic-governance-mesh/RD-031-semantic-compatibility-and-conflicts.md [F:4c93c5e8fe]: RD-031: Semantic Compatibility & Conflicts
+- modonome/docs/research/agentic-governance-mesh/RD-032-network-level-ratchet.md [F:ee7bfba513]: RD-032: Network-Level Ratchet
+- modonome/docs/research/agentic-governance-mesh/governance-mesh-vision.md [F:d09a19a7c1]: The Governance Mesh Vision: Modonome as a WWW for Repositories
+- modonome/docs/specs/governed-autonomy-spec.md [F:b1a7f9f5f1]: Governed Autonomy: A Specification for Safe Autonomous Software Engineering Agents
+- modonome/docs/specs/ratchet-spec.md [F:55782eb44e]: Anti-Gaming Ratchet Specification
+- modonome/docs/versioning.md [F:3f20965fe2]: Versioning and embedding
+- modonome/docs/vscode-workflow.md [F:a3e626523d]: VS Code manual trigger workflow
+- modonome/examples/demo-app/README.md [F:09ad97f1b7]: modonome-demo
+- modonome/examples/demo-app/WALKTHROUGH.md [F:4ffe30e0e8]: Modonome on this demo app: captured dry-run + maker/checker cycle
+- modonome/examples/demo-app/src/CartService.js [F:9b34aa65e8]: CartService: manages user shopping carts stored in memory.
+- modonome/examples/demo-app/src/CheckoutService.js [F:c060c516f3]: CheckoutService: drives the checkout flow from cart to order.
+- modonome/examples/demo-app/src/InventoryService.js [F:aa16e5cab8]: InventoryService: tracks stock levels for products in memory.
+- modonome/examples/demo-app/src/NotificationService.js [F:825b61ddca]: NotificationService: records notifications sent to users.
+- modonome/examples/demo-app/src/OrderService.js [F:6702e39956]: OrderService: creates and manages orders.
+- modonome/examples/demo-app/src/PaymentProcessor.js [F:ebc685a8b4]: PaymentProcessor: wraps a payment gateway with amount conversion.
+- modonome/examples/demo-app/src/index.js [F:2661bf859c]: Composition root for the demo app.
+- modonome/examples/demo-app/tests/CartService.test.js [F:9257723e82]: function makeDb
+- modonome/examples/demo-app/tests/CheckoutService.test.js [F:757c2bb256]: function makeCartService
+- modonome/examples/demo-app/tests/InventoryService.test.js [F:77b07bffea]: function makeDb
+- modonome/examples/demo-app/tests/OrderService.test.js [F:25e87dfcce]: Tests for OrderService.
+- modonome/examples/demo-app/tests/PaymentProcessor.test.js [F:1229733eaa]: function makeGateway
+- modonome/examples/node-typescript/README.md [F:2bd6e850ad]: Example: Node and TypeScript service
+- modonome/examples/node-typescript/src/checkout.ts [F:78870533d8]: type Card
+- modonome/examples/python-service/README.md [F:2e9228b32a]: Example: Python service
+- modonome/examples/python-service/app/orders.py [F:5b27e3c674]: Apply a percentage discount to a list of items. Args: items: List of dicts with "price" key discount_percent: Discount percentage (0-100) Returns: Total after d
+- modonome/examples/python-service/tests/test_orders.py [F:08056f009e]: Test discount with 0% - should return full amount. Note: This covers only the zero-discount case. The function should be tested with non-zero discounts (10%, 50
+- modonome/fixtures/evidence-tampered.md [F:6345b6d776]: RELEASE-EVIDENCE
+- modonome/fixtures/negative-controls/app-syntax-error.js [F:a13ad3ae06]: Negative control: intentional syntax error in example app
+- modonome/fixtures/portability/prompt-injection-host/docs/guide.md [F:6ff1fff6d9]: Host Documentation
+- modonome/fixtures/portability/prompt-injection-host/src/main.js [F:d4bfbb023b]: This file contains adversarial content in comments that should not affect Modonome.
+- modonome/fixtures/portability/schema-collision/README.md [F:2e4a571def]: Schema Collision Fixture
+- modonome/prompts/modonome.bundle.md [F:57485f95be]: Modonome Master Prompt (core)
+- modonome/prompts/modonome.core.md [F:5a41d65a1c]: Modonome Master Prompt (core)
+- modonome/prompts/modules/adoption.md [F:2a6d5dcf71]: Adoption pass
+- modonome/prompts/modules/control-panel.md [F:c65c7668da]: Operator control panel
+- modonome/prompts/modules/gates.md [F:0c6d7ed102]: Deterministic gates
+- modonome/prompts/modules/network.md [F:14d4b3d4d8]: Cross-repo knowledge network
+- modonome/prompts/modules/roles.md [F:57e06518df]: Agent roles
+- modonome/prompts/modules/state-machine.md [F:0c2cd84f27]: Durable state machine
+- modonome/scripts/agent/render-prompt.mjs [F:3c15b74b05]: Substitute every ${VAR} from env. Throw if a referenced variable is unset, so a missing identity or branch fails loudly instead of rendering an empty value into
+- modonome/scripts/agent/resolve-role.mjs [F:cb249e0013]: Resolve runner and model settings for a named role. * * @param {object} cfg - Parsed config object (output of parseFlatYaml or loadConfig). * @param {string} ro
+- modonome/scripts/agent/run-cycle.mjs [F:d1bf4c847b]: Resolve and validate a full cycle plan without calling any model. Pure: it reads the passed config and runId and throws on any policy violation. This is the tes
+- modonome/scripts/assert-governed-change.mjs [F:c78817d011]: !/usr/bin/env node
+- modonome/scripts/audit-learnings.mjs [F:c996c3a65b]: !/usr/bin/env node
+- modonome/scripts/build-prompt.mjs [F:49ab69598d]: !/usr/bin/env node
+- modonome/scripts/build-release-evidence.mjs [F:bbaa141131]: Sample-app captures: real maker and checker runs recorded under examples/<app>/runs/. These directories are committed (unlike the gitignored .modonome/runs/), s
+- modonome/scripts/check-checker-engagement.mjs [F:31d5be125e]: !/usr/bin/env node
+- modonome/scripts/check-drift.mjs [F:1c24d80b34]: !/usr/bin/env node
+- modonome/scripts/check-edit-set-compliance.mjs [F:70dfc37197]: !/usr/bin/env node
+- modonome/scripts/check-evidence-secrets.mjs [F:418726e0a1]: Resolve the list of files to scan. If a path argument is supplied use it directly; otherwise walk examples/runs/metrics.jsonl via readdirSync.
+- modonome/scripts/check-gate-dag.mjs [F:029548088d]: gateGraphErrors(graph) -> { errors: [...], order: [...] } `errors` lists every defect (dangling edge or cycle); when it is empty, `order` holds a topological or
+- modonome/scripts/check-md-governance.mjs [F:5f57d51aa6]: 4. ADR number uniqueness across docs/adr and docs/research.
+- modonome/scripts/check-portability.mjs [F:83f6984d88]: !/usr/bin/env node
+- modonome/scripts/check-promotion-readiness.mjs [F:d1fcc82276]: Check that a section appears as a Markdown heading (h1-h6), so a one-line ADR with the section words buried in prose cannot game the gate.
+- modonome/scripts/check-repo-hygiene.mjs [F:c2c9bd2116]: Helper
+- modonome/scripts/check-self-application.mjs [F:862076978e]: 4. The two protected-path surfaces must agree. CODEOWNERS is what GitHub enforces; protected_paths_extra is what the engine reads. If they disagree, a path is p
+- modonome/scripts/check-state-machine-acyclic.mjs [F:f9556837ea]: Build the adjacency map { state: [to, ...] } from the transition list. When includeCapGuard is false, cap_guard edges are dropped: those are the sanctioned boun
+- modonome/scripts/check-style.mjs [F:455576414e]: !/usr/bin/env node
+- modonome/scripts/dry-run-sweep.mjs [F:c143490d2a]: !/usr/bin/env node
+- modonome/scripts/guard-ratchet.mjs [F:215f542349]: !/usr/bin/env node
+- modonome/scripts/lib/graph.mjs [F:55f93cdc43]: isCyclic(adjacency) -> { cyclic: bool, cycle: [...] } Detects whether the graph contains a cycle. When a cycle is found, `cycle` holds the nodes involved in the
+- modonome/scripts/lib/jsonschema.mjs [F:98b6d2511c]: A small, dependency-free JSON Schema validator.
+- modonome/scripts/lib/learnings.mjs [F:97cfc83c7c]: Extract the first fenced json block that appears after the "## Promoted" heading.
+- modonome/scripts/lib/run-gate-capped.mjs [F:fd210e7df1]: Thin wrapper around spawnSync with a hard timeout and output-size cap.
+- modonome/scripts/lib/secret-patterns.mjs [F:415e55f5a3]: Returns an array of { name } objects for every pattern that matches text.
+- modonome/scripts/lib/yaml-lite.mjs [F:61fcb417a3]: Parse a raw value string from after the colon, handling inline comments and quoted strings. Returns the trimmed scalar text or empty string.
+- modonome/scripts/mcp-server.mjs [F:26e5ac1d2f]: !/usr/bin/env node
+- modonome/scripts/migrate-config.mjs [F:1f810973a3]: Safe defaults for every lever. Migration fills any missing key from here.
+- modonome/scripts/preflight-embedding.mjs [F:86b4bb7edc]: Minimal, dependency-free scan for top-level YAML job names under `jobs:`.
+- modonome/scripts/release.mjs [F:8365c044db]: !/usr/bin/env node
+- modonome/scripts/report.mjs [F:243fafb24e]: !/usr/bin/env node
+- modonome/scripts/run-gate-pipeline.mjs [F:e8fc6fd5f8]: parseArgs(argv) -> { diff, "work-item" } map of fixture paths by gate arg name.
+- modonome/scripts/scaffold.mjs [F:2530664271]: !/usr/bin/env node
+- modonome/scripts/sync-site-data.mjs [F:d6fb870676]: Parse RELEASE-EVIDENCE.md to extract gate counts and autonomy status
+- modonome/scripts/transition-work-item.mjs [F:f3b2bc2913]: A lease is "live" if it has an owner and an unexpired lease_expires_at. The lease holder is recorded as lease_owner (the field this swap writes) or, for older i
+- modonome/scripts/validate-config.mjs [F:19a4e5c8e6]: Safety rules beyond structural validation. These keep a config from claiming an armed posture without the controls that make arming safe. Note on arming levers:
+- modonome/scripts/validate-knowledge-packet.mjs [F:444d7f4cb1]: !/usr/bin/env node
+- modonome/scripts/validate-work-item.mjs [F:2994383bf6]: Resolve a model name to its family by longest-matching prefix. Returns null when no prefix matches, so unrecognized models are treated as distinct families (the
+- modonome/site/README.md [F:5fca96d766]: Modonome landing page (modonome.com)
+- modonome/site/index.html [F:0e706d689b]: class Component
+- modonome/templates/.modonome/DECISIONS.md [F:a508fee727]: Modonome decisions
+- modonome/templates/.modonome/LEARNINGS.md [F:90589362b9]: Learnings, staged candidate conventions
+- modonome/templates/.modonome/NETWORK.md [F:59a3fa8a79]: Cross-repo network
+- modonome/templates/.modonome/STATUS.md [F:04f7e245c7]: Modonome status
+- modonome/templates/.modonome/control-panel.md [F:7afc761adf]: Modonome control panel
+- modonome/tests/arming.test.mjs [F:fef7d05751]: function tmpRepo
+- modonome/tests/chaos.test.mjs [F:5f753ce350]: Chaos test helper: any call must either return errors cleanly OR not throw. A crash or hang is a failure.
+- modonome/tests/cli-dispatch.test.mjs [F:d1a2d3a59f]: function cli
+- modonome/tests/dependency.test.mjs [F:92919b6198]: Read all .mjs files in a directory (non-recursive by default).
+- modonome/tests/dry-run.test.mjs [F:609328ee50]: function dryRun
+- modonome/tests/e2e.test.mjs [F:688d91b28b]: function tmp
+- modonome/tests/embedding-safety.test.mjs [F:61050b8b88]: Run preflight in --json mode against a fixture. Returns { code, report, raw }. A clean environment is used so the host's own MODONOME_* shell does not leak into
+- modonome/tests/learnings.test.mjs [F:6e5a96bba3]: function run
+- modonome/tests/maker-checker.test.mjs [F:38bc512830]: function run
+- modonome/tests/metrics.test.mjs [F:c2e06e51a0]: Schema-conformant event line using "event" field (not "type").
+- modonome/tests/performance.test.mjs [F:3f5a8ac280]: Build a synthetic 1000-line diff that is clean (no gaming patterns).
+- modonome/tests/portability.test.mjs [F:7bd664ec9d]: Run validate-config.mjs against a given config path.
+- modonome/tests/provenance.test.mjs [F:45780be2ea]: Base valid packet factory: returns a fresh object each call.
+- modonome/tests/ratchet.test.mjs [F:ddef457783]: function ratchet
+- modonome/tests/rollback.test.mjs [F:4595224a8e]: Recursively snapshot path -> "size:sha-like(content)" for every file.
+- modonome/tests/run-log.test.mjs [F:964df2d250]: function tmp
+- modonome/tests/self-application.test.mjs [F:632c0210cc]: Build a minimal passing temp repo and return the path. Caller must rmSync(tmp, {recursive:true}).
+- modonome/tests/tick.test.mjs [F:f6d6e27b74]: function tmp
+- modonome/tests/ws-b-harness.test.mjs [F:ccf5990660]: A config fixture with distinct maker/checker models and a models registry.
+- modonome/tests/ws-e-negative-controls.test.mjs [F:7c35311e70]: WS-E: negative-control fixtures that prove governance gates have teeth.
+- modonome/tests/ws-e-ratchet-languages.test.mjs [F:ce0dff846d]: function runRatchet
 - prompts/modonome.bundle.md [F:c0714e4bf0]: Modonome Master Prompt (core)
 - prompts/modonome.core.md [F:1c3b1b469e]: Modonome Master Prompt (core)
 - prompts/modules/adoption.md [F:41623f0bcd]: Adoption pass
@@ -254,6 +433,7 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - scripts/build-compliance-evidence.mjs [F:2e327963ed]: Observe concrete facts about a repository. Pure with respect to its inputs: it only reads the filesystem under root and returns a plain object.
 - scripts/build-prompt.mjs [F:c4395c3023]: !/usr/bin/env node
 - scripts/build-release-evidence.mjs [F:9344d335a6]: Sample-app captures: real maker and checker runs recorded under examples/<app>/runs/. These directories are committed (unlike the gitignored .modonome/runs/), s
+- scripts/check-architecture-drift.mjs [F:4749cc43a0]: Escape regex metacharacters so an unexpected schema value (e.g. containing "." or "+") cannot produce an invalid pattern or change what the word-boundary match 
 - scripts/check-checker-engagement.mjs [F:fc5d887ff6]: !/usr/bin/env node
 - scripts/check-decisions-authority.mjs [F:92d6903b5f]: Parse DECISIONS.md text into heading violations and Resolved-section entries.
 - scripts/check-drift.mjs [F:87c30bdb4c]: !/usr/bin/env node
@@ -261,7 +441,7 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - scripts/check-evidence-secrets.mjs [F:ace169adc4]: Resolve the list of files to scan. If a path argument is supplied use it directly; otherwise walk examples/runs/metrics.jsonl via readdirSync.
 - scripts/check-gate-dag.mjs [F:fc21812307]: gateGraphErrors(graph) -> { errors: [...], order: [...] } `errors` lists every defect (dangling edge or cycle); when it is empty, `order` holds a topological or
 - scripts/check-licenses.mjs [F:cc361bd05a]: Core check. Takes the parsed package.json and (optional) adapters manifest and returns a list of human-readable problem strings. Pure: no filesystem or network.
-- scripts/check-md-governance.mjs [F:fd08562f92]: 4. ADR number uniqueness across docs/adr and docs/research.
+- scripts/check-md-governance.mjs [F:fd08562f92]: 4. ADR number uniqueness within docs/adr, and across docs/adr and docs/research.
 - scripts/check-portability.mjs [F:2d4c555ba1]: !/usr/bin/env node
 - scripts/check-promotion-readiness.mjs [F:c5938c33fd]: Check that a section appears as a Markdown heading (h1-h6), so a one-line ADR with the section words buried in prose cannot game the gate.
 - scripts/check-repo-hygiene.mjs [F:61296e720c]: Helper
@@ -270,11 +450,13 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - scripts/check-style.mjs [F:ca0833ac73]: !/usr/bin/env node
 - scripts/dry-run-sweep.mjs [F:6f247eb514]: Only fires when the swept repo actually has a control panel at apps/control-panel (auditCoverage/auditCoherence report `skipped: true` and this returns nothing 
 - scripts/guard-ratchet.mjs [F:8a10462927]: !/usr/bin/env node
+- scripts/hygiene.mjs [F:90e1fd2fd9]: Collect findings for the current branch, the commits unique to it, and the PR-body-shaped surfaces we can see locally (the commit bodies themselves).
 - scripts/install-hooks.mjs [F:a7ce0f6452]: True when targetRoot is modonome's own repo (not a host that merely depends on it or vendored a copy of these scripts). Checked by package.json name rather than
 - scripts/lib/branch-name.mjs [F:6e0bd62fa3]: True when the first path segment of a branch name equals a denylisted token. * Matching is case-insensitive. "feature/ai-adapter" is allowed because the * first
 - scripts/lib/canonical-json.mjs [F:245efb551c]: Domain separation tag binds a signature to this packet type and version so a signature over one structure cannot be replayed as another.
 - scripts/lib/commit-identity.mjs [F:e4ff19bbe2]: True when a name or email belongs to a denylisted agent or vendor identity. * Real automation such as dependabot is allowed; only coding-agent and model * vendo
 - scripts/lib/control-panel-audit.mjs [F:1a19f02364]: Today's real high-water mark is 7 (Arming & Safety, Caps & budget tab). The budget is set a few above that: a real ratchet against regression, not an arbitrary 
+- scripts/lib/detect-attribution.mjs [F:4a7eaceb5c]: True when any path segment of a branch name exactly equals a denylisted token. * This is a strict superset of isModelIdentifierBranch (which checks only the fir
 - scripts/lib/ed25519.mjs [F:0cacf66a3b]: Raw 32-byte public key as base64, accepting either a public or private KeyObject.
 - scripts/lib/graph.mjs [F:f51cba9beb]: isCyclic(adjacency) -> { cyclic: bool, cycle: [...] } Detects whether the graph contains a cycle. When a cycle is found, `cycle` holds the nodes involved in the
 - scripts/lib/jsonschema.mjs [F:34cb2b6c48]: A small, dependency-free JSON Schema validator.
@@ -327,8 +509,11 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - tests/action-queue.test.mjs [F:195e9217ca]: function tmpQueue
 - tests/arming.test.mjs [F:60548316f5]: function tmpRepo
 - tests/chaos.test.mjs [F:8fe56e5618]: Chaos test helper: any call must either return errors cleanly OR not throw. A crash or hang is a failure.
+- tests/check-architecture-drift.test.mjs [F:564b053598]: function makeMinimalRepo
+- tests/check-md-governance.test.mjs [F:0391f3b249]: Build a minimal repo that satisfies the root allow-list, protected-file manifest, link integrity, and audit-naming checks, so only the ADR-number logic under te
 - tests/cli-dispatch.test.mjs [F:40e4f39b59]: function cli
 - tests/compliance-evidence.test.mjs [F:3ea503e7c0]: Helper reused by the mapping test.
+- tests/config-key-parity.test.mjs [F:5eff4122c0]: Extract the string literals inside a named list/set declaration, regardless of whether it is `new Set([...])` or `[...] as const`.
 - tests/decisions-authority.test.mjs [F:f921eecad7]: A repo with one commit (base: entry "a" only) and a second commit that adds a new Resolved entry "b" on top. Returns { dir, baseSha }.
 - tests/dependency.test.mjs [F:b70824b13e]: Read all .mjs files in a directory (non-recursive by default).
 - tests/dry-run.test.mjs [F:778c33cdc0]: function dryRun
@@ -381,10 +566,21 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - S:4d0bae812e function round `function round(n, places = 6)` L91
 - S:b88ce47ede function attentionRank `export function attentionRank(paths, { churn = new Map(), centralityMap = new Map(), pagerankMap = new Map() } = {})` L98 : Rank files by a normalized composite of churn, centrality, and PageRank. Returns a sorted list of { path, churn, centrality, pagerank, score }, highest first.
 - S:5ad0c942a1 function findCycle `export function findCycle(adj)` L117 : Report whether the import graph has a cycle and one example cycle, reusing the shared cycle detector so the snapshot can warn about circular dependencies.
+### modonome/scripts/check-gate-dag.mjs [F:029548088d]
+- S:f51e232b3c function gateGraphErrors `export function gateGraphErrors(graph)` L20 : gateGraphErrors(graph) -> { errors: [...], order: [...] } `errors` lists every defect (dangling edge or cycle); when it is empty, `order` holds a topological ordering with dependencies before dependen
 ### agentproof/scenarios/ap-33-config-env-override-inert.mjs [F:02a5f8fc55]
 - S:1e6749f65a function run `function run(env)` L31
+### tests/check-md-governance.test.mjs [F:0391f3b249]
+- S:c932c7339f function makeMinimalRepo `function makeMinimalRepo()` L15 : Build a minimal repo that satisfies the root allow-list, protected-file manifest, link integrity, and audit-naming checks, so only the ADR-number logic under test can make the run fail or pass.
+- S:0ab594146c function runScript `function runScript(tmp)` L33
+- S:689125598d function makeMinimalGitRepo `function makeMinimalGitRepo()` L43 : A git-init'd variant of makeMinimalRepo(), for the staleness check, which shells out to `git log` and needs a real repository to query.
+- S:bac2ebbef5 function gitCommit `function gitCommit(tmp, message)` L53
+- S:cd2e7eba8f function gitCommitAt `function gitCommitAt(tmp, message, isoDate)` L61 : Commit with an explicit, backdated timestamp, so staleness tests do not depend on same-day wall-clock ordering between setup commits and a `last_reviewed` stamp (git's `--since` treats a bare date as 
 ### examples/demo-app/tests/OrderService.test.js [F:044b762a79]
 - S:949f988c9e function makeDb `function makeDb(orders = new Map())` L10
+### modonome/examples/python-service/tests/test_orders.py [F:08056f009e]
+- S:4a3379e2f4 function test_total_sums_prices `def test_total_sums_prices()` L4
+- S:b162b09cfd function test_apply_discount_zero_percent `def test_apply_discount_zero_percent()` L8 : Test discount with 0% - should return full amount. Note: This covers only the zero-discount case. The function should be tested with non-zero discounts (10%, 50%, etc.) to verify correct discount calc
 ### design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx [F:08064e0c53]
 - S:0a11409d06 interface WorkItemDetail `export interface WorkItemDetail extends WorkItemSummary` L14 : Full detail for a single work item, as shown in the read-only inspector drawer. * Extends the card summary shape with the fields only needed once someone opens the * item: identities, lease, allowed e
 - S:6a4d8aa30d interface WorkItemDrawerProps `export interface WorkItemDrawerProps` L31
@@ -424,6 +620,11 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - S:cefb8c3f64 interface PanelSource `export interface PanelSource` L197 : Where a loaded PanelState actually came from, so the UI never presents demo data as real.
 - S:4a0171ecb5 interface PanelState `export interface PanelState` L206
 - S:a2d9480f78 interface WriteActions `export interface WriteActions` L231 : The write side of the panel, threaded down from App to the screens that mutate real * state. Every call here hits a real file on disk when `writable` is true; screens must * still confirm before calli
+### modonome/bin/modonome.mjs [F:0bcdaa56a9]
+- S:13c3821a9f function resolveArming `export function resolveArming(targetDir, env = process.env)` L35 : The authoritative arming gate. A config file the agent can write can never arm the engine on its own: arming requires the MODONOME_ARMED=true environment variable, which lives in CI or operator scope,
+- S:80c78d7850 function run `function run(script, args)` L56
+- S:cb39c074a5 function targetDirFrom `function targetDirFrom(rest)` L66
+- S:4096977e59 function main `function main(argv)` L70
 ### scripts/verify-packet.mjs [F:0c1c5ad5d9]
 - S:6dd199eea1 function resolveActiveKey `export function resolveActiveKey(peerKeys, alias, now = new Date())` L19 : Resolve an alias to an active, in-window key entry in the allowlist.
 - S:f3b8628cdb function verifyPacket `export function verifyPacket(packet, peerKeys, { now = new Date(), skipContentGate = false } = {})` L35 : Full ordered verification. options.skipContentGate runs only the signature checks (steps 3 to 5), used when the caller already ran the schema and redaction gate.
@@ -439,6 +640,8 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 ### apps/control-panel/src/state/arming.ts [F:0da05a2a05]
 - S:f2e1ea8458 function deriveMode `export function deriveMode(config: ModonomeConfig, envArmed: boolean): ArmingMode` L16
 - S:97bc3f0eb4 function deriveArming `export function deriveArming(` L22
+### modonome/site/index.html [F:0e706d689b]
+- S:6cc6721d2c class Component `class Component extends DCLogic` L613
 ### .design-sync/previews/StatusPill.tsx [F:10e76cfcd3]
 - S:a3fb13b441 function Tones `export const Tones = () => (` L4
 ### apps/control-panel/src/App.tsx [F:113387361d]
@@ -452,6 +655,8 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - S:ed24428ce0 function gitHead `export function gitHead(root)` L50 : The current git HEAD sha for the repo, or null when unavailable.
 - S:236237bc1b function unquote `function unquote(p)` L56 : Strip git's optional quoting from a porcelain path.
 - S:93d0a78f18 function changedPaths `export function changedPaths(root, cache)` L65 : The set of paths that changed since the cache was built: uncommitted work (git status) plus commits since cache.built_at_head. Returns null when git is not usable, which forces a full rebuild.
+### modonome/examples/demo-app/tests/PaymentProcessor.test.js [F:1229733eaa]
+- S:c1d2461f3b function makeGateway `function makeGateway()` L5
 ### scripts/lib/packet-id.mjs [F:12c7a4e461]
 - S:3968554637 const VOLATILE_FIELDS `export const VOLATILE_FIELDS = ['id', 'signature'];` L8
 - S:9f7fa8d585 function packetContent `export function packetContent(packet)` L10
@@ -475,6 +680,10 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 ### tests/action-queue.test.mjs [F:195e9217ca]
 - S:0064b473e6 function tmpQueue `function tmpQueue()` L14
 - S:d240732a9d function sampleAction `function sampleAction(id, target = "ci")` L18
+### modonome/scripts/validate-config.mjs [F:19a4e5c8e6]
+- S:20166c1472 function loadConfig `export function loadConfig(path)` L13
+- S:cf3faf9c70 function safetyErrors `export function safetyErrors(cfg)` L27 : Safety rules beyond structural validation. These keep a config from claiming an armed posture without the controls that make arming safe. Note on arming levers: config values such as autonomy_enabled 
+- S:5294eba3f8 function validateConfig `export function validateConfig(cfg)` L53
 ### design-system/src/components/ConceptTile/ConceptTile.tsx [F:1a137480ae]
 - S:05a5299b28 interface ConceptTileProps `export interface ConceptTileProps extends ButtonHTMLAttributes<HTMLButtonElement>` L5
 - S:14c08c7efc function ConceptTile `export function ConceptTile({ icon, label, tag, className, ...rest }: ConceptTileProps)` L20 : A compact, focusable tile naming one engine concept: an icon, its name, and a short * category tag. Renders as a real button so it is keyboard-reachable on its own, meant * to be wrapped in a HoverCar
@@ -489,6 +698,10 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - S:762b3eaf4a function Models `export const Models = () => (` L17
 ### tests/ws-b-harness.test.mjs [F:1bcaaff9eb]
 - S:fc01241f03 function cfg `function cfg(overrides = {})` L13 : A config fixture with distinct maker/checker models and a models registry.
+### modonome/scripts/check-drift.mjs [F:1c24d80b34]
+- S:d00a4f98af function coreLevers `function coreLevers()` L16
+- S:ca168a4ae9 function schemaLevers `function schemaLevers()` L25
+- S:85e5858cca function templateLevers `function templateLevers()` L30
 ### scripts/lib/snapshot-anchors.mjs [F:1cf31c4792]
 - S:55b15c0abb function short `function short(text, len = 10)` L9 : A short, stable id from a string. Hex keeps it deterministic across platforms.
 - S:2e016b842d function fileAnchor `export function fileAnchor(relPath)` L13
@@ -508,10 +721,23 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - S:5a6c3aef24 class OrderService `export class OrderService` L7
 ### .design-sync/previews/Slider.tsx [F:1f40b6eb6e]
 - S:a2fef04067 function Budget `export const Budget = () => (` L4
+### modonome/scripts/migrate-config.mjs [F:1f810973a3]
+- S:fc08b277ab const CURRENT_SCHEMA_VERSION `export const CURRENT_SCHEMA_VERSION = 1;` L10
+- S:d72ee8a81c const SAFE_DEFAULTS `export const SAFE_DEFAULTS =` L13 : Safe defaults for every lever. Migration fills any missing key from here.
+- S:d47c94165a function migrate `export function migrate(cfg)` L57
 ### design-system/src/components/Toggle/Toggle.tsx [F:214cc0a5f4]
 - S:537ea4dfe0 type ToggleTone `export type ToggleTone = "primary" | "info" | "owner";` L5
 - S:cd836c2fc7 interface ToggleProps `export interface ToggleProps` L7
 - S:84b00e90de function Toggle `export function Toggle(` L28 : An accessible switch for boolean config such as dry_run, auto_merge, or * local_model_only_by_default. Implemented as a `role="switch"` button rather * than a checkbox so the on/off semantics are anno
+### modonome/scripts/guard-ratchet.mjs [F:215f542349]
+- S:e111fab8d9 function normalizeLF `function normalizeLF(s)` L20
+- S:c7634d361e function getDiff `function getDiff()` L24
+- S:d359cd25ba function count `function count(lines, re)` L258
+- S:eec3cd695b function deconfuse `function deconfuse(line)` L277
+- S:4310bdbafc function stripInlineComment `function stripInlineComment(line)` L285
+- S:4eaad4ec1b function isVacuousAssertion `function isVacuousAssertion(line)` L290
+- S:d717222831 function countBareAsserts `function countBareAsserts(lines)` L300
+- S:a51958bf10 function isVacuousPyAssert `function isVacuousPyAssert(line)` L308
 ### .design-sync/previews/ActivationLadder.tsx [F:2207a6ebce]
 - S:b919653baa function DryRun `export const DryRun = () => (` L44
 - S:ea5d04ea13 function Armed `export const Armed = () => (` L48
@@ -527,6 +753,13 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - S:0a5fed1978 function loadFixtures `export function loadFixtures(dir)` L57 : Load every fixture JSON file from a directory. * @param {string} dir directory holding fixture *.json files * @returns {Array<object>} parsed fixture objects, sorted by file name for stable output
 - S:407ded8730 function evaluateFixture `export function evaluateFixture(fixture, promptText)` L77 : Evaluate one fixture against the committed prompt text. A fixture is ok only when * every one of its anchors is present, meaning the governing rule that produces its * golden decision still exists in 
 - S:c2e641f1c8 function runSuite `export function runSuite(root, fixturesDir)` L100 : Run the whole suite: load fixtures, resolve prompt text, evaluate each. * @param {string} root repository root * @param {string} fixturesDir directory holding fixtures * @returns {{ results: Array<{id
+### modonome/scripts/report.mjs [F:243fafb24e]
+- S:b9206c2ac1 function writeRunLog `function writeRunLog(runsDir, command, payload)` L16
+- S:0f1beb8a34 function pad `function pad(s, n) { return String(s).padEnd(n); }` L29
+- S:d4e1609962 function rpad `function rpad(s, n) { return String(s).padStart(n); }` L30
+- S:678ccaad6c function parseMetrics `function parseMetrics()` L32
+- S:9b936c4c55 function summarize `function summarize(events)` L41
+- S:70d51e8a7c function agentproofScore `function agentproofScore()` L76
 ### scripts/lib/canonical-json.mjs [F:245efb551c]
 - S:76171943e3 function canonicalize `export function canonicalize(value)` L7
 - S:781c4112a2 const PACKET_DOMAIN `export const PACKET_DOMAIN = 'modonome.knowledge-packet.v1\n';` L22 : Domain separation tag binds a signature to this packet type and version so a signature over one structure cannot be replayed as another.
@@ -536,22 +769,42 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 ### .design-sync/previews/LearningCard.tsx [F:250c8a0d4a]
 - S:7d5af2fca1 function Staged `export const Staged = () => (` L22
 - S:dd05df51d3 function Promoted `export const Promoted = () => <LearningCard learning={promotedLearning} />;` L26
+### modonome/scripts/scaffold.mjs [F:2530664271]
+- S:7ba529ec85 function listTemplate `function listTemplate(dir, base = "")` L13
+- S:6bd43ecef0 function scaffold `export function scaffold(target, write)` L24
+- S:984b5960cc function writeRunLog `function writeRunLog(runsDir, command, payload)` L58
 ### scripts/lib/lang-adapters/index.mjs [F:2554ddd30c]
 - S:4df7a92e8e function registerAdapter `export function registerAdapter(adapter)` L15
 - S:a07487517b function getAdapter `export function getAdapter(relPath)` L25 : Resolve the adapter for a path by extension, defaulting to the generic fallback.
 - S:ec18e42e1a function extractFile `export function extractFile(relPath, source)` L32 : Extract from one file, guarding against any adapter error so a single bad file never aborts a whole snapshot.
 ### apps/control-panel/src/state/configDiff.ts [F:25e649633c]
 - S:ea841eb82d function diffConfig `export function diffConfig(base: ModonomeConfig, edited: ModonomeConfig): Partial<ModonomeConfig>` L35
+### modonome/examples/demo-app/tests/OrderService.test.js [F:25e87dfcce]
+- S:9de6f4c077 function makeDb `function makeDb(orders = new Map())` L10
+### modonome/examples/demo-app/src/index.js [F:2661bf859c]
+- S:bea4288f1c function main `async function main()` L59
 ### design-system/src/components/AppShell/AppShell.tsx [F:268769c4a6]
 - S:4426823827 interface NavItem `export interface NavItem` L5
 - S:a4155f5067 interface AppShellProps `export interface AppShellProps` L16
 - S:24b854ce78 function BrandMark `function BrandMark()` L36 : The Modonome brand mark: a teal ring with a check on the dark ground.
 - S:5154763a93 function AppShell `export function AppShell(` L60 : The application frame: a fixed sidebar of primary navigation, a sticky top bar for * the mode switch and arming status, and a scrollable content column. It establishes * the mdn-root wrapper (the dark
+### modonome/scripts/mcp-server.mjs [F:26e5ac1d2f]
+- S:9c3070f1c9 function toolRatchet `async function toolRatchet(args)` L112
+- S:044f84b4c9 function toolValidateConfig `async function toolValidateConfig(args)` L159
+- S:8e58df27b5 function toolValidateWorkItem `async function toolValidateWorkItem(args)` L184
+- S:b50441c6b4 function toolStatus `async function toolStatus(args)` L208
+- S:e19125b9e5 function send `function send(obj)` L266
+- S:2ff80149f0 function errorResponse `function errorResponse(id, code, message)` L270
+- S:9c37d53f97 function handleRequest `async function handleRequest(req)` L274
 ### .design-sync/previews/ArmingStateBadge.tsx [F:28b7af3c53]
 - S:df7e6c1db0 function Disabled `export const Disabled = () => <ArmingStateBadge mode="disabled" size="md" />;` L4
 - S:36be7c4ac5 function DryRun `export const DryRun = () => <ArmingStateBadge mode="dry-run" size="md" />;` L6
 - S:813f68335e function Armed `export const Armed = () => <ArmingStateBadge mode="armed" envArmed size="md" />;` L8
 - S:28578fa81a function Large `export const Large = () => <ArmingStateBadge mode="armed" envArmed size="lg" />;` L10
+### modonome/scripts/validate-work-item.mjs [F:2994383bf6]
+- S:612dbf54d4 function modelFamily `function modelFamily(model)` L17 : Resolve a model name to its family by longest-matching prefix. Returns null when no prefix matches, so unrecognized models are treated as distinct families (they fall through the family check and are 
+- S:9ca73bd19d function governanceErrors `export function governanceErrors(item, config = {})` L30 : Governance rules that JSON Schema cannot express (cross-field invariants).
+- S:9b581ffdb1 function validateWorkItem `export function validateWorkItem(item, config = {})` L88
 ### tests/snapshot-golden.test.mjs [F:2a74ae3f05]
 - S:d595535449 function names `function names(result)` L9
 - S:a5baaff840 function modules `function modules(result)` L12
@@ -599,6 +852,8 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - S:a2d5fcb920 function GatesScreen `export function GatesScreen({ state }: { state: PanelState })` L12 : The integrity surface: the deterministic CI gates every change must pass, the * protected paths that require explicit owner approval, and the separation-of-duties * contract (distinct maker, checker, 
 ### .design-sync/previews/LeaseTable.tsx [F:31658eff0b]
 - S:6425f5a6c7 function WithLeases `export const WithLeases = () => <LeaseTable leases={leases} onRelease={() => {}} />;` L10
+### modonome/scripts/check-checker-engagement.mjs [F:31d5be125e]
+- S:0140b0b673 function readEvents `function readEvents(path)` L23
 ### scripts/lib/lang-adapters/python.mjs [F:3213d03b72]
 - S:618d055a7c function clean `function clean(text)` L5 : Dependency-free signature extractor for Python. It captures top-level def and class declarations (async included), their leading triple-quoted docstring, and import edges. Bodies are never included. e
 - S:37c1996b57 function signature `function signature(line)` L10
@@ -632,6 +887,8 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - S:cbbe6a270b function isPrivateHost `function isPrivateHost(baseUrl)` L33 : A base_url points at a private/self-hosted host when its hostname is localhost, a loopback address, a *.local mDNS name, or an RFC1918 range.
 - S:ff45c441d1 function canReach `export function canReach(target, roleEndpoint)` L62 : Decide whether a runner target can reach a role's endpoint. A target declares * its reach with optional fields on its config entry: * reachable_providers: provider names it can call (for example ["loc
 - S:55ee648216 function resolveExecutionTarget `export function resolveExecutionTarget(role, cfg)` L91 : Resolve the required execution target (environment id) for a role's model * endpoint. Reads cfg.runners and returns the first target that both declares an * environment and can reach the endpoint, pre
+### modonome/tests/maker-checker.test.mjs [F:38bc512830]
+- S:dbd147fd24 function run `function run(script, args = [], env = {})` L13
 ### scripts/report.mjs [F:3b382f95c0]
 - S:a9b3acb352 function writeRunLog `function writeRunLog(runsDir, command, payload)` L16
 - S:4118076b3e function pad `function pad(s, n) { return String(s).padEnd(n); }` L29
@@ -649,6 +906,8 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - S:bafcfbb33c function formatDelta `function formatDelta(n)` L224
 ### .design-sync/previews/Checkbox.tsx [F:3b4065b679]
 - S:b6eeacb415 function Requirement `export const Requirement = () => (` L4
+### modonome/scripts/agent/render-prompt.mjs [F:3c15b74b05]
+- S:7d9f8e832c function renderPrompt `export function renderPrompt(role, env = process.env)` L22 : Substitute every ${VAR} from env. Throw if a referenced variable is unset, so a missing identity or branch fails loudly instead of rendering an empty value into a model prompt.
 ### apps/control-panel/src/lib/confirm.tsx [F:3c479cac6e]
 - S:efea80af4e function ConfirmProvider `export function ConfirmProvider({ children }: { children: ReactNode })` L20 : Provides an imperative confirm() that resolves true when the operator approves. * Every destructive control in the panel awaits this before it fires, satisfying the * control-panel requirement of a co
 - S:7989466d34 function useConfirm `export function useConfirm(): ConfirmFn` L59
@@ -664,9 +923,11 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 ### tests/compliance-evidence.test.mjs [F:3ea503e7c0]
 - S:09a834e684 function makeRepo `function makeRepo(spec)` L14
 - S:64de4c98b6 function makeRepoOnce `function makeRepoOnce()` L91 : Helper reused by the mapping test.
+### modonome/tests/performance.test.mjs [F:3f5a8ac280]
+- S:f6c8abe425 function buildLargeDiff `function buildLargeDiff(lines)` L17 : Build a synthetic 1000-line diff that is clean (no gaming patterns).
 ### scripts/check-self-application.mjs [F:4096620673]
-- S:91c42b4f27 function read `function read(rel)` L20
-- S:87c8d03eb8 function dirsFromCodeowners `function dirsFromCodeowners()` L73 : 4. The two protected-path surfaces must agree. CODEOWNERS is what GitHub enforces; protected_paths_extra is what the engine reads. If they disagree, a path is protected in name only (the bin/ gap that
+- S:91c42b4f27 function read `function read(rel)` L21
+- S:87c8d03eb8 function dirsFromCodeowners `function dirsFromCodeowners()` L98 : 4. The two protected-path surfaces must agree. CODEOWNERS is what GitHub enforces; protected_paths_extra is what the engine reads. If they disagree, a path is protected in name only (the bin/ gap that
 ### tests/cli-dispatch.test.mjs [F:40e4f39b59]
 - S:daac1f172a function cli `function cli(...args)` L12
 - S:1c82a73570 function tmp `function tmp()` L19
@@ -674,15 +935,46 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - S:586705c7a0 type CardTone `export type CardTone = "default" | "raised";` L5
 - S:1ae77ae47b interface CardProps `export interface CardProps extends HTMLAttributes<HTMLDivElement>` L7
 - S:555c013724 function Card `export function Card(` L31 : The standard container surface for the control panel. Renders an optional header * row (eyebrow, title, help hint, and right-aligned actions) above a divider, then the * body. When no title, eyebrow, 
+### modonome/scripts/lib/secret-patterns.mjs [F:415e55f5a3]
+- S:01bf34c42f const SECRET_PATTERNS `export const SECRET_PATTERNS = [` L5
+- S:ff36edf7a0 function scanForSecrets `export function scanForSecrets(text)` L16 : Returns an array of { name } objects for every pattern that matches text.
+### modonome/scripts/check-evidence-secrets.mjs [F:418726e0a1]
+- S:309077a9e5 function resolveFiles `function resolveFiles(argPath)` L20 : Resolve the list of files to scan. If a path argument is supplied use it directly; otherwise walk examples/runs/metrics.jsonl via readdirSync.
 ### .design-sync/previews/Drawer.tsx [F:41f5ffe77a]
 - S:b6fce3a5a9 function ItemDetail `export const ItemDetail = () => (` L3
 ### .design-sync/previews/Modal.tsx [F:4387a44284]
 - S:afe9763761 function RaiseCap `export const RaiseCap = () => (` L3
+### modonome/scripts/validate-knowledge-packet.mjs [F:444d7f4cb1]
+- S:31cea80072 function redactionErrors `export function redactionErrors(packet)` L19
+- S:f6d7432406 function validatePacket `export function validatePacket(packet)` L45
+### modonome/scripts/check-style.mjs [F:455576414e]
+- S:e4ff4d0484 function walk `function walk(dir, out = [])` L21
+### modonome/tests/provenance.test.mjs [F:45780be2ea]
+- S:0409cf4fab function makePacket `function makePacket(overrides = {})` L7 : Base valid packet factory: returns a fresh object each call.
+### modonome/tests/rollback.test.mjs [F:4595224a8e]
+- S:e1d0e5941d function snapshot `async function snapshot(dir)` L27 : Recursively snapshot path -> "size:sha-like(content)" for every file.
+- S:d641d1aa7a function hash `function hash(buf)` L50 : Tiny content hash (FNV-1a): avoids a crypto import and is deterministic.
+- S:2cf7016bf2 function makeHostRepo `async function makeHostRepo()` L59
+- S:d6760ca4ca function runPreflight `function runPreflight(target)` L70
 ### tests/snapshot-incremental.test.mjs [F:4637e1fecb]
 - S:48356203e2 function repo `function repo()` L13
+### scripts/check-architecture-drift.mjs [F:4749cc43a0]
+- S:fd2e16186e function escapeRegExp `function escapeRegExp(s)` L67 : Escape regex metacharacters so an unexpected schema value (e.g. containing "." or "+") cannot produce an invalid pattern or change what the word-boundary match means. schemas/work-item.schema.json is 
 ### tests/self-application.test.mjs [F:48355ccf4d]
-- S:e3c36060ec function makeMinimalRepo `function makeMinimalRepo()` L64 : Build a minimal passing temp repo and return the path. Caller must rmSync(tmp, {recursive:true}).
-- S:7c9eb8f22d function runScript `function runScript(tmp)` L78
+- S:e3c36060ec function makeMinimalRepo `function makeMinimalRepo()` L87 : Build a minimal passing temp repo and return the path. Caller must rmSync(tmp, {recursive:true}).
+- S:7c9eb8f22d function runScript `function runScript(tmp)` L105
+- S:43cc2b28a1 function withStubRunner `function withStubRunner(tmp, score, extendedScore, totalScore)` L219
+### modonome/scripts/build-prompt.mjs [F:49ab69598d]
+- S:30a838374b function buildBundle `function buildBundle()` L24
+### scripts/lib/detect-attribution.mjs [F:4a7eaceb5c]
+- S:bb570e99d8 const AI_SIGNATURE_RE `export const AI_SIGNATURE_RE = new RegExp(P, "iu");` L40
+- S:ba4cb77f9c function branchHasModelSegment `export function branchHasModelSegment(name)` L51 : True when any path segment of a branch name exactly equals a denylisted token. * This is a strict superset of isModelIdentifierBranch (which checks only the first * segment): it also catches evasions 
+- S:4bfc88b9a8 function suggestBranchName `export function suggestBranchName(name)` L65 : Propose a compliant branch name by replacing any denylisted segment with a neutral * placeholder, preserving the rest of the path so the suggestion stays meaningful. * "claude/fix-config" -> "change/f
+- S:38e44b5fa7 function detectBranch `export function detectBranch(name)` L79 : Scan a branch name and return a finding if it carries a model identifier.
+- S:e0f397f4e1 function detectCommits `export function detectCommits(logOutput, bodies = [])` L103 : Scan commits for forbidden author/committer identity (reusing commit-identity.mjs) * AND for AI signatures inside commit-message bodies. The identity check and the body * check are complementary: the 
+- S:099c6ccde0 function detectText `export function detectText(kind, where, text)` L132 : Scan a block of free text (PR body, a comment, a tracked file) for AI signatures. * Returns one finding per matching line so the remedy can point at the exact spot.
+- S:6c21b6660b function firstMatch `function firstMatch(text)` L149
+- S:af6abeace9 function formatRemedy `export function formatRemedy(findings)` L159 : Render a precomputed, actionable remedy so a blocked violation is never a dead end. * The message names the exact fix and, where applicable, the literal git commands to * apply it, so a reviewer paste
 ### scripts/lib/snapshot-redact.mjs [F:4b91a9f65b]
 - S:3ef15e4c1b function redactText `export function redactText(text, { strict = false } = {})` L13 : Mask every matching secret in `text`. Returns { text, redactions } where each redaction records the pattern name and how many matches it masked.
 ### scripts/lib/learnings.mjs [F:4ebb5aa8a0]
@@ -702,6 +994,13 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - S:5ea90f5e50 class CheckoutService `export class CheckoutService` L3
 ### apps/control-panel/server/learningsFormat.mjs [F:54df44aadd]
 - S:712330cf3e function parseStagedLine `export function parseStagedLine(line)` L6
+### modonome/scripts/lib/graph.mjs [F:55f93cdc43]
+- S:ac412385f3 function isCyclic `export function isCyclic(adjacency)` L11 : isCyclic(adjacency) -> { cyclic: bool, cycle: [...] } Detects whether the graph contains a cycle. When a cycle is found, `cycle` holds the nodes involved in the order they were detected via DFS (the f
+- S:08ebb57f4b function topoSort `export function topoSort(adjacency, nodes)` L48 : topoSort(adjacency, nodes) -> { order: [...], error?: string } Returns a topological ordering of `nodes` given the directed edges in `adjacency`. Nodes not present in `nodes` but reachable via edges a
+- S:cee5707cf7 function collectNodes `function collectNodes(adjacency)` L75 : Collect every node mentioned either as a key or as a neighbour value.
+### tests/check-architecture-drift.test.mjs [F:564b053598]
+- S:d8edda2d76 function makeMinimalRepo `function makeMinimalRepo()` L12
+- S:7cd6925ad6 function runScript `function runScript(tmp)` L19
 ### design-system/src/components/SafetyStrip/SafetyStrip.tsx [F:57ca5f1716]
 - S:bbdb581d9d interface SafetyStripProps `export interface SafetyStripProps` L5
 - S:3f2874e2ce function SafetyStrip `export function SafetyStrip(` L43 : A horizontal, wrapping strip of small labeled cells summarizing the safety-relevant * levers for a project at a glance: whether autonomy and auto-merge are on, dry-run * status, merge and budget caps,
@@ -737,6 +1036,9 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - S:6b0614bdf6 function claim `export function claim(workerEnv, dir = DEFAULT_QUEUE_DIR, now = new Date(), leaseMinutes = DEFAULT_LEASE_MINUTES)` L124 : Atomically lease the oldest queued action this worker environment can serve. * A record is servable when its target equals the worker env or appears in the * worker env's served set. Sets state to cla
 - S:194e854c70 function complete `export function complete(id, result, dir = DEFAULT_QUEUE_DIR, ok = true)` L153 : Mark a claimed action done or failed, attaching an optional result object. * * @param {string} id * @param {object|null} result * @param {string} [dir] * @param {boolean} [ok] - true marks done, false
 - S:ed1db0b6bb function reclaimStale `export function reclaimStale(dir = DEFAULT_QUEUE_DIR, now = new Date())` L173 : Revert every claimed record whose lease has expired back to queued, clearing * its owner and expiry. Returns the list of reclaimed records. * * @param {string} [dir] * @param {Date} [now] * @returns {
+### modonome/examples/python-service/app/orders.py [F:5b27e3c674]
+- S:6d3e2b0afb function total `def total(items)` L1
+- S:ea9c565786 function apply_discount `def apply_discount(items, discount_percent)` L5 : Apply a percentage discount to a list of items. Args: items: List of dicts with "price" key discount_percent: Discount percentage (0-100) Returns: Total after discount
 ### .design-sync/previews/Input.tsx [F:5e207f73c7]
 - S:ddfea151e8 function TrustedAuthor `export const TrustedAuthor = () => (` L4
 ### scripts/scaffold.mjs [F:5e450ff82c]
@@ -744,12 +1046,39 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - S:8c6ccd3e8b function listTemplate `function listTemplate(dir, base = "")` L60
 - S:6dcbe228c5 function scaffold `export function scaffold(target, write)` L71
 - S:1856df868b function writeRunLog `function writeRunLog(runsDir, command, payload)` L105
+### tests/config-key-parity.test.mjs [F:5eff4122c0]
+- S:d6cf821403 function keysFromDeclaration `function keysFromDeclaration(source, declName)` L23 : Extract the string literals inside a named list/set declaration, regardless of whether it is `new Set([...])` or `[...] as const`.
+- S:da40a0864b function assertSameSet `function assertSameSet(a, b, label)` L33
+### modonome/scripts/check-md-governance.mjs [F:5f57d51aa6]
+- S:4f0d22731e function walkMd `function walkMd(dir, out = [])` L57
+- S:b2866f5e1c function checkTarget `function checkTarget(fileDir, rawTarget, srcFile)` L102
+- S:e32acc21d5 function adrNumbers `function adrNumbers(dir)` L138 : 4. ADR number uniqueness across docs/adr and docs/research.
+- S:3804b72d7b function parseFrontMatter `function parseFrontMatter(text)` L171 : Front-matter parsing for canonical uniqueness and advisory presence.
+### modonome/tests/chaos.test.mjs [F:5f753ce350]
+- S:0c1d145320 function noThrow `function noThrow(fn)` L18 : Chaos test helper: any call must either return errors cleanly OR not throw. A crash or hang is a failure.
+- S:498e36a4df function ratchetWithTimeout `function ratchetWithTimeout(content)` L28 : Wrap guard-ratchet call with a hard 5-second timeout.
 ### tests/arming.test.mjs [F:60548316f5]
 - S:5d58defc25 function tmpRepo `function tmpRepo(configBody)` L14
 - S:580f464240 function runStatus `function runStatus(dir, env)` L23
+### modonome/tests/dry-run.test.mjs [F:609328ee50]
+- S:7c16d38881 function dryRun `function dryRun(dir)` L13
+### modonome/tests/embedding-safety.test.mjs [F:61050b8b88]
+- S:91b5956fe9 function runPreflight `function runPreflight(fixtureName)` L22 : Run preflight in --json mode against a fixture. Returns { code, report, raw }. A clean environment is used so the host's own MODONOME_* shell does not leak into the env-pollution check.
+- S:5083a2d364 function ids `function ids(report)` L42
+- S:50ef2ea3e2 function findingsBySeverity `function findingsBySeverity(report, severity)` L46
 ### scripts/check-repo-hygiene.mjs [F:61296e720c]
 - S:0cfad6d2cf function findSafeToDeleteFiles `function findSafeToDeleteFiles(dir)` L28
 - S:17985dad90 function execSync `function execSync(cmd, opts)` L235 : Helper
+### modonome/scripts/lib/yaml-lite.mjs [F:61fcb417a3]
+- S:3c57cf03a2 function parseScalar `function parseScalar(raw)` L15
+- S:a9f603d0af function stripQuotes `function stripQuotes(s)` L33
+- S:7bd74ccdb2 function extractRawValue `function extractRawValue(afterColon)` L42 : Parse a raw value string from after the colon, handling inline comments and quoted strings. Returns the trimmed scalar text or empty string.
+- S:c435c18526 function indentOf `function indentOf(line)` L59 : Count leading spaces to determine nesting depth.
+- S:e6b46405d1 function parseEntries `function parseEntries(entries, start, minIndent)` L67 : Parse an array of non-empty, non-comment lines into a nested object. Each entry is { indent, key, rawValue }.
+- S:e77ef9f188 function parseFlatYaml `export function parseFlatYaml(text)` L99
+### modonome/tests/self-application.test.mjs [F:632c0210cc]
+- S:17f84eccfa function makeMinimalRepo `function makeMinimalRepo()` L63 : Build a minimal passing temp repo and return the path. Caller must rmSync(tmp, {recursive:true}).
+- S:67afd1eac4 function runScript `function runScript(tmp)` L77
 ### design-system/src/components/Modal/Modal.tsx [F:63351e350b]
 - S:5a2d3d98ce type ModalSize `export type ModalSize = "sm" | "md";` L6
 - S:b5d72ba60f interface ModalProps `export interface ModalProps` L8
@@ -767,6 +1096,12 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - S:312c004ac1 function HoverCard `export function HoverCard({ title, body, source, children, side = "bottom" }: HoverCardProps)` L46 : A richer sibling of Tooltip: a small card (heading, body copy, source citation) for * reference content pulled from real documentation, rather than a one-line hint. Unlike * Tooltip, its content accep
 ### apps/control-panel/src/screens/OverviewScreen.tsx [F:6627655633]
 - S:050ec6eff9 function OverviewScreen `export function OverviewScreen(` L26 : Mission control: the "is it safe, is it working" glance. Arming posture, the safety * strip, the live queue, spend to date, gate health, and the most recent activity.
+### modonome/examples/demo-app/src/OrderService.js [F:6702e39956]
+- S:3471b62da2 class OrderService `export class OrderService` L7
+### modonome/tests/e2e.test.mjs [F:688d91b28b]
+- S:c7d0a6944e function tmp `function tmp()` L26
+- S:09784fe538 function run `function run(script, ...args)` L30
+- S:8e6327e071 function mcpCall `function mcpCall(method, params = {})` L34
 ### scripts/lib/secret-patterns.mjs [F:68c4da7fe8]
 - S:e95e85f904 const SECRET_PATTERNS `export const SECRET_PATTERNS = [` L5
 - S:9c4deaa396 function scanForSecrets `export function scanForSecrets(text)` L16 : Returns an array of { name } objects for every pattern that matches text.
@@ -777,6 +1112,8 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 ### scripts/lib/branch-name.mjs [F:6e0bd62fa3]
 - S:7698d9efeb function isModelIdentifierBranch `export function isModelIdentifierBranch(name)` L26 : True when the first path segment of a branch name equals a denylisted token. * Matching is case-insensitive. "feature/ai-adapter" is allowed because the * first segment is "feature"; only a leading "a
 - S:99c574f83d function resolveBranchName `export function resolveBranchName(env = process.env)` L37 : Resolve the branch under review from CI environment variables. Prefers the * pull request head ref, then the push ref name. Returns an empty string when * neither is set so callers can fall back to a 
+### modonome/tests/learnings.test.mjs [F:6e5a96bba3]
+- S:a6711b1c39 function run `function run(script, args = [], env = {})` L13
 ### scripts/dry-run-sweep.mjs [F:6f247eb514]
 - S:bb800288d9 function writeRunLog `function writeRunLog(runsDir, command, payload)` L17
 - S:002c9f1daa function slug `function slug(text)` L30
@@ -793,6 +1130,11 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 ### design-system/src/components/Checkbox/Checkbox.tsx [F:7054844360]
 - S:435432f041 interface CheckboxProps `export interface CheckboxProps` L6
 - S:0b453b55b9 function Checkbox `export function Checkbox({ checked, onCheckedChange, label, hint, disabled }: CheckboxProps)` L25 : A labeled checkbox for boolean choices in lists and forms, such as opting * into a rule or selecting an item in a batch action. Renders a native * `<input type="checkbox">` visually replaced by a styl
+### modonome/scripts/check-edit-set-compliance.mjs [F:70dfc37197]
+- S:ea2b2b74d4 function getDiff `function getDiff(baseRef = "origin/main")` L19
+- S:04070ad054 function getChangedFiles `function getChangedFiles(diff)` L38
+- S:577b4af161 function loadCurrentWorkItem `function loadCurrentWorkItem()` L50
+- S:30a56dcf20 function matchesPattern `function matchesPattern(path, patterns)` L75
 ### design-system/src/components/Drawer/Drawer.tsx [F:71f0bfb455]
 - S:145586915d interface DrawerProps `export interface DrawerProps` L5
 - S:eb4b11fdf2 function Drawer `export function Drawer({ open, onClose, title, width = 480, children }: DrawerProps)` L25 : A right-side sheet that slides in over a scrim, for focused tasks that need more * room than a popover but should not leave the current page's context (inspecting a * work item, editing a policy). Tra
@@ -815,6 +1157,9 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - S:1ba042e0cf function main `async function main()` L563
 ### apps/control-panel/src/screens/LearningsScreen.tsx [F:757a70680a]
 - S:4514b4c1f0 function LearningsScreen `export function LearningsScreen({ state, write }: { state: PanelState; write: WriteActions })` L18 : Where the engine's judgment surfaces for a human to check. Open decisions ask an * explicit question before the engine proceeds; the learning queue shows the lessons * the engine has staged from repea
+### modonome/examples/demo-app/tests/CheckoutService.test.js [F:757c2bb256]
+- S:41d20506e6 function makeCartService `function makeCartService(cart)` L5
+- S:486564f6d6 function makeOrderService `function makeOrderService()` L13
 ### design-system/src/components/Input/Input.tsx [F:763efdd51c]
 - S:e9fcedbe8f interface InputProps `export interface InputProps extends InputHTMLAttributes<HTMLInputElement>` L7
 - S:6981533501 function Input `export function Input(` L24 : A labeled single-line text input. Shares the labeled-field frame used by every * form control in the panel: an optional label, an optional hint bubble, and an * optional error message below. Use for f
@@ -825,10 +1170,17 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - S:35ac020356 function AuditTimeline `export function AuditTimeline({ events, limit }: AuditTimelineProps)` L69 : A vertical audit trail with a connecting line down the left edge. Each event shows a * colored node carrying an icon for its kind (so the event type is never carried by * color alone), the relative ti
 ### tests/dry-run.test.mjs [F:778c33cdc0]
 - S:e15045d8a4 function dryRun `function dryRun(dir)` L13
+### modonome/examples/demo-app/tests/InventoryService.test.js [F:77b07bffea]
+- S:bf6925f372 function makeDb `function makeDb()` L5
 ### .design-sync/previews/Toast.tsx [F:7832db450f]
 - S:67852685cf function Info `export const Info = () => <Toast tone="info" title="Dry-run sweep queued" />;` L4
 - S:96c461f8cd function Success `export const Success = () => <Toast tone="ok" title="Merged" message="PAY-402 merged by merge authority" />;` L6
 - S:21a4872ace function Blocked `export const Blocked = () => <Toast tone="blocked" title="Ratchet rejected" message="Removed a test assertion" />;` L8
+### modonome/examples/node-typescript/src/checkout.ts [F:78870533d8]
+- S:0b8145d325 type Card `export type Card = { number: string; expired: boolean };` L1
+- S:8963e1ac09 type RefundResult `export type RefundResult =` L3
+- S:b58f1e4e54 function charge `export function charge(card: Card): "ok" | "declined"` L9
+- S:36a2a1a974 function refund `export function refund(card: Card, amount: number): RefundResult` L13
 ### scripts/lib/token-estimate.mjs [F:7944059823]
 - S:59617d720e function estimateTokens `export function estimateTokens(text)` L5 : Dependency-free token accounting for snapshot tiers. The estimate is a heuristic (about four characters per token) that needs no tokenizer and no network, which keeps the utility portable. It is used 
 - S:a48d9e0b16 function budgetTier `export function budgetTier(items, maxTokens, sizeFn)` L13 : Greedily keep pre-ranked items until the token budget is spent. `sizeFn` returns the token cost of an item. A falsy or non-finite budget keeps everything. Returns { kept, dropped, tokens } so the call
@@ -841,6 +1193,12 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - S:130202d7f0 function Queue `export const Queue = () => (` L3
 ### scripts/sign-packet.mjs [F:7b3e38c9a6]
 - S:8ec4bd5dec function signPacket `export function signPacket(packet, privateKeyObject, { keyAlias, signedAt })` L20 : Pure: attach a signature object to a packet using the given private key.
+### modonome/tests/portability.test.mjs [F:7bd664ec9d]
+- S:148b119be5 function runValidateConfig `function runValidateConfig(configPath, opts = {})` L28 : Run validate-config.mjs against a given config path.
+- S:7cc3b31372 function runGuardRatchet `function runGuardRatchet(diffPath, opts = {})` L37 : Run guard-ratchet.mjs with a --diff fixture.
+- S:d06be7fb51 function runPortabilityCheck `function runPortabilityCheck(fixturePath, opts = {})` L46 : Run check-portability.mjs against a fixture directory.
+### modonome/tests/ws-e-negative-controls.test.mjs [F:7c35311e70]
+- S:9d7054774e function runScript `function runScript(script, args = [], env = {})` L19
 ### design-system/src/lib/cx.ts [F:7c8d518693]
 - S:d732af6be5 type ClassValue `export type ClassValue = string | false | null | undefined;` L2 : Join class names, dropping falsy values. A tiny classnames helper.
 - S:deea6aabbd function cx `export function cx(...values: ClassValue[]): string` L4
@@ -856,6 +1214,14 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 ### design-system/src/components/Slider/Slider.tsx [F:81c495717c]
 - S:66cd7b74c6 interface SliderProps `export interface SliderProps` L5
 - S:a91334a377 function Slider `export function Slider(` L32 : A styled range input. Keeps the native `<input type="range">` for full * keyboard and assistive-tech support (arrow keys, Home/End, screen reader * value announcements) while the track and thumb pick 
+### modonome/examples/demo-app/src/NotificationService.js [F:825b61ddca]
+- S:a32627c66c class NotificationService `export class NotificationService` L4
+### modonome/scripts/release.mjs [F:8365c044db]
+- S:1888fb9ea8 function run `function run(cmd, opts = {})` L9
+### modonome/scripts/check-portability.mjs [F:83f6984d88]
+- S:703dffea03 function fail `function fail(code, message)` L41
+- S:530fde1259 function warn `function warn(code, message)` L45
+- S:79f2960826 function info `function info(code, message)` L49
 ### .design-sync/previews/NumberField.tsx [F:84a5c32a4c]
 - S:74e8f23a0b function MergeCap `export const MergeCap = () => (` L4
 - S:14b57397ed function Budget `export const Budget = () => (` L14
@@ -864,10 +1230,30 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - S:90b86b1f26 function hasChangeRequestSignal `export function hasChangeRequestSignal(transcript)` L50 : True when the transcript contains any documented change-request signal * phrase (case-insensitive). Pure string search: no partial-word surprises * beyond what the phrase itself implies. * * @param {s
 - S:328dcdf4cc function countRaisedQuestions `export function countRaisedQuestions(transcript)` L76 : Count distinct raised concerns/questions in the transcript. * * Heuristic (documented, approximate, not semantic): * - Any line ending in "?" counts once. * - Any line starting with "concern:", "quest
 - S:cfe87f9141 function parseCheckerTelemetry `export function parseCheckerTelemetry(transcript)` L111 : Derive checker-engagement telemetry from a checker transcript. * * @param {string|undefined|null} transcript - Full checker transcript text. * @returns {{checker_requested_changes: boolean, checker_qu
+### modonome/scripts/check-self-application.mjs [F:862076978e]
+- S:f9ee75dd74 function read `function read(rel)` L20
+- S:d2a0e5a9b5 function dirsFromCodeowners `function dirsFromCodeowners()` L70 : 4. The two protected-path surfaces must agree. CODEOWNERS is what GitHub enforces; protected_paths_extra is what the engine reads. If they disagree, a path is protected in name only (the bin/ gap that
 ### design-system/src/lib/format.ts [F:86838d35ac]
 - S:6c778494b3 function relativeTime `export function relativeTime(iso: string, now: number = Date.parse("2026-07-01T09:45:00Z")): string` L7 : Format an ISO timestamp as a short relative string, for example "3m ago" or "in 12m".
 - S:8641765bb2 function formatDuration `export function formatDuration(ms?: number): string` L34 : Format a duration in milliseconds as a compact string, for example "1.2s" or "9s".
 - S:6cb93e992c function formatUsd `export function formatUsd(usd: number): string` L45 : Format a USD amount with two decimals.
+### modonome/scripts/preflight-embedding.mjs [F:86b4bb7edc]
+- S:789690996e function exists `async function exists(p)` L99
+- S:6a3bfb7218 function readTextSafe `async function readTextSafe(p)` L108
+- S:161a116f44 function listFilesRecursive `async function listFilesRecursive(dir, { maxDepth = 5 } = {})` L116
+- S:7bbc7b3ccf function parseCiJobNames `function parseCiJobNames(yamlText)` L141 : Minimal, dependency-free scan for top-level YAML job names under `jobs:`.
+- S:4ffe99a278 function parseFlatYaml `function parseFlatYaml(yamlText)` L176 : Extremely small YAML-ish key:value reader for flat config files. Good enough to inspect schema_version and the boolean arming levers without a YAML dep.
+- S:8a4ec5f2b9 function checkSchemaCollision `export async function checkSchemaCollision(targetDir)` L198 : (a) Schema collision: target has .modonome/ with incompatible config.
+- S:b313bd43db function checkCiJobConflict `export async function checkCiJobConflict(targetDir)` L254 : (b) CI job name conflict: target's CI files use Modonome job names.
+- S:edcd0c4854 function checkScriptShadowing `export async function checkScriptShadowing(targetDir)` L288 : (c) Script shadowing: target has scripts/ that shadow Modonome scripts.
+- S:0665fa0267 function checkEnvPollution `export async function checkEnvPollution(targetDir, env = process.env)` L323 : (d) Env var pollution: MODONOME_* env vars set that override safe defaults. Reads from the current process environment (the shell preparing to embed) AND statically inspects, read-only, the target's `
+- S:0eaefa872b function checkDependencyConflict `export async function checkDependencyConflict(targetDir)` L376 : (e) Dependency conflict: target has deps that conflict with Modonome requirements.
+- S:fa50f6039a function checkPromptInjection `export async function checkPromptInjection(targetDir)` L440 : (f) Prompt injection risk: governance-override patterns in the target. Trusted locations (.modonome/, schemas/, CI dirs) are scanned exhaustively; for the rest of the repo we scan source-bearing files
+- S:38154efbac function checkNodeVersion `export async function checkNodeVersion(targetDir)` L478 : (g) Node version incompatibility: target requires Node < 18.
+- S:3bb5166a11 const CHECKS `export const CHECKS = [` L517
+- S:8b41b22394 function runPreflight `export async function runPreflight(targetDir)` L527
+- S:f6abaf077d function renderHuman `function renderHuman(report)` L540
+- S:b8baa4cd39 function main `async function main()` L563
 ### scripts/agent/apply-patch.mjs [F:872221b1da]
 - S:88426a3883 function looksLikeDiff `function looksLikeDiff(body)` L12 : A body looks like a unified diff when it has a "diff --git" header, or a paired "--- "/"+++ " file header, or an "@@ " hunk marker.
 - S:074c2b3c02 function extractDiff `export function extractDiff(text)` L28 : Pull a unified diff out of a model response. Prefers a fenced ```diff or * ```patch block; falls back to a bare fenced block whose body looks like a * diff; falls back to treating the whole text as a 
@@ -955,12 +1341,24 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 ### tests/chaos.test.mjs [F:8fe56e5618]
 - S:8041c36b7b function noThrow `function noThrow(fn)` L18 : Chaos test helper: any call must either return errors cleanly OR not throw. A crash or hang is a failure.
 - S:856f3a5bea function ratchetWithTimeout `function ratchetWithTimeout(content)` L28 : Wrap guard-ratchet call with a hard 5-second timeout.
+### scripts/hygiene.mjs [F:90e1fd2fd9]
+- S:2cb05d3887 function git `function git(args, opts = {})` L28
+- S:05ff801d3e function currentBranch `function currentBranch()` L33
+- S:fc3bb4bc24 function collectFindings `function collectFindings()` L40 : Collect findings for the current branch, the commits unique to it, and the PR-body-shaped surfaces we can see locally (the commit bodies themselves).
+- S:400a8c02c3 function applyFix `function applyFix(branch, findings)` L66
+- S:c546f7913f function main `function main(argv)` L85
 ### fixtures/portability/prompt-injection-host/src/main.js [F:90f0999521]
 - S:d75c32ea9c function add `export function add(a, b)` L11
 - S:d7d594dd8d function multiply `export function multiply(a, b)` L15
 ### design-system/src/components/MdnRoot/MdnRoot.tsx [F:90fc20ddd8]
 - S:7902cd38d0 interface MdnRootProps `export interface MdnRootProps extends HTMLAttributes<HTMLDivElement>` L4
 - S:f2642efdc2 function MdnRoot `export function MdnRoot({ children, className, style, ...rest }: MdnRootProps)` L14 : The design-system root. Establishes the dark ground, the body font, and the token * scope that every component inherits. Wrap an app or a screen in this (AppShell already * does). It is also the wrapp
+### modonome/examples/demo-app/tests/CartService.test.js [F:9257723e82]
+- S:14a9ee0822 function makeDb `function makeDb()` L5
+### modonome/tests/dependency.test.mjs [F:92919b6198]
+- S:8dcc2e5912 function listMjs `function listMjs(dir, recursive = false)` L13 : Read all .mjs files in a directory (non-recursive by default).
+- S:ea43a9aac5 function extractImportSpecifiers `function extractImportSpecifiers(source)` L29 : Extract import specifiers from a file's source text. Only matches actual import statements (not comments or JSDoc).
+- S:26de6b333a function isAllowedImport `function isAllowedImport(specifier)` L47
 ### scripts/check-decisions-authority.mjs [F:92d6903b5f]
 - S:3b092e9ab0 function parseDecisions `export function parseDecisions(text)` L62 : Parse DECISIONS.md text into heading violations and Resolved-section entries.
 - S:183f710a08 function readCodeownersUsers `function readCodeownersUsers(rootDir)` L122
@@ -994,10 +1392,24 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 ### apps/control-panel/src/state/adapter.ts [F:95d4304133]
 - S:7b984e047b function finalizeState `export function finalizeState(base: PanelState): PanelState` L18
 - S:559455c526 function loadPanelState `export async function loadPanelState(mode: PanelMode, dir?: string): Promise<PanelState>` L25
+### modonome/tests/run-log.test.mjs [F:964df2d250]
+- S:8ecf9d11b2 function tmp `function tmp()` L12
+- S:da48c47624 function run `function run(script, ...args)` L16
 ### .design-sync/previews/RoleBadge.tsx [F:973aaa9d86]
 - S:c38d35b211 function Roles `export const Roles = () => (` L4
+### modonome/scripts/lib/learnings.mjs [F:97cfc83c7c]
+- S:230eedb522 const REQUIRED_FIELDS `export const REQUIRED_FIELDS = [` L7
+- S:901612f43f function readPromotedLearnings `export function readPromotedLearnings(root)` L19 : Extract the first fenced json block that appears after the "## Promoted" heading.
+### modonome/scripts/lib/jsonschema.mjs [F:98b6d2511c]
+- S:a2eb7d7fc6 function typeOf `function typeOf(value)` L6
+- S:35ae29fd3a function matchesType `function matchesType(value, type)` L13
+- S:6cedef702f function validate `export function validate(schema, value, path = "$", errors = [])` L22
+### modonome/examples/demo-app/src/CartService.js [F:9b34aa65e8]
+- S:544c1653e6 class CartService `export class CartService` L3
 ### apps/control-panel/src/screens/WorkQueueScreen.tsx [F:9b3f18856e]
 - S:84220fc054 function WorkQueueScreen `export function WorkQueueScreen({ state, write }: { state: PanelState; write: WriteActions })` L15 : The durable work-item state machine, laid out as a board: queued, claimed, making, * checking, merge ready, done, and escalated. Selecting a card opens a read-only * inspector drawer with the item's i
+### modonome/agentproof/scenarios/ap-33-config-env-override-inert.mjs [F:9c7aa5a694]
+- S:08f13b85a9 function run `function run(env)` L31
 ### .design-sync/previews/AuditTimeline.tsx [F:9c9edea0c9]
 - S:46d90cc86e function Timeline `export const Timeline = () => <AuditTimeline events={events} />;` L13
 ### tests/e2e.test.mjs [F:9cbe9238f8]
@@ -1043,6 +1455,8 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - S:2ce7a5bbe7 function positional `function positional(argv)` L144
 - S:ecd0da924a function maybeRegisterParser `async function maybeRegisterParser(root, argv)` L156 : Register the tree-sitter parser when requested via --parser or config, with a graceful fallback to the heuristic default when tree-sitter is not installed.
 - S:68308360b1 function main `async function main(argv)` L164
+### modonome/fixtures/negative-controls/app-syntax-error.js [F:a13ad3ae06]
+- S:e23b4cd8af class OrderServiceBroken `export class OrderServiceBroken` L5
 ### fixtures/negative-controls/app-syntax-error.js [F:a1411f1423]
 - S:7369c62b84 class OrderServiceBroken `export class OrderServiceBroken` L5
 ### tests/mcp-compliance.test.mjs [F:a167609a41]
@@ -1052,6 +1466,9 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - S:aabd2d1e55 interface TableColumn `export interface TableColumn<T>` L6
 - S:1d4c8df8c0 interface TableProps `export interface TableProps<T>` L19
 - S:9f9ed94a62 function Table `export function Table<T>({ columns, rows, getRowKey, onRowClick, empty, dense }: TableProps<T>)` L42 : A generic, semantic data table. Renders a real `<table>` with `<thead>`/`<tbody>` * so screen readers and browser table navigation work as expected. Rows highlight on * hover; when `onRowClick` is set
+### agentproof/scenarios/ap-36-adr-number-uniqueness.mjs [F:a6d2bd3021]
+- S:cd1b84d7ff function makeMinimalRepo `function makeMinimalRepo()` L34 : A minimal repo that satisfies every check other than the one under test, so a failure can only come from the ADR-number logic being exercised.
+- S:336ebe7ff5 function run `function run(tmp)` L52
 ### scripts/install-hooks.mjs [F:a7ce0f6452]
 - S:0ca7d7cb9c function isModonomeRepo `export function isModonomeRepo(targetRoot)` L46 : True when targetRoot is modonome's own repo (not a host that merely depends on it or vendored a copy of these scripts). Checked by package.json name rather than by path, so it holds under a copied or 
 - S:2681abe2e5 function installHooks `export function installHooks(targetRoot, { self = false, mode = "snapshot" } = {})` L60 : Install the pre-commit hook into targetRoot. Returns "installed", "kept" (a host hook already existed and was preserved), or "no-git". self=true writes modonome's own dev hook and overwrites; a host i
@@ -1060,6 +1477,8 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - S:49158af5a6 type IconButtonSize `export type IconButtonSize = "sm" | "md";` L6
 - S:b4354229d8 interface IconButtonProps `export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>` L8
 - S:8c83339acb function IconButton `export function IconButton(` L25 : A square, icon-only button. Always carries an `aria-label` built from the required * `label` prop so the control has an accessible name even though no text is visible. * Use for compact affordances su
+### modonome/examples/demo-app/src/InventoryService.js [F:aa16e5cab8]
+- S:70d409e8e2 class InventoryService `export class InventoryService` L3
 ### scripts/agent/tool-loop-adapter.mjs [F:aa77f227a6]
 - S:170dcaab55 function resolveAdapterCommand `export function resolveAdapterCommand(adapterEntry)` L28 : Resolve the command the external adapter is invoked as. Precedence: an explicit * adapterEntry.command, then adapterEntry.name, then a bare fallback. The value is * a bare command name resolved agains
 - S:d7a4f68100 function containedCwd `export function containedCwd(root, target)` L46 : Enforce ADR-009 path containment. The adapter's working directory must resolve * to exactly the target directory (resolve(root, plan.target)); a cwd outside the * target, reached via ".." or an absolu
@@ -1124,16 +1543,36 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - S:357942abbf function readItem `function readItem(itemsDir, name)` L38
 ### .design-sync/previews/GatePanel.tsx [F:bb6a874d58]
 - S:b01ec1a6ac function Gates `export const Gates = () => <GatePanel gates={gates} />;` L25
+### modonome/scripts/build-release-evidence.mjs [F:bbaa141131]
+- S:7986bfa4bb function gate `function gate(script, args = [])` L21
+- S:02f441a452 function mark `function mark(ok) { return ok ? "pass" : "FAIL"; }` L25
+- S:97bae3a467 function listCaptures `function listCaptures()` L60 : Sample-app captures: real maker and checker runs recorded under examples/<app>/runs/. These directories are committed (unlike the gitignored .modonome/runs/), so summarizing them stays reproducible fr
 ### tests/ws-e-negative-controls.test.mjs [F:bbb6476d71]
 - S:f5a71d2ca6 function runScript `function runScript(script, args = [], env = {})` L19
 ### examples/demo-app/src/InventoryService.js [F:bd02b28f17]
 - S:c7db2cc29d class InventoryService `export class InventoryService` L3
+### modonome/examples/demo-app/src/CheckoutService.js [F:c060c516f3]
+- S:fb6e37c1e7 class CheckoutService `export class CheckoutService` L3
 ### design-system/src/components/Sparkline/Sparkline.tsx [F:c0e80ca327]
 - S:ac1ae69e0f type SparklineTone `export type SparklineTone = "primary" | "info" | "owner" | "danger";` L3
 - S:b27476e527 interface SparklineProps `export interface SparklineProps` L5
 - S:655f25fbed function Sparkline `export function Sparkline(` L33 : A minimal inline trend chart: a single line normalized to fit the box, with an * optional soft area fill beneath it. No axes or gridlines, intended to sit inline * next to a metric (cost trend, throug
 - S:a272c887e3 function toPoints `function toPoints(data: number[], innerW: number, innerH: number, padding: number): [number, number][]` L82
 - S:686192f35d function toLinePath `function toLinePath(points: [number, number][]): string` L97
+### modonome/scripts/dry-run-sweep.mjs [F:c143490d2a]
+- S:b80d06ecc5 function writeRunLog `function writeRunLog(runsDir, command, payload)` L14
+- S:27e5c22ace function detectStack `function detectStack()` L27
+- S:a53f828827 function detectProtected `function detectProtected()` L46
+- S:3fde950a26 function detectInstructions `function detectInstructions()` L54
+- S:d0f735209d function detectHotFiles `function detectHotFiles()` L58
+- S:f5c548090e function proposeWork `function proposeWork(stack, hotFiles)` L77
+### modonome/scripts/check-repo-hygiene.mjs [F:c2c9bd2116]
+- S:411baa9807 function findSafeToDeleteFiles `function findSafeToDeleteFiles(dir)` L26
+- S:69917e9a72 function execSync `function execSync(cmd, opts)` L185 : Helper
+### modonome/tests/metrics.test.mjs [F:c2e06e51a0]
+- S:930b4b449f function tmp `function tmp()` L12
+- S:cb3284a30c function runReport `function runReport(targetDir)` L16
+- S:da0511af10 function makeEvent `function makeEvent(event, extra = {})` L24 : Schema-conformant event line using "event" field (not "type").
 ### scripts/build-prompt.mjs [F:c4395c3023]
 - S:27005d8f20 function buildBundle `function buildBundle()` L25
 ### scripts/check-promotion-readiness.mjs [F:c5938c33fd]
@@ -1160,12 +1599,24 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - S:89566a4918 function tierVar `export function tierVar(tier: RiskTier): string` L39 : CSS custom-property name for a risk-tier color.
 - S:a26ee6eefd const workStateLabels `export const workStateLabels: Record<WorkState, string> =` L44 : Human labels for the work states, in flow order.
 - S:644e7adeef const tokens `export const tokens =` L56
+### modonome/scripts/assert-governed-change.mjs [F:c78817d011]
+- S:082c5bf3ca function getDiff `function getDiff(baseRef)` L46
+- S:63a2c3a7b1 function getChangedFiles `function getChangedFiles(diff)` L57
+- S:7412177ca3 function getNetAssertions `function getNetAssertions(diff)` L69
+- S:620c45c707 function exercisesRealGate `function exercisesRealGate(diff, changedFiles)` L99
+- S:34ca4fc4bc function touchesProtectedPath `function touchesProtectedPath(changedFiles)` L131
+- S:bf0e227134 function loadCurrentWorkItem `function loadCurrentWorkItem()` L137
+- S:504101e60f function isEmptyOrTrivial `function isEmptyOrTrivial(diff)` L150
 ### scripts/audit-learnings.mjs [F:c9493b5275]
 - S:9299cd9a70 function matches `function matches(l)` L29
+### modonome/scripts/audit-learnings.mjs [F:c996c3a65b]
+- S:98a3e69ce1 function matches `function matches(l)` L29
 ### scripts/check-style.mjs [F:ca0833ac73]
-- S:ee9b2c90d1 function walk `function walk(dir, out = [])` L21
+- S:ee9b2c90d1 function walk `function walk(dir, out = [])` L25
 ### .design-sync/previews/Sparkline.tsx [F:ca13fe2a5b]
 - S:aa4de9995b function Trends `export const Trends = () => (` L4
+### modonome/scripts/agent/resolve-role.mjs [F:cb249e0013]
+- S:59df326f9d function resolveRole `export function resolveRole(cfg, role)` L30 : Resolve runner and model settings for a named role. * * @param {object} cfg - Parsed config object (output of parseFlatYaml or loadConfig). * @param {string} role - One of "maker", "checker", "self-go
 ### scripts/lib/snapshot-walk.mjs [F:cb66095cb4]
 - S:7c5c3a31a4 function compilePattern `function compilePattern(pattern)` L41 : Compile one gitignore-style pattern into a tester over a posix relative path. Supported: comments, negation (!), leading / (anchored), trailing / (directory), * (within a segment), ** (across segments
 - S:531cf59eb3 function loadIgnore `export function loadIgnore(root)` L86 : Build an ignore predicate for a repo root. The predicate takes a posix relative path and returns true when the path should be excluded. Later patterns win, so a negation can re-include a path a broad 
@@ -1180,6 +1631,10 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - S:298b204d13 function runPreflight `function runPreflight(fixtureName)` L22 : Run preflight in --json mode against a fixture. Returns { code, report, raw }. A clean environment is used so the host's own MODONOME_* shell does not leak into the env-pollution check.
 - S:c73cab5b60 function ids `function ids(report)` L42
 - S:2ca7aeeeaf function findingsBySeverity `function findingsBySeverity(report, severity)` L46
+### modonome/tests/ws-b-harness.test.mjs [F:ccf5990660]
+- S:78a34b3b59 function cfg `function cfg(overrides = {})` L13 : A config fixture with distinct maker/checker models and a models registry.
+### modonome/tests/ws-e-ratchet-languages.test.mjs [F:ce0dff846d]
+- S:ef30b3792b function runRatchet `function runRatchet(diffFile)` L11
 ### design-system/src/components/CostPanel/CostPanel.tsx [F:ce1173e176]
 - S:66b4da1ed7 type ModelCostClass `export type ModelCostClass = "paid" | "free" | "local";` L6
 - S:2e3ac2ba9f interface ModelCostRow `export interface ModelCostRow` L8
@@ -1193,14 +1648,35 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - S:8d1ca74a54 function leaseHolder `function leaseHolder(item)` L23 : A lease is "live" if it has an owner and an unexpired lease_expires_at. The lease holder is recorded as lease_owner (the field this swap writes) or, for older items, the schema's `owner` field; either
 - S:87ca9c146a function leaseIsLive `function leaseIsLive(item, now)` L27
 - S:fd822bf451 function tryTransition `export function tryTransition(item, fromState, toState, writerId, now = new Date())` L39 : tryTransition(item, fromState, toState, writerId, now) -> result { ok: true, item } swap succeeded; item is a fresh copy { ok: false, conflict: "<reason>" } swap refused; item is left untouched `now` 
+### modonome/tests/cli-dispatch.test.mjs [F:d1a2d3a59f]
+- S:369e2ae214 function cli `function cli(...args)` L12
+- S:b31aa4e5f4 function tmp `function tmp()` L19
+### modonome/scripts/agent/run-cycle.mjs [F:d1bf4c847b]
+- S:f7599cdd66 function parseArgs `export function parseArgs(argv)` L32
+- S:28a5f54ae8 function planCycle `export function planCycle(opts, cfg, runId)` L50 : Resolve and validate a full cycle plan without calling any model. Pure: it reads the passed config and runId and throws on any policy violation. This is the testable core of the harness; the execute p
+- S:d66b2b20d5 function invokeRole `function invokeRole(plan, role, env)` L103
+- S:6fb0a03700 function runCycle `export function runCycle(opts, { execute, cfg, runId, env = process.env })` L150 : Execute a plan. Refuses a hosted run when the budget is zero. Runs the maker, then the checker, each as a distinct CLI invocation with its own model and identity.
+### modonome/scripts/check-promotion-readiness.mjs [F:d1fcc82276]
+- S:8efbeffc2c function configDefaults `function configDefaults(rel)` L32
+- S:d37a00b42a function hasHeading `function hasHeading(text, section)` L39 : Check that a section appears as a Markdown heading (h1-h6), so a one-line ADR with the section words buried in prose cannot game the gate.
+- S:ed44d6eac7 function findPromotionAdr `function findPromotionAdr(flag)` L43
 ### design-system/src/components/Carousel/Carousel.tsx [F:d20e4b6b91]
 - S:fa36ece453 interface CarouselProps `export interface CarouselProps` L5
 - S:36acbff697 function Carousel `export function Carousel({ children, label, className }: CarouselProps)` L21 : A horizontally scrolling row with scroll-snap and prev/next nav buttons. Items stay * in normal tab order (each is independently focusable, and the browser scrolls a * focused item into view automatic
+### modonome/fixtures/portability/prompt-injection-host/src/main.js [F:d4bfbb023b]
+- S:d6fe95e4ae function add `export function add(a, b)` L11
+- S:7edaffdf2a function multiply `export function multiply(a, b)` L15
 ### .design-sync/previews/PermissionDeniedState.tsx [F:d590ca62b9]
 - S:655cf75cf0 function OwnerOnly `export const OwnerOnly = () => (` L3
 ### design-system/src/components/HelpHint/HelpHint.tsx [F:d5b496b125]
 - S:733f5fd096 interface HelpHintProps `export interface HelpHintProps` L5
 - S:e44c445050 function HelpHint `export function HelpHint({ label, children, size = 13 }: HelpHintProps)` L21 : A tiny circular help affordance: a `help` icon button that reveals its text in a * Tooltip on hover or keyboard focus. This is the pervasive "hover for context" * control placed next to section labels
+### modonome/scripts/sync-site-data.mjs [F:d6fb870676]
+- S:8d86e64ac8 function parseEvidence `function parseEvidence()` L18 : Parse RELEASE-EVIDENCE.md to extract gate counts and autonomy status
+- S:7df381c27f function countWorkItems `function countWorkItems()` L48 : Count work items by state
+- S:0b89752a41 function readVersion `function readVersion()` L67 : Parse version from .modonome/version
+- S:becec17f36 function updateSite `function updateSite(data)` L76 : Update site/index.html with live data
+- S:a5fef4acd5 function verifySiteData `function verifySiteData(data)` L97 : Verify site data matches evidence (used in CI gate)
 ### tests/run-log.test.mjs [F:d7d4e8d2a9]
 - S:fe9c17eefa function tmp `function tmp()` L12
 - S:37a0d721be function run `function run(script, ...args)` L16
@@ -1248,6 +1724,8 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - S:4f43d4e206 function runCycle `export function runCycle(opts, { execute, cfg, runId, env = process.env, queueDir, deps })` L357 : Execute a plan. Refuses a hosted run when the budget is zero. Runs the maker, then the checker, each as a distinct CLI invocation with its own model and identity. `deps` (chatCompletionImpl/applyPatch
 - S:d33c2c4d3e function runRoles `function runRoles(plan, roles, env, deps)` L402 : Invoke each role in turn and produce the "executed" result. A role's transport decides whether invokeRole returns a status number synchronously (anthropic-cli) or a Promise (openai-http, which awaits 
 - S:f71a25079c function main `async function main()` L417
+### modonome/tests/ratchet.test.mjs [F:ddef457783]
+- S:86adeb3c6c function ratchet `function ratchet(diffPath)` L16
 ### tests/scaffold-adoption.test.mjs [F:de5ebbf586]
 - S:fe07a3bcbc function gitRepo `function gitRepo()` L13
 - S:8579f519b1 function scaffold `function scaffold(dir, extra = [])` L25
@@ -1279,10 +1757,16 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - S:ce5e964e25 function ArmingMode `export const ArmingMode = () => (` L4
 - S:8c65a8b2a2 function ActiveWork `export const ActiveWork = () => (` L15
 - S:dd37641bec function Spend `export const Spend = () => (` L27
+### modonome/scripts/run-gate-pipeline.mjs [F:e8fc6fd5f8]
+- S:621f5fbd19 function parseArgs `function parseArgs(argv)` L44 : parseArgs(argv) -> { diff, "work-item" } map of fixture paths by gate arg name.
+- S:38779ec06d function gateOrder `export function gateOrder(graph)` L57 : gateOrder(graph) -> [...] the gates in dependency-first topological order. topoSort orders a gate ahead of the gates it points to, so reverse to put each gate's dependencies before the gate itself.
+- S:a9e087e292 function runPipeline `export function runPipeline(order, fixtures)` L68 : runPipeline(order, fixtures) -> [...] failures in topological order. Each failure is { gate, reason }. A missing fixture for a gate is itself a failure: the gate cannot be evaluated, so the pipeline m
 ### tests/helpers/mock-openai-server.mjs [F:eb14a0bdeb]
 - S:135fde5dfb function startMockServer `export function startMockServer(options = {})` L23 : Start a mock OpenAI chat-completions server. * * @param {object} [options] * @param {"success"|"retry-then-success"|"delay"|"malformed"|"error"} [options.mode] * - "success": always returns a normal c
 - S:b65916676a function successBody `function successBody(overrides)` L98
 - S:ac31df31c0 function writeJson `function writeJson(res, status, body)` L113
+### modonome/examples/demo-app/src/PaymentProcessor.js [F:ebc685a8b4]
+- S:cb97d20f6c class PaymentProcessor `export class PaymentProcessor` L5
 ### apps/control-panel/src/state/liveClient.ts [F:ec52ca3820]
 - S:38948fee1c class LiveApiError `export class LiveApiError extends Error {}` L10
 - S:819d9d37ff function call `async function call<T>(path: string, init?: RequestInit): Promise<T>` L12
@@ -1310,10 +1794,20 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - S:524aeb5cd6 function Detail `export const Detail = () => <WorkItemDrawer item={item} open onClose={() => {}} />;` L23
 ### tests/ratchet.test.mjs [F:f238d164c9]
 - S:2e93f745f3 function ratchet `function ratchet(diffPath)` L17
+### modonome/scripts/transition-work-item.mjs [F:f3b2bc2913]
+- S:1bf8ed23b5 function leaseHolder `function leaseHolder(item)` L22 : A lease is "live" if it has an owner and an unexpired lease_expires_at. The lease holder is recorded as lease_owner (the field this swap writes) or, for older items, the schema's `owner` field; either
+- S:a1c9733e61 function leaseIsLive `function leaseIsLive(item, now)` L26
+- S:b4de11d986 function tryTransition `export function tryTransition(item, fromState, toState, writerId, now = new Date())` L38 : tryTransition(item, fromState, toState, writerId, now) -> result { ok: true, item } swap succeeded; item is a fresh copy { ok: false, conflict: "<reason>" } swap refused; item is left untouched `now` 
 ### scripts/lib/graph.mjs [F:f51cba9beb]
 - S:3c3cd672a7 function isCyclic `export function isCyclic(adjacency)` L11 : isCyclic(adjacency) -> { cyclic: bool, cycle: [...] } Detects whether the graph contains a cycle. When a cycle is found, `cycle` holds the nodes involved in the order they were detected via DFS (the f
 - S:075e86ea7c function topoSort `export function topoSort(adjacency, nodes)` L48 : topoSort(adjacency, nodes) -> { order: [...], error?: string } Returns a topological ordering of `nodes` given the directed edges in `adjacency`. Nodes not present in `nodes` but reachable via edges a
 - S:9ec4198171 function collectNodes `function collectNodes(adjacency)` L75 : Collect every node mentioned either as a key or as a neighbour value.
+### modonome/tests/tick.test.mjs [F:f6d6e27b74]
+- S:a74e3a18a7 function tmp `function tmp()` L12
+- S:3d6d3dbe12 function runTick `function runTick(stateDir)` L16
+- S:0d6814d161 function makeItem `function makeItem(overrides = {})` L23
+- S:70b1c57b7b function writeItem `function writeItem(itemsDir, name, item)` L34
+- S:e9a5773541 function readItem `function readItem(itemsDir, name)` L38
 ### .design-sync/previews/Button.tsx [F:f6e100ab45]
 - S:f988f356bd function Variants `export const Variants = () => (` L4
 - S:edacefac29 function Sizes `export const Sizes = () => (` L19
@@ -1326,10 +1820,10 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - S:a3bf9f1833 interface QueueBoardProps `export interface QueueBoardProps` L4
 - S:16975f80af function QueueBoard `export function QueueBoard({ items, onSelect }: QueueBoardProps)` L18 : The work queue as a board. Items are grouped into the columns of the durable state * machine (queued, claimed, making, checking, merge ready, done, escalated), with * rework folded into making and mer
 ### bin/modonome.mjs [F:f90930c3c3]
-- S:5835c8b608 function resolveArming `export function resolveArming(targetDir, env = process.env)` L43 : The authoritative arming gate. A config file the agent can write can never arm the engine on its own: arming requires the MODONOME_ARMED=true environment variable, which lives in CI or operator scope,
-- S:53b9eda0f8 function run `function run(script, args)` L64
-- S:214691c25d function targetDirFrom `function targetDirFrom(rest)` L74
-- S:9249714b12 function main `function main(argv)` L78
+- S:5835c8b608 function resolveArming `export function resolveArming(targetDir, env = process.env)` L49 : The authoritative arming gate. A config file the agent can write can never arm the engine on its own: arming requires the MODONOME_ARMED=true environment variable, which lives in CI or operator scope,
+- S:53b9eda0f8 function run `function run(script, args)` L70
+- S:214691c25d function targetDirFrom `function targetDirFrom(rest)` L80
+- S:9249714b12 function main `function main(argv)` L84
 ### tests/decisions-authority.test.mjs [F:f921eecad7]
 - S:b1b5323930 function runGate `function runGate(dir, args = [])` L77
 - S:0b25fbc8fe function plainDecisionsDir `function plainDecisionsDir(content)` L81
@@ -1343,6 +1837,10 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - S:a06feb4e68 interface IdentityChipProps `export interface IdentityChipProps` L6
 - S:6797390adc function initialsFor `function initialsFor(name: string): string` L18
 - S:aaca852d2b function IdentityChip `export function IdentityChip({ name, model, role, size = "md" }: IdentityChipProps)` L31 : A compact identity marker: an initials avatar plus a name, with an optional model * string in muted mono beneath. When `role` is set the avatar ring is tinted (info for * maker, primary for checker) s
+### modonome/scripts/check-state-machine-acyclic.mjs [F:f9556837ea]
+- S:7803189a84 function buildAdjacency `function buildAdjacency(machine, { includeCapGuard })` L14 : Build the adjacency map { state: [to, ...] } from the transition list. When includeCapGuard is false, cap_guard edges are dropped: those are the sanctioned bounded-retry escapes and must not count as 
+- S:fe283f290f function reaches `function reaches(adjacency, start, targets)` L26 : reaches(adjacency, start, targets) -> bool Whether any node in `targets` is reachable from `start` along the edges.
+- S:0101b67ee5 function stateMachineErrors `export function stateMachineErrors(machine)` L39
 ### .design-sync/previews/WorkItemCard.tsx [F:f9c98a8642]
 - S:e173063c31 function Queued `export const Queued = () => (` L4
 - S:c7ebadadb9 function Checking `export const Checking = () => (` L19
@@ -1358,10 +1856,14 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 ### scripts/check-checker-engagement.mjs [F:fc5d887ff6]
 - S:aa00911a72 function readEvents `function readEvents(path)` L23
 ### scripts/check-md-governance.mjs [F:fd08562f92]
-- S:99ae98a428 function walkMd `function walkMd(dir, out = [])` L59
-- S:575af01d8c function checkTarget `function checkTarget(fileDir, rawTarget, srcFile)` L104
-- S:bc1fd2c5b3 function adrNumbers `function adrNumbers(dir)` L140 : 4. ADR number uniqueness across docs/adr and docs/research.
-- S:24c6a3dc6c function parseFrontMatter `function parseFrontMatter(text)` L173 : Front-matter parsing for canonical uniqueness and advisory presence.
+- S:99ae98a428 function walkMd `function walkMd(dir, out = [])` L66
+- S:575af01d8c function checkTarget `function checkTarget(fileDir, rawTarget, srcFile)` L111
+- S:bc1fd2c5b3 function adrNumbers `function adrNumbers(dir)` L147 : 4. ADR number uniqueness within docs/adr, and across docs/adr and docs/research.
+- S:24c6a3dc6c function parseFrontMatter `function parseFrontMatter(text)` L197 : Front-matter parsing for canonical uniqueness and advisory presence.
+- S:6647a4e550 function extractCitedPaths `function extractCitedPaths(text)` L245
+- S:38b734e681 function commitsSince `function commitsSince(paths, sinceDate)` L270 : Commits touching any of `paths` since `sinceDate` (a YYYY-MM-DD string already validated by the caller). Returns 0 (fail open, warn-free) if this is not a git checkout, e.g. an npm-installed copy of t
+### modonome/scripts/lib/run-gate-capped.mjs [F:fd210e7df1]
+- S:4eb3fe8ff9 function runGateCapped `export function runGateCapped(cmdArray, { timeoutMs = 30000, maxBuffer = 67108864 } = {})` L11
 ### scripts/agent/render-prompt.mjs [F:fd660a117b]
 - S:22e3bba95f function snapshotContext `export function snapshotContext(root = process.cwd())` L23 : Build a compact repository-snapshot context block from the committed Tier 0 signature, so every rendered role prompt starts pre-oriented and an agent can read the map instead of scanning the whole tre
 - S:2b5847c683 function renderPrompt `export function renderPrompt(role, env = process.env)` L58 : Substitute every ${VAR} from env. Throw if a referenced variable is unset, so a missing identity or branch fails loudly instead of rendering an empty value into a model prompt.
@@ -1371,6 +1873,9 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - S:cdac115f81 function runPortabilityCheck `function runPortabilityCheck(fixturePath, opts = {})` L46 : Run check-portability.mjs against a fixture directory.
 ### .design-sync/previews/TierBadge.tsx [F:fe5ec971f8]
 - S:7d8d2691e2 function Tiers `export const Tiers = () => (` L4
+### modonome/tests/arming.test.mjs [F:fef7d05751]
+- S:799aef1826 function tmpRepo `function tmpRepo(configBody)` L14
+- S:f41b8134cc function runStatus `function runStatus(dir, env)` L23
 ### examples/demo-app/src/PaymentProcessor.js [F:ff3aef693f]
 - S:9dee57c7c2 class PaymentProcessor `export class PaymentProcessor` L5
 ### scripts/lib/lang-adapters/go.mjs [F:ffe5c1269b]
@@ -1382,6 +1887,7 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 ## Import edges
 
 - scripts/lib/snapshot-graph.mjs -> scripts/lib/graph.mjs
+- modonome/scripts/check-gate-dag.mjs -> modonome/scripts/lib/graph.mjs
 - examples/demo-app/tests/OrderService.test.js -> examples/demo-app/src/OrderService.js
 - tests/check-licenses.test.mjs -> scripts/check-licenses.mjs
 - design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx -> design-system/src/components/StatusPill/StatusPill.tsx
@@ -1394,6 +1900,7 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - apps/control-panel/server/api.mjs -> apps/control-panel/server/modonomeWriter.mjs
 - apps/control-panel/server/api.mjs -> apps/control-panel/server/modonomeReader.mjs
 - design-system/src/components/DecisionCard/index.ts -> design-system/src/components/DecisionCard/DecisionCard.tsx
+- modonome/bin/modonome.mjs -> modonome/scripts/validate-config.mjs
 - scripts/verify-packet.mjs -> scripts/lib/ed25519.mjs
 - scripts/verify-packet.mjs -> scripts/lib/canonical-json.mjs
 - scripts/verify-packet.mjs -> scripts/validate-knowledge-packet.mjs
@@ -1413,6 +1920,7 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - tests/config.test.mjs -> scripts/lib/jsonschema.mjs
 - tests/config.test.mjs -> scripts/validate-config.mjs
 - tests/config.test.mjs -> scripts/migrate-config.mjs
+- modonome/examples/demo-app/tests/PaymentProcessor.test.js -> modonome/examples/demo-app/src/PaymentProcessor.js
 - scripts/lib/packet-id.mjs -> scripts/lib/canonical-json.mjs
 - design-system/src/components/Carousel/index.ts -> design-system/src/components/Carousel/Carousel.tsx
 - design-system/src/components/ActivationLadder/ActivationLadder.tsx -> design-system/src/lib/cx.ts
@@ -1422,17 +1930,22 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - scripts/check-control-panel-coverage.mjs -> scripts/lib/control-panel-audit.mjs
 - design-system/src/components/MdnRoot/index.ts -> design-system/src/components/MdnRoot/MdnRoot.tsx
 - design-system/src/components/LeaseTable/index.ts -> design-system/src/components/LeaseTable/LeaseTable.tsx
+- modonome/scripts/validate-config.mjs -> modonome/scripts/lib/yaml-lite.mjs
+- modonome/scripts/validate-config.mjs -> modonome/scripts/lib/jsonschema.mjs
 - design-system/src/components/ConceptTile/ConceptTile.tsx -> design-system/src/lib/cx.ts
 - design-system/src/components/ConceptTile/ConceptTile.tsx -> design-system/src/components/Icon/Icon.tsx
 - tests/ws-b-harness.test.mjs -> scripts/validate-config.mjs
 - tests/ws-b-harness.test.mjs -> scripts/agent/run-cycle.mjs
 - tests/ws-b-harness.test.mjs -> scripts/agent/render-prompt.mjs
 - design-system/src/components/Select/index.ts -> design-system/src/components/Select/Select.tsx
+- modonome/scripts/check-drift.mjs -> modonome/scripts/migrate-config.mjs
+- modonome/scripts/check-drift.mjs -> modonome/scripts/lib/yaml-lite.mjs
 - design-system/src/components/LearningCard/LearningCard.tsx -> design-system/src/components/StatusPill/StatusPill.tsx
 - design-system/src/components/LearningCard/LearningCard.tsx -> design-system/src/components/Card/Card.tsx
 - design-system/src/components/LearningCard/LearningCard.tsx -> design-system/src/components/Button/Button.tsx
 - design-system/src/components/Tabs/Tabs.tsx -> design-system/src/lib/cx.ts
 - design-system/src/components/Tabs/Tabs.tsx -> design-system/src/components/Icon/Icon.tsx
+- modonome/scripts/migrate-config.mjs -> modonome/scripts/lib/yaml-lite.mjs
 - design-system/src/components/Toggle/Toggle.tsx -> design-system/src/lib/cx.ts
 - design-system/src/components/Toggle/Toggle.tsx -> design-system/src/components/HelpHint/HelpHint.tsx
 - apps/control-panel/server/modonomeWriter.mjs -> apps/control-panel/server/learningsFormat.mjs
@@ -1442,8 +1955,16 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - scripts/lib/lang-adapters/index.mjs -> scripts/lib/lang-adapters/java.mjs
 - scripts/lib/lang-adapters/index.mjs -> scripts/lib/lang-adapters/go.mjs
 - apps/control-panel/src/state/configDiff.ts -> apps/control-panel/src/state/types.ts
+- modonome/examples/demo-app/tests/OrderService.test.js -> modonome/examples/demo-app/src/OrderService.js
+- modonome/examples/demo-app/src/index.js -> modonome/examples/demo-app/src/OrderService.js
+- modonome/examples/demo-app/src/index.js -> modonome/examples/demo-app/src/NotificationService.js
+- modonome/examples/demo-app/src/index.js -> modonome/examples/demo-app/src/CartService.js
+- modonome/examples/demo-app/src/index.js -> modonome/examples/demo-app/src/InventoryService.js
+- modonome/examples/demo-app/src/index.js -> modonome/examples/demo-app/src/CheckoutService.js
+- modonome/examples/demo-app/src/index.js -> modonome/examples/demo-app/src/PaymentProcessor.js
 - design-system/src/components/AppShell/AppShell.tsx -> design-system/src/lib/cx.ts
 - design-system/src/components/AppShell/AppShell.tsx -> design-system/src/components/Icon/Icon.tsx
+- modonome/scripts/validate-work-item.mjs -> modonome/scripts/lib/jsonschema.mjs
 - tests/snapshot-golden.test.mjs -> scripts/lib/lang-adapters/index.mjs
 - tests/snapshot-golden.test.mjs -> scripts/lib/lang-adapters/tree-sitter.mjs
 - scripts/lib/merkle.mjs -> scripts/lib/canonical-json.mjs
@@ -1459,6 +1980,7 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - design-system/src/components/RoleBadge/RoleBadge.tsx -> design-system/src/components/Icon/Icon.tsx
 - examples/demo-app/tests/PaymentProcessor.test.js -> examples/demo-app/src/PaymentProcessor.js
 - design-system/src/components/WorkItemDrawer/index.ts -> design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx
+- modonome/tests/maker-checker.test.mjs -> modonome/scripts/validate-work-item.mjs
 - tests/ws-h-config.test.mjs -> scripts/lib/yaml-lite.mjs
 - tests/ws-h-config.test.mjs -> scripts/agent/resolve-role.mjs
 - tests/ws-h-config.test.mjs -> scripts/validate-config.mjs
@@ -1470,20 +1992,32 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - tests/packet-signing.test.mjs -> scripts/lib/packet-id.mjs
 - tests/packet-signing.test.mjs -> scripts/lib/canonical-json.mjs
 - tests/packet-signing.test.mjs -> scripts/sign-packet.mjs
+- modonome/tests/performance.test.mjs -> modonome/scripts/validate-config.mjs
+- modonome/tests/performance.test.mjs -> modonome/scripts/validate-work-item.mjs
+- modonome/tests/performance.test.mjs -> modonome/scripts/validate-knowledge-packet.mjs
 - design-system/src/components/HoverCard/index.ts -> design-system/src/components/HoverCard/HoverCard.tsx
 - scripts/check-self-application.mjs -> scripts/lib/yaml-lite.mjs
 - scripts/check-self-application.mjs -> scripts/lib/jsonschema.mjs
 - design-system/src/components/Card/Card.tsx -> design-system/src/lib/cx.ts
 - design-system/src/components/Card/Card.tsx -> design-system/src/components/HelpHint/HelpHint.tsx
+- modonome/scripts/check-evidence-secrets.mjs -> modonome/scripts/lib/secret-patterns.mjs
 - tests/runner-env.test.mjs -> scripts/agent/run-cycle.mjs
+- modonome/scripts/validate-knowledge-packet.mjs -> modonome/scripts/lib/secret-patterns.mjs
+- modonome/scripts/validate-knowledge-packet.mjs -> modonome/scripts/lib/jsonschema.mjs
+- modonome/tests/provenance.test.mjs -> modonome/scripts/validate-knowledge-packet.mjs
 - tests/snapshot-incremental.test.mjs -> scripts/lib/snapshot-cache.mjs
 - tests/snapshot-incremental.test.mjs -> scripts/lib/canonical-json.mjs
 - tests/snapshot-incremental.test.mjs -> scripts/lib/snapshot-core.mjs
 - design-system/src/components/Card/index.ts -> design-system/src/components/Card/Card.tsx
 - tests/self-application.test.mjs -> scripts/lib/jsonschema.mjs
+- scripts/lib/detect-attribution.mjs -> scripts/lib/branch-name.mjs
+- scripts/lib/detect-attribution.mjs -> scripts/lib/commit-identity.mjs
 - design-system/src/components/TierBadge/index.ts -> design-system/src/components/TierBadge/TierBadge.tsx
 - scripts/lib/snapshot-redact.mjs -> scripts/lib/secret-patterns.mjs
 - tests/branch-name.test.mjs -> scripts/lib/branch-name.mjs
+- modonome/tests/ws-h-config.test.mjs -> modonome/scripts/validate-config.mjs
+- modonome/tests/ws-h-config.test.mjs -> modonome/scripts/lib/yaml-lite.mjs
+- modonome/tests/ws-h-config.test.mjs -> modonome/scripts/agent/resolve-role.mjs
 - apps/control-panel/src/screens/SettingsScreen.tsx -> apps/control-panel/src/state/types.ts
 - apps/control-panel/src/screens/SettingsScreen.tsx -> apps/control-panel/src/state/configDiff.ts
 - apps/control-panel/src/screens/SettingsScreen.tsx -> apps/control-panel/src/lib/confirm.tsx
@@ -1503,10 +2037,14 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - tests/maker-checker.test.mjs -> scripts/validate-work-item.mjs
 - scripts/agent/action-queue.mjs -> scripts/lib/jsonschema.mjs
 - scripts/scaffold.mjs -> scripts/install-hooks.mjs
+- modonome/tests/chaos.test.mjs -> modonome/scripts/validate-config.mjs
+- modonome/tests/chaos.test.mjs -> modonome/scripts/validate-knowledge-packet.mjs
+- modonome/tests/chaos.test.mjs -> modonome/scripts/lib/yaml-lite.mjs
 - design-system/src/components/LearningCard/index.ts -> design-system/src/components/LearningCard/LearningCard.tsx
 - tests/arming.test.mjs -> bin/modonome.mjs
 - scripts/check-repo-hygiene.mjs -> scripts/lib/branch-name.mjs
 - scripts/check-repo-hygiene.mjs -> scripts/lib/commit-identity.mjs
+- modonome/tests/self-application.test.mjs -> modonome/scripts/lib/jsonschema.mjs
 - design-system/src/components/Modal/Modal.tsx -> design-system/src/lib/cx.ts
 - design-system/src/components/Modal/Modal.tsx -> design-system/src/components/IconButton/IconButton.tsx
 - design-system/src/components/ConfirmDialog/ConfirmDialog.tsx -> design-system/src/components/Modal/Modal.tsx
@@ -1519,6 +2057,7 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - apps/control-panel/src/screens/OverviewScreen.tsx -> apps/control-panel/src/content/concepts.ts
 - design-system/src/components/ActivationLadder/index.ts -> design-system/src/components/ActivationLadder/ActivationLadder.tsx
 - design-system/src/components/StatusPill/index.ts -> design-system/src/components/StatusPill/StatusPill.tsx
+- modonome/tests/learnings.test.mjs -> modonome/scripts/lib/learnings.mjs
 - scripts/dry-run-sweep.mjs -> scripts/lib/control-panel-audit.mjs
 - scripts/dry-run-sweep.mjs -> scripts/lib/repo-detect.mjs
 - scripts/dry-run-sweep.mjs -> scripts/score-proposals.mjs
@@ -1529,15 +2068,19 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - design-system/src/components/Drawer/Drawer.tsx -> design-system/src/components/IconButton/IconButton.tsx
 - apps/control-panel/src/screens/LearningsScreen.tsx -> apps/control-panel/src/state/types.ts
 - apps/control-panel/src/screens/LearningsScreen.tsx -> apps/control-panel/src/lib/confirm.tsx
+- modonome/examples/demo-app/tests/CheckoutService.test.js -> modonome/examples/demo-app/src/CheckoutService.js
 - design-system/src/components/Input/Input.tsx -> design-system/src/lib/cx.ts
 - design-system/src/components/Input/Input.tsx -> design-system/src/components/HelpHint/HelpHint.tsx
 - design-system/src/components/Input/Input.tsx -> design-system/src/components/Icon/Icon.tsx
 - design-system/src/components/AuditTimeline/AuditTimeline.tsx -> design-system/src/lib/format.ts
 - design-system/src/components/AuditTimeline/AuditTimeline.tsx -> design-system/src/components/Icon/Icon.tsx
+- modonome/examples/demo-app/tests/InventoryService.test.js -> modonome/examples/demo-app/src/InventoryService.js
 - design-system/src/components/ArmingStateBadge/ArmingStateBadge.tsx -> design-system/src/lib/cx.ts
 - design-system/src/components/ArmingStateBadge/ArmingStateBadge.tsx -> design-system/src/tokens/tokens.ts
 - design-system/src/components/ArmingStateBadge/ArmingStateBadge.tsx -> design-system/src/components/Icon/Icon.tsx
 - scripts/sign-packet.mjs -> scripts/lib/canonical-json.mjs
+- modonome/tests/ws-e-negative-controls.test.mjs -> modonome/scripts/validate-work-item.mjs
+- modonome/tests/ws-e-negative-controls.test.mjs -> modonome/scripts/lib/learnings.mjs
 - apps/control-panel/src/state/fixtures/host.ts -> apps/control-panel/src/state/types.ts
 - design-system/src/components/ConfirmDialog/index.ts -> design-system/src/components/ConfirmDialog/ConfirmDialog.tsx
 - design-system/src/components/Select/Select.tsx -> design-system/src/lib/cx.ts
@@ -1548,12 +2091,15 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - tests/resolve-role.test.mjs -> scripts/agent/resolve-role.mjs
 - design-system/src/components/Table/index.ts -> design-system/src/components/Table/Table.tsx
 - design-system/src/components/Icon/index.ts -> design-system/src/components/Icon/Icon.tsx
+- modonome/scripts/check-self-application.mjs -> modonome/scripts/lib/yaml-lite.mjs
+- modonome/scripts/check-self-application.mjs -> modonome/scripts/lib/jsonschema.mjs
 - scripts/check-work-items.mjs -> scripts/lib/yaml-lite.mjs
 - scripts/check-work-items.mjs -> scripts/validate-work-item.mjs
 - scripts/check-drift.mjs -> scripts/lib/yaml-lite.mjs
 - scripts/check-drift.mjs -> scripts/migrate-config.mjs
 - apps/control-panel/src/main.tsx -> apps/control-panel/src/App.tsx
 - apps/control-panel/src/main.tsx -> apps/control-panel/src/app.css
+- modonome/tests/packet.test.mjs -> modonome/scripts/validate-knowledge-packet.mjs
 - apps/control-panel/src/state/fixtures/product.ts -> apps/control-panel/src/state/types.ts
 - design-system/src/components/Tabs/index.ts -> design-system/src/components/Tabs/Tabs.tsx
 - apps/control-panel/server/modonomeReader.mjs -> apps/control-panel/server/learningsFormat.mjs
@@ -1578,6 +2124,7 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - design-system/src/components/States/index.ts -> design-system/src/components/States/States.tsx
 - design-system/src/components/MdnRoot/MdnRoot.tsx -> design-system/src/lib/cx.ts
 - design-system/src/components/MetricTile/index.ts -> design-system/src/components/MetricTile/MetricTile.tsx
+- modonome/examples/demo-app/tests/CartService.test.js -> modonome/examples/demo-app/src/CartService.js
 - scripts/validate-config.mjs -> scripts/lib/yaml-lite.mjs
 - scripts/validate-config.mjs -> scripts/lib/jsonschema.mjs
 - scripts/build-release-evidence.mjs -> scripts/lib/yaml-lite.mjs
@@ -1675,6 +2222,7 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - design-system/src/components/ProgressMeter/index.ts -> design-system/src/components/ProgressMeter/ProgressMeter.tsx
 - design-system/src/components/ModeSwitcher/ModeSwitcher.tsx -> design-system/src/lib/cx.ts
 - design-system/src/components/ModeSwitcher/ModeSwitcher.tsx -> design-system/src/components/Icon/Icon.tsx
+- modonome/examples/demo-app/tests/NotificationService.test.js -> modonome/examples/demo-app/src/NotificationService.js
 - design-system/src/components/WorkItemCard/index.ts -> design-system/src/components/WorkItemCard/WorkItemCard.tsx
 - design-system/src/components/WorkItemCard/WorkItemCard.tsx -> design-system/src/components/StatusPill/StatusPill.tsx
 - design-system/src/components/WorkItemCard/WorkItemCard.tsx -> design-system/src/lib/cx.ts
@@ -1684,6 +2232,8 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - design-system/src/components/Checkbox/index.ts -> design-system/src/components/Checkbox/Checkbox.tsx
 - tests/provenance.test.mjs -> scripts/validate-knowledge-packet.mjs
 - design-system/src/components/IdentityChip/index.ts -> design-system/src/components/IdentityChip/IdentityChip.tsx
+- modonome/scripts/build-release-evidence.mjs -> modonome/scripts/lib/yaml-lite.mjs
+- modonome/scripts/build-release-evidence.mjs -> modonome/scripts/lib/learnings.mjs
 - tests/ws-e-negative-controls.test.mjs -> scripts/lib/learnings.mjs
 - tests/ws-e-negative-controls.test.mjs -> scripts/validate-work-item.mjs
 - tests/sweep-to-work-item.test.mjs -> scripts/dry-run-sweep.mjs
@@ -1694,17 +2244,34 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - scripts/check-promotion-readiness.mjs -> scripts/lib/yaml-lite.mjs
 - design-system/src/components/Sparkline/index.ts -> design-system/src/components/Sparkline/Sparkline.tsx
 - scripts/audit-learnings.mjs -> scripts/lib/learnings.mjs
+- modonome/scripts/audit-learnings.mjs -> modonome/scripts/lib/learnings.mjs
+- scripts/check-style.mjs -> scripts/lib/detect-attribution.mjs
 - tests/install-hooks.test.mjs -> scripts/install-hooks.mjs
+- modonome/scripts/check-learning-traceability.mjs -> modonome/scripts/lib/learnings.mjs
+- modonome/tests/ws-b-harness.test.mjs -> modonome/scripts/validate-config.mjs
+- modonome/tests/ws-b-harness.test.mjs -> modonome/scripts/agent/render-prompt.mjs
+- modonome/tests/ws-b-harness.test.mjs -> modonome/scripts/agent/run-cycle.mjs
 - design-system/src/components/CostPanel/CostPanel.tsx -> design-system/src/components/StatusPill/StatusPill.tsx
 - design-system/src/components/CostPanel/CostPanel.tsx -> design-system/src/lib/format.ts
 - design-system/src/components/CostPanel/CostPanel.tsx -> design-system/src/components/ProgressMeter/ProgressMeter.tsx
 - design-system/src/components/CostPanel/CostPanel.tsx -> design-system/src/components/Table/Table.tsx
+- modonome/scripts/check-work-items.mjs -> modonome/scripts/validate-work-item.mjs
+- modonome/scripts/check-work-items.mjs -> modonome/scripts/lib/yaml-lite.mjs
 - design-system/src/components/Drawer/index.ts -> design-system/src/components/Drawer/Drawer.tsx
 - design-system/src/components/GatePanel/index.ts -> design-system/src/components/GatePanel/GatePanel.tsx
 - design-system/src/components/HelpHint/index.ts -> design-system/src/components/HelpHint/HelpHint.tsx
 - examples/demo-app/tests/NotificationService.test.js -> examples/demo-app/src/NotificationService.js
+- modonome/scripts/agent/run-cycle.mjs -> modonome/scripts/validate-config.mjs
+- modonome/scripts/agent/run-cycle.mjs -> modonome/scripts/agent/render-prompt.mjs
+- modonome/scripts/agent/run-cycle.mjs -> modonome/scripts/lib/learnings.mjs
+- modonome/scripts/agent/run-cycle.mjs -> modonome/scripts/agent/resolve-role.mjs
+- modonome/scripts/check-promotion-readiness.mjs -> modonome/scripts/lib/yaml-lite.mjs
 - design-system/src/components/Carousel/Carousel.tsx -> design-system/src/lib/cx.ts
 - design-system/src/components/Carousel/Carousel.tsx -> design-system/src/components/IconButton/IconButton.tsx
+- modonome/tests/config.test.mjs -> modonome/scripts/validate-config.mjs
+- modonome/tests/config.test.mjs -> modonome/scripts/migrate-config.mjs
+- modonome/tests/config.test.mjs -> modonome/scripts/lib/yaml-lite.mjs
+- modonome/tests/config.test.mjs -> modonome/scripts/lib/jsonschema.mjs
 - design-system/src/components/HelpHint/HelpHint.tsx -> design-system/src/components/Tooltip/Tooltip.tsx
 - design-system/src/components/HelpHint/HelpHint.tsx -> design-system/src/components/Icon/Icon.tsx
 - tests/render-prompt-unit.test.mjs -> scripts/agent/render-prompt.mjs
@@ -1745,6 +2312,8 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - apps/control-panel/src/screens/ArmingScreen.tsx -> apps/control-panel/src/state/configDiff.ts
 - apps/control-panel/src/screens/ArmingScreen.tsx -> apps/control-panel/src/lib/confirm.tsx
 - tests/promote-learning.test.mjs -> scripts/lib/learnings.mjs
+- modonome/scripts/run-gate-pipeline.mjs -> modonome/scripts/lib/graph.mjs
+- modonome/scripts/run-gate-pipeline.mjs -> modonome/scripts/lib/run-gate-capped.mjs
 - design-system/src/components/NumberField/index.ts -> design-system/src/components/NumberField/NumberField.tsx
 - apps/control-panel/src/state/liveClient.ts -> apps/control-panel/src/state/types.ts
 - tests/tool-loop-adapter.test.mjs -> scripts/agent/run-cycle.mjs
@@ -1766,60 +2335,62 @@ Files: 765  Bytes: 2452404  Map tokens: 87066/120000
 - bin/modonome.mjs -> scripts/validate-config.mjs
 - tests/decisions-authority.test.mjs -> scripts/check-decisions-authority.mjs
 - design-system/src/components/IdentityChip/IdentityChip.tsx -> design-system/src/lib/cx.ts
+- modonome/scripts/check-state-machine-acyclic.mjs -> modonome/scripts/lib/graph.mjs
 - design-system/src/components/ProtectedPathRow/index.ts -> design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx
 - scripts/check-gate-dag.mjs -> scripts/lib/graph.mjs
 - design-system/src/components/IconButton/index.ts -> design-system/src/components/IconButton/IconButton.tsx
+- modonome/tests/arming.test.mjs -> modonome/bin/modonome.mjs
 
 ## Attention (centrality + pagerank)
 
-1. design-system/src/lib/cx.ts centrality=32 pagerank=0.038223
-2. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.024779
-3. design-system/src/index.ts centrality=48 pagerank=0.001005
-4. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.008433
-5. apps/control-panel/src/state/types.ts centrality=12 pagerank=0.008423
-6. scripts/lib/yaml-lite.mjs centrality=12 pagerank=0.008009
-7. scripts/agent/run-cycle.mjs centrality=17 pagerank=0.003781
-8. scripts/lib/jsonschema.mjs centrality=8 pagerank=0.01092
-9. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.006011
-10. scripts/lib/learnings.mjs centrality=9 pagerank=0.007277
-11. scripts/validate-config.mjs centrality=11 pagerank=0.004728
-12. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001681
-13. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.004848
-14. scripts/lib/canonical-json.mjs centrality=8 pagerank=0.005236
-15. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.005625
-16. apps/control-panel/src/App.tsx centrality=11 pagerank=0.001432
-17. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002936
-18. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.003628
-19. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.005231
-20. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.003513
-21. scripts/validate-work-item.mjs centrality=6 pagerank=0.003425
-22. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001682
-23. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.003202
-24. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.005458
-25. scripts/agent/resolve-role.mjs centrality=6 pagerank=0.002934
-26. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001874
-27. scripts/snapshot.mjs centrality=8 pagerank=0.001005
-28. scripts/lib/graph.mjs centrality=4 pagerank=0.004116
-29. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002936
-30. design-system/src/lib/format.ts centrality=5 pagerank=0.002935
-31. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001874
-32. scripts/agent/providers.mjs centrality=3 pagerank=0.004005
-33. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.001127
-34. design-system/src/components/Modal/Modal.tsx centrality=4 pagerank=0.002671
-35. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001874
-36. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001874
-37. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.001874
-38. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.001874
-39. design-system/src/components/TierBadge/TierBadge.tsx centrality=4 pagerank=0.002639
-40. examples/demo-app/src/index.js centrality=6 pagerank=0.001005
-41. design-system/src/components/Table/Table.tsx centrality=4 pagerank=0.002591
-42. apps/control-panel/server/learningsFormat.mjs centrality=2 pagerank=0.004057
-43. design-system/src/components/IdentityChip/IdentityChip.tsx centrality=4 pagerank=0.002458
-44. scripts/lib/control-panel-audit.mjs centrality=3 pagerank=0.003119
-45. design-system/src/components/ArmingStateBadge/ArmingStateBadge.tsx centrality=4 pagerank=0.001874
-46. design-system/src/components/Checkbox/Checkbox.tsx centrality=4 pagerank=0.001874
-47. design-system/src/components/DecisionCard/DecisionCard.tsx centrality=4 pagerank=0.001874
-48. design-system/src/components/Input/Input.tsx centrality=4 pagerank=0.001874
-49. design-system/src/components/LearningCard/LearningCard.tsx centrality=4 pagerank=0.001874
-50. design-system/src/components/MetricTile/MetricTile.tsx centrality=4 pagerank=0.001874
+1. design-system/src/lib/cx.ts centrality=32 pagerank=0.026106
+2. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.016924
+3. design-system/src/index.ts centrality=48 pagerank=0.000686
+4. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.00576
+5. apps/control-panel/src/state/types.ts centrality=12 pagerank=0.005753
+6. scripts/lib/yaml-lite.mjs centrality=12 pagerank=0.00547
+7. scripts/agent/run-cycle.mjs centrality=17 pagerank=0.002583
+8. scripts/lib/jsonschema.mjs centrality=8 pagerank=0.007458
+9. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.004106
+10. modonome/scripts/lib/yaml-lite.mjs centrality=10 pagerank=0.005149
+11. scripts/lib/learnings.mjs centrality=9 pagerank=0.00497
+12. scripts/validate-config.mjs centrality=11 pagerank=0.003229
+13. modonome/scripts/lib/jsonschema.mjs centrality=6 pagerank=0.005623
+14. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001148
+15. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.003311
+16. scripts/lib/canonical-json.mjs centrality=8 pagerank=0.003576
+17. modonome/scripts/validate-config.mjs centrality=9 pagerank=0.002877
+18. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.003842
+19. apps/control-panel/src/App.tsx centrality=11 pagerank=0.000978
+20. modonome/scripts/lib/learnings.mjs centrality=6 pagerank=0.003207
+21. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002006
+22. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.002478
+23. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.003573
+24. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.0024
+25. scripts/validate-work-item.mjs centrality=6 pagerank=0.002339
+26. modonome/scripts/validate-knowledge-packet.mjs centrality=6 pagerank=0.002242
+27. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001149
+28. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.002187
+29. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.003728
+30. scripts/agent/resolve-role.mjs centrality=6 pagerank=0.002004
+31. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.00128
+32. scripts/snapshot.mjs centrality=8 pagerank=0.000686
+33. scripts/lib/graph.mjs centrality=4 pagerank=0.002811
+34. modonome/scripts/validate-work-item.mjs centrality=5 pagerank=0.002048
+35. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002006
+36. design-system/src/lib/format.ts centrality=5 pagerank=0.002004
+37. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.00128
+38. scripts/agent/providers.mjs centrality=3 pagerank=0.002735
+39. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.00077
+40. design-system/src/components/Modal/Modal.tsx centrality=4 pagerank=0.001824
+41. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.00128
+42. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.00128
+43. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.00128
+44. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.00128
+45. design-system/src/components/TierBadge/TierBadge.tsx centrality=4 pagerank=0.001802
+46. examples/demo-app/src/index.js centrality=6 pagerank=0.000686
+47. modonome/examples/demo-app/src/index.js centrality=6 pagerank=0.000686
+48. design-system/src/components/Table/Table.tsx centrality=4 pagerank=0.00177
+49. apps/control-panel/server/learningsFormat.mjs centrality=2 pagerank=0.002771
+50. design-system/src/components/IdentityChip/IdentityChip.tsx centrality=4 pagerank=0.001679
 

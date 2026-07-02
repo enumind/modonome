@@ -1,3 +1,10 @@
+---
+status: active
+owner: "@nateshpp"
+last_reviewed: 2026-07-01
+canonical: [eu-ai-act-classification]
+---
+
 # EU AI Act Classification
 
 **Date:** 2026-06-23  
@@ -12,12 +19,15 @@ obligations that may arise for operators deploying it in certain contexts.
 ## Operating Mode Summary
 
 Modonome has four operating modes, each with a different risk profile under the EU AI Act.
+Shadow is planned, not yet implemented (`docs/adr/ADR-002-shadow-mode.md` tracks it as
+WI-011); it is included here for completeness of the eventual ladder, not as a claim
+that it exists today.
 
 | Mode | Description | Estimated classification |
 |------|-------------|-------------------------|
 | Disabled | Read-only. Produces adoption maps and proposals. No write action. | Likely outside scope of the AI Act (no autonomous decision-making) |
 | Dry-run | Projects actions, records metrics, takes no write action. | Likely outside scope or minimal-risk |
-| Shadow | Read-only comparison of projected decisions against human outcomes. | Likely outside scope or minimal-risk |
+| Shadow (planned) | Read-only comparison of projected decisions against human outcomes. | Likely outside scope or minimal-risk |
 | Armed | Writes pull requests, may merge changes autonomously within caps. | Context-dependent (see analysis below) |
 
 ---
@@ -27,12 +37,13 @@ Modonome has four operating modes, each with a different risk profile under the 
 The EU AI Act classifies an AI system as high-risk if it falls within Annex III. The relevant
 categories for Modonome armed-mode deployments are:
 
-**Annex III, Category 4: Critical infrastructure.**  
+**Annex III, Category 2: Critical infrastructure.**  
 If Modonome armed mode is used to autonomously modify software that controls or manages
 critical infrastructure (energy, water, transport, finance), this deployment may constitute
 a high-risk use case.
 
-**Annex III, Category 8: Law enforcement and administration of justice.**  
+**Annex III, Category 6: Law enforcement**, and **Category 8: Administration of justice
+and democratic processes.**  
 Not applicable to typical Modonome deployments.
 
 **General-purpose AI (GPAI) provisions:**  

@@ -9,6 +9,89 @@ or CVE identifier where one exists.
 
 ## Unreleased
 
+### Documentation coherence, SME accuracy, and diagram consistency
+
+- Corrected `docs/compliance/compliance.md` and `docs/specs/governed-autonomy-spec.md`:
+  both presented an internal AG-numbered risk taxonomy as if it were a literal restatement
+  of the published OWASP Top 10 for Agentic Applications (ASI01 through ASI10). The two
+  lists do not correspond one-to-one; the AG numbering predates OWASP's December 2025
+  publication and is cited directly by AgentProof scenarios and the ratchet spec, so it is
+  relabeled honestly as Modonome's own taxonomy rather than renumbered to match OWASP's,
+  which would have broken those existing citations.
+- Corrected `docs/compliance/eu-ai-act-classification.md`: cited Annex III "Category 4"
+  for critical infrastructure (actually Category 2) and conflated "Category 8: Law
+  enforcement and administration of justice" (law enforcement is Category 6;
+  administration of justice and democratic processes is Category 8 on its own).
+- `GOVERNANCE.md` and `docs/compliance/eu-ai-act-classification.md` both presented
+  "Shadow" mode as a live activation-ladder rung with no qualifier, contradicting
+  `docs/adr/ADR-002-shadow-mode.md`'s finding that no implementation exists. Both now
+  note it is planned (WI-011), matching the caveat ADR-025 already carried.
+- `docs/guidelines/markdown-governance.md`'s root allow-list table was missing three
+  files the enforcing script actually permits (`CODEX.md`, `CLAUDE.md`,
+  `RATCHET-SPEC.md`). Added, with an honest note that `RATCHET-SPEC.md`'s content
+  does not match its name or the real ratchet spec and is flagged for owner review
+  rather than given an invented justification.
+- `docs/README.md` said "34 accepted ADRs"; 9 of the 34 carry `Status: Proposed`.
+  Corrected to state both counts.
+- Fixed a rendering bug in two Mermaid diagrams in `docs/specs/governed-autonomy-spec.md`:
+  edge and node labels used `\n` for line breaks, which Mermaid does not render as one;
+  every other diagram in the repository already uses `<br/>`. Also fixed a typo
+  ("fingerpinrted") and added color classes to the previously uncolored
+  Maker/Checker/Merger diagram, matching ARCHITECTURE.md's established palette.
+- In ARCHITECTURE.md's "Where Modonome fits in your pipeline" diagram, the anti-gaming
+  ratchet shared the engine's color class, visually equating the two even though the
+  document's own security argument rests on the ratchet being structurally independent
+  from the engine. Recolored to match the ratchet's identity in the other diagrams.
+
+### Documentation drift prevention, phase two
+
+- Added `check-architecture-drift.mjs`: fails CI if a file under `scripts/agent/` or
+  `scripts/mcp-server.mjs` is not mentioned anywhere in ARCHITECTURE.md, if
+  ARCHITECTURE.md cites a `scripts/*.mjs` path that no longer exists, or if a
+  work-item state in `schemas/work-item.schema.json` is not named in ARCHITECTURE.md's
+  "The agent loop" section. Running it against this repo surfaced two real gaps: the
+  agent execution layer (`scripts/agent/`) had no entry in "The pieces," and the
+  agent-loop diagram used role labels (Maker, Checker) with no bridge to the literal
+  state-machine vocabulary. Both are fixed in ARCHITECTURE.md, not worked around.
+- `check-self-application.mjs` now asserts the AgentProof score hand-typed in
+  README.md, agentproof/README.md, and agentproof/SPEC.md matches
+  `agentproof/runner.mjs --json`'s own computed score, and that the markdown
+  governance, architecture drift, and self-application gates are each wired into
+  `ci.yml`. Skipped entirely for a fixture or host repo with no `agentproof/`
+  directory of its own.
+- `check-md-governance.mjs` now requires `last_reviewed` front-matter on every file
+  under `docs/compliance/` and `docs/audits/`, and fails if more than 15 commits have
+  touched a doc's own cited paths since it was last reviewed. Scoped to this small,
+  externally-facing set rather than all of `docs/`, where front-matter coverage is
+  still mid-migration. Backfilled front-matter on the five existing files in scope.
+- Fixed two pre-existing bugs in `tests/self-application.test.mjs`'s fixture that had
+  been masked by exit-code-only assertions: `makeMinimalRepo()` wrote CODEOWNERS to
+  the repository root instead of `.github/CODEOWNERS`, and it was missing every file
+  the snapshot-dogfooding check (ADR-033) requires. Both caused the script to crash
+  rather than run cleanly; the crash's exit code happened to match what the negative
+  tests expected, so nothing caught it until a test that required a genuine exit 0
+  was added.
+
+### Documentation governance gate fix
+
+- Fixed a gap in the ADR-number-uniqueness check (`check-md-governance.mjs`, ADR-031):
+  it only ever compared `docs/adr/` against `docs/research/` and could not detect two
+  files inside `docs/adr/` claiming the same number. Two same-day pull requests had
+  independently done exactly that (`ADR-032-oss-adapter-boundary.md` and
+  `ADR-032-repo-snapshot.md`), undetected by CI. The check now also flags duplicates
+  within a single directory. `ADR-032-repo-snapshot.md` is renamed to
+  `ADR-033-repo-snapshot.md`. Added a regression test
+  (`tests/check-md-governance.test.mjs`) and a permanent adversarial scenario
+  (AgentProof AP-36, now 25/25 normative plus 10/10 extended). See
+  `docs/audits/claims-audit-2026-07-01.md` for the full re-verification this prompted.
+- Corrected ARCHITECTURE.md: it claimed three execution contexts while
+  `scripts/mcp-server.mjs`, a fully implemented MCP stdio server, was already a fourth.
+  Also added the `rework`, `escalated`, and lease-expiry states to the agent-loop
+  diagram, which previously showed only the linear happy path.
+- ADR-025 now cross-references ADR-002's decision to remove "shadow mode" from docs
+  pending implementation, instead of reusing the term a day later with no link between
+  the two.
+
 ### Repo snapshot utility hardening
 
 - Fixed a CodeQL-flagged time-of-check-to-time-of-use race in `scaffold`'s `AGENTS.md`
@@ -29,7 +112,7 @@ or CVE identifier where one exists.
   and is deterministic. New config levers live under `snapshot` (`ci_mode` warn by default,
   `sign` false, `parser` heuristic, `token_budget`, `strict_redact`). Discovery is layered
   through `llms.txt`, an `AGENTS.md` pointer, `prompts/modules/snapshot.md`, and the
-  `modonome_snapshot` MCP tool. See ADR-032.
+  `modonome_snapshot` MCP tool. See ADR-033.
 - Snapshot regeneration is incremental: a local, gitignored cache under `.modonome/cache/`
   plus git change detection means only changed files are re-read and re-parsed, while the
   output stays byte-identical to a full rebuild. `--full` forces a from-scratch build.

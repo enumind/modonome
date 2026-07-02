@@ -175,7 +175,7 @@ npx modonome snapshot . --since HEAD~1   # print the signature-level delta since
 ```
 
 Agents discover it through the root `llms.txt`, a pointer in `AGENTS.md` or `CLAUDE.md`, or
-the `modonome_snapshot` MCP tool. See [docs/adr/ADR-032-repo-snapshot.md](docs/adr/ADR-032-repo-snapshot.md).
+the `modonome_snapshot` MCP tool. See [docs/adr/ADR-033-repo-snapshot.md](docs/adr/ADR-033-repo-snapshot.md).
 
 ## Embed it
 
@@ -269,6 +269,10 @@ npm run verify   # drift, style, hygiene, self-application, learning, promotion,
 learnings, and a `metrics.example.jsonl` sample (the live `metrics.jsonl` is written by the
 engine at runtime and is not committed). Adopters should run `npx modonome scaffold . --write`
 to start fresh with their own config and empty state.
+
+## Development practice
+
+This project is developed with AI assistance, governed by the same autonomy loop it ships. The governance process (CI gates, independent checker, anti-gaming ratchet) is the trust signal, not the identity of any tool involved.
 
 ## License
 

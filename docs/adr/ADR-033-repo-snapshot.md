@@ -1,4 +1,4 @@
-# ADR-032: Repo snapshot
+# ADR-033: Repo snapshot
 
 Status: Accepted
 
