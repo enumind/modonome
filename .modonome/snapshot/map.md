@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:e3f703465351f74a547677081c5a22ad40fdc97e3dc1e015ba469b5ad3c8d190
-Files: 789  Bytes: 2625666  Map tokens: 96360/120000
+Merkle root: sha256:60bc9da72d791b5d2f88a1f788a2d162d1fd589896ddbb44defac72f9fd7cc24
+Files: 791  Bytes: 2638574  Map tokens: 96961/120000
 
 ## Modules
 
@@ -84,6 +84,7 @@ Files: 789  Bytes: 2625666  Map tokens: 96360/120000
 - apps/control-panel/server/learningsFormat.mjs [F:54df44aadd]: Shared parsing for the "## Staged" bullet lines in .modonome/LEARNINGS.md, so the
 - apps/control-panel/server/modonomeReader.mjs [F:8a3dd6ccff]: A gate's status is implied by the state of every work item that declares it, never by a fabricated pass. A repo that has only ever run dry-run sweeps shows ever
 - apps/control-panel/server/modonomeWriter.mjs [F:22566cb46e]: A line-level patch, not a full YAML re-serialize, so every hand-written comment in config.yaml survives an edit made from the panel. Only top-level, zero-indent
+- apps/control-panel/server/remediationView.mjs [F:5daab9894d]: Builds the read-only remediation view-model for the panel. Pure: it takes already
 - apps/control-panel/src/App.tsx [F:113387361d]: function App
 - apps/control-panel/src/content/concepts.ts [F:f83d1100e9]: interface ConceptEntry
 - apps/control-panel/src/lib/confirm.tsx [F:3c479cac6e]: Provides an imperative confirm() that resolves true when the operator approves. * Every destructive control in the panel awaits this before it fires, satisfying
@@ -439,23 +440,25 @@ Files: 789  Bytes: 2625666  Map tokens: 96360/120000
 - S:3e9158c80b type RiskTier `export type RiskTier = 1 | 2 | 3 | 4;` L22
 - S:86cb290127 interface Subject `export interface Subject` L25 : The subject a mode points at: which repo the panel is reading.
 - S:a337ae8f0b interface ModonomeConfig `export interface ModonomeConfig` L37 : The engine configuration (schemas/config.schema.json), the levers the panel edits.
-- S:d56c1854d7 interface ArmingCheck `export interface ArmingCheck` L71 : One prerequisite in the armed-mode gate checklist.
-- S:6bc87187a8 interface ArmingStatus `export interface ArmingStatus` L79
-- S:5a49db2766 interface WorkItemVM `export interface WorkItemVM` L86
-- S:f3e5c99141 interface LeaseVM `export interface LeaseVM` L108
-- S:dddb39652d type GateStatus `export type GateStatus = "pass" | "fail" | "flaky" | "running" | "pending";` L115
-- S:9bc07de53c interface GateVM `export interface GateVM` L117
-- S:126357e421 interface CostByModel `export interface CostByModel` L126
-- S:ebe2964819 interface CostVM `export interface CostVM` L134
-- S:72a5c214ac interface LearningVM `export interface LearningVM` L143
-- S:e03cf612ca interface DecisionVM `export interface DecisionVM` L153
-- S:3ad2d564a8 type AuditKind `export type AuditKind =` L162
-- S:7c6ba2a644 interface AuditEventVM `export interface AuditEventVM` L177
-- S:19226d4902 interface ProtectedPathVM `export interface ProtectedPathVM` L184
-- S:61e677ae40 interface TrendPoint `export interface TrendPoint` L191
-- S:cefb8c3f64 interface PanelSource `export interface PanelSource` L197 : Where a loaded PanelState actually came from, so the UI never presents demo data as real.
-- S:4a0171ecb5 interface PanelState `export interface PanelState` L206
-- S:a2d9480f78 interface WriteActions `export interface WriteActions` L231 : The write side of the panel, threaded down from App to the screens that mutate real * state. Every call here hits a real file on disk when `writable` is true; screens must * still confirm before calli
+- S:d56c1854d7 interface ArmingCheck `export interface ArmingCheck` L72 : One prerequisite in the armed-mode gate checklist.
+- S:6bc87187a8 interface ArmingStatus `export interface ArmingStatus` L80
+- S:5a49db2766 interface WorkItemVM `export interface WorkItemVM` L87
+- S:f3e5c99141 interface LeaseVM `export interface LeaseVM` L109
+- S:dddb39652d type GateStatus `export type GateStatus = "pass" | "fail" | "flaky" | "running" | "pending";` L116
+- S:9bc07de53c interface GateVM `export interface GateVM` L118
+- S:126357e421 interface CostByModel `export interface CostByModel` L127
+- S:ebe2964819 interface CostVM `export interface CostVM` L135
+- S:72a5c214ac interface LearningVM `export interface LearningVM` L144
+- S:e03cf612ca interface DecisionVM `export interface DecisionVM` L154
+- S:6ef3b2f2e5 interface RemediationProposalVM `export interface RemediationProposalVM` L164 : One commit the metadata-only remediator would rewrite, and why.
+- S:b41535d6e7 interface RemediationVM `export interface RemediationVM` L175 : The armed metadata-only remediator (ADR-035) as a read-only surface plus one owner * lever. `applyEnabled` mirrors the config flag; `ready` is true only when every arming * condition is met, and `bloc
+- S:3ad2d564a8 type AuditKind `export type AuditKind =` L184
+- S:7c6ba2a644 interface AuditEventVM `export interface AuditEventVM` L199
+- S:19226d4902 interface ProtectedPathVM `export interface ProtectedPathVM` L206
+- S:61e677ae40 interface TrendPoint `export interface TrendPoint` L213
+- S:cefb8c3f64 interface PanelSource `export interface PanelSource` L219 : Where a loaded PanelState actually came from, so the UI never presents demo data as real.
+- S:4a0171ecb5 interface PanelState `export interface PanelState` L228
+- S:a2d9480f78 interface WriteActions `export interface WriteActions` L255 : The write side of the panel, threaded down from App to the screens that mutate real * state. Every call here hits a real file on disk when `writable` is true; screens must * still confirm before calli
 ### scripts/verify-packet.mjs [F:0c1c5ad5d9]
 - S:6dd199eea1 function resolveActiveKey `export function resolveActiveKey(peerKeys, alias, now = new Date())` L18 : Resolve an alias to an active, in-window key entry in the allowlist.
 - S:f3b8628cdb function verifyPacket `export function verifyPacket(packet, peerKeys, { now = new Date(), skipContentGate = false } = {})` L34 : Full ordered verification. options.skipContentGate runs only the signature checks (steps 3 to 5), used when the caller already ran the schema and redaction gate.
@@ -564,12 +567,12 @@ Files: 789  Bytes: 2625666  Map tokens: 96360/120000
 - S:b919653baa function DryRun `export const DryRun = () => (` L44
 - S:ea5d04ea13 function Armed `export const Armed = () => (` L48
 ### apps/control-panel/server/modonomeWriter.mjs [F:22566cb46e]
-- S:7cd45cbc03 function formatYamlScalar `function formatYamlScalar(value)` L35
-- S:1c5d801590 function patchYamlText `function patchYamlText(text, patch)` L43 : A line-level patch, not a full YAML re-serialize, so every hand-written comment in config.yaml survives an edit made from the panel. Only top-level, zero-indent keys are touched; nested maps (roles, m
-- S:b06714d9c5 function patchConfig `export function patchConfig(modonomeDir, patch)` L68
-- S:8b67ef3e8b function workItemFile `function workItemFile(modonomeDir, itemId)` L82
-- S:fd9d32de9a function releaseLease `export function releaseLease(modonomeDir, itemId)` L88
-- S:5b0e153cfb function pruneLearning `export function pruneLearning(modonomeDir, lesson)` L99
+- S:7cd45cbc03 function formatYamlScalar `function formatYamlScalar(value)` L36
+- S:1c5d801590 function patchYamlText `function patchYamlText(text, patch)` L44 : A line-level patch, not a full YAML re-serialize, so every hand-written comment in config.yaml survives an edit made from the panel. Only top-level, zero-indent keys are touched; nested maps (roles, m
+- S:b06714d9c5 function patchConfig `export function patchConfig(modonomeDir, patch)` L69
+- S:8b67ef3e8b function workItemFile `function workItemFile(modonomeDir, itemId)` L83
+- S:fd9d32de9a function releaseLease `export function releaseLease(modonomeDir, itemId)` L89
+- S:5b0e153cfb function pruneLearning `export function pruneLearning(modonomeDir, lesson)` L100
 ### scripts/test-prompt-behavior.mjs [F:23917c6197]
 - S:a931ad2e62 function resolvePromptText `export function resolvePromptText(root)` L44 : Concatenate the committed prompt source files into one searchable string. * @param {string} root repository root that contains the prompts directory * @returns {string} the concatenated committed prom
 - S:0a5fed1978 function loadFixtures `export function loadFixtures(dir)` L57 : Load every fixture JSON file from a directory. * @param {string} dir directory holding fixture *.json files * @returns {Array<object>} parsed fixture objects, sorted by file name for stable output
@@ -589,7 +592,7 @@ Files: 789  Bytes: 2625666  Map tokens: 96360/120000
 - S:a07487517b function getAdapter `export function getAdapter(relPath)` L25 : Resolve the adapter for a path by extension, defaulting to the generic fallback.
 - S:ec18e42e1a function extractFile `export function extractFile(relPath, source)` L32 : Extract from one file, guarding against any adapter error so a single bad file never aborts a whole snapshot.
 ### apps/control-panel/src/state/configDiff.ts [F:25e649633c]
-- S:ea841eb82d function diffConfig `export function diffConfig(base: ModonomeConfig, edited: ModonomeConfig): Partial<ModonomeConfig>` L35
+- S:ea841eb82d function diffConfig `export function diffConfig(base: ModonomeConfig, edited: ModonomeConfig): Partial<ModonomeConfig>` L36
 ### design-system/src/components/AppShell/AppShell.tsx [F:268769c4a6]
 - S:4426823827 interface NavItem `export interface NavItem` L5
 - S:a4155f5067 interface AppShellProps `export interface AppShellProps` L16
@@ -761,7 +764,7 @@ Files: 789  Bytes: 2625666  Map tokens: 96360/120000
 - S:dab0af7046 function readStagedEntries `export function readStagedEntries(root)` L51 : Return the staged bullet lines (the "- [date] ..." entries) between the "## Staged" and "## Promoted" headings. Lines that do not begin a bullet are ignored, so surrounding prose does not count agains
 - S:30e8b022de function appendStagedEntry `export function appendStagedEntry(root, line)` L63 : Append one staged candidate line to LEARNINGS.md, enforcing the format and the cap. Never evicts: a full section throws so a human promotes or prunes first. Idempotent on an exact-duplicate line. Retu
 ### apps/control-panel/src/screens/SettingsScreen.tsx [F:4ebf08705b]
-- S:6d2334f815 function SettingsScreen `export function SettingsScreen({ state, write }: { state: PanelState; write: WriteActions })` L40 : The advanced-configuration screen, one conceptual area per tab so nothing forces an * operator to scroll past three unrelated subsystems to reach the one they came for. * Role and model assignment (ne
+- S:6d2334f815 function SettingsScreen `export function SettingsScreen({ state, write }: { state: PanelState; write: WriteActions })` L41 : The advanced-configuration screen, one conceptual area per tab so nothing forces an * operator to scroll past three unrelated subsystems to reach the one they came for. * Role and model assignment (ne
 ### examples/demo-app/tests/CheckoutService.test.js [F:52caf3b287]
 - S:ad302fbf54 function makeCartService `function makeCartService(cart)` L5
 - S:8d10c3ed6e function makeOrderService `function makeOrderService()` L13
@@ -818,6 +821,8 @@ Files: 789  Bytes: 2625666  Map tokens: 96360/120000
 - S:6b0614bdf6 function claim `export function claim(workerEnv, dir = DEFAULT_QUEUE_DIR, now = new Date(), leaseMinutes = DEFAULT_LEASE_MINUTES)` L124 : Atomically lease the oldest queued action this worker environment can serve. * A record is servable when its target equals the worker env or appears in the * worker env's served set. Sets state to cla
 - S:194e854c70 function complete `export function complete(id, result, dir = DEFAULT_QUEUE_DIR, ok = true)` L153 : Mark a claimed action done or failed, attaching an optional result object. * * @param {string} id * @param {object|null} result * @param {string} [dir] * @param {boolean} [ok] - true marks done, false
 - S:ed1db0b6bb function reclaimStale `export function reclaimStale(dir = DEFAULT_QUEUE_DIR, now = new Date())` L173 : Revert every claimed record whose lease has expired back to queued, clearing * its owner and expiry. Returns the list of reclaimed records. * * @param {string} [dir] * @param {Date} [now] * @returns {
+### apps/control-panel/server/remediationView.mjs [F:5daab9894d]
+- S:f36d6a8da6 function buildRemediationView `export function buildRemediationView({ config = {}, envArmed = false, commits = [], identity = { name: "", email: "" } } = {})` L12
 ### .design-sync/previews/Input.tsx [F:5e207f73c7]
 - S:ddfea151e8 function TrustedAuthor `export const TrustedAuthor = () => (` L4
 ### scripts/scaffold.mjs [F:5e450ff82c]
@@ -932,7 +937,7 @@ Files: 789  Bytes: 2625666  Map tokens: 96360/120000
 - S:41443bba10 function total `def total(items)` L1
 - S:05fcfe1c5b function apply_discount `def apply_discount(items, discount_percent)` L5 : Apply a percentage discount to a list of items. Args: items: List of dicts with "price" key discount_percent: Discount percentage (0-100) Returns: Total after discount
 ### apps/control-panel/src/state/fixtures/host.ts [F:7d236c9aa6]
-- S:90f1a56d4e const hostState `export const hostState: PanelState =` L178
+- S:90f1a56d4e const hostState `export const hostState: PanelState =` L179
 ### design-system/src/components/Select/Select.tsx [F:819f72edf6]
 - S:64376e38db interface SelectOption `export interface SelectOption` L6
 - S:8af9c33a76 interface SelectProps `export interface SelectProps` L13
@@ -963,8 +968,8 @@ Files: 789  Bytes: 2625666  Map tokens: 96360/120000
 ### .design-sync/previews/IconButton.tsx [F:8972d37045]
 - S:5d118d4b60 function Row `export const Row = () => (` L3
 ### apps/control-panel/src/state/fixtures/product.ts [F:89aee72994]
-- S:e89c164d25 function titleFromId `function titleFromId(id: string): string` L50
-- S:f0db7341e7 const productState `export const productState: PanelState =` L85
+- S:e89c164d25 function titleFromId `function titleFromId(id: string): string` L51
+- S:f0db7341e7 const productState `export const productState: PanelState =` L86
 ### scripts/guard-ratchet.mjs [F:8a10462927]
 - S:89e92655dd function normalizeLF `function normalizeLF(s)` L20
 - S:a34306cc67 function getDiff `function getDiff()` L24
@@ -978,26 +983,28 @@ Files: 789  Bytes: 2625666  Map tokens: 96360/120000
 - S:69f3537d3b function tmp `function tmp()` L13
 - S:1fe8548dac function fixture `function fixture()` L17
 ### apps/control-panel/server/modonomeReader.mjs [F:8a3dd6ccff]
-- S:33534dd596 function readModonomeState `export function readModonomeState(modonomeDir, { mode })` L16
-- S:895b1937bd function readConfig `function readConfig(modonomeDir)` L50
-- S:9287ce102a function readWorkItems `function readWorkItems(modonomeDir)` L84
-- S:064519e650 function titleFromId `function titleFromId(id)` L100
-- S:ac0d90ea9c function toWorkItemVM `function toWorkItemVM(item)` L108
-- S:23afcde4ab function impliedGateStatus `function impliedGateStatus(state)` L134 : A gate's status is implied by the state of every work item that declares it, never by a fabricated pass. A repo that has only ever run dry-run sweeps shows every declared gate as "pending", which is t
-- S:639160c471 function buildGates `function buildGates(items)` L150
-- S:e41c3f2d61 function buildProtectedPaths `function buildProtectedPaths(config, items)` L178
-- S:4741feecf9 function buildCost `function buildCost(config, metrics)` L198 : modonome's own agent runner does not yet record a dollar cost per call (see scripts/agent/run-cycle.mjs), so real spend is honestly zero until that lands. Calls are still counted from the real maker_r
-- S:77031e48f4 function readLearnings `function readLearnings(modonomeDir)` L236
-- S:783d91f2ed function extractSection `function extractSection(text, heading)` L283
-- S:b02fc1cd06 function readDecisions `function readDecisions(modonomeDir)` L288
-- S:4350272f8a function readRuns `function readRuns(modonomeDir)` L321
-- S:d9c2336e09 function readMetrics `function readMetrics(modonomeDir)` L340 : Real telemetry only. metrics.example.jsonl documents the schema and must never be read here: the promoted learning L-001 in this repo's own LEARNINGS.md exists specifically because sample telemetry wa
-- S:409d8caf58 function describeMetric `function describeMetric(m, kind)` L356
-- S:b8469e1267 function buildAudit `function buildAudit(runs, metrics)` L375
-- S:a8971aba2c function buildTrends `function buildTrends(runs)` L414
-- S:b81af2dbe4 function latestAgentProofScore `function latestAgentProofScore(runs)` L426
-- S:baab120dbc function gitInfo `function gitInfo(repoRoot)` L432
-- S:4cd48cf92e function buildSubject `function buildSubject({ repoRoot, modonomeDir, mode, config, queue, runs })` L449
+- S:33534dd596 function readModonomeState `export function readModonomeState(modonomeDir, { mode })` L17
+- S:895b1937bd function readConfig `function readConfig(modonomeDir)` L57
+- S:9287ce102a function readWorkItems `function readWorkItems(modonomeDir)` L92
+- S:064519e650 function titleFromId `function titleFromId(id)` L108
+- S:ac0d90ea9c function toWorkItemVM `function toWorkItemVM(item)` L116
+- S:23afcde4ab function impliedGateStatus `function impliedGateStatus(state)` L142 : A gate's status is implied by the state of every work item that declares it, never by a fabricated pass. A repo that has only ever run dry-run sweeps shows every declared gate as "pending", which is t
+- S:639160c471 function buildGates `function buildGates(items)` L158
+- S:e41c3f2d61 function buildProtectedPaths `function buildProtectedPaths(config, items)` L186
+- S:4741feecf9 function buildCost `function buildCost(config, metrics)` L206 : modonome's own agent runner does not yet record a dollar cost per call (see scripts/agent/run-cycle.mjs), so real spend is honestly zero until that lands. Calls are still counted from the real maker_r
+- S:77031e48f4 function readLearnings `function readLearnings(modonomeDir)` L244
+- S:783d91f2ed function extractSection `function extractSection(text, heading)` L291
+- S:b02fc1cd06 function readDecisions `function readDecisions(modonomeDir)` L296
+- S:4350272f8a function readRuns `function readRuns(modonomeDir)` L329
+- S:d9c2336e09 function readMetrics `function readMetrics(modonomeDir)` L348 : Real telemetry only. metrics.example.jsonl documents the schema and must never be read here: the promoted learning L-001 in this repo's own LEARNINGS.md exists specifically because sample telemetry wa
+- S:409d8caf58 function describeMetric `function describeMetric(m, kind)` L364
+- S:b8469e1267 function buildAudit `function buildAudit(runs, metrics)` L383
+- S:a8971aba2c function buildTrends `function buildTrends(runs)` L422
+- S:b81af2dbe4 function latestAgentProofScore `function latestAgentProofScore(runs)` L434
+- S:baab120dbc function gitInfo `function gitInfo(repoRoot)` L440
+- S:f40a6dfd1b function gitCommits `function gitCommits(repoRoot)` L461 : The unpublished commit range (origin/main..HEAD) with the identity and message fields the remediation planner reads. Bounded to origin/main so the panel only ever proposes over history that has not be
+- S:37268eb979 function gitIdentity `function gitIdentity(repoRoot)` L485 : The repository's own git identity, the target a reauthor rewrite would use. Empty when unset, which the planner and the CLI both treat as "not usable for apply".
+- S:4cd48cf92e function buildSubject `function buildSubject({ repoRoot, modonomeDir, mode, config, queue, runs })` L495
 ### design-system/src/components/Tooltip/Tooltip.tsx [F:8a9aff1529]
 - S:77a4165d99 type TooltipSide `export type TooltipSide = "top" | "bottom" | "left" | "right";` L12
 - S:0b70780ca5 interface TooltipProps `export interface TooltipProps` L14
@@ -1638,6 +1645,7 @@ Files: 789  Bytes: 2625666  Map tokens: 96360/120000
 - design-system/src/components/Modal/index.ts -> design-system/src/components/Modal/Modal.tsx
 - tests/maker-checker.test.mjs -> scripts/validate-work-item.mjs
 - scripts/agent/action-queue.mjs -> scripts/lib/jsonschema.mjs
+- apps/control-panel/server/remediationView.mjs -> scripts/lib/remediate.mjs
 - scripts/scaffold.mjs -> scripts/install-hooks.mjs
 - design-system/src/components/LearningCard/index.ts -> design-system/src/components/LearningCard/LearningCard.tsx
 - tests/arming.test.mjs -> bin/modonome.mjs
@@ -1695,6 +1703,7 @@ Files: 789  Bytes: 2625666  Map tokens: 96360/120000
 - apps/control-panel/src/state/fixtures/product.ts -> apps/control-panel/src/state/types.ts
 - design-system/src/components/Tabs/index.ts -> design-system/src/components/Tabs/Tabs.tsx
 - apps/control-panel/server/modonomeReader.mjs -> apps/control-panel/server/learningsFormat.mjs
+- apps/control-panel/server/modonomeReader.mjs -> apps/control-panel/server/remediationView.mjs
 - design-system/src/components/Tooltip/Tooltip.tsx -> design-system/src/lib/cx.ts
 - tests/transition-work-item-unit.test.mjs -> scripts/transition-work-item.mjs
 - design-system/src/components/Button/Button.tsx -> design-system/src/lib/cx.ts
@@ -1808,6 +1817,7 @@ Files: 789  Bytes: 2625666  Map tokens: 96360/120000
 - design-system/src/index.ts -> design-system/src/components/Slider/index.ts
 - design-system/src/index.ts -> design-system/src/components/ProtectedPathRow/index.ts
 - design-system/src/index.ts -> design-system/src/components/IconButton/index.ts
+- tests/remediation-view.test.mjs -> apps/control-panel/server/remediationView.mjs
 - tests/snapshot-security.test.mjs -> scripts/lib/snapshot-cache.mjs
 - tests/snapshot-security.test.mjs -> scripts/lib/snapshot-walk.mjs
 - tests/snapshot-security.test.mjs -> scripts/lib/snapshot-core.mjs
@@ -1916,54 +1926,54 @@ Files: 789  Bytes: 2625666  Map tokens: 96360/120000
 
 ## Attention (centrality + pagerank)
 
-1. design-system/src/lib/cx.ts centrality=32 pagerank=0.036742
-2. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.023819
-3. design-system/src/index.ts centrality=48 pagerank=0.000966
-4. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.008106
-5. apps/control-panel/src/state/types.ts centrality=12 pagerank=0.008097
-6. scripts/lib/yaml-lite.mjs centrality=12 pagerank=0.007786
-7. scripts/lib/jsonschema.mjs centrality=8 pagerank=0.010584
-8. scripts/agent/run-cycle.mjs centrality=17 pagerank=0.003635
-9. scripts/lib/learnings.mjs centrality=10 pagerank=0.007754
-10. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.005778
-11. scripts/validate-config.mjs centrality=12 pagerank=0.00475
-12. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001616
-13. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.00466
-14. scripts/lib/canonical-json.mjs centrality=8 pagerank=0.005033
-15. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.005407
-16. apps/control-panel/src/App.tsx centrality=11 pagerank=0.001377
-17. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.004394
-18. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002823
-19. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.003488
-20. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.005028
-21. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.003377
-22. scripts/validate-work-item.mjs centrality=6 pagerank=0.003293
-23. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001617
-24. scripts/lib/graph.mjs centrality=4 pagerank=0.004655
-25. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.003078
-26. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.005247
-27. scripts/agent/resolve-role.mjs centrality=6 pagerank=0.002821
-28. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001802
-29. scripts/snapshot.mjs centrality=8 pagerank=0.000966
-30. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002823
-31. design-system/src/lib/format.ts centrality=5 pagerank=0.002821
-32. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001802
-33. scripts/lib/branch-name.mjs centrality=3 pagerank=0.004065
-34. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.004065
-35. scripts/agent/providers.mjs centrality=3 pagerank=0.00385
-36. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.001083
-37. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001802
-38. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001802
-39. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.001802
-40. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.001802
-41. design-system/src/components/Modal/Modal.tsx centrality=4 pagerank=0.002567
-42. design-system/src/components/TierBadge/TierBadge.tsx centrality=4 pagerank=0.002537
-43. examples/demo-app/src/index.js centrality=6 pagerank=0.000966
-44. design-system/src/components/Table/Table.tsx centrality=4 pagerank=0.002491
-45. apps/control-panel/server/learningsFormat.mjs centrality=2 pagerank=0.003899
-46. design-system/src/components/IdentityChip/IdentityChip.tsx centrality=4 pagerank=0.002363
-47. scripts/lib/control-panel-audit.mjs centrality=3 pagerank=0.002998
-48. scripts/lib/git-scope.mjs centrality=3 pagerank=0.00269
-49. design-system/src/components/ArmingStateBadge/ArmingStateBadge.tsx centrality=4 pagerank=0.001802
-50. design-system/src/components/Checkbox/Checkbox.tsx centrality=4 pagerank=0.001802
+1. design-system/src/lib/cx.ts centrality=32 pagerank=0.036441
+2. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.023624
+3. design-system/src/index.ts centrality=48 pagerank=0.000958
+4. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.00804
+5. apps/control-panel/src/state/types.ts centrality=12 pagerank=0.008031
+6. scripts/lib/yaml-lite.mjs centrality=12 pagerank=0.007722
+7. scripts/lib/jsonschema.mjs centrality=8 pagerank=0.010497
+8. scripts/agent/run-cycle.mjs centrality=17 pagerank=0.003605
+9. scripts/lib/learnings.mjs centrality=10 pagerank=0.007691
+10. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.005731
+11. scripts/validate-config.mjs centrality=12 pagerank=0.004711
+12. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.006164
+13. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001603
+14. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.004622
+15. scripts/lib/canonical-json.mjs centrality=8 pagerank=0.004992
+16. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.005363
+17. apps/control-panel/src/App.tsx centrality=11 pagerank=0.001365
+18. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002799
+19. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.003459
+20. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.004987
+21. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.00335
+22. scripts/validate-work-item.mjs centrality=6 pagerank=0.003266
+23. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001603
+24. scripts/lib/graph.mjs centrality=4 pagerank=0.004616
+25. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.003052
+26. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.005204
+27. scripts/agent/resolve-role.mjs centrality=6 pagerank=0.002798
+28. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001787
+29. scripts/lib/branch-name.mjs centrality=3 pagerank=0.0048
+30. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.0048
+31. scripts/snapshot.mjs centrality=8 pagerank=0.000958
+32. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002799
+33. design-system/src/lib/format.ts centrality=5 pagerank=0.002798
+34. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001787
+35. scripts/agent/providers.mjs centrality=3 pagerank=0.003818
+36. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.001074
+37. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001787
+38. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001787
+39. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.001787
+40. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.001787
+41. design-system/src/components/Modal/Modal.tsx centrality=4 pagerank=0.002546
+42. scripts/lib/remediate.mjs centrality=3 pagerank=0.003287
+43. design-system/src/components/TierBadge/TierBadge.tsx centrality=4 pagerank=0.002516
+44. examples/demo-app/src/index.js centrality=6 pagerank=0.000958
+45. design-system/src/components/Table/Table.tsx centrality=4 pagerank=0.00247
+46. design-system/src/components/IdentityChip/IdentityChip.tsx centrality=4 pagerank=0.002344
+47. scripts/lib/control-panel-audit.mjs centrality=3 pagerank=0.002974
+48. scripts/lib/git-scope.mjs centrality=3 pagerank=0.002668
+49. design-system/src/components/ArmingStateBadge/ArmingStateBadge.tsx centrality=4 pagerank=0.001787
+50. design-system/src/components/Checkbox/Checkbox.tsx centrality=4 pagerank=0.001787
 

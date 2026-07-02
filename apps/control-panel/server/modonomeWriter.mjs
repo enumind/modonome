@@ -29,6 +29,7 @@ const SCALAR_CONFIG_KEYS = new Set([
   "repo_network_dry_run",
   "share_raw_code_across_repos",
   "share_repo_identifiers_by_default",
+  "remediation_apply_enabled",
 ]);
 const ARRAY_CONFIG_KEYS = new Set(["trusted_author_allowlist", "protected_paths_extra"]);
 

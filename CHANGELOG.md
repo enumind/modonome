@@ -45,6 +45,28 @@ or CVE identifier where one exists.
   `docs/adr/ADR-035-metadata-remediator.md`. The lever is additive and off by default,
   so it is backward compatible and needs no schema version bump.
 
+### Governed Remediation Phase 2: control-panel remediation lever family
+
+- Surfaced the metadata-only remediator (ADR-035) in the control panel as an owner-gated
+  lever plus a read-only status surface, extending the existing `apps/control-panel/`
+  rather than adding a new app. A new "Remediation" tab on the Settings screen carries the
+  `remediation_apply_enabled` capability toggle (reusing the existing config-save path, so
+  it writes through the same `MODONOME_PANEL_WRITE`-gated, confirm-dialog machinery as every
+  other lever), a read-only apply-readiness panel that names exactly which arming conditions
+  are unmet, and a read-only list of the commits `remediate plan` would rewrite.
+- Added `apps/control-panel/server/remediationView.mjs`, a pure, dependency-free helper that
+  turns config, the environment arming bit, and the branch commits into the panel's
+  remediation view-model by reusing the Phase 2 planner. It runs under plain `node --test`
+  (`tests/remediation-view.test.mjs`), so the readiness and proposal logic is covered without
+  the frontend toolchain. The reader gathers the unpublished commit range
+  (`origin/main..HEAD`) in the loaded repo and feeds it in; a repo without `origin/main`
+  yields no proposals rather than an error.
+- The panel reports arming, it never grants it: the readiness predicate mirrors the CLI
+  (`autonomy_enabled` and not `dry_run` and the capability flag AND `MODONOME_ARMED`), and
+  `MODONOME_ARMED` stays outside the panel's write surface. Moved the flag from an
+  `exposure.json` exemption to a real hinted control, keeping the coverage and coherence
+  gates green.
+
 ### Governed Remediation Phase 1: near-miss widener and human-only promotion path
 
 - Added `scripts/lib/near-miss.mjs`, a deterministic near-miss widener that flags
