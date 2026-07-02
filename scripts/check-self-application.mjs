@@ -7,6 +7,7 @@
 //
 // Usage: node scripts/check-self-application.mjs
 import { readFileSync, existsSync, readdirSync } from "node:fs";
+import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { validate } from "./lib/jsonschema.mjs";
@@ -41,6 +42,12 @@ const REQUIRED_GATES = [
   { name: "checker engagement", needle: "check-checker-engagement.mjs" },
   { name: "license and adapter boundary", needle: "check-licenses.mjs" },
   { name: "prompt behavioral regression", needle: "test-prompt-behavior.mjs" },
+  { name: "markdown governance", needle: "check-md-governance.mjs" },
+  { name: "architecture drift", needle: "check-architecture-drift.mjs" },
+  // This script checking for its own name is not circular: it is a text search over
+  // ci.yml, not a re-invocation. It exists because this exact gate went unwired into
+  // CI for a period with nothing catching it.
+  { name: "self-application conformance", needle: "check-self-application.mjs" },
 ];
 for (const g of REQUIRED_GATES) {
   if (!activeCI.includes(g.needle)) problems.push(`ci.yml does not run the ${g.name} gate (${g.needle}).`);
@@ -111,13 +118,54 @@ if (existsSync(stateDir)) {
   }
 }
 
+// 7. Badge consistency. The AgentProof score is hand-typed as prose in three files
+//    instead of generated from one source. Rather than build a generation step for a
+//    handful of badges, this asserts they agree with the runner's own computed output.
+//    README.md states only the normative score; agentproof/README.md and SPEC.md also
+//    state the extended and total counts, the numbers that have actually changed three
+//    times (16, 25, 34, 35 scenarios) while the normative count has not, so checking
+//    only `score` would never catch the drift this exists to catch. Skipped entirely
+//    for a fixture or host repo with no agentproof/ directory: this invariant is
+//    specific to this repository, not a requirement for every adopter.
+if (existsSync(join(root, "agentproof/runner.mjs"))) {
+  const runnerResult = spawnSync("node", [join(root, "agentproof/runner.mjs"), "--json"], {
+    encoding: "utf8",
+    timeout: 60000,
+  });
+  let runnerJson = null;
+  try {
+    runnerJson = JSON.parse(runnerResult.stdout);
+  } catch {
+    problems.push("agentproof/runner.mjs --json did not print parseable JSON.");
+  }
+  if (runnerJson && runnerJson.score) {
+    const BADGE_FILES = [
+      { rel: "README.md", scores: [runnerJson.score] },
+      { rel: "agentproof/README.md", scores: [runnerJson.score, runnerJson.extended_score, runnerJson.total_score] },
+      { rel: "agentproof/SPEC.md", scores: [runnerJson.score, runnerJson.extended_score, runnerJson.total_score] },
+    ];
+    for (const { rel, scores } of BADGE_FILES) {
+      if (!existsSync(join(root, rel))) continue; // not every fixture ships every badge file
+      const text = read(rel);
+      for (const score of scores.filter(Boolean)) {
+        if (!text.includes(score)) {
+          problems.push(
+            `${rel} does not contain the current AgentProof score "${score}" ` +
+              `(agentproof/runner.mjs --json is the source of truth).`
+          );
+        }
+      }
+    }
+  }
+}
+
 // Branch protection cannot be verified without repo-admin API access, so it is an
 // explicit action item rather than a silent pass. These are the contexts that must
 // be required on the default branch for this repo to live its own README.
 notes.push("Branch protection on the default branch is NOT verifiable from here (needs repo-admin API).");
 notes.push("Required status checks to enable on the default branch: \"verify\" and \"ratchet\" (from ci.yml).");
 
-// 6. Snapshot dogfooding (ADR-032). Modonome must consume its own snapshot: a
+// 6. Snapshot dogfooding (ADR-033). Modonome must consume its own snapshot: a
 //    committed signature must exist, agent instructions must point at the map, and
 //    the hook plus CI gate must keep it fresh. This makes the "we use our own
 //    feature" claim machine-checked rather than aspirational.
