@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:ffb4951a211431ed234636ba846e0eb8333fb6688c102bfd3cfeb0a5d24d0f2d
-Files: 760  Bytes: 2408922  Map tokens: 85615/120000
+Merkle root: sha256:6606c02cdca072fbebbd9c4a499a534fee6c1aa0d6e66d7f37a3dcf806342f04
+Files: 760  Bytes: 2409120  Map tokens: 85723/120000
 
 ## Modules
 
@@ -250,6 +250,7 @@ Files: 760  Bytes: 2408922  Map tokens: 85615/120000
 - scripts/agent/route-action.mjs [F:37f4a5c04e]: Classify a role's model endpoint into a coarse reachability descriptor: kind: "local" self-hosted / private-host endpoint (Ollama, llama.cpp) kind: "github" the
 - scripts/agent/run-cycle.mjs [F:ddeb486c49]: Derive the ordered list of roles the cycle executes. An explicit cfg.role_sequence (a non-empty array of role names) is honored so a crew role added in config r
 - scripts/agent/tool-loop-adapter.mjs [F:aa77f227a6]: Resolve the command the external adapter is invoked as. Precedence: an explicit * adapterEntry.command, then adapterEntry.name, then a bare fallback. The value 
+- scripts/assert-governed-change.mjs [F:fa49930755]: function gitDiff
 - scripts/audit-learnings.mjs [F:c9493b5275]: !/usr/bin/env node
 - scripts/build-compliance-evidence.mjs [F:2e327963ed]: Observe concrete facts about a repository. Pure with respect to its inputs: it only reads the filesystem under root and returns a plain object.
 - scripts/build-prompt.mjs [F:c4395c3023]: !/usr/bin/env node
@@ -1326,6 +1327,8 @@ Files: 760  Bytes: 2408922  Map tokens: 85615/120000
 - S:e173063c31 function Queued `export const Queued = () => (` L4
 - S:c7ebadadb9 function Checking `export const Checking = () => (` L19
 - S:dff1725e3b function Escalated `export const Escalated = () => (` L37
+### scripts/assert-governed-change.mjs [F:fa49930755]
+- S:13a8db3ab6 function gitDiff `function gitDiff(...args)` L5
 ### tests/metrics.test.mjs [F:fadcf390da]
 - S:c176253e9c function tmp `function tmp()` L12
 - S:8bff005013 function runReport `function runReport(targetDir)` L16

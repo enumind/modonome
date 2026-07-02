@@ -1,10 +1,16 @@
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 
 const baseBranch = process.argv[2] || 'origin/main';
 
+function gitDiff(...args) {
+  // execFileSync passes args straight to the git process, no shell in between, so a
+  // baseBranch value with shell metacharacters cannot escape into command execution.
+  return execFileSync('git', ['diff', ...args, `${baseBranch}...HEAD`], { encoding: 'utf8' });
+}
+
 try {
   // 1. Get the list of changed files
-  const changedFilesStr = execSync(`git diff --name-only ${baseBranch}...HEAD`, { encoding: 'utf8' });
+  const changedFilesStr = gitDiff('--name-only');
   const changedFiles = changedFilesStr.split('\n').filter(Boolean);
 
   if (changedFiles.length === 0) {
@@ -29,7 +35,7 @@ try {
   // that overruns the OS pipe buffer under execSync and fails with ENOBUFS before
   // the line count is ever read. --numstat carries the same added-line count in a
   // fraction of the bytes.
-  const numstat = execSync(`git diff --numstat ${baseBranch}...HEAD`, { encoding: 'utf8' });
+  const numstat = gitDiff('--numstat');
   const addedLines = numstat
     .split('\n')
     .filter(Boolean)

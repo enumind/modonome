@@ -232,7 +232,7 @@ export const hostState: PanelState = {
     {
       id: "L-h-3",
       status: "staged",
-      lesson: "Webhook payloads should never be typed as any at the boundary.",
+      lesson: "Webhook payloads should never bypass type checking at the boundary.",
       ageDays: 1,
       evidence: "PAY-434",
       signal: "review",
