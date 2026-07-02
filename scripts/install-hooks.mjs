@@ -68,7 +68,7 @@ export function installHooks(targetRoot, { self = false, mode = "snapshot" } = {
   return "installed";
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const here = dirname(fileURLToPath(import.meta.url));
   const root = join(here, "..");
   const result = installHooks(root, { self: isModonomeRepo(root) });

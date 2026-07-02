@@ -86,7 +86,7 @@ function matchesPattern(path, patterns) {
   return false;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   // Skip on non-PR contexts (e.g., push to main)
   if (!process.env.GITHUB_BASE_REF) {
     console.log("Not a pull request; skipping edit-set compliance check.");

@@ -115,7 +115,7 @@ function writeRunLog(runsDir, command, payload) {
   } catch { /* log writes must never crash the command */ }
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const startMs = Date.now();
   const target = process.argv[2] || ".";
   const write = process.argv.includes("--write");

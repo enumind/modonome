@@ -89,7 +89,7 @@ export function validateWorkItem(item, config = {}) {
   return [...validate(schema, item), ...governanceErrors(item, config)];
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const path = process.argv[2];
   if (!path) {
     console.error("Usage: node scripts/validate-work-item.mjs <item.json>");

@@ -105,7 +105,7 @@ export function runSuite(root, fixturesDir) {
   return { results, failed };
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const root = process.env.MODONOME_ROOT ? process.env.MODONOME_ROOT : defaultRoot;
   const fixturesDir = join(root, "tests", "fixtures", "prompt-behavior");
   const { results, failed } = runSuite(root, fixturesDir);

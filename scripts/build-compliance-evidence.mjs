@@ -8,6 +8,7 @@
 // Usage: node scripts/build-compliance-evidence.mjs <dir> [--json]
 import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join, basename, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const EVIDENCE_SCHEMA_VERSION = 1;
 
@@ -121,7 +122,7 @@ export function renderMarkdown(evidence) {
   return lines.join('\n');
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const args = process.argv.slice(2);
   const dir = args.find((a) => !a.startsWith('-')) || '.';
   const asJson = args.includes('--json');
