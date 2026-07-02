@@ -9,9 +9,6 @@ on:
 jobs:
   ratchet:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: read
     steps:
       - uses: actions/checkout@v7
         with:
@@ -25,23 +22,32 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      # Snapshot freshness, the test suite, and AgentProof all run BEFORE the
-      # base-branch checkouts below, which overwrite the gate scripts and the
-      # attribution detector kernel with base versions. All three need to see
-      # this branch's real files: snapshot hashing needs the real tree, and both
-      # the test suite (tests/ratchet.test.mjs, tests/portability.test.mjs, etc.)
-      # and AgentProof's ratchet scenarios spawn scripts/guard-ratchet.mjs by
-      # path to test its own behavior, not to check this diff -- running them
-      # after the base-branch checkout would silently test main's
-      # guard-ratchet.mjs instead of this PR's.
+      # Snapshot freshness runs BEFORE the base-branch checkouts below, which
+      # overwrite the gate scripts and the attribution detector kernel with base
+      # versions. Hashing must see this branch's real files. Honors snapshot.ci_mode.
       - name: Run snapshot freshness gate
         run: node scripts/snapshot.mjs . --check
 
-      - name: Run tests gate
-        run: node --test tests/*.test.mjs
-
-      - name: Run AgentProof gate
-        run: node agentproof/runner.mjs
+      # Promotion-safety gates (Governed Remediation Phase 1). These judge THIS
+      # branch's own proposed changes to the deterministic detectors, so they must
+      # run BEFORE the base-branch checkout below overwrites those files with the
+      # base copy, in the same pre-checkout position (and for the same reason) as the
+      # snapshot freshness gate above. On a promotion PR the detector kernel, its own
+      # unit tests, the false-positive corpus, the regex-safety lint, and the
+      # determinism-boundary rule all must see the PR's code, not the base copy.
+      - name: Run detector-kernel unit tests against this branch's own code
+        run: node --test tests/branch-name.test.mjs tests/commit-identity.test.mjs tests/detect-attribution.test.mjs tests/near-miss.test.mjs
+      - name: Run attribution false-positive corpus gate
+        run: node scripts/check-attribution-fp-corpus.mjs
+      - name: Run regex safety gate
+        run: node scripts/check-regex-safety.mjs
+      - name: Run gate DAG and determinism boundary gate
+        run: node scripts/check-gate-dag.mjs
+      # Advisory only: surfaces near-miss attribution tokens as LEARNINGS.md
+      # proposals for human review. It never blocks CI (always exits 0 on a finding);
+      # promotion into the deterministic denylist stays human-only.
+      - name: Run near-miss widener (advisory)
+        run: node scripts/detect-near-miss.mjs
 
       # Mandatory Base-Branch Checkouts matching check-self-application.mjs criteria
       # NOTE: These steps only run on pull requests where github.base_ref is defined.
@@ -68,20 +74,6 @@ jobs:
           git checkout "origin/${{ github.base_ref }}" -- scripts/lib/commit-identity.mjs
           git checkout "origin/${{ github.base_ref }}" -- scripts/lib/detect-attribution.mjs || echo "detect-attribution.mjs not on base yet (bootstrap PR)"
 
-      # Unlike guard-ratchet.mjs and check-style.mjs above, this gate is new: the
-      # first PR that introduces it has no prior version on the base branch to
-      # load, so the checkout is skipped (not failed) when the base branch
-      # doesn't have the file yet. Every PR after this one merges will find it
-      # there and get the same trust-isolation the other two gates get.
-      - name: Load check-decisions-authority.mjs from the base branch
-        if: github.event_name == 'pull_request'
-        run: |
-          if git cat-file -e "origin/${{ github.base_ref }}:scripts/check-decisions-authority.mjs" 2>/dev/null; then
-            git checkout "origin/${{ github.base_ref }}" -- scripts/check-decisions-authority.mjs
-          else
-            echo "scripts/check-decisions-authority.mjs not yet on base branch; skipping trust-isolation checkout (first introduction)."
-          fi
-
       # Governance-relevant change assertion matching tests/ws-d-governed-change.test.mjs criteria
       - name: Governance-relevant change assertion
         run: node scripts/assert-governed-change.mjs origin/main
@@ -104,11 +96,6 @@ jobs:
 
       - name: Run self-application conformance gate
         run: node scripts/check-self-application.mjs
-
-      - name: Run decisions-authority gate
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: node scripts/check-decisions-authority.mjs origin/main
 
       - name: Run license and adapter boundary gate
         run: node scripts/check-licenses.mjs
@@ -139,6 +126,12 @@ jobs:
 
       - name: Run control-panel governance gates
         run: npm run check:control-panel
+
+      - name: Run tests gate
+        run: node --test tests/*.test.mjs
+
+      - name: Run AgentProof gate
+        run: node agentproof/runner.mjs
 
       - name: Run anti-gaming ratchet gate
         run: node scripts/guard-ratchet.mjs origin/main

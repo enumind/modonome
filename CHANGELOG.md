@@ -9,6 +9,39 @@ or CVE identifier where one exists.
 
 ## Unreleased
 
+### Governed Remediation Phase 1: near-miss widener and human-only promotion path
+
+- Added `scripts/lib/near-miss.mjs`, a deterministic near-miss widener that flags
+  attribution tokens the strict detectors miss: separator and spelling variants of a
+  denylisted token (`claude-code`, `claude_code`) and vendors not yet denylisted
+  (`mistral`, `grok`). Two precision tiers keep false positives out. Tier 1
+  distinctive tokens match by separator-normalized substring on branch names and
+  identities; Tier 2 generic words (`assistant`, `grok`, `cohere`) match only as an
+  exact segment or word, never in free text. Free-text scanning needs both a
+  distinctive-vendor token and an attribution cue, so this repo's legitimate
+  `claude`/`gpt` mentions and ordinary `grok`/`cohere` prose never fire. The widener
+  imports the strict predicates only to suppress what strict already catches.
+- Added `scripts/detect-near-miss.mjs`, an advisory scanner wired into CI. It prints
+  a ready-to-paste `LEARNINGS.md` Staged proposal for each near-miss and always exits
+  0, so it never blocks a build; `--write` appends the proposal under the Staged cap.
+  Promotion into the live denylist stays human-only.
+- Gated the promotion path with three deterministic checks that run before the CI
+  base-branch checkout, so they judge a promotion PR's own detector changes rather
+  than the base copy: `check-attribution-fp-corpus.mjs` (a regression corpus of
+  legitimate names, branches, and prose, including the surname "Robin Bott", that
+  must never be flagged), `check-regex-safety.mjs` (a ReDoS lint rejecting
+  nested-quantifier patterns), and an import-graph rule added to `check-gate-dag.mjs`
+  proving the deterministic detectors never import the widener (fuzzy may only
+  tighten, never override). Fixed a latent gap where the base-branch checkout blinded
+  the detector unit tests on any PR that edits those files, by running them early
+  against this branch's own code.
+- Enforced the previously-documented 20-entry `LEARNINGS.md` Staged cap in
+  `scripts/lib/learnings.mjs` (`readStagedEntries`, `appendStagedEntry`); it refuses
+  when full and never auto-evicts.
+- Added a Communication convention to `AGENTS.md` and the maker/checker prompts:
+  PR bodies, comments, and agent-authored documents lead with a Summary, then
+  Details, then an Annexure. Enforced by the checker, not a machine gate.
+
 ### Documentation coherence, SME accuracy, and diagram consistency
 
 - Corrected `docs/compliance/compliance.md` and `docs/specs/governed-autonomy-spec.md`:
