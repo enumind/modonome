@@ -1,0 +1,90 @@
+{
+  "manifest_version": 2,
+  "kind": "policy-attestation",
+  "generator": {
+    "name": "totally-not-modonome",
+    "homepage": "https://modonome.com",
+    "repository": "https://github.com/enumind/modonome"
+  },
+  "disclosure": {
+    "model": "architectural",
+    "statement": "AI participation in this repository is disclosed at the architectural level rather than per artifact. Trust rests on the governance process: CI gates, an independent checker, and the anti-gaming ratchet. Git history reflects human ownership, and agent identity stays out of commit messages, branch names, and pull requests.",
+    "sources": [
+      {
+        "file": "README.md",
+        "section": "Development practice",
+        "found": true,
+        "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      {
+        "file": "AGENTS.md",
+        "section": "Commit messages",
+        "found": true,
+        "sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      }
+    ]
+  },
+  "policy": {
+    "attribution_sources": [
+      {
+        "file": "scripts/lib/branch-name.mjs",
+        "sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+      },
+      {
+        "file": "scripts/lib/commit-identity.mjs",
+        "sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+      },
+      {
+        "file": "scripts/lib/detect-attribution.mjs",
+        "sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+      },
+      {
+        "file": "scripts/lib/near-miss.mjs",
+        "sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+      }
+    ],
+    "branch_denylist": [
+      "ai",
+      "anthropic",
+      "bot",
+      "claude",
+      "copilot",
+      "gemini",
+      "gpt",
+      "llm",
+      "openai"
+    ],
+    "capabilities": [
+      {
+        "name": "repo_network_enabled",
+        "default": false
+      },
+      {
+        "name": "market_scan_enabled",
+        "default": false
+      },
+      {
+        "name": "envisioner_enabled",
+        "default": true
+      },
+      {
+        "name": "remediation_apply_enabled",
+        "default": false
+      }
+    ],
+    "protected_paths_extra": [
+      "bin",
+      "scripts"
+    ],
+    "gates": [
+      "check-drift",
+      "check-style",
+      "tests"
+    ]
+  },
+  "posture": {
+    "autonomy_enabled": false,
+    "dry_run": true
+  },
+  "content_digest": "sha256:ec61f1ac0373f28727bb7660854eb9e22c31e92b2472ac2c6f1ee3a48bd7ea4f"
+}

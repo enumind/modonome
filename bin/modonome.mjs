@@ -37,7 +37,9 @@ Usage:
   npx modonome hygiene fix <dir>         apply the safe, local, metadata-only remedy (branch rename).
   npx modonome remediate plan            preview the metadata-only commit-history rewrite. Read-only, changes nothing.
   npx modonome remediate apply           rewrite commit metadata to strip attribution. Armed and capability-gated only.
-  npx modonome attest [--check|--show]   write or verify the policy-pack and disclosure attestation for this repo.
+  npx modonome attest [--check|--show|--verify]   write, check, or verify this repo's policy-pack and disclosure attestation.
+  npx modonome attest --diff <file>      compare a foreign policy pack's disclosed policy against this repo's live policy.
+  npx modonome attest --adopt <file> --alias <name>   validate and vendor a foreign policy pack. Refuses on any integrity or credit failure.
   npx modonome help                      show this message.
 
 Modonome stays off until an owner arms it through the environment or CI.`;
