@@ -13,8 +13,12 @@
 <meta property="og:description" content="An off-by-default autonomy loop that adopts your repo rules, proposes small reviewable PRs, and gates them in CI so weakened tests cannot merge. AgentProof 25/25 for gate integrity.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@ModonomeLab">
-<meta name="twitter:image" content="https://modonome.com/assets/modonome-logo.webp">
-<meta property="og:image" content="https://modonome.com/assets/modonome-logo.webp">
+<meta name="twitter:image" content="https://modonome.com/assets/og-card.png">
+<meta name="twitter:image:alt" content="Modonome">
+<meta property="og:image" content="https://modonome.com/assets/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Modonome">
 <meta name="keywords" content="agentproof, autonomous agent benchmark, CI governance, anti-gaming ratchet, agentic AI safety, tech debt automation, test integrity, agent gate integrity, governed autonomy, modonome">
 <script type="application/ld+json">
 {
@@ -36,9 +40,10 @@
 }
 </script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b1220'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%235dd4ab' stroke-width='2'/%3E%3Cpath d='M13 16l2 2 4-4' fill='none' stroke='%235dd4ab' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="./support.js"></script>
+<link rel="preconnect" href="https://unpkg.com" crossorigin>
+<script crossorigin defer src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin defer src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script defer src="./support.js"></script>
 </head>
 <body>
 <noscript>
@@ -55,8 +60,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="helix-data.js"></script>
-<script src="repo-data.js"></script>
+<script defer src="helix-data.js"></script>
+<script defer src="repo-data.js"></script>
 <style>
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
@@ -93,7 +98,7 @@
         <sc-for list="{{ topNav }}" as="t" hint-placeholder-count="6">
           <a href="{{ t.href }}" style="{{ t.style }}" style-hover="color:#f6f4ee">{{ t.label }}</a>
         </sc-for>
-        <a href="https://x.com/ModonomeLab" target="_blank" rel="noopener noreferrer" aria-label="Follow Modonome on X" style="display:flex;align-items:center;color:#9fabbc;text-decoration:none;transition:color .2s" style-hover="color:#f6f4ee"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+        <a href="https://x.com/ModonomeLab" target="_blank" rel="noopener noreferrer" aria-label="Follow Modonome on X" style="display:flex;align-items:center;gap:7px;font-size:13.5px;font-weight:600;color:#e8ebf0;background:rgba(93,212,171,.08);border:1px solid rgba(93,212,171,.3);padding:8px 14px;border-radius:9px;text-decoration:none;transition:border-color .2s,background .2s" style-hover="border-color:#5dd4ab;background:rgba(93,212,171,.16)"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Follow</a>
         <a href="#quickstart" style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:#0b1220;background:#5dd4ab;padding:9px 17px;border-radius:9px;text-decoration:none;transition:transform .2s,box-shadow .2s" style-hover="transform:translateY(-1px);box-shadow:0 10px 26px rgba(93,212,171,.32)">Get started</a>
       </div>
     </div>
@@ -107,7 +112,10 @@
       <div class="mn-satin" style="--satin-mask:url('assets/modonome-logo.webp');display:block;margin:0 auto 30px;width:min(440px,82%)"><img src="assets/modonome-logo.webp" alt="Modonome" style="width:100%;display:block;mix-blend-mode:lighten"></div>
       <h1 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(34px,5.4vw,62px);line-height:1.06;letter-spacing:-.02em;margin:0 0 22px;color:#f6f4ee">The Governed Autonomous<br>Engineering Loop.</h1>
       <p style="max-width:700px;margin:0 auto 38px;font-size:clamp(16px,2vw,19px);line-height:1.6;color:#aeb9c8">Modonome enforces the structural separation between making, checking, and merging: the governance layer that keeps autonomous coding loops honest. It runs inside a harness you already have: a coding agent, a CI job, or a human session. The implementation is a prompt and a set of scripts. A declarative rule set governs each agent's operating boundaries, context scope, and model selection, so maker, checker, and merge authority can each run on the model that fits the task.</p>
-      <a href="https://github.com/enumind/modonome" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:9px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#9fabbc;background:rgba(159,201,180,.05);border:1px solid rgba(159,201,180,.16);border-radius:8px;padding:7px 14px;margin:0 auto 32px;text-decoration:none;transition:border-color .2s,color .2s" style-hover="border-color:rgba(93,212,171,.5);color:#5dd4ab"><svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor" style="color:#5dd4ab;flex-shrink:0" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg> github.com/enumind/modonome</a>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:0 0 32px">
+        <a href="https://github.com/enumind/modonome" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:9px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#9fabbc;background:rgba(159,201,180,.05);border:1px solid rgba(159,201,180,.16);border-radius:8px;padding:7px 14px;text-decoration:none;transition:border-color .2s,color .2s" style-hover="border-color:rgba(93,212,171,.5);color:#5dd4ab"><svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor" style="color:#5dd4ab;flex-shrink:0" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg> github.com/enumind/modonome</a>
+        <a href="https://x.com/ModonomeLab" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:9px;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:#e8ebf0;background:rgba(93,212,171,.1);border:1px solid rgba(93,212,171,.4);border-radius:8px;padding:7px 14px;text-decoration:none;transition:border-color .2s,background .2s" style-hover="border-color:#5dd4ab;background:rgba(93,212,171,.18)"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color:#5dd4ab;flex-shrink:0" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg> Follow @ModonomeLab</a>
+      </div>
       <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
         <a href="#simulator" style="display:inline-flex;align-items:center;gap:9px;font-weight:600;font-size:15px;color:#0b1220;background:#5dd4ab;padding:14px 26px;border-radius:11px;text-decoration:none;transition:transform .2s,box-shadow .2s" style-hover="transform:translateY(-2px);box-shadow:0 14px 34px rgba(93,212,171,.34)">Run the simulator →</a>
         <a href="https://github.com/enumind/modonome/blob/main/examples/demo-app/WALKTHROUGH.md" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:9px;font-weight:600;font-size:15px;color:#e8ebf0;background:rgba(159,201,180,.07);border:1px solid rgba(159,201,180,.22);padding:14px 24px;border-radius:11px;text-decoration:none;transition:border-color .2s,background .2s" style-hover="border-color:rgba(93,212,171,.5);background:rgba(159,201,180,.12);color:#f6f4ee">Read the walkthrough →</a>
