@@ -1,0 +1,91 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Modonome policy attestation",
+  "description": "A content-addressed, optionally Ed25519-signed manifest disclosing the governance policy this repo enforces and its AI-participation posture (ADR-036).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["manifest_version", "kind", "disclosure", "policy", "posture", "content_digest"],
+  "properties": {
+    "manifest_version": { "type": "integer", "minimum": 1 },
+    "kind": { "type": "string", "const": "policy-attestation" },
+    "disclosure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model", "statement", "sources"],
+      "properties": {
+        "model": { "type": "string", "minLength": 1 },
+        "statement": { "type": "string", "minLength": 1 },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["file", "section", "found", "sha256"],
+            "properties": {
+              "file": { "type": "string", "minLength": 1 },
+              "section": { "type": "string", "minLength": 1 },
+              "found": { "type": "boolean" },
+              "sha256": { "type": ["string", "null"] }
+            }
+          }
+        }
+      }
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["attribution_sources", "branch_denylist", "capabilities", "protected_paths_extra", "gates"],
+      "properties": {
+        "attribution_sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["file", "sha256"],
+            "properties": {
+              "file": { "type": "string", "minLength": 1 },
+              "sha256": { "type": ["string", "null"] }
+            }
+          }
+        },
+        "branch_denylist": { "type": "array", "items": { "type": "string" } },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "default"],
+            "properties": {
+              "name": { "type": "string", "minLength": 1 },
+              "default": { "type": "boolean" }
+            }
+          }
+        },
+        "protected_paths_extra": { "type": "array", "items": { "type": "string" } },
+        "gates": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "posture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["autonomy_enabled", "dry_run"],
+      "properties": {
+        "autonomy_enabled": { "type": "boolean" },
+        "dry_run": { "type": "boolean" }
+      }
+    },
+    "content_digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["alg", "key_alias", "pubkey_b64", "sig_b64", "signed_at"],
+      "properties": {
+        "alg": { "type": "string", "const": "ed25519" },
+        "key_alias": { "type": "string", "minLength": 1 },
+        "pubkey_b64": { "type": "string", "minLength": 1 },
+        "sig_b64": { "type": "string", "minLength": 1 },
+        "signed_at": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

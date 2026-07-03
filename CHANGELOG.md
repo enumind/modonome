@@ -9,6 +9,32 @@ or CVE identifier where one exists.
 
 ## Unreleased
 
+### Governed Remediation Phase 3: policy-pack manifest and disclosure attestation
+
+- Added `scripts/lib/policy-manifest.mjs` (pure builder) and
+  `scripts/build-policy-attestation.mjs` (CLI, also `modonome attest`), which generate a
+  content-addressed `.modonome/policy-attestation.json`. The manifest discloses, in one
+  verifiable place, the governance policy this repo enforces (the attribution denylists by
+  content hash, every capability flag and its default, the protected paths, and the gate set
+  derived from the `verify` chain) and the architectural-level AI-participation posture with a
+  section fingerprint of the `README.md` and `AGENTS.md` prose that states it.
+- The manifest is a disclosure generated from the authoritative sources, never a source of
+  truth the detectors read back from: it fingerprints the four detector libraries rather than
+  importing them, so a policy pack can be published and verified without weakening the
+  base-pinned trust boundary. The body is RFC 8785 canonical JSON addressed by a `sha256`
+  digest; signing is optional and off by default, attaching an Ed25519 envelope (ADR-017) over
+  a domain-separated body only when `MODONOME_SIGNING_KEY` is present.
+- Added `check:attestation` (`build-policy-attestation.mjs --check`) to the `verify` chain and
+  to CI in the pre-base-checkout slot, beside the snapshot and promotion-safety gates, so it
+  judges the pull request's own policy files and committed artifact. This gives the attestation
+  the CI freshness gate that `RELEASE-EVIDENCE.md` still lacks. `check-self-application.mjs` now
+  requires the gate to be wired in CI.
+- Extracted the capability-flag list to `scripts/lib/capability-flags.mjs`, shared by
+  `check-promotion-readiness.mjs` and the attestation, so the disclosed capability set and the
+  gated one cannot drift.
+- No config lever and no schema change: generation is read-only and always safe, and signing is
+  gated by an environment secret rather than config. See ADR-036.
+
 ### Governed Remediation Phase 2: armed metadata-only commit-history remediator
 
 - Added `scripts/lib/remediate.mjs` (pure planner) and `scripts/remediate.mjs` (CLI,
