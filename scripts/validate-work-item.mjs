@@ -14,7 +14,7 @@ const modelFamilies = JSON.parse(readFileSync(join(here, "..", "schemas", "model
 // when no prefix matches, so unrecognized models are treated as distinct
 // families (they fall through the family check and are caught only if their
 // names are exactly equal).
-function modelFamily(model) {
+export function modelFamily(model) {
   let family = null;
   let longest = -1;
   for (const [prefix, fam] of Object.entries(modelFamilies)) {
