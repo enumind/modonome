@@ -1,8 +1,13 @@
 /*
+  # GitHub Pages does not apply this file. It is honored only on hosts that read
+  # _headers (Netlify, Cloudflare Pages). The enforced policy on Pages is the
+  # meta http-equiv Content-Security-Policy in index.html, kept in sync with this.
+  #
   # 'unsafe-eval' is required by the DC (Design Component) runtime in support.js,
   # which uses new Function() to execute user-authored component logic in the
   # browser sandbox. This is intentional and nosemgrep-annotated in the source.
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://unpkg.com 'unsafe-eval'; font-src https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://raw.githubusercontent.com https://api.github.com; img-src 'self' data:; object-src 'none'; base-uri 'self'
+  # React is self-hosted under /vendor, so no external script origin is needed.
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-eval'; font-src https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://raw.githubusercontent.com https://api.github.com; img-src 'self' data:; object-src 'none'; base-uri 'self'
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
