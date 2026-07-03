@@ -3,16 +3,11 @@
 // propose. This mutates nothing. It is the safe first command.
 // Usage: node scripts/dry-run-sweep.mjs <targetDir> [--emit-work-item]
 import { existsSync, readdirSync, mkdirSync, writeFileSync, unlinkSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { join } from "node:path";
 import { detectStack, detectProtected, detectInstructions, detectHotFiles } from "./lib/repo-detect.mjs";
 import { deriveSignals, scoreProposals } from "./score-proposals.mjs";
 import { auditCoverage, auditCoherence } from "./lib/control-panel-audit.mjs";
-
-const args = process.argv.slice(2);
-const target = args[0] || ".";
-const emitWorkItem = args.includes("--emit-work-item");
-const has = (p) => existsSync(join(target, p));
-const startMs = Date.now();
 
 function writeRunLog(runsDir, command, payload) {
   try {
@@ -117,57 +112,79 @@ export function proposalToWorkItem(proposal, opts = {}) {
   };
 }
 
-const stack = detectStack(target);
-const protectedPaths = detectProtected(target);
-const instructions = detectInstructions(target);
-const hotFiles = detectHotFiles(target);
-const adopted = has(".autonomy") ? ".autonomy (adopted)" : ".modonome";
+// Run stack/protected-path/instruction/hot-file detection and score the resulting
+// proposals for a target directory. Read-only: writes nothing. Shared by the CLI
+// printer below, `--emit-work-item`, and `queue.mjs`, so a proposal a human sees
+// in `dry-run` and one `queue` later writes to disk are always computed the same way.
+export function sweepTarget(target) {
+  const has = (p) => existsSync(join(target, p));
+  const stack = detectStack(target);
+  const protectedPaths = detectProtected(target);
+  const instructions = detectInstructions(target);
+  const hotFiles = detectHotFiles(target);
+  const adopted = has(".autonomy") ? ".autonomy (adopted)" : ".modonome";
 
-const controlPanelWork = proposeControlPanelWork(target);
-const proposals = [...proposeWork(stack, hotFiles), ...controlPanelWork.proposals];
-const scored = orderProposalsByScore(proposals, hotFiles);
+  const controlPanelWork = proposeControlPanelWork(target);
+  const proposals = [...proposeWork(stack, hotFiles), ...controlPanelWork.proposals];
+  const scored = orderProposalsByScore(proposals, hotFiles);
 
-if (emitWorkItem && scored.length > 0) {
-  const workItem = proposalToWorkItem(scored[0].proposal);
-  console.log(JSON.stringify(workItem, null, 2));
-} else {
-  const lines = [];
-  lines.push("Modonome dry-run sweep");
-  lines.push("Mode: dry-run. This run changed nothing.\n");
-  lines.push(`Target: ${target}`);
-  lines.push(`State directory: ${adopted}`);
-  lines.push(`Detected stack: ${stack.name} (${stack.pm})`);
-  lines.push(`Repo instructions found: ${instructions.length ? instructions.join(", ") : "none"}`);
-  lines.push(`Repo snapshot: ${has(".modonome/snapshot/signature.json") ? "present (read .modonome/snapshot/map.md; verify with modonome snapshot . --verify)" : "none (run modonome snapshot . to generate an LLM-ready map)"}`);
-  lines.push("\nGates it would adopt:");
-  for (const g of stack.gates) lines.push(`  - ${g}`);
-  lines.push("\nProtected paths it would never auto-merge:");
-  for (const p of (protectedPaths.length ? protectedPaths : ["none detected, ask the owner to confirm"])) lines.push(`  - ${p}`);
-  lines.push("\nProposed bounded work (each becomes a small reviewable pull request, ordered by priority score):");
-  scored.forEach((s, i) => lines.push(`  ${i + 1}. [score ${s.score.toFixed(1)}] ${s.proposal}`));
-  if (controlPanelWork.omitted > 0) {
-    lines.push(`  ...and ${controlPanelWork.omitted} more control-panel finding(s); run npm run check:control-panel for the full list.`);
-  }
-  lines.push("\nRefused by default: autonomy off, no auto-merge, no protected-path edits, no remote spend, nothing shared across repos.");
-  lines.push("Next safe step: review this output, then run `npx modonome scaffold .` to drop disabled, dry-run state files.");
-
-  console.log(lines.join("\n"));
+  return { has, stack, protectedPaths, instructions, hotFiles, adopted, controlPanelWork, proposals, scored };
 }
 
-// Clean hands: dry-run is the read-only first command, so it writes nothing to a
-// repo it was only asked to read. A run log is kept only once the repo is scaffolded
-// (a .modonome directory already exists), where an audit trail is expected and the
-// "changed nothing" promise no longer implies an untouched filesystem.
-if (existsSync(join(target, ".modonome"))) {
-  writeRunLog(join(target, ".modonome", "runs"), "dry-run", {
-    argv: args,
-    target,
-    detected_stack: { name: stack.name, pm: stack.pm },
-    protected_paths: protectedPaths,
-    proposals,
-    scored,
-    hot_files: hotFiles,
-    exit_code: 0,
-    duration_ms: Date.now() - startMs,
-  });
+function main(args) {
+  const startMs = Date.now();
+  const target = args[0] || ".";
+  const emitWorkItem = args.includes("--emit-work-item");
+
+  const { has, stack, protectedPaths, instructions, hotFiles, adopted, controlPanelWork, proposals, scored } =
+    sweepTarget(target);
+
+  if (emitWorkItem && scored.length > 0) {
+    const workItem = proposalToWorkItem(scored[0].proposal);
+    console.log(JSON.stringify(workItem, null, 2));
+  } else {
+    const lines = [];
+    lines.push("Modonome dry-run sweep");
+    lines.push("Mode: dry-run. This run changed nothing.\n");
+    lines.push(`Target: ${target}`);
+    lines.push(`State directory: ${adopted}`);
+    lines.push(`Detected stack: ${stack.name} (${stack.pm})`);
+    lines.push(`Repo instructions found: ${instructions.length ? instructions.join(", ") : "none"}`);
+    lines.push(`Repo snapshot: ${has(".modonome/snapshot/signature.json") ? "present (read .modonome/snapshot/map.md; verify with modonome snapshot . --verify)" : "none (run modonome snapshot . to generate an LLM-ready map)"}`);
+    lines.push("\nGates it would adopt:");
+    for (const g of stack.gates) lines.push(`  - ${g}`);
+    lines.push("\nProtected paths it would never auto-merge:");
+    for (const p of (protectedPaths.length ? protectedPaths : ["none detected, ask the owner to confirm"])) lines.push(`  - ${p}`);
+    lines.push("\nProposed bounded work (each becomes a small reviewable pull request, ordered by priority score):");
+    scored.forEach((s, i) => lines.push(`  ${i + 1}. [score ${s.score.toFixed(1)}] ${s.proposal}`));
+    if (controlPanelWork.omitted > 0) {
+      lines.push(`  ...and ${controlPanelWork.omitted} more control-panel finding(s); run npm run check:control-panel for the full list.`);
+    }
+    lines.push("\nRefused by default: autonomy off, no auto-merge, no protected-path edits, no remote spend, nothing shared across repos.");
+    lines.push("Next safe step: review this output, then run `npx modonome scaffold .` to drop disabled, dry-run state files.");
+
+    console.log(lines.join("\n"));
+  }
+
+  // Clean hands: dry-run is the read-only first command, so it writes nothing to a
+  // repo it was only asked to read. A run log is kept only once the repo is scaffolded
+  // (a .modonome directory already exists), where an audit trail is expected and the
+  // "changed nothing" promise no longer implies an untouched filesystem.
+  if (existsSync(join(target, ".modonome"))) {
+    writeRunLog(join(target, ".modonome", "runs"), "dry-run", {
+      argv: args,
+      target,
+      detected_stack: { name: stack.name, pm: stack.pm },
+      protected_paths: protectedPaths,
+      proposals,
+      scored,
+      hot_files: hotFiles,
+      exit_code: 0,
+      duration_ms: Date.now() - startMs,
+    });
+  }
+}
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main(process.argv.slice(2));
 }

@@ -116,3 +116,30 @@ export function parseFlatYaml(text) {
   const topIndent = entries.length > 0 ? Math.min(...entries.map((e) => e.indent)) : 0;
   return parseEntries(entries, 0, topIndent);
 }
+
+function formatScalarForYaml(value) {
+  if (Array.isArray(value)) return `[${value.join(", ")}]`;
+  return String(value);
+}
+
+// Patch one or more top-level (zero-indent) scalar keys in a config.yaml's raw
+// text, line by line. Every other line, including every comment, is left
+// untouched, so a hand-written config file survives an arm/disarm cycle byte
+// for byte outside the patched line(s). Only a zero-indent `key:` line matches;
+// a same-named nested key (e.g. under `roles:`) is never touched. Throws if a
+// requested key has no top-level line, so a typo never silently no-ops.
+export function patchTopLevelYaml(text, patch) {
+  const remaining = new Set(Object.keys(patch));
+  const lines = text.split("\n").map((line) => {
+    const m = /^([A-Za-z0-9_]+):/.exec(line);
+    if (m && remaining.has(m[1])) {
+      remaining.delete(m[1]);
+      return `${m[1]}: ${formatScalarForYaml(patch[m[1]])}`;
+    }
+    return line;
+  });
+  if (remaining.size > 0) {
+    throw new Error(`Config key(s) not found at top level: ${[...remaining].join(", ")}`);
+  }
+  return lines.join("\n");
+}

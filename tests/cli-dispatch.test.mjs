@@ -103,6 +103,44 @@ test("validate routes to packet validator when filename contains 'packet'", () =
   }
 });
 
+test("queue dispatches to queue.mjs and prints the picker", () => {
+  const dir = tmp();
+  try {
+    const scaffoldR = spawnSync("node", [join(root, "scripts/scaffold.mjs"), dir, "--write", "--no-snapshot"], {
+      encoding: "utf8",
+      timeout: 30000,
+    });
+    assert.strictEqual(scaffoldR.status, 0, `scaffold exited ${scaffoldR.status}: ${scaffoldR.stderr}`);
+    const r = cli("queue", dir);
+    assert.strictEqual(r.status, 0, `queue exited ${r.status}: ${r.stderr}`);
+    assert.match(r.stdout, /Scored proposals/, "must print the queue picker");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("arm dispatches to arm.mjs and refuses without a config", () => {
+  const dir = tmp();
+  try {
+    const r = cli("arm", dir);
+    assert.strictEqual(r.status, 1, `arm exited ${r.status}: ${r.stderr}`);
+    assert.match(r.stderr, /No config found/, "must dispatch to arm.mjs");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("disarm dispatches to disarm.mjs and refuses without a config", () => {
+  const dir = tmp();
+  try {
+    const r = cli("disarm", dir);
+    assert.strictEqual(r.status, 1, `disarm exited ${r.status}: ${r.stderr}`);
+    assert.match(r.stderr, /nothing to disarm/, "must dispatch to disarm.mjs");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
 test("report runs without error on a directory with no metrics", () => {
   const dir = tmp();
   try {
