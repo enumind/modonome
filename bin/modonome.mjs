@@ -23,6 +23,11 @@ Usage:
   npx modonome migrate <file>            add new config levers with safe defaults and bump the version.
   npx modonome tick [stateDir]           expire stale in-flight work items whose lease has passed.
   npx modonome status [dir]              print the effective arming posture for the target repo.
+  npx modonome queue [dir]                print scored dry-run proposals as a numbered picker.
+  npx modonome queue [dir] 1,3            queue proposals 1 and 3 as schema-valid work items.
+  npx modonome queue [dir] --all --max N  queue every proposal, or the top N.
+  npx modonome arm [dir]                  verify preconditions locally and set autonomy_enabled: true.
+  npx modonome disarm [dir]               set autonomy_enabled: false. Both print the CI-secret command for the second key.
   npx modonome report [dir]              print governance activity summary and AgentProof score.
   npx modonome compliance <dir>          write a read-only OpenSSF, SLSA, and NIST evidence pack for the repo.
   npx modonome snapshot <dir>            write a tiered, Merkle-verified repo snapshot for LLM context.
@@ -139,6 +144,15 @@ function main(argv) {
       process.exit(0);
       break;
     }
+    case "queue":
+      run("queue.mjs", rest);
+      break;
+    case "arm":
+      run("arm.mjs", rest);
+      break;
+    case "disarm":
+      run("disarm.mjs", rest);
+      break;
     case "report":
       run("report.mjs", rest);
       break;

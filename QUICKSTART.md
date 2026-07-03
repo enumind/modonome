@@ -31,11 +31,23 @@ Open `.modonome/config.yaml`. Confirm the protected paths, the gates, and the ca
 npx modonome validate .modonome/config.yaml
 ```
 
-## 4. Turn one finding into a change
+## 4. Turn findings into queued work
 
-Pick one proposed item. Define a work packet (goal, allowed files, a failing test as the
-fence). Implement it. Open a normal pull request for human review. Modonome's role here is to
-keep the change small, fenced, and independently checked.
+```bash
+npx modonome queue .
+```
+
+This prints the same proposals from step 1, numbered by priority score, and writes nothing.
+Queue one or more as schema-valid work items:
+
+```bash
+npx modonome queue . 1,3        # queue proposals 1 and 3
+npx modonome queue . --all      # queue everything the sweep found
+```
+
+Each queued item starts in state `queued` with a goal, an allowed file set, and a failing test
+as its fence. Implement it and open a normal pull request for human review. Modonome's role
+here is to keep the change small, fenced, and independently checked.
 
 ## 5. Stage a lesson
 
@@ -83,8 +95,23 @@ The MCP tools are read-only (ADR-009) and cannot arm the engine.
 
 ## Arming later
 
-Armed mode is a deliberate, owner-only step. Work through this checklist before setting
-`MODONOME_ARMED=true` in your CI or harness environment.
+Armed mode is a deliberate, owner-only step, split across two keys: `autonomy_enabled` in
+`.modonome/config.yaml`, and `MODONOME_ARMED` in your CI or harness environment. Neither alone
+arms the engine.
+
+```bash
+npx modonome arm .
+```
+
+This checks the preconditions Modonome can verify locally, no network call: maker and checker
+use distinct model families, `.github/CODEOWNERS` covers everything in `protected_paths_extra`,
+and the `require_*` separation-of-duties flags are still on. If they pass, it writes
+`autonomy_enabled: true` and prints the exact `gh secret set MODONOME_ARMED` command for the
+second key, which it never sets itself. `npx modonome disarm .` reverses both.
+
+Work through the rest of this checklist too: it covers the platform-side settings `arm` has no
+way to verify (branch protection, required checks are things GitHub enforces, not something a
+local command can confirm without a token).
 
 **Platform gates**
 
