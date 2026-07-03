@@ -44,6 +44,7 @@ jobs:
       - run: node scripts/check-regex-safety.mjs
       - run: node scripts/check-gate-dag.mjs
       - run: node scripts/detect-near-miss.mjs
+      - run: node scripts/build-policy-attestation.mjs --check
       - run: git checkout "origin/\${{ github.base_ref }}" -- scripts/guard-ratchet.mjs
       - run: git checkout "origin/\${{ github.base_ref }}" -- scripts/check-style.mjs
       - run: git checkout "origin/\${{ github.base_ref }}" -- scripts/check-repo-hygiene.mjs

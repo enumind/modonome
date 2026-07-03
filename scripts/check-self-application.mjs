@@ -61,6 +61,9 @@ const REQUIRED_GATES = [
   // Scans the PR body and comments for AI-participation signatures (operational-note 6):
   // the one attribution surface no tracked-file gate can see.
   { name: "PR body and comment hygiene", needle: "hygiene check --pr" },
+  // Governed Remediation Phase 3: freshness gate for the content-addressed policy and
+  // disclosure attestation. Runs pre-base-checkout so it judges the PR's own policy files.
+  { name: "policy attestation freshness", needle: "build-policy-attestation.mjs --check" },
 ];
 for (const g of REQUIRED_GATES) {
   if (!activeCI.includes(g.needle)) problems.push(`ci.yml does not run the ${g.name} gate (${g.needle}).`);

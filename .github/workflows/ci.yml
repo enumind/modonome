@@ -64,6 +64,14 @@ jobs:
       - name: Run near-miss widener (advisory)
         run: node scripts/detect-near-miss.mjs
 
+      # Governed Remediation Phase 3 policy attestation freshness gate. Like the snapshot
+      # and promotion-safety gates above, it must run BEFORE the base-branch checkout: it
+      # rebuilds the content-addressed policy/disclosure manifest from THIS branch's own
+      # policy files and compares it to the committed .modonome/policy-attestation.json, so
+      # a PR that changes a detector or a capability default must also refresh the attestation.
+      - name: Run policy attestation freshness gate
+        run: node scripts/build-policy-attestation.mjs --check
+
       # Mandatory Base-Branch Checkouts matching check-self-application.mjs criteria
       # NOTE: These steps only run on pull requests where github.base_ref is defined.
       # On push events, github.base_ref is empty, so these are skipped to prevent
