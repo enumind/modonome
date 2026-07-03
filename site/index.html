@@ -12,6 +12,7 @@
 <meta property="og:title" content="Modonome - Governed autonomy for any repo">
 <meta property="og:description" content="An off-by-default autonomy loop that adopts your repo rules, proposes small reviewable PRs, and gates them in CI so weakened tests cannot merge. AgentProof 25/25 for gate integrity.">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@ModonomeLab">
 <meta name="twitter:image" content="https://modonome.com/assets/modonome-logo.webp">
 <meta property="og:image" content="https://modonome.com/assets/modonome-logo.webp">
 <meta name="keywords" content="agentproof, autonomous agent benchmark, CI governance, anti-gaming ratchet, agentic AI safety, tech debt automation, test integrity, agent gate integrity, governed autonomy, modonome">
@@ -46,7 +47,7 @@
 <h2>AgentProof: 25/25 HARDENED</h2>
 <p>AgentProof is the adversarial benchmark for agent gate-integrity. It proves through 25 executable scenarios that an implementation's gates hold under attack. Modonome scores 25/25 HARDENED.</p>
 <p>Scenarios covered: assertion removal (JS/TS, Java, .NET, Python), test skip injection, broad type escape, coverage threshold removal, unsafe config combinations, identity collapse (maker/checker same session or same model family), raw code leakage, schema/prompt/template drift, protected-path escalation, prompt injection inertness, state machine acyclicity, deterministic gate ordering, trust boundary (base-branch code loading), audit trail append-only integrity, model diversity enforcement, concurrent mutation serialization, gate DAG acyclicity, evidence secret screening, resource cap enforcement.</p>
-<p><a href="https://github.com/enumind/modonome">GitHub</a> · <a href="https://github.com/enumind/modonome/blob/main/agentproof/README.md">AgentProof</a> · <a href="https://github.com/enumind/modonome/blob/main/QUICKSTART.md">Quickstart</a></p>
+<p><a href="https://github.com/enumind/modonome">GitHub</a> · <a href="https://github.com/enumind/modonome/blob/main/agentproof/README.md">AgentProof</a> · <a href="https://github.com/enumind/modonome/blob/main/QUICKSTART.md">Quickstart</a> · <a href="https://x.com/ModonomeLab">Follow on X</a></p>
 </noscript>
 <x-dc>
 <helmet>
@@ -92,6 +93,7 @@
         <sc-for list="{{ topNav }}" as="t" hint-placeholder-count="6">
           <a href="{{ t.href }}" style="{{ t.style }}" style-hover="color:#f6f4ee">{{ t.label }}</a>
         </sc-for>
+        <a href="https://x.com/ModonomeLab" target="_blank" rel="noopener noreferrer" aria-label="Follow Modonome on X" style="display:flex;align-items:center;color:#9fabbc;text-decoration:none;transition:color .2s" style-hover="color:#f6f4ee"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
         <a href="#quickstart" style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:#0b1220;background:#5dd4ab;padding:9px 17px;border-radius:9px;text-decoration:none;transition:transform .2s,box-shadow .2s" style-hover="transform:translateY(-1px);box-shadow:0 10px 26px rgba(93,212,171,.32)">Get started</a>
       </div>
     </div>
@@ -601,9 +603,10 @@
         <span class="mn-satin" style="--satin-mask:url('assets/modonome-logo.webp')"><img src="assets/modonome-logo.webp" alt="Modonome" style="height:24px;display:block;mix-blend-mode:lighten"></span>
         <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#54627a">MIT · {{ version }} · No telemetry</span>
       </div>
-      <div style="display:flex;gap:24px;font-size:13.5px">
+      <div style="display:flex;gap:24px;font-size:13.5px;align-items:center">
         <a href="https://github.com/enumind/modonome" target="_blank" rel="noopener noreferrer" style="color:#9fabbc;text-decoration:none;transition:color .2s" style-hover="color:#5dd4ab">GitHub</a>
         <a href="https://github.com/enumind/modonome/issues" target="_blank" rel="noopener noreferrer" style="color:#9fabbc;text-decoration:none;transition:color .2s" style-hover="color:#5dd4ab">Discussions</a>
+        <a href="https://x.com/ModonomeLab" target="_blank" rel="noopener noreferrer" aria-label="Follow Modonome on X" style="display:inline-flex;align-items:center;gap:7px;color:#9fabbc;text-decoration:none;transition:color .2s" style-hover="color:#5dd4ab"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Follow on X</a>
       </div>
     </div>
   </footer>
