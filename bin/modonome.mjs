@@ -35,6 +35,8 @@ Usage:
   npx modonome hygiene check <dir>       find AI-participation signatures in the branch and commits. Exit 1 if any.
   npx modonome hygiene explain <dir>     same as check, with the reason and pattern for each finding.
   npx modonome hygiene fix <dir>         apply the safe, local, metadata-only remedy (branch rename).
+  npx modonome remediate plan            preview the metadata-only commit-history rewrite. Read-only, changes nothing.
+  npx modonome remediate apply           rewrite commit metadata to strip attribution. Armed and capability-gated only.
   npx modonome help                      show this message.
 
 Modonome stays off until an owner arms it through the environment or CI.`;
@@ -155,6 +157,9 @@ function main(argv) {
       break;
     case "hygiene":
       run("hygiene.mjs", rest);
+      break;
+    case "remediate":
+      run("remediate.mjs", rest);
       break;
     case "help":
     case "--help":

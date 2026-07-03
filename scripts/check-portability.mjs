@@ -102,7 +102,7 @@ if (existsSync(modonomeConfigPath)) {
     "require_distinct_maker_checker_model", "trusted_author_allowlist", "protected_paths_extra",
     "state_dir", "market_scan_enabled", "owner_approval_required_for_new_claims",
     "repo_network_enabled", "repo_network_dry_run", "share_raw_code_across_repos",
-    "share_repo_identifiers_by_default", "roles", "runners", "models",
+    "share_repo_identifiers_by_default", "remediation_apply_enabled", "roles", "runners", "models",
   ]);
   const topLevelKeys = [...text.matchAll(/^([a-z_][a-z0-9_]*):/gm)].map((m) => m[1]);
   for (const key of topLevelKeys) {

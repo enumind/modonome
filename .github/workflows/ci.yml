@@ -117,6 +117,16 @@ jobs:
       - name: Run repo hygiene gate
         run: node scripts/check-repo-hygiene.mjs
 
+      # Scan the PR's own title, body, and conversation comments for AI-participation
+      # signatures. This is the one attribution surface no tracked-file gate can see:
+      # a session-URL footer appended to a PR body at creation time. Pull-request only,
+      # since it needs the PR number; uses the standard GITHUB_TOKEN, no new secret.
+      - name: Scan PR body and comments for AI-participation signatures
+        if: github.event_name == 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node bin/modonome.mjs hygiene check --pr ${{ github.event.pull_request.number }}
+
       - name: Run markdown governance gate
         run: node scripts/check-md-governance.mjs
 
