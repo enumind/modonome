@@ -9,6 +9,7 @@ import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { parseFlatYaml } from "./lib/yaml-lite.mjs";
+import { CAPABILITY_FLAGS } from "./lib/capability-flags.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 
@@ -22,8 +23,9 @@ let root = join(here, "..");
 }
 const problems = [];
 
-// Capability flags that expand the engine's authority and trust boundary.
-const CAPABILITY_FLAGS = ["repo_network_enabled", "market_scan_enabled", "envisioner_enabled", "remediation_apply_enabled"];
+// Capability flags (CAPABILITY_FLAGS) are shared with the policy attestation
+// (scripts/lib/policy-manifest.mjs) so the disclosed capability set and the promotion
+// gate stay in lockstep.
 
 // A promotion ADR must demonstrate evidence-based readiness, not faith.
 // Sections must appear as Markdown headings; mere substring presence is insufficient.
