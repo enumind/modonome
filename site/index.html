@@ -186,7 +186,7 @@
         <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#5dd4ab;margin-bottom:14px">Structural by design</div>
         <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(28px,3.4vw,38px);line-height:1.12;letter-spacing:-.02em;margin:0 0 18px;color:#f6f4ee">The controls are real code in your pipeline.</h2>
         <p style="font-size:16px;line-height:1.65;color:#aeb9c8;margin:0 0 22px">A clever prompt can talk another prompt into almost anything. A CI gate that runs outside the agent’s write scope answers only to your pipeline. The ratchet, the validators, and the drift guard all live there, so the guarantees hold steady even when a prompt tries to bend them.</p>
-        <div style="display:inline-flex;align-items:center;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#5dd4ab;background:rgba(62,201,138,.07);border:1px solid rgba(93,212,171,.25);border-radius:9px;padding:10px 14px">Autonomy turns on only when an owner sets MODONOME_ARMED. Until then it stays at rest.</div>
+        <div style="display:inline-flex;align-items:center;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#5dd4ab;background:rgba(62,201,138,.07);border:1px solid rgba(93,212,171,.25);border-radius:9px;padding:10px 14px">Autonomy turns on only when an owner sets MODONOME_ARMED. Until then it stays disarmed.</div>
       </div>
       <div style="display:flex;flex-direction:column;gap:12px">
         <sc-for list="{{ guarantees }}" as="g" hint-placeholder-count="5">
@@ -412,7 +412,7 @@
         {{ networkConnectors }}
 
         <div ref="{{ netHub }}" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:214px;text-align:center;background:linear-gradient(180deg,rgba(62,201,138,.12),rgba(9,16,32,.62));border:1px solid rgba(93,212,171,.4);border-radius:18px;padding:20px 20px 18px;z-index:4;box-shadow:0 0 0 1px rgba(93,212,171,.3),0 0 30px rgba(93,212,171,.22);transition:box-shadow .4s">
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#5dd4ab;margin-bottom:11px">Governed mesh</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#5dd4ab;margin-bottom:11px">Knowledge network</div>
           <div style="display:flex;align-items:center;justify-content:center;width:48px;height:48px;margin:0 auto 12px;border-radius:14px;background:rgba(93,212,171,.14);border:1px solid rgba(93,212,171,.4);color:#5dd4ab;font-size:22px">⛨</div>
           <div style="font-family:'Space Grotesk';font-weight:600;font-size:16px;line-height:1.16;color:#f6f4ee;margin-bottom:9px">Application<br>Knowledge Network</div>
           <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9fabbc"><span style="color:#5dd4ab;font-weight:600">{{ netShared }}</span> patterns shared <span style="color:#7c8aa0">(illustrative)</span></div>

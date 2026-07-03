@@ -1,7 +1,7 @@
 {
   "name": "modonome",
   "version": "0.1.0-alpha",
-  "description": "HARDENED - Governed autonomy for any repo. An off-by-default autonomy loop that adopts your repo's rules, proposes small reviewable changes, and gates them in CI so weakened tests cannot merge.",
+  "description": "Blocks AI coding agents from weakening your tests. An off-by-default governed-autonomy loop that adopts your repo's rules, proposes small reviewable changes, and gates them in CI so weakened tests cannot merge.",
   "type": "module",
   "bin": {
     "modonome": "bin/modonome.mjs"
@@ -22,7 +22,6 @@
     "check:attestation": "node scripts/build-policy-attestation.mjs --check",
     "test": "node --test tests/*.test.mjs",
     "test:coverage": "node --test --experimental-test-coverage --test-coverage-exclude='tests/**' --test-coverage-exclude='agentproof/**' --test-coverage-lines=80 --test-coverage-branches=66 --test-coverage-functions=80 tests/*.test.mjs",
-    "govbench": "node agentproof/runner.mjs",
     "preflight": "node scripts/preflight-embedding.mjs",
     "check:control-panel": "node scripts/check-control-panel-coverage.mjs && node scripts/check-control-panel-coherence.mjs",
     "check:frontend": "npm --prefix design-system run build && npm --prefix apps/control-panel run build",
@@ -66,6 +65,13 @@
     "ci",
     "governance",
     "code-review",
+    "ai-code-review",
+    "agent-guardrails",
+    "coding-agent",
+    "gate-integrity",
+    "merge-gate",
+    "llm",
+    "mcp",
     "modernization",
     "tech-debt",
     "ai-safety",

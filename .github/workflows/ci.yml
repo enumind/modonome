@@ -5,6 +5,9 @@ on:
     branches: [ main ]
   push:
     branches: [ main ]
+  # Report in the merge queue too. A required check that omits merge_group silently
+  # never reports once a merge queue is enabled, so the gate must declare it.
+  merge_group:
 
 jobs:
   ratchet:

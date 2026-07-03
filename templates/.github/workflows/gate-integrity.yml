@@ -1,0 +1,41 @@
+# Modonome gate integrity. Rejects a pull request that weakens its own tests or gates
+# (removed assertions, injected skips, type escapes, lowered coverage). Mark the
+# "gate-integrity" check required via a branch ruleset. It declares merge_group, so it
+# also reports in a merge queue. The check runs the pinned modonome package, not code
+# from the pull request under review, so a PR cannot weaken the gate that judges it.
+name: gate-integrity
+
+on:
+  pull_request:
+  merge_group:
+
+jobs:
+  gate-integrity:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # Needed only for the SARIF upload below. Drop it if you do not use code scanning.
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # SARIF for the Security tab, with stable MR### rule codes.
+      - name: Gate integrity (SARIF)
+        run: npx --yes modonome ratchet --sarif > modonome-gate-integrity.sarif || true
+
+      - name: Upload SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: modonome-gate-integrity.sarif
+          category: modonome-gate-integrity
+
+      # The verdict. This step fails the check when a gate was weakened.
+      - name: Gate integrity (verdict)
+        run: npx --yes modonome ratchet

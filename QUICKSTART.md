@@ -42,6 +42,45 @@ keep the change small, fenced, and independently checked.
 When a review correction or a gate failure teaches something general, add one line to
 `.modonome/LEARNINGS.md`. An owner promotes durable lessons into your canonical docs later.
 
+## Add the gate to your CI
+
+Make the gate-integrity check block a pull request that weakens its own tests or gates. On
+GitHub, add the Marketplace action and mark `Modonome Gate Integrity` a required check via a
+ruleset. It declares `merge_group`, so it also reports in a merge queue:
+
+```yaml
+# .github/workflows/gate-integrity.yml
+on:
+  pull_request:
+  merge_group:
+jobs:
+  gate-integrity:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: enumind/modonome@v1
+```
+
+Findings render in the Security tab as SARIF with stable `MR###` rule codes. On any other CI,
+run `npx modonome ratchet` (add `--sarif` or `--json` for machine-readable output). `scaffold`
+already drops this workflow into `.github/workflows/gate-integrity.yml` for you.
+
+## Wire it into your agent (MCP)
+
+Register the read-only governance tools with your coding agent so it can check a diff before
+it commits, and see the arming posture in-session:
+
+```bash
+npx modonome connect . --write        # writes .mcp.json; add --cursor or --vscode as well
+```
+
+The MCP tools are read-only (ADR-009) and cannot arm the engine.
+
 ## Arming later
 
 Armed mode is a deliberate, owner-only step. Work through this checklist before setting

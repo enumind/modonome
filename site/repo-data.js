@@ -146,7 +146,7 @@ window.__MODONOME_REPO = {
       { where: 'Record', dir: 'toEngine', color: '#5dd4ab', text: 'the proposal is scored on safety and value', r: -1, e: 3 },
       { where: 'Owner', dir: 'toEngine', color: '#f5b14a', text: 'a brand-new idea waits for owner approval', r: 2, e: 3 },
     ]},
-    { tag: 'UPGRADE MODONOME', accent: '#7cc4ff', label: 'New Modonome version', title: 'Modonome updates itself safely', summary: 'A new version keeps your settings and history intact, and new options arrive switched off, so nothing changes on its own.', outcome: 'Modonome moves to v0.2.0 with your config intact and autonomy still at rest.', steps: [
+    { tag: 'UPGRADE MODONOME', accent: '#7cc4ff', label: 'New Modonome version', title: 'Modonome updates itself safely', summary: 'A new version keeps your settings and history intact, and new options arrive switched off, so nothing changes on its own.', outcome: 'Modonome moves to v0.2.0 with your config intact and autonomy still disarmed.', steps: [
       { where: 'Plan', dir: 'toEngine', color: '#7cc4ff', text: 'a new Modonome version is available', r: -1, e: 1 },
       { where: 'Record', dir: 'toEngine', color: '#7cc4ff', text: 'settings carry over and your history stays intact', set: { engine: { version: 'v0.2.0' } }, hi: { engine: ['version'] }, r: -1, e: 1 },
       { where: 'Plan', dir: 'toEngine', color: '#7cc4ff', text: 'new options arrive switched off, so nothing changes on its own', r: -1, e: 2 },
@@ -165,7 +165,7 @@ window.__MODONOME_REPO = {
   // ---- Quickstart ----
   quickstart: [
     { n: '1', title: 'Preview, safely', t: 'The dry run reads your repository and shows the work it would propose. Nothing is written.' },
-    { n: '2', title: 'Adopt when ready', t: 'Scaffold local state in your repo. Autonomy stays at rest until an owner switches it on.' },
+    { n: '2', title: 'Adopt when ready', t: 'Scaffold local state in your repo. Autonomy stays disarmed until an owner switches it on.' },
     { n: '3', title: 'Prove the controls', t: 'Run AgentProof to confirm every safeguard holds on your own setup.' },
   ],
 
