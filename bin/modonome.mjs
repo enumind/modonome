@@ -29,9 +29,10 @@ Usage:
   npx modonome snapshot <dir> --check   fail or warn (per config) if the committed snapshot is stale.
   npx modonome snapshot <dir> --pack    write a single portable .msnap bundle for sharing.
   npx modonome snapshot <dir> --since <ref>  print the file-level delta since a git ref.
-  npx modonome agentproof                run the AgentProof adversarial benchmark suite (16 scenarios).
+  npx modonome agentproof                run the AgentProof adversarial benchmark suite (25 scenarios).
   npx modonome ratchet [baseRef]         anti-gaming gate: reject a diff that weakens tests or gates.
   npx modonome ratchet --staged          same, but check the index against HEAD (for a pre-commit hook).
+  npx modonome ratchet [baseRef] --sarif machine-readable SARIF 2.1.0 (or --json) with MR### rule codes.
   npx modonome hygiene check <dir>       find AI-participation signatures in the branch and commits. Exit 1 if any.
   npx modonome hygiene explain <dir>     same as check, with the reason and pattern for each finding.
   npx modonome hygiene fix <dir>         apply the safe, local, metadata-only remedy (branch rename).
@@ -40,6 +41,9 @@ Usage:
   npx modonome attest [--check|--show|--verify]   write, check, or verify this repo's policy-pack and disclosure attestation.
   npx modonome attest --diff <file>      compare a foreign policy pack's disclosed policy against this repo's live policy.
   npx modonome attest --adopt <file> --alias <name>   validate and vendor a foreign policy pack. Refuses on any integrity or credit failure.
+  npx modonome receipt [baseRef]         emit an in-toto gate-integrity attestation (sign it with actions/attest in CI).
+  npx modonome mcp                       run the read-only governance MCP server (stdio) for any MCP harness.
+  npx modonome connect [dir]             register the MCP server with your agent (.mcp.json). Add --write to apply.
   npx modonome help                      show this message.
 
 Modonome stays off until an owner arms it through the environment or CI.`;
@@ -151,6 +155,15 @@ function main(argv) {
       break;
     case "ratchet":
       run("guard-ratchet.mjs", rest);
+      break;
+    case "receipt":
+      run("ratchet-attestation.mjs", rest);
+      break;
+    case "mcp":
+      run("mcp-server.mjs", rest);
+      break;
+    case "connect":
+      run("connect.mjs", rest);
       break;
     case "migrate":
       run("migrate-config.mjs", rest);

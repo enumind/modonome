@@ -154,14 +154,20 @@ if (emitWorkItem && scored.length > 0) {
   console.log(lines.join("\n"));
 }
 
-writeRunLog(join(target, ".modonome", "runs"), "dry-run", {
-  argv: args,
-  target,
-  detected_stack: { name: stack.name, pm: stack.pm },
-  protected_paths: protectedPaths,
-  proposals,
-  scored,
-  hot_files: hotFiles,
-  exit_code: 0,
-  duration_ms: Date.now() - startMs,
-});
+// Clean hands: dry-run is the read-only first command, so it writes nothing to a
+// repo it was only asked to read. A run log is kept only once the repo is scaffolded
+// (a .modonome directory already exists), where an audit trail is expected and the
+// "changed nothing" promise no longer implies an untouched filesystem.
+if (existsSync(join(target, ".modonome"))) {
+  writeRunLog(join(target, ".modonome", "runs"), "dry-run", {
+    argv: args,
+    target,
+    detected_stack: { name: stack.name, pm: stack.pm },
+    protected_paths: protectedPaths,
+    proposals,
+    scored,
+    hot_files: hotFiles,
+    exit_code: 0,
+    duration_ms: Date.now() - startMs,
+  });
+}
