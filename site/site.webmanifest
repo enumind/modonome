@@ -1,0 +1,13 @@
+{
+  "name": "Modonome",
+  "short_name": "Modonome",
+  "description": "Governed autonomy for any repo. The engineering loop that keeps making, checking, and merging in separate hands.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b1220",
+  "theme_color": "#0b1220",
+  "icons": [
+    { "src": "/assets/icon-192.png", "type": "image/png", "sizes": "192x192" },
+    { "src": "/assets/icon-512.png", "type": "image/png", "sizes": "512x512" }
+  ]
+}

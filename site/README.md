@@ -20,10 +20,13 @@ can update the page in the same commit, so the page never drifts from the produc
 ## Runtime dependencies
 
 The page requires:
-- **React 18** and **ReactDOM 18** (loaded from `unpkg.com` CDN in `index.html`)
+- **React 18** and **ReactDOM 18** (self-hosted UMD builds under `vendor/`, referenced from `index.html`)
 - **Google Fonts** (Space Grotesk, IBM Plex Sans, IBM Plex Mono, loaded from `fonts.googleapis.com`)
 
-Both are loaded at runtime. A no-JS fallback is not provided by this design.
+React is served from the repo, so the page has no third-party script origin. The
+`noscript` block carries a static text fallback for crawlers and no-JS visitors, and the
+`/agentproof/` and `/quickstart/` pages render without any JavaScript. `index.html` also
+carries a `meta` Content-Security-Policy (GitHub Pages does not apply the `_headers` file).
 
 ## Deploy
 
@@ -44,12 +47,17 @@ Two layers keep the page in sync with the product:
 2. **Build-time (automated):** `.github/workflows/sync-site-data.yml` runs on every push to
    `main` that changes `README.md`, `ROADMAP.md`, `agentproof/README.md`, or `package.json`.
    It runs `scripts/sync-site-data.mjs`, which updates `meta.version`, `meta.agentproofScore`,
-   and `meta.agentproofLevel` in `site/repo-data.js`, commits, and pushes. The `pages.yml`
-   deploy then auto-triggers on the commit to `site/**`.
+   and `meta.agentproofLevel` in `site/repo-data.js` (from `package.json` and
+   `agentproof/README.md`) and the `engineBase` line in `site/index.html` (from
+   `RELEASE-EVIDENCE.md` and the work-item queue), regenerates the repo snapshot, then commits
+   and pushes. The `pages.yml` deploy auto-triggers on the commit to `site/**`.
 
 Feature copy changes (feature titles, body text, loop steps, roadmap milestones) are updated
 by editing `site/repo-data.js` and `site/content/features.json` in the same PR as the product
-change. The sync script handles structured fields only (version, score, level).
+change. The sync script handles structured fields only (version, score, level). Prose claims in
+`index.html` (the JSON-LD block, the `noscript` fallback, the AgentProof section, and the
+`/agentproof/` and `/quickstart/` content pages) are hand-maintained: update them in the same PR
+when scenario counts or scores change.
 
 ## Keeping it in sync with features
 
