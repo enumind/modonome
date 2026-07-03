@@ -30,6 +30,7 @@ const config: ModonomeConfig = {
   repo_network_dry_run: true,
   share_raw_code_across_repos: false,
   share_repo_identifiers_by_default: false,
+  remediation_apply_enabled: true,
   roles: {
     maker: { runner: "local", model: "llama-3.3-70b" },
     checker: { runner: "container", model: "claude-sonnet-4-6" },
@@ -283,4 +284,15 @@ export const hostState: PanelState = {
     { label: "Wk5", value: 81 },
   ],
   agentProofScore: 25,
+  remediation: {
+    applyEnabled: true,
+    ready: true,
+    blockers: [],
+    proposalCount: 2,
+    proposals: [
+      { sha: "9f2c1ab34", reasons: ["forbidden-author"] },
+      { sha: "3d81007ee", reasons: ["ai-signature-in-message"] },
+    ],
+    fingerprint: "sha256:5b7d1e0a9c3f42d68a01b4e7c2f9086d3a5c7e1f0b2d4a6c8e0f1a3b5c7d9e0f2",
+  },
 };

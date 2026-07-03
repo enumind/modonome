@@ -30,10 +30,16 @@ const DETERMINISTIC_ENTRY_FILES = [
   "scripts/lib/commit-identity.mjs",
   "scripts/lib/detect-attribution.mjs",
 ];
-// The widener. The reverse edge is required and allowed: near-miss.mjs imports the
-// strict predicates so it can suppress anything strict already catches. Only the
-// forbidden direction (detector -> widener) is checked here.
-const FORBIDDEN_IMPORT = "scripts/lib/near-miss.mjs";
+// Files a deterministic detector must never reach through its import graph. The reverse
+// edges are required and allowed: near-miss.mjs (the widener) imports the strict
+// predicates so it can suppress anything strict already catches, and remediate.mjs (the
+// applier) imports the detectors to know what to rewrite. Only the forbidden direction
+// (detector -> widener, or detector -> applier) is checked here. Keeping the applier
+// unreachable keeps detection a pure, side-effect-free, base-pinnable trust root.
+const FORBIDDEN_IMPORTS = [
+  { file: "scripts/lib/near-miss.mjs", why: "the near-miss widener (fuzzy may only tighten, never override)" },
+  { file: "scripts/lib/remediate.mjs", why: "the remediation applier (detection must never depend on the history-mutating tool)" },
+];
 
 // Extract the relative import specifiers from one module's source: static
 // `from "..."`, side-effect `import "..."`, and dynamic `import("...")`. A
@@ -75,11 +81,14 @@ export function determinismBoundaryErrors(root = REPO_ROOT) {
 
   const errors = [];
   for (const entry of DETERMINISTIC_ENTRY_FILES) {
-    if (reachableFrom(adjacency, entry).has(FORBIDDEN_IMPORT)) {
-      errors.push(
-        `${entry} can reach ${FORBIDDEN_IMPORT} through its import graph. A deterministic ` +
-          `detector must never import the near-miss widener (fuzzy may only tighten, never override).`,
-      );
+    const reach = reachableFrom(adjacency, entry);
+    for (const forbidden of FORBIDDEN_IMPORTS) {
+      if (reach.has(forbidden.file)) {
+        errors.push(
+          `${entry} can reach ${forbidden.file} through its import graph. A deterministic ` +
+            `detector must never import ${forbidden.why}.`,
+        );
+      }
     }
   }
   return errors;

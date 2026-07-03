@@ -9,6 +9,64 @@ or CVE identifier where one exists.
 
 ## Unreleased
 
+### Governed Remediation Phase 2: armed metadata-only commit-history remediator
+
+- Added `scripts/lib/remediate.mjs` (pure planner) and `scripts/remediate.mjs` (CLI,
+  also `modonome remediate plan|apply`). This completes the loop Phase 1 left open:
+  `hygiene` detects attribution signatures and prints the commit-identity and
+  commit-message remedies but defers applying them to "the armed, gated remediator
+  (later phase)". `remediate plan` is a tokenless, read-only proposal (no model, no
+  network) that prints a deterministic fingerprint; `remediate apply` performs the
+  rewrite.
+- The applier is metadata-only and provably so: it replays the branch-unique range
+  with `git commit-tree`, reusing each commit's original tree object, and verifies
+  every rewritten commit's tree SHA is unchanged (and the top tree is unchanged)
+  before moving the branch ref, resetting hard to the saved head on any mismatch. It
+  is deterministic, re-runnable, and idempotent (a second run is a no-op), and it
+  never touches published history: the range is `origin/main..HEAD`, and it refuses on
+  the default branch, on a dirty tracked working tree, on a merge in range, and when
+  `origin/main` is absent.
+- Gated apply behind a new capability flag `remediation_apply_enabled`, default off,
+  added to the config schema, both `config.yaml` files, `migrate-config` safe defaults,
+  and the prompt core. Following ADR-004 and ADR-024, apply requires
+  `autonomy_enabled` and not `dry_run` and the capability flag in config AND the
+  authoritative `MODONOME_ARMED=true` in the environment, so a config the agent can
+  write can never arm it, and even a fully armed engine will not rewrite history until
+  an owner turns this one capability on. `check-promotion-readiness.mjs` now tracks the
+  flag, so it cannot reach default-on in a shipped config without a promotion ADR.
+- Extended the determinism boundary in `check-gate-dag.mjs`: the strict detectors are
+  now proven to reach neither the near-miss widener nor the new applier through their
+  import graph, so the detection kernel stays a pure, side-effect-free, base-pinnable
+  trust root while the applier depends on the detectors and never the reverse.
+- Registered the flag in `apps/control-panel/exposure.json` as a documented exemption:
+  its owner-facing lever family (a proposal queue plus an approve action) is the Phase 2
+  control-panel follow-up, so apply is CLI-only and owner-gated until then.
+- Recorded the trust boundary and the default-off-until-evidence promotion path in
+  `docs/adr/ADR-035-metadata-remediator.md`. The lever is additive and off by default,
+  so it is backward compatible and needs no schema version bump.
+
+### Governed Remediation Phase 2: control-panel remediation lever family
+
+- Surfaced the metadata-only remediator (ADR-035) in the control panel as an owner-gated
+  lever plus a read-only status surface, extending the existing `apps/control-panel/`
+  rather than adding a new app. A new "Remediation" tab on the Settings screen carries the
+  `remediation_apply_enabled` capability toggle (reusing the existing config-save path, so
+  it writes through the same `MODONOME_PANEL_WRITE`-gated, confirm-dialog machinery as every
+  other lever), a read-only apply-readiness panel that names exactly which arming conditions
+  are unmet, and a read-only list of the commits `remediate plan` would rewrite.
+- Added `apps/control-panel/server/remediationView.mjs`, a pure, dependency-free helper that
+  turns config, the environment arming bit, and the branch commits into the panel's
+  remediation view-model by reusing the Phase 2 planner. It runs under plain `node --test`
+  (`tests/remediation-view.test.mjs`), so the readiness and proposal logic is covered without
+  the frontend toolchain. The reader gathers the unpublished commit range
+  (`origin/main..HEAD`) in the loaded repo and feeds it in; a repo without `origin/main`
+  yields no proposals rather than an error.
+- The panel reports arming, it never grants it: the readiness predicate mirrors the CLI
+  (`autonomy_enabled` and not `dry_run` and the capability flag AND `MODONOME_ARMED`), and
+  `MODONOME_ARMED` stays outside the panel's write surface. Moved the flag from an
+  `exposure.json` exemption to a real hinted control, keeping the coverage and coherence
+  gates green.
+
 ### Governed Remediation Phase 1: near-miss widener and human-only promotion path
 
 - Added `scripts/lib/near-miss.mjs`, a deterministic near-miss widener that flags
