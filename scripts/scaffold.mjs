@@ -99,6 +99,23 @@ export function scaffold(target, write) {
     }
   }
 
+  // Copilot code review guidance, so GitHub's own reviewer flags gate-weakening in the
+  // ratchet's vocabulary. Never overwrite an existing instructions file.
+  {
+    const src = join(here, "..", "templates", ".github", "copilot-instructions.md");
+    const dest = join(target, ".github", "copilot-instructions.md");
+    const destRel = join(".github", "copilot-instructions.md");
+    if (existsSync(dest)) {
+      planned.push({ rel: destRel, action: "keep" });
+    } else {
+      planned.push({ rel: destRel, action: "create" });
+      if (write) {
+        mkdirSync(dirname(dest), { recursive: true });
+        writeFileSync(dest, readFileSync(src, "utf8"));
+      }
+    }
+  }
+
   return planned;
 }
 
