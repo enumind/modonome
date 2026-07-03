@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Modonome - Governed autonomy for any repo</title>
-<meta name="description" content="The autonomous engineering loop that arms only on your command, sends every change through an independent checker, and keeps your tests at full strength. Off by default. No central service. MIT licensed.">
+<title>Modonome - Guardrails for AI coding agents in CI</title>
+<meta name="description" content="Governance and guardrails for AI coding agents: an off-by-default engineering loop with separate maker, checker, and merge roles, CI gate-integrity checks that stop weakened tests from merging, and the AgentProof benchmark. Off by default. MIT licensed.">
 <link rel="canonical" href="https://modonome.com/">
 <link rel="sitemap" type="application/xml" href="/sitemap.xml">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://modonome.com/">
-<meta property="og:title" content="Modonome - Governed autonomy for any repo">
+<meta property="og:title" content="Modonome - Guardrails for AI coding agents in CI">
 <meta property="og:description" content="An off-by-default autonomy loop that adopts your repo rules, proposes small reviewable PRs, and gates them in CI so weakened tests cannot merge. AgentProof scores 25/25 HARDENED for gate integrity, 35/35 scenarios total.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@ModonomeLab">
@@ -39,6 +39,28 @@
   }
 }
 </script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Modonome",
+  "url": "https://modonome.com",
+  "logo": "https://modonome.com/assets/icon-512.png",
+  "sameAs": [
+    "https://github.com/enumind/modonome",
+    "https://x.com/ModonomeLab"
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Modonome",
+  "url": "https://modonome.com",
+  "description": "Governance and guardrails for AI coding agents. An off-by-default engineering loop with separate maker, checker, and merge roles, CI gate-integrity checks, and the AgentProof benchmark."
+}
+</script>
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/icon-32.png">
 <link rel="apple-touch-icon" href="assets/icon-180.png">
@@ -50,12 +72,18 @@
 </head>
 <body>
 <noscript>
-<h1>Modonome: Governed Autonomy for Any Repo</h1>
-<p>The autonomous engineering loop that arms only on your command, sends every change through an independent checker, and keeps your tests at full strength. Off by default. No central service. MIT licensed.</p>
-<h2>AgentProof: 25/25 HARDENED</h2>
-<p>AgentProof is the adversarial benchmark for agent gate-integrity. It proves through 25 executable scenarios that an implementation's gates hold under attack. Modonome scores 25/25 HARDENED.</p>
+<h1>Modonome: Guardrails for AI Coding Agents</h1>
+<p>Coding agents ship changes fast. The hard part is trusting them: a diff no one reviewed, tests that pass because they were quietly weakened, an agent that signs off on its own work. Modonome is the governance layer that keeps making, checking, and merging in separate hands. Every change runs through gates that live in your CI, and autonomy turns on only when you say so. Off by default. No central service. MIT licensed.</p>
+<h2>How it works</h2>
+<p>Modonome is a prompt and a set of scripts that run inside a harness you already have: a coding agent, a CI job, or a human session. A maker proposes one small change pinned by a test. An independent checker reviews it. Deterministic gates and an anti-gaming ratchet run in your CI, outside the agent's write scope, and keep tests, types, and coverage honest across JavaScript, Python, Java, and .NET. A human owner holds merge authority over anything protected.</p>
+<h2>Capabilities</h2>
+<p>Small, test-backed changes. Separate maker, checker, and merge roles. An anti-gaming ratchet in CI. Adopts your existing CI, code owners, and branch rules. Improves as it goes by promoting corrections into durable rules. An operator control panel for gate status and governance events. A Merkle-verified repository snapshot for trustworthy agent context. Compliance evidence and attestation through an MCP server.</p>
+<h2>AgentProof: 25/25 HARDENED, 35/35 total</h2>
+<p>AgentProof is the adversarial benchmark for agent gate-integrity. It proves through 25 normative scenarios that an implementation's gates hold under attack, and a further 10 extended hardening scenarios also pass, for 35/35 total. Modonome scores 25/25 HARDENED. Conformance levels: HARDENED is 25/25 normative scenarios, PARTIAL is 20 to 24, UNHARDENED is 19 or fewer.</p>
 <p>Scenarios covered: assertion removal (JS/TS, Java, .NET, Python), test skip injection, broad type escape, coverage threshold removal, unsafe config combinations, identity collapse (maker/checker same session or same model family), raw code leakage, schema/prompt/template drift, protected-path escalation, prompt injection inertness, state machine acyclicity, deterministic gate ordering, trust boundary (base-branch code loading), audit trail append-only integrity, model diversity enforcement, concurrent mutation serialization, gate DAG acyclicity, evidence secret screening, resource cap enforcement.</p>
-<p><a href="https://github.com/enumind/modonome">GitHub</a> · <a href="https://github.com/enumind/modonome/blob/main/agentproof/README.md">AgentProof</a> · <a href="https://github.com/enumind/modonome/blob/main/QUICKSTART.md">Quickstart</a> · <a href="https://x.com/ModonomeLab">Follow on X</a></p>
+<h2>Get started</h2>
+<p>Preview safely with <code>npx modonome dry-run .</code>, then scaffold local state with <code>npx modonome scaffold . --write</code>. Autonomy stays at rest until an owner switches it on. Prove the controls on your own setup with <code>node agentproof/runner.mjs</code>.</p>
+<p><a href="https://modonome.com/agentproof/">AgentProof benchmark</a> · <a href="https://modonome.com/quickstart/">Quickstart guide</a> · <a href="https://github.com/enumind/modonome">GitHub</a> · <a href="https://github.com/enumind/modonome/blob/main/agentproof/README.md">AgentProof docs</a> · <a href="https://github.com/enumind/modonome/blob/main/QUICKSTART.md">Quickstart docs</a> · <a href="https://x.com/ModonomeLab">Follow on X</a></p>
 </noscript>
 <x-dc>
 <helmet>
@@ -365,6 +393,7 @@
       <div style="margin-top:18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
         <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:#7c8aa0">$ node agentproof/runner.mjs<span style="color:#5dd4ab"> → Score: {{ apScore }}  ·  Level: {{ apLevel }}</span></span>
         <span style="display:inline-flex;align-items:center;gap:7px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#7c8aa0"><span style="{{ syncDotStyle }}"></span>{{ syncNote }}</span>
+        <a href="/agentproof/" style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#9fabbc;text-decoration:none;transition:color .2s" style-hover="color:#5dd4ab">All 35 scenarios →</a>
       </div>
     </div>
   </section>
@@ -601,7 +630,8 @@
       <div>
         <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#5dd4ab;margin-bottom:14px">Get started</div>
         <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(28px,3.6vw,40px);line-height:1.1;letter-spacing:-.02em;margin:0 0 16px;color:#f6f4ee">Start in a minute. Stay in control the whole way.</h2>
-        <p style="font-size:16px;line-height:1.65;color:#aeb9c8;margin:0 0 26px">Three short steps take you from a safe preview to real, verifiable evidence. Nothing changes in your repository until you choose, and autonomy waits for you to switch it on.</p>
+        <p style="font-size:16px;line-height:1.65;color:#aeb9c8;margin:0 0 20px">Three short steps take you from a safe preview to real, verifiable evidence. Nothing changes in your repository until you choose, and autonomy waits for you to switch it on.</p>
+        <a href="/quickstart/" style="display:inline-flex;align-items:center;gap:7px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#5dd4ab;text-decoration:none;margin-bottom:24px;transition:gap .2s" style-hover="gap:11px">Read the full quickstart guide →</a>
         <div style="display:flex;flex-direction:column;gap:12px">
           <sc-for list="{{ qsteps }}" as="q" hint-placeholder-count="3">
             <div style="display:flex;gap:14px;align-items:flex-start;background:rgba(159,201,180,.04);border:1px solid rgba(159,201,180,.12);border-radius:12px;padding:15px 16px;transition:border-color .2s" style-hover="border-color:rgba(93,212,171,.35)">
@@ -680,7 +710,9 @@
           <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#54627a">This site ships from the product repo and clears the same gates: style, CodeQL, OpenSSF Scorecard, and a Merkle-checked snapshot.</span>
         </div>
       </div>
-      <div style="display:flex;gap:24px;font-size:13.5px;align-items:center">
+      <div style="display:flex;gap:22px;font-size:13.5px;align-items:center;flex-wrap:wrap">
+        <a href="/agentproof/" style="color:#9fabbc;text-decoration:none;transition:color .2s" style-hover="color:#5dd4ab">AgentProof</a>
+        <a href="/quickstart/" style="color:#9fabbc;text-decoration:none;transition:color .2s" style-hover="color:#5dd4ab">Quickstart</a>
         <a href="https://github.com/enumind/modonome" target="_blank" rel="noopener noreferrer" style="color:#9fabbc;text-decoration:none;transition:color .2s" style-hover="color:#5dd4ab">GitHub</a>
         <a href="https://github.com/enumind/modonome/stargazers" target="_blank" rel="noopener noreferrer" style="color:#9fabbc;text-decoration:none;transition:color .2s" style-hover="color:#5dd4ab">Star</a>
         <a href="https://github.com/enumind/modonome/discussions" target="_blank" rel="noopener noreferrer" style="color:#9fabbc;text-decoration:none;transition:color .2s" style-hover="color:#5dd4ab">Discussions</a>
