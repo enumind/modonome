@@ -32,7 +32,7 @@
       "key": "learning",
       "icon": "refresh",
       "title": "Improves as it goes",
-      "summary": "Real corrections become staged lessons. Once an owner promotes them, they become durable rules: the loop gets smarter with each cycle."
+      "summary": "Real corrections become staged lessons. Once an owner promotes one, it becomes a durable rule, the mechanism the loop is built to improve by."
     },
     {
       "key": "estate",
@@ -44,13 +44,13 @@
       "key": "control-panel",
       "icon": "panel",
       "title": "Operator control panel",
-      "summary": "A dashboard shows gate status, governance events, and the levers an owner uses to arm, pause, and review autonomy, so control stays in plain sight."
+      "summary": "In progress: a dashboard for gate status, governance events, and the levers an owner uses to arm, pause, and review autonomy, so control stays in plain sight."
     },
     {
       "key": "snapshot",
       "icon": "snapshot",
       "title": "Verifiable repo context",
-      "summary": "A Merkle-verified snapshot gives each agent a compact, tamper-evident map of the repository, so its context is current and trustworthy without rereading the whole tree."
+      "summary": "Each agent works from a current, trustworthy map of the repository instead of rereading the whole tree. It is a compact snapshot, Merkle-verified so tampering cannot slip through unnoticed."
     },
     {
       "key": "compliance",

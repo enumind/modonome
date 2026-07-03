@@ -28,7 +28,7 @@ window.__MODONOME_REPO = {
   balances: [
     { left: 'speed', right: 'guardrails', title: 'Security and trust', body: 'Agents act inside real guardrails enforced in your pipeline, so autonomy comes with evidence rather than good intentions.' },
     { left: 'fast', right: 'governed', title: 'Speed with governance', body: 'Routine, provable work moves quickly, while anything sensitive slows down for an independent check and a human owner.' },
-    { left: 'today', right: 'tomorrow', title: 'Learning that compounds', body: 'Every correction becomes a lesson and, once an owner approves it, a durable rule that raises the floor for next time.' },
+    { left: 'today', right: 'tomorrow', title: 'Learning that compounds', body: 'Every correction can become a lesson, and once an owner approves it, a durable rule that raises the floor for next time.' },
     { left: 'features', right: 'debt', title: 'Innovation and clearance', body: 'Teams keep shipping new features while Modonome steadily clears the debt that builds up in critical applications.' },
   ],
 
@@ -50,10 +50,10 @@ window.__MODONOME_REPO = {
     { icon: '⊞', title: 'Separate roles for trust', body: 'The maker, the checker, and the merge authority are always different roles, so each change gets a genuine second look before it lands.' },
     { icon: '⛨', title: 'Anti-gaming ratchet in CI', body: 'A check running in your pipeline keeps tests, types, and coverage honest across JavaScript, Python, Java, and .NET.' },
     { icon: '⇄', title: 'Adopts your setup on day one', body: 'It follows your existing CI, code owners, and branch rules. There is no new process for the team to learn.' },
-    { icon: '↻', title: 'Improves as it goes', body: 'Real corrections become staged lessons. Once an owner promotes them, they become durable rules: the loop gets smarter with each cycle.' },
+    { icon: '↻', title: 'Improves as it goes', body: 'Real corrections become staged lessons. Once an owner promotes one, it becomes a durable rule, the mechanism the loop is built to improve by.' },
     { icon: '⊟', title: 'Language-aware across your stack', body: 'The anti-gaming ratchet is language-aware across JavaScript, Python, Java, and .NET today. Broader enterprise estates are on the roadmap.' },
-    { icon: '▤', title: 'Operator control panel', body: 'A dashboard shows gate status, governance events, and the levers an owner uses to arm, pause, and review autonomy, so control stays in plain sight.' },
-    { icon: '◈', title: 'Verifiable repo context', body: 'A Merkle-verified snapshot gives each agent a compact, tamper-evident map of the repository, so its context is current and trustworthy without rereading the whole tree.' },
+    { icon: '▤', title: 'Operator control panel', body: 'In progress: a dashboard for gate status, governance events, and the levers an owner uses to arm, pause, and review autonomy, so control stays in plain sight.' },
+    { icon: '◈', title: 'Verifiable repo context', body: 'Each agent works from a current, trustworthy map of the repository instead of rereading the whole tree. It is a compact snapshot, Merkle-verified so tampering cannot slip through unnoticed.' },
     { icon: '❑', title: 'Compliance evidence on demand', body: 'An MCP server exposes attestation and evidence tools, so a host repository can produce a signed record of what ran and what held.' },
   ],
 
