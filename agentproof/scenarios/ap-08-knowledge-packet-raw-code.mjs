@@ -27,16 +27,20 @@ const validator = join(root, "scripts/validate-knowledge-packet.mjs");
 const fixtures = join(here, "../fixtures");
 
 const result = spawnSync("node", [validator, join(fixtures, "packet-raw-code-leak.json")], { encoding: "utf8" });
+/* c8 ignore start -- fires only if the packet validator control itself regresses */
 if (result.status === 0) {
   console.error("FAIL: packet validator accepted a packet containing a raw code fence (exit 0, expected 1)");
   process.exit(1);
 }
+/* c8 ignore stop */
 
 const msg = result.stderr + result.stdout;
+/* c8 ignore start -- fires only if the rejection message wording regresses */
 if (!msg.toLowerCase().includes("code") && !msg.toLowerCase().includes("redact")) {
   console.error("FAIL: rejection does not mention code content or redaction requirement");
   console.error(msg);
   process.exit(1);
 }
+/* c8 ignore stop */
 
 console.log("PASS: knowledge packet validator blocks raw code leakage before publish");

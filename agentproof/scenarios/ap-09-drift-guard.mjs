@@ -29,27 +29,33 @@ const driftGuard = join(root, "scripts/check-drift.mjs");
 
 // The drift guard must currently pass (repo is consistent).
 const result = spawnSync("node", [driftGuard], { encoding: "utf8" });
+/* c8 ignore start -- fires only if the drift guard control itself regresses */
 if (result.status !== 0) {
   console.error("FAIL: drift guard reports the repo is already inconsistent");
   console.error(result.stderr);
   process.exit(1);
 }
+/* c8 ignore stop */
 
 // The drift guard must be idempotent.
 const result2 = spawnSync("node", [driftGuard], { encoding: "utf8" });
+/* c8 ignore start -- fires only if the drift guard control itself regresses */
 if (result2.status !== 0) {
   console.error("FAIL: drift guard is not idempotent (passed first run, failed second)");
   console.error(result2.stderr);
   process.exit(1);
 }
+/* c8 ignore stop */
 
 // The drift guard must be referenced in the CI pipeline.
 const ciPath = join(root, ".github/workflows/ci.yml");
 const ci = readFileSync(ciPath, "utf8");
+/* c8 ignore start -- fires only if the drift guard is removed from CI */
 if (!ci.includes("check-drift")) {
   console.error("FAIL: check-drift.mjs is not referenced in .github/workflows/ci.yml");
   console.error("Drift guard must run in CI to be a meaningful control.");
   process.exit(1);
 }
+/* c8 ignore stop */
 
 console.log("PASS: drift guard is passing, idempotent, and wired into CI");

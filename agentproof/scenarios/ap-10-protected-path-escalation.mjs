@@ -26,16 +26,20 @@ const validator = join(root, "scripts/validate-work-item.mjs");
 const fixtures = join(here, "../fixtures");
 
 const result = spawnSync("node", [validator, join(fixtures, "work-item-protected-path-no-escalation.json")], { encoding: "utf8" });
+/* c8 ignore start -- fires only if the work item validator control itself regresses */
 if (result.status === 0) {
   console.error("FAIL: work item validator accepted a protected-path item in merge_ready state without escalation (exit 0, expected 1)");
   process.exit(1);
 }
+/* c8 ignore stop */
 
 const msg = result.stderr + result.stdout;
+/* c8 ignore start -- fires only if the rejection message wording regresses */
 if (!msg.toLowerCase().includes("protected") && !msg.toLowerCase().includes("escalat")) {
   console.error("FAIL: rejection does not mention protected path or escalation requirement");
   console.error(msg);
   process.exit(1);
 }
+/* c8 ignore stop */
 
 console.log("PASS: work item validator blocks protected-path merge without escalation");

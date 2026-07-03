@@ -26,16 +26,20 @@ const validator = join(root, "scripts/validate-config.mjs");
 const fixtures = join(here, "../fixtures");
 
 const result = spawnSync("node", [validator, join(fixtures, "config-unsafe-auto-merge.yaml")], { encoding: "utf8" });
+/* c8 ignore start -- fires only if the config validator control itself regresses */
 if (result.status === 0) {
   console.error("FAIL: config validator accepted auto_merge=true without branch protection (exit 0, expected 1)");
   process.exit(1);
 }
+/* c8 ignore stop */
 
 const msg = result.stderr + result.stdout;
+/* c8 ignore start -- fires only if the rejection message wording regresses */
 if (!msg.includes("auto_merge") && !msg.includes("branch_protection") && !msg.includes("maker_checker")) {
   console.error("FAIL: rejection message does not identify the unsafe combination");
   console.error(msg);
   process.exit(1);
 }
+/* c8 ignore stop */
 
 console.log("PASS: config validator rejects auto_merge without required safety controls");

@@ -105,6 +105,66 @@ test("validate routes to packet validator when filename contains 'packet'", () =
   }
 });
 
+test("scaffold dispatches to scaffold.mjs", () => {
+  const dir = tmp();
+  try {
+    const r = cli("scaffold", dir, "--write");
+    assert.strictEqual(r.status, 0, `scaffold exited ${r.status}: ${r.stderr}`);
+    assert.match(r.stdout, /Scaffold applied/, "must print scaffold confirmation");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("migrate dispatches to migrate-config.mjs", () => {
+  const dir = tmp();
+  try {
+    const cfgPath = join(dir, "config.yaml");
+    writeFileSync(cfgPath, "schema_version: 0\n");
+    const r = cli("migrate", cfgPath);
+    assert.strictEqual(r.status, 0, `migrate exited ${r.status}: ${r.stderr}`);
+    assert.match(r.stdout, /schema_version/, "must report the migration outcome");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("tick dispatches to tick.mjs", () => {
+  const dir = tmp();
+  try {
+    const r = cli("tick", dir);
+    assert.strictEqual(r.status, 0, `tick exited ${r.status}: ${r.stderr}`);
+    assert.match(r.stdout, /tick:/, "must print tick output");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("agentproof dispatches to the benchmark runner", () => {
+  const r = cli("agentproof", "ap-01");
+  assert.strictEqual(r.status, 0, `agentproof exited ${r.status}: ${r.stderr}`);
+  assert.match(r.stdout, /AgentProof/, "must print the benchmark banner");
+});
+
+test("agentproof reports an error when the scenario filter matches nothing", () => {
+  const r = cli("agentproof", "zz-nonexistent-scenario");
+  assert.strictEqual(r.status, 2, `expected exit 2, got ${r.status}`);
+  assert.match(r.stderr, /No matching scenarios found/);
+});
+
+test("validate with no --type routes a non-packet filename to the config validator", () => {
+  const dir = tmp();
+  try {
+    const cfgPath = join(dir, "some-config.yaml");
+    writeFileSync(cfgPath, "schema_version: 1\n");
+    const r = cli("validate", cfgPath);
+    assert.ok(r.status !== 2, "exit 2 would mean unknown command, not a validate dispatch");
+    assert.doesNotMatch(r.stdout + r.stderr, /Usage: node scripts\/validate-knowledge-packet/, "must not route to the packet validator");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
 test("report runs without error on a directory with no metrics", () => {
   const dir = tmp();
   try {

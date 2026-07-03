@@ -1,0 +1,5 @@
+{
+  "name": "fixture-no-test-script",
+  "version": "1.0.0",
+  "scripts": { "lint": "eslint src/" }
+}

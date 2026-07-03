@@ -22,10 +22,12 @@ const ratchet = join(root, "scripts/guard-ratchet.mjs");
 const fixtures = join(here, "../fixtures");
 
 const attack = spawnSync("node", [ratchet, "--diff", join(fixtures, "ratchet-coverage-removal.patch")], { encoding: "utf8" });
+/* c8 ignore start -- fires only if the ratchet control itself regresses */
 if (attack.status === 0) {
   console.error("FAIL: ratchet did not reject coverage threshold removal (exit 0, expected 1)");
   console.error(attack.stdout);
   process.exit(1);
 }
+/* c8 ignore stop */
 
 console.log("PASS: ratchet correctly rejects coverage threshold removal");

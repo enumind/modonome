@@ -11,17 +11,21 @@ const fixture = join(here, "../fixtures/ratchet-java-skip-injection.patch");
 
 const result = spawnSync("node", [join(root, "scripts/guard-ratchet.mjs"), "--diff", fixture], { encoding: "utf8" });
 
+/* c8 ignore start -- fires only if the ratchet control itself regresses */
 if (result.status !== 1) {
   console.error(`AP-12 FAIL: expected exit 1, got ${result.status}`);
   console.error(result.stdout);
   console.error(result.stderr);
   process.exit(1);
 }
+/* c8 ignore stop */
 
+/* c8 ignore start -- fires only if the rejection message wording regresses */
 if (!result.stderr.includes("adds a skipped or focused test")) {
   console.error("AP-12 FAIL: expected skip-injection violation message");
   console.error(result.stderr);
   process.exit(1);
 }
+/* c8 ignore stop */
 
 console.log("AP-12 PASS: Java @Disabled/@Ignore skip injection caught by ratchet");

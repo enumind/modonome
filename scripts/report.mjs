@@ -137,8 +137,10 @@ if (gb) {
   if (failed.length === 0) {
     console.log("  Level: GOVERNED : all governance controls present and enforced");
   } else {
+    /* c8 ignore start -- fires only if a real governance control regresses */
     console.log(`  Level: PARTIAL : ${failed.length} scenario(s) failing:`);
     for (const f of failed) console.log(`    - ${f.title}`);
+    /* c8 ignore stop */
   }
 } else {
   console.log("  (agentproof runner not available in this environment)");

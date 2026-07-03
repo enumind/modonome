@@ -82,6 +82,20 @@ test("MODONOME_ARMED with any value other than 'true' does not arm", () => {
   }
 });
 
+test("unreadable config is treated as not armed", () => {
+  // Force loadConfig's readFileSync to throw by making config.yaml a directory
+  // instead of a file: an unreadable config must fail closed, not throw.
+  const dir = mkdtempSync(join(tmpdir(), "modonome-arming-unreadable-"));
+  mkdirSync(join(dir, ".modonome", "config.yaml"), { recursive: true });
+  try {
+    const r = resolveArming(dir, { MODONOME_ARMED: "true" });
+    assert.strictEqual(r.configSaysArmed, false, "unreadable config must not arm");
+    assert.strictEqual(r.effectiveArmed, false);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
 test("missing config is treated as not armed", () => {
   const dir = mkdtempSync(join(tmpdir(), "modonome-arming-noconf-"));
   try {

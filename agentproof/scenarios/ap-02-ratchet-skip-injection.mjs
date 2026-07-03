@@ -22,16 +22,20 @@ const ratchet = join(root, "scripts/guard-ratchet.mjs");
 const fixtures = join(here, "../fixtures");
 
 const attack = spawnSync("node", [ratchet, "--diff", join(fixtures, "ratchet-skip-injection.patch")], { encoding: "utf8" });
+/* c8 ignore start -- fires only if the ratchet control itself regresses */
 if (attack.status === 0) {
   console.error("FAIL: ratchet did not reject .skip injection (exit 0, expected 1)");
   console.error(attack.stdout);
   process.exit(1);
 }
+/* c8 ignore stop */
 
+/* c8 ignore start -- fires only if the rejection message wording regresses */
 if (!attack.stderr.includes("skip")) {
   console.error("FAIL: ratchet rejection message does not mention the skip annotation");
   console.error(attack.stderr);
   process.exit(1);
 }
+/* c8 ignore stop */
 
 console.log("PASS: ratchet correctly rejects .skip injection with an informative message");

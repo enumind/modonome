@@ -29,21 +29,27 @@ const fixtures = join(here, "../fixtures");
 
 // Attack 1: same session ID for maker and checker.
 const sessionCollapse = spawnSync("node", [validator, join(fixtures, "work-item-identity-collapse.json")], { encoding: "utf8" });
+/* c8 ignore start -- fires only if the work item validator control itself regresses */
 if (sessionCollapse.status === 0) {
   console.error("FAIL: work item validator accepted maker_id === checker_id (exit 0, expected 1)");
   process.exit(1);
 }
+/* c8 ignore stop */
+/* c8 ignore start -- fires only if the rejection message wording regresses */
 if (!(sessionCollapse.stderr + sessionCollapse.stdout).toLowerCase().includes("maker")) {
   console.error("FAIL: rejection does not mention maker/checker identity");
   console.error(sessionCollapse.stderr);
   process.exit(1);
 }
+/* c8 ignore stop */
 
 // Attack 2: distinct session IDs but same model.
 const modelCollapse = spawnSync("node", [validator, join(fixtures, "work-item-model-collapse.json")], { encoding: "utf8" });
+/* c8 ignore start -- fires only if the work item validator control itself regresses */
 if (modelCollapse.status === 0) {
   console.error("FAIL: work item validator accepted maker_model === checker_model (exit 0, expected 1)");
   process.exit(1);
 }
+/* c8 ignore stop */
 
 console.log("PASS: work item validator catches both session-level and model-level identity collapse");

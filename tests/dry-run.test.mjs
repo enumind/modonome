@@ -57,6 +57,59 @@ test("dry-run detects protected paths when present", () => {
   assert.match(result.stdout, /Protected paths it would never auto-merge/, "must list protected paths section");
 });
 
+test("dry-run on a Maven project detects Java stack", () => {
+  const result = dryRun(join(fixtures, "maven"));
+  assert.strictEqual(result.status, 0, `exited ${result.status}: ${result.stderr}`);
+  assert.match(result.stdout, /Java \(Maven\)/, "must detect Maven stack");
+  assert.match(result.stdout, /mvnw verify/, "must include mvnw verify as a gate");
+});
+
+test("dry-run on a Gradle project detects Java stack", () => {
+  const result = dryRun(join(fixtures, "gradle"));
+  assert.strictEqual(result.status, 0, `exited ${result.status}: ${result.stderr}`);
+  assert.match(result.stdout, /Java \(Gradle\)/, "must detect Gradle stack");
+  assert.match(result.stdout, /gradlew check/, "must include gradlew check as a gate");
+});
+
+test("dry-run on a Go project detects Go stack", () => {
+  const result = dryRun(join(fixtures, "go"));
+  assert.strictEqual(result.status, 0, `exited ${result.status}: ${result.stderr}`);
+  assert.match(result.stdout, /\bGo\b/, "must detect Go stack");
+  assert.match(result.stdout, /go vet/, "must include go vet as a gate");
+});
+
+test("dry-run on a .NET project detects C# stack", () => {
+  const result = dryRun(join(fixtures, "dotnet"));
+  assert.strictEqual(result.status, 0, `exited ${result.status}: ${result.stderr}`);
+  assert.match(result.stdout, /C# \(\.NET\)/, "must detect .NET stack");
+  assert.match(result.stdout, /dotnet build/, "must include dotnet build as a gate");
+});
+
+test("dry-run on a Terraform project detects infrastructure stack", () => {
+  const result = dryRun(join(fixtures, "terraform"));
+  assert.strictEqual(result.status, 0, `exited ${result.status}: ${result.stderr}`);
+  assert.match(result.stdout, /Infrastructure \(Terraform\)/, "must detect Terraform stack");
+  assert.match(result.stdout, /terraform validate/, "must include terraform validate as a gate");
+});
+
+test("dry-run detects pnpm as the package manager from its lockfile", () => {
+  const result = dryRun(join(fixtures, "pnpm"));
+  assert.strictEqual(result.status, 0, `exited ${result.status}: ${result.stderr}`);
+  assert.match(result.stdout, /pnpm/, "must detect pnpm as package manager");
+});
+
+test("dry-run detects yarn as the package manager from its lockfile", () => {
+  const result = dryRun(join(fixtures, "yarn"));
+  assert.strictEqual(result.status, 0, `exited ${result.status}: ${result.stderr}`);
+  assert.match(result.stdout, /yarn/, "must detect yarn as package manager");
+});
+
+test("dry-run reports no test script found when package.json has none", () => {
+  const result = dryRun(join(fixtures, "no-test-script"));
+  assert.strictEqual(result.status, 0, `exited ${result.status}: ${result.stderr}`);
+  assert.match(result.stdout, /no test script found/, "must report missing test script");
+});
+
 test("dry-run names the top hot file in proposals when git history is available", () => {
   // Run against the modonome repo itself, which has real git history.
   const result = dryRun(root);

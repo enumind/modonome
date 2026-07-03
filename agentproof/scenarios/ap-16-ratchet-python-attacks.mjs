@@ -39,11 +39,13 @@ for (const [file, label] of attacks) {
     [join(root, "scripts/guard-ratchet.mjs"), "--diff", join(fixtures, file)],
     { encoding: "utf8" }
   );
+  /* c8 ignore start -- fires only if the ratchet control itself regresses */
   if (result.status !== 1) {
     console.error(`AP-16 FAIL: ratchet did not catch ${label} (exit ${result.status})`);
     console.error(result.stderr);
     failed = true;
   }
+  /* c8 ignore stop */
 }
 
 // Clean direction: a diff that adds real bare assertions MUST pass.
@@ -52,11 +54,14 @@ const clean = spawnSync(
   [join(root, "scripts/guard-ratchet.mjs"), "--diff", join(fixtures, "ratchet-python-bare-assert-clean.patch")],
   { encoding: "utf8" }
 );
+/* c8 ignore start -- fires only if the ratchet control itself regresses */
 if (clean.status !== 0) {
   console.error("AP-16 FAIL: ratchet rejected a clean Python diff with real bare assertions (exit 1, expected 0)");
   console.error(clean.stderr);
   failed = true;
 }
+/* c8 ignore stop */
 
+/* c8 ignore next -- fires only if a preceding check above already regressed */
 if (failed) process.exit(1);
 console.log("AP-16 PASS: ratchet catches all five Python gate-weakening patterns and accepts clean bare assertions");

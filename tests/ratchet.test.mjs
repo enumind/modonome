@@ -69,3 +69,19 @@ test("ratchet accepts a Python diff that adds real bare assertions", () => {
   const r = ratchet(join(apFixtures, "ratchet-python-bare-assert-clean.patch"));
   assert.equal(r.status, 0, `real bare assertions must pass:\n${r.stderr}`);
 });
+
+test("ratchet refuses an unsafe git ref rather than shelling it out", () => {
+  const r = spawnSync("node", [guard, "origin/main; rm -rf /tmp/pwned"], { encoding: "utf8" });
+  assert.notEqual(r.status, 0, "an unsafe ref must not be accepted");
+  assert.match(r.stderr, /refusing to diff against unsafe ref/, "must name the refusal reason");
+});
+
+test("ratchet surfaces a git failure when the base ref does not exist", () => {
+  const r = spawnSync("node", [guard, "this-ref-does-not-exist-anywhere"], { encoding: "utf8" });
+  assert.notEqual(r.status, 0, "a nonexistent ref must fail, not silently pass");
+});
+
+test("ratchet in base-ref mode compares the working tree to a real ref with no differences", () => {
+  const r = spawnSync("node", [guard, "HEAD"], { encoding: "utf8", cwd: root });
+  assert.equal(r.status, 0, `diffing HEAD against itself should be clean:\n${r.stderr}`);
+});

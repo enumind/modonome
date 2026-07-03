@@ -1,0 +1,9 @@
+diff --git a/tsconfig.json b/tsconfig.json
+--- a/tsconfig.json
++++ b/tsconfig.json
+@@
+   "compilerOptions": {
+-    "strict": true,
++    "strict": false,
+     "noImplicitAny": true
+   }

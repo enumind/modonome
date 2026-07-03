@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -65,6 +65,63 @@ test("report shows no-activity message when metrics.jsonl is absent", () => {
     const result = runReport(dir);
     assert.strictEqual(result.status, 0);
     assert.match(result.stdout, /No metrics recorded yet/, "should show no-activity message");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("report shows work item states and agentproof score for real activity", () => {
+  const dir = tmp();
+  const stateDir = join(dir, ".modonome");
+  mkdirSync(stateDir, { recursive: true });
+
+  const lines = [
+    makeEvent("item_created", { item: "item-001", state: "queued" }),
+    makeEvent("gate_passed", { item: "item-001", state: "checking" }),
+  ];
+  writeFileSync(join(stateDir, "metrics.jsonl"), lines.join("\n") + "\n");
+
+  const result = runReport(dir);
+  try {
+    assert.strictEqual(result.status, 0, `report.mjs exited ${result.status}: ${result.stderr}`);
+    assert.match(result.stdout, /Work Item States/);
+    assert.match(result.stdout, /queued:\s+1/);
+    assert.match(result.stdout, /checking:\s+1/);
+    assert.match(result.stdout, /AgentProof Score/);
+    assert.match(result.stdout, /Level: GOVERNED/);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("report prunes run logs beyond the last 30", () => {
+  const dir = tmp();
+  const runsDir = join(dir, ".modonome", "runs");
+  mkdirSync(runsDir, { recursive: true });
+
+  for (let i = 0; i < 30; i++) {
+    writeFileSync(join(runsDir, `2026-01-01T00-00-${String(i).padStart(2, "0")}-000Z-report.json`), "{}");
+  }
+
+  const result = runReport(dir);
+  try {
+    assert.strictEqual(result.status, 0, `report.mjs exited ${result.status}: ${result.stderr}`);
+    const remaining = readdirSync(runsDir).filter((f) => f.endsWith(".json"));
+    assert.equal(remaining.length, 30, "run log directory should be pruned back to 30 entries");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("report shows agentproof unavailable when the runner cannot be spawned", () => {
+  const dir = tmp();
+  try {
+    const result = spawnSync(process.execPath, [join(root, "scripts/report.mjs"), dir], {
+      encoding: "utf8",
+      timeout: 30000,
+      env: { ...process.env, PATH: "" },
+    });
+    assert.match(result.stdout, /agentproof runner not available/);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

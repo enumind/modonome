@@ -27,24 +27,30 @@ const ratchet = join(root, "scripts/guard-ratchet.mjs");
 const fixtures = join(here, "../fixtures");
 
 const attack = spawnSync("node", [ratchet, "--diff", join(fixtures, "ratchet-assertion-removal.patch")], { encoding: "utf8" });
+/* c8 ignore start -- fires only if the ratchet control itself regresses */
 if (attack.status === 0) {
   console.error("FAIL: ratchet did not reject assertion removal (exit 0, expected 1)");
   console.error(attack.stdout);
   process.exit(1);
 }
+/* c8 ignore stop */
 
 const vacuous = spawnSync("node", [ratchet, "--diff", join(fixtures, "ratchet-vacuous-matcher.patch")], { encoding: "utf8" });
+/* c8 ignore start -- fires only if the ratchet control itself regresses */
 if (vacuous.status === 0) {
   console.error("FAIL: ratchet did not reject a vacuous assertion that keeps the count up (exit 0, expected 1)");
   console.error(vacuous.stdout);
   process.exit(1);
 }
+/* c8 ignore stop */
 
 const clean = spawnSync("node", [ratchet, "--diff", join(fixtures, "ratchet-clean.patch")], { encoding: "utf8" });
+/* c8 ignore start -- fires only if the ratchet control itself regresses */
 if (clean.status !== 0) {
   console.error("FAIL: ratchet rejected a clean diff (exit 1, expected 0)");
   console.error(clean.stderr);
   process.exit(1);
 }
+/* c8 ignore stop */
 
 console.log("PASS: ratchet rejects assertion removal and vacuous assertions, and accepts clean diffs");

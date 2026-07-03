@@ -153,3 +153,98 @@ test("tick exits cleanly when no work-items directory exists", () => {
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test("tick falls back to the default .modonome state dir when none is given on the command line", () => {
+  const dir = tmp();
+  try {
+    // No .modonome directory exists under dir, and no stateDir argument is
+    // passed, so tick must fall back to its default (".modonome") relative
+    // to cwd and report the same "nothing to do" path as an explicit miss.
+    const r = spawnSync("node", [join(root, "scripts/tick.mjs")], {
+      encoding: "utf8",
+      timeout: 10000,
+      cwd: dir,
+    });
+    assert.strictEqual(r.status, 0);
+    assert.match(r.stdout, /no work-items directory found/, "must use the default state dir");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("tick skips a work item file that is not valid JSON", () => {
+  const dir = tmp();
+  const stateDir = join(dir, ".modonome");
+  const itemsDir = join(stateDir, "work-items");
+  mkdirSync(itemsDir, { recursive: true });
+
+  const past = new Date(Date.now() - 3600_000).toISOString();
+  writeFileSync(join(itemsDir, "broken.json"), "{ this is not valid json");
+  writeItem(itemsDir, "good.json", makeItem({
+    state: "making",
+    attempts: 0,
+    max_attempts: 3,
+    lease_expires_at: past,
+  }));
+
+  try {
+    const r = runTick(stateDir);
+    assert.strictEqual(r.status, 0, `tick must not crash on a malformed item: ${r.stderr}`);
+
+    // The malformed file must be left exactly as it was.
+    assert.strictEqual(readFileSync(join(itemsDir, "broken.json"), "utf8"), "{ this is not valid json");
+
+    // The valid item alongside it must still be processed normally.
+    const updated = readItem(itemsDir, "good.json");
+    assert.strictEqual(updated.state, "queued");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("tick leaves an in-flight item untouched when it has no lease_expires_at", () => {
+  const dir = tmp();
+  const stateDir = join(dir, ".modonome");
+  const itemsDir = join(stateDir, "work-items");
+  mkdirSync(itemsDir, { recursive: true });
+
+  const item = makeItem({ state: "claimed", attempts: 0, max_attempts: 3 });
+  delete item.lease_expires_at;
+  writeItem(itemsDir, "item.json", item);
+
+  try {
+    const r = runTick(stateDir);
+    assert.strictEqual(r.status, 0);
+    const updated = readItem(itemsDir, "item.json");
+    assert.strictEqual(updated.state, "claimed", "an in-flight item without a lease must not be touched");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("tick applies default attempts and max_attempts when an expired item omits them", () => {
+  const dir = tmp();
+  const stateDir = join(dir, ".modonome");
+  const itemsDir = join(stateDir, "work-items");
+  mkdirSync(itemsDir, { recursive: true });
+
+  const past = new Date(Date.now() - 3600_000).toISOString();
+  writeItem(itemsDir, "item.json", {
+    schema_version: 1,
+    id: "WI-no-attempts",
+    state: "claimed",
+    lease_expires_at: past,
+  });
+
+  try {
+    const r = runTick(stateDir);
+    assert.strictEqual(r.status, 0, `tick failed: ${r.stderr}`);
+    const updated = readItem(itemsDir, "item.json");
+    // attempts defaults to 0 (then incremented to 1) and max_attempts
+    // defaults to 3, so 1 < 3 requeues rather than escalates.
+    assert.strictEqual(updated.state, "queued");
+    assert.strictEqual(updated.attempts, 1);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});

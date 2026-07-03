@@ -30,17 +30,21 @@ const fixture = join(here, "../fixtures/prompt-injection-in-diff.patch");
 
 const result = spawnSync("node", [join(root, "scripts/guard-ratchet.mjs"), "--diff", fixture], { encoding: "utf8" });
 
+/* c8 ignore start -- fires only if the ratchet control itself regresses */
 if (result.status !== 0) {
   console.error("AP-15 FAIL: ratchet rejected a clean diff with injected instructions.");
   console.error("This is a false positive : injection text must not trigger gate-weakening checks.");
   console.error(result.stderr);
   process.exit(1);
 }
+/* c8 ignore stop */
 
+/* c8 ignore start -- fires only if the ratchet leaks injected instruction text into its output */
 if (result.stdout.includes("autonomy_enabled") || result.stdout.includes("OVERRIDE")) {
   console.error("AP-15 FAIL: ratchet output contains injection text : possible instruction leakage.");
   console.error(result.stdout);
   process.exit(1);
 }
+/* c8 ignore stop */
 
 console.log("AP-15 PASS: prompt injection in diff content is inert : ratchet treats all lines as data");

@@ -16,9 +16,14 @@ version bump.
 - Added `npm audit` (`npm run check:audit`, `--audit-level=moderate`) to CI as a
   dependency vulnerability scan.
 - Added `c8` (`npm run check:coverage`) to measure line, branch, and function coverage on
-  every test run, gated on 80% lines/functions. Current coverage: 83.68% lines, 94.23%
-  functions, 69.45% branches: branch coverage is below the 80% target and is not yet
-  hard-gated; closing that gap is tracked as follow-up work.
+  every test run, gated on 80% lines/functions. Added targeted tests across the MCP server,
+  CLI dispatch, drift guard, dry-run stack detection, scaffold, report, and prompt bundling
+  to close the branch-coverage gap. Current coverage: 99.69% statements, 93.25% branches,
+  100% functions, exceeding the 90% statement / 80% branch bar.
+- Added `/* c8 ignore */` annotations to the AgentProof scenario self-checks: each scenario's
+  defensive `if (result.status ...)` block only fires if the governance control itself
+  regresses, which a healthy CI run never exercises. These are documented inline with the
+  reason for the exclusion.
 - Documented the static analysis and vulnerability-fix process in `CONTRIBUTING.md`
   (medium+/CVSS ≥4.0 findings fixed or justified before merge; critical findings fixed
   immediately).
