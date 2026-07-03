@@ -74,10 +74,17 @@ outside the scope of the ratchet's automated judgment.
 
 ### 3.1 Input
 
-A conformant ratchet MUST accept a unified diff via one of two mechanisms:
+A conformant ratchet MUST accept a unified diff via at least one of two mechanisms:
 
 1. A git ref: the ratchet computes `git diff <base-ref>...HEAD` and checks the result.
 2. A diff file: the ratchet reads a unified diff from a file path provided as an argument.
+
+Implementors SHOULD additionally accept a third mechanism for use as a pre-commit hook:
+
+3. The staged index: the ratchet computes `git diff --cached` and checks the result. A
+   pre-commit hook runs before the commit exists, so `HEAD` is still the parent commit; the
+   change under review is the index against `HEAD`, not a ref range. This mechanism is
+   optional because it only applies to implementations that also ship a pre-commit hook.
 
 A conformant ratchet MUST operate correctly on diffs that touch multiple files.
 
@@ -129,6 +136,15 @@ assertions while removing old ones is permitted when the net count does not decr
 **Implementation note:** The check MUST count assertion call sites per file, not per diff
 hunk. A diff that removes assertions in one hunk and adds them in another MUST be assessed
 on the net count for that file.
+
+**Comment stripping requirement:** The check MUST strip inline comments (`//` to end of
+line, `#` to end of line for Python) from both added and removed lines before counting
+assertion call sites. Without this, an assertion commented out in place -- the removed line
+is the live assertion, the added line is the same call text behind a comment marker -- nets
+to a zero delta in an uncleaned count, because the assertion pattern matches inside the
+comment too. The removal check would stay silent while the test's actual coverage was
+deleted. This is the same requirement Section 4.3 states for the type-escape check, applied
+here for the same reason.
 
 #### 4.1.1 Test File Pattern
 
@@ -322,6 +338,71 @@ forms) are counted by the existing call-site patterns, not double-counted.
 
 **Scope:** Both parts apply to Python test files only (`*_test.py`, `test_*.py`).
 
+### 4.9 Assertion Strength Downgrade
+
+**Condition:** For any test file, the number of strong (value-comparing) assertions removed
+by the diff exceeds the number added, AND the diff adds at least one vacuous-existence
+assertion in that file.
+
+**Rationale:** Section 4.1's removal check counts assertion call sites, not what they prove.
+Replacing a value-comparing assertion (`expect(x).toBe(42)`, `assertEquals(x, 42)`) with an
+existence-only check (`expect(x).toBeDefined()`, `assertNotNull(x)`) keeps the call-site
+count constant -- Section 4.1 stays silent -- while deleting what the test actually verifies.
+An existence check passes for nearly any value; it proves the code ran, not that it produced
+the right result.
+
+**Patterns a conformant ratchet MUST classify as strong (value-comparing) assertions:**
+
+- `.toBe(`, `.toEqual(`, `.toStrictEqual(`, `.toMatchObject(`, `.toContain(`,
+  `.toHaveBeenCalledWith(`, `.toThrow(`, `.toBeCloseTo(` : Jest, Vitest, Jasmine
+- `assertEquals(`, `assertArrayEquals(`, `assertSame(`, `assertThat(`, `.isEqualTo(` : JUnit, AssertJ
+- `Assert.AreEqual(`, `Assert.AreSame(`, `Assert.Equal(`, `.Should().Be(` : MSTest, NUnit, xUnit, FluentAssertions
+
+**Patterns a conformant ratchet MUST classify as vacuous-existence assertions:**
+
+- `.toBeDefined(`, `.toBeUndefined(`, `.toBeNull(`, `.toBeTruthy(`, `.toBeFalsy(`, `.toBeNaN(` : Jest, Vitest, Jasmine
+- `assertNotNull(`, `assertNull(` : JUnit
+- `Assert.IsNotNull(`, `Assert.IsNull(`, `Assert.NotNull(`, `Assert.Null(` : MSTest, NUnit, xUnit
+
+**Comment stripping requirement:** The check MUST strip inline comments before counting
+strong and vacuous-existence assertions on both added and removed lines, for the same reason
+given in Section 4.1: a strong assertion commented out in place must not count as a
+surviving strong assertion against its own commented reappearance.
+
+**Zero-false-positive boundary:** The check fires only when a strong-assertion net decrease
+coincides with a vacuous-existence addition in the same file. Adding an existence check
+alongside unchanged or increased strong-assertion coverage is not flagged; existence checks
+are legitimate as a supplement, only their use as a strength-preserving substitute is a
+gate weakening.
+
+**Scope:** Applies to test files only, all supported languages.
+
+### 4.10 Unicode Homoglyph Evasion
+
+**Condition:** The diff adds a line in a test file that contains a non-ASCII character and,
+after mapping known Unicode homoglyphs (Cyrillic, Greek, and fullwidth lookalikes) back to
+their ASCII equivalents, matches a skip/focus pattern (Section 4.2) or an assertion pattern
+(Sections 4.1, 4.9).
+
+**Rationale:** The patterns in Sections 4.1, 4.2, and 4.9 are ASCII-only. An agent that
+learns those patterns are checked can substitute a visually identical non-ASCII lookalike --
+Cyrillic `ѕ` (U+0455) for Latin `s` in `.ѕkip(`, for example -- to add a gate-weakening
+construct that a human reviewer's eye does not distinguish from the real one, but that the
+literal ASCII pattern does not match.
+
+**Implementation note:** Homoglyph mapping MUST cover at minimum the visually confusable
+Cyrillic and Greek letters that overlap the Latin alphabet used in the patterns above
+(a, e, o, p, c, x, s, i, j, h, d, q, g, n, k, v). The de-confused line, not the original, is
+what gets matched against the Section 4.1/4.2/4.9 patterns; the original line is what gets
+reported to the operator so the disguise is visible in the violation message.
+
+**Zero-false-positive boundary:** The check fires only on added test-file lines that carry a
+non-ASCII character AND de-confuse into a gate-weakening pattern. Legitimate non-ASCII
+content in test files (fixture strings, i18n test data) that does not de-confuse into one of
+those patterns is never flagged.
+
+**Scope:** Applies to test files only, all supported languages.
+
 ---
 
 ## 5. Advisory Signals (Non-Normative)
@@ -331,6 +412,13 @@ exit non-zero. They fail the zero-false-positive requirement when used as blocki
 
 - Snapshot file changes that reduce the number of assertions captured.
 - Test files whose line count decreases without a proportional decrease in test case count.
+- Count-preserving assertion collapse: N individual assertions replaced by one assertion
+  that checks the same values collectively (`expect(a).toBe(1); expect(b).toBe(2)` ->
+  `expect([a,b]).toEqual([1,2])`). This can hide which specific value regressed, but
+  distinguishing it from a legitimate refactor is not decidable by a deterministic,
+  zero-false-positive diff check: both produce the same shape. The compensating,
+  deterministic guarantee is that a collapse which *reduces* the assertion call-site count
+  is rejected by Section 4.1; only the count-preserving case is a residual limitation.
 - Dependency changes unrelated to the declared work item scope (requires external context).
 - Hand-edited generated files (requires knowledge of which files are generated).
 - Deleted test files (deletion of an entire file may be correct; the check cannot know).
@@ -345,8 +433,8 @@ ratchet.
 
 ### 6.1 Minimum Conformance
 
-A ratchet implementation is conformant if it implements all five normative checks (Sections
-4.1 through 4.5), satisfies the zero-false-positive requirement for each, implements the
+A ratchet implementation is conformant if it implements all ten normative checks (Sections
+4.1 through 4.10), satisfies the zero-false-positive requirement for each, implements the
 interface defined in Section 3, and runs in CI outside the agent's write scope (Section 3.3).
 
 ### 6.2 Extended Conformance
@@ -363,14 +451,18 @@ An extended-conformant ratchet additionally:
 
 The reference implementation is `scripts/guard-ratchet.mjs` in the Modonome repository
 (github.com/enumind/modonome). It satisfies minimum conformance. The reference test suite
-is AgentProof scenarios AP-01 through AP-04 in `agentproof/scenarios/`.
+is the ratchet-specific AgentProof scenarios in `agentproof/scenarios/` (see Section 6.4).
 
 ### 6.4 Conformance Test Suite
 
-Any implementation claiming conformance MUST pass AgentProof scenarios AP-01 through AP-04.
-These scenarios are language-agnostic: the fixture diffs are standard unified diffs, and the
-expected exit codes are 0 (clean) or 1 (violation). The scenarios can be adapted to invoke
-any ratchet implementation by changing the command in the scenario script.
+Any implementation claiming conformance MUST pass the ratchet-specific scenarios in
+`agentproof/scenarios/` (filenames prefixed `ap-NN-ratchet-*`; they are not a contiguous
+numeric range, interspersed with scenarios for other governance areas). As of this
+revision that is AP-01 through AP-04, AP-11 through AP-14, AP-16, and AP-27 through AP-32,
+covering Sections 4.1 through 4.9 across JS/TS, Java, C#, and Python. These scenarios are
+language-agnostic: the fixture diffs are standard unified diffs, and the expected exit
+codes are 0 (clean) or 1 (violation). The scenarios can be adapted to invoke any ratchet
+implementation by changing the command in the scenario script.
 
 ---
 

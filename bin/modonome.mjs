@@ -15,6 +15,7 @@ const HELP = `Modonome, governed autonomy for any repo.
 Usage:
   npx modonome dry-run <dir>              read the repo and print proposed work. Changes nothing.
   npx modonome scaffold <dir>             drop .modonome state files. Disabled and dry-run. Add --write to apply.
+  npx modonome scaffold <dir> --write --ratchet   non-agent adoption: install only the anti-gaming pre-commit hook.
   npx modonome adopt <dir>               alias for dry-run, writes an adoption summary to stdout.
   npx modonome validate <file>           validate a config or knowledge packet (type inferred from filename).
   npx modonome validate <file> --type config   explicitly validate as a config file.
@@ -29,6 +30,8 @@ Usage:
   npx modonome snapshot <dir> --pack    write a single portable .msnap bundle for sharing.
   npx modonome snapshot <dir> --since <ref>  print the file-level delta since a git ref.
   npx modonome agentproof                run the AgentProof adversarial benchmark suite (16 scenarios).
+  npx modonome ratchet [baseRef]         anti-gaming gate: reject a diff that weakens tests or gates.
+  npx modonome ratchet --staged          same, but check the index against HEAD (for a pre-commit hook).
   npx modonome hygiene check <dir>       find AI-participation signatures in the branch and commits. Exit 1 if any.
   npx modonome hygiene explain <dir>     same as check, with the reason and pattern for each finding.
   npx modonome hygiene fix <dir>         apply the safe, local, metadata-only remedy (branch rename).
@@ -143,6 +146,9 @@ function main(argv) {
     case "agentproof":
       process.exit(spawnSync("node", [join(here, "..", "agentproof", "runner.mjs"), ...rest], { stdio: "inherit" }).status ?? 1);
       break;
+    case "ratchet":
+      run("guard-ratchet.mjs", rest);
+      break;
     case "migrate":
       run("migrate-config.mjs", rest);
       break;
@@ -168,6 +174,6 @@ function main(argv) {
   }
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   main(process.argv.slice(2));
 }

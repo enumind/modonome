@@ -6,6 +6,7 @@
 // cycles that would otherwise let an item loop forever.
 // Usage: node scripts/check-state-machine-acyclic.mjs <path/to/fixture.json>
 import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { isCyclic, topoSort } from "./lib/graph.mjs";
 
 // Build the adjacency map { state: [to, ...] } from the transition list.
@@ -73,7 +74,7 @@ export function stateMachineErrors(machine) {
   return errs;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const path = process.argv[2];
   if (!path) {
     console.error("Usage: node scripts/check-state-machine-acyclic.mjs <fixture.json>");

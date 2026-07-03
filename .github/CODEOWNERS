@@ -1,12 +1,12 @@
 # All files — global catchall so every path requires maintainer review.
-*             @nateshpp
+*             @nateshpp @techseek4vr
 
 # Critical governance paths — all changes require maintainer review.
 # CODEOWNERS review is enforced by branch protection on main.
-/bin/         @nateshpp
-/prompts/     @nateshpp
-/schemas/     @nateshpp
-/scripts/     @nateshpp
-/templates/   @nateshpp
-/.github/     @nateshpp
-/site/        @nateshpp
+/bin/         @nateshpp @techseek4vr
+/prompts/     @nateshpp @techseek4vr
+/schemas/     @nateshpp @techseek4vr
+/scripts/     @nateshpp @techseek4vr
+/templates/   @nateshpp @techseek4vr
+/.github/     @nateshpp @techseek4vr
+/site/        @nateshpp @techseek4vr

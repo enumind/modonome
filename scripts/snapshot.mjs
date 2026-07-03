@@ -16,6 +16,7 @@
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { join, basename } from "node:path";
 import { spawnSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 import { canonicalize } from "./lib/canonical-json.mjs";
 import { parseFlatYaml } from "./lib/yaml-lite.mjs";
 import { buildSnapshot } from "./lib/snapshot-core.mjs";
@@ -258,7 +259,7 @@ async function main(argv) {
   process.exit(0);
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   main(process.argv.slice(2));
 }
 

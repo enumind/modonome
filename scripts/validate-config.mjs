@@ -54,7 +54,7 @@ export function validateConfig(cfg) {
   return [...validate(schema, cfg), ...safetyErrors(cfg)];
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const path = process.argv[2];
   if (!path) {
     console.error("Usage: node scripts/validate-config.mjs <config path>");

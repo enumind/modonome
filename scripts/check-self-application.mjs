@@ -44,6 +44,7 @@ const REQUIRED_GATES = [
   { name: "prompt behavioral regression", needle: "test-prompt-behavior.mjs" },
   { name: "markdown governance", needle: "check-md-governance.mjs" },
   { name: "architecture drift", needle: "check-architecture-drift.mjs" },
+  { name: "decisions authority", needle: "check-decisions-authority.mjs" },
   // This script checking for its own name is not circular: it is a text search over
   // ci.yml, not a re-invocation. It exists because this exact gate went unwired into
   // CI for a period with nothing catching it.

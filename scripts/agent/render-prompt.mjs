@@ -67,7 +67,7 @@ export function renderPrompt(role, env = process.env) {
   });
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const role = process.argv[2];
   if (!role) {
     console.error("Usage: node scripts/agent/render-prompt.mjs <maker|checker>");

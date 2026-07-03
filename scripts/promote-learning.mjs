@@ -88,7 +88,7 @@ export function validateLearningRecord(record) {
 }
 
 // CLI entry point.
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const opts = {};
   for (let i = 2; i < process.argv.length; i += 2) {
     const key = process.argv[i];

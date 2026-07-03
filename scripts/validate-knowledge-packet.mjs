@@ -46,7 +46,7 @@ export function validatePacket(packet) {
   return [...validate(schema, packet), ...redactionErrors(packet)];
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const path = process.argv[2];
   if (!path) {
     console.error("Usage: node scripts/validate-knowledge-packet.mjs <packet.json>");

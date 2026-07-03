@@ -50,6 +50,20 @@ test("scaffold does not overwrite an existing AGENTS.md", () => {
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
+test("--ratchet installs only the anti-gaming hook, skipping AGENTS.md and the snapshot", () => {
+  const dir = gitRepo();
+  try {
+    const r = scaffold(dir, ["--ratchet"]);
+    assert.equal(r.status, 0, r.stderr);
+    assert.ok(!existsSync(join(dir, ".modonome", "snapshot")), "no snapshot generated");
+    assert.ok(!existsSync(join(dir, "llms.txt")), "no llms.txt");
+    assert.ok(!existsSync(join(dir, "AGENTS.md")), "no AGENTS.md pointer created");
+    const hook = join(dir, ".git", "hooks", "pre-commit");
+    assert.ok(existsSync(hook), "pre-commit hook installed");
+    assert.match(readFileSync(hook, "utf8"), /modonome ratchet --staged/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
 test("--no-snapshot opts out of snapshot generation", () => {
   const dir = gitRepo();
   try {

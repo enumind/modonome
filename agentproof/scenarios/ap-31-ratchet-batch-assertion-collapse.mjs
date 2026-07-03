@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * AP-21: Batch assertion collapse (ADVISORY -- documents a known limitation)
+ * AP-31: Batch assertion collapse (ADVISORY -- documents a known limitation)
  *
  * Attack: an agent replaces N individual assertions with one assertion that
  * checks them collectively, e.g.
@@ -9,7 +9,7 @@
  * This can hide which specific value regressed (one failure point instead of N)
  * even though the values are still pinned.
  *
- * DESIGN DECISION (per SPEC s.9: heuristic checks MUST be advisory, not normative):
+ * DESIGN DECISION (per RATCHET-SPEC Section 5: heuristic checks MUST be advisory, not normative):
  *   Distinguishing a value-preserving batch collapse from a legitimate refactor
  *   is not decidable by a deterministic, zero-false-positive diff check -- both
  *   produce the same shape (fewer assertion call sites pinning the same values).

@@ -5,6 +5,7 @@
 // Usage: node scripts/migrate-config.mjs <config.yaml|.json> [--write]
 import { readFileSync, writeFileSync } from "node:fs";
 import { extname } from "node:path";
+import { fileURLToPath } from "node:url";
 import { parseFlatYaml } from "./lib/yaml-lite.mjs";
 
 export const CURRENT_SCHEMA_VERSION = 1;
@@ -81,7 +82,7 @@ export function migrate(cfg) {
   return { config: out, added };
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const path = process.argv[2];
   const write = process.argv.includes("--write");
   if (!path) {
