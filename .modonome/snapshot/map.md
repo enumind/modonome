@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:87659c1d37ee7de5d4a3c818c96b2f52b24ffa7cf320df215c3ad99c05a23099
-Files: 823  Bytes: 2884069  Map tokens: 102087/120000
+Merkle root: sha256:8a3faaed69cb7423363a63d119b1f9c7dd287a54e120d36f94a67fd7f6605622
+Files: 827  Bytes: 2919519  Map tokens: 103369/120000
 
 ## Modules
 
@@ -187,6 +187,7 @@ Files: 823  Bytes: 2884069  Map tokens: 102087/120000
 - docs/adr/ADR-034-compliance-audit-staleness-gate.md [F:21752cf61a]: ADR-034: Compliance and audit doc staleness gate
 - docs/adr/ADR-035-metadata-remediator.md [F:c3588d683e]: ADR-035: Metadata-only Commit-History Remediator
 - docs/adr/ADR-036-policy-attestation.md [F:750436d8c1]: ADR-036: Policy-Pack Manifest and Disclosure Attestation
+- docs/adr/ADR-037-policy-pack-adoption.md [F:01a7edaeba]: ADR-037: Policy-Pack Adoption Tooling
 - docs/audits/claims-audit-2026-06-25.md [F:8a7591db62]: Claims audit, 2026-06-25
 - docs/audits/claims-audit-2026-07-01.md [F:6a3a98df8c]: Claims audit, 2026-07-01
 - docs/autonomy-plan.md [F:3dcdfa18c0]: Autonomy plan: governed autonomy on free models
@@ -288,6 +289,7 @@ Files: 823  Bytes: 2884069  Map tokens: 102087/120000
 - scripts/lib/branch-name.mjs [F:6e0bd62fa3]: True when the first path segment of a branch name equals a denylisted token. * Matching is case-insensitive. "feature/ai-adapter" is allowed because the * first
 - scripts/lib/canonical-json.mjs [F:245efb551c]: Domain separation tag binds a signature to this packet type and version so a signature over one structure cannot be replayed as another.
 - scripts/lib/capability-flags.mjs [F:98529ba7ea]: The capability flags that expand the engine's authority and trust boundary (ADR-024). A single source of truth shared by the promotion-readiness gate (scripts/c
+- scripts/lib/cli-args.mjs [F:2d93cea2d4]: Minimal argv helper shared by scripts that take `--flag value` pairs.
 - scripts/lib/commit-identity.mjs [F:e4ff19bbe2]: True when a name or email belongs to a denylisted agent or vendor identity. * Real automation such as dependabot is allowed; only coding-agent and model * vendo
 - scripts/lib/control-panel-audit.mjs [F:1a19f02364]: Today's real high-water mark is 7 (Arming & Safety, Caps & budget tab). The budget is set a few above that: a real ratchet against regression, not an arbitrary 
 - scripts/lib/detect-attribution.mjs [F:4a7eaceb5c]: True when any path segment of a branch name exactly equals a denylisted token. * This is a strict superset of isModelIdentifierBranch (which checks only the fir
@@ -307,7 +309,7 @@ Files: 823  Bytes: 2884069  Map tokens: 102087/120000
 - scripts/lib/merkle.mjs [F:2b9c43b0ca]: Hash raw file bytes (Buffer or string) into a prefixed digest.
 - scripts/lib/near-miss.mjs [F:9a3e8ed7d2]: Tier 1: distinctive vendor/product tokens with no ordinary-English or in-repo collision, so separator-normalized SUBSTRING matching on branch names and identiti
 - scripts/lib/packet-id.mjs [F:12c7a4e461]: Content-addressed packet identity (ADR-016). The id is sha256 over the JCS of the
-- scripts/lib/policy-manifest.mjs [F:4db1101024]: Extract a Markdown section body: the heading whose text matches `heading` (case-insensitive) and the lines beneath it, up to the next heading of the same or hig
+- scripts/lib/policy-manifest.mjs [F:4db1101024]: v2 adds the required `generator` credit block (Phase 4: policy-pack adoption tooling, ADR-037). Because `generator` is required and content-digested, a vendored
 - scripts/lib/remediate.mjs [F:8ffb11f281]: Remove every line carrying an AI-authorship signature from a commit message, then * drop the trailing blank lines the removal leaves behind. Pure and determinis
 - scripts/lib/repo-detect.mjs [F:ae46bbab81]: Build the small file helpers a detector needs, bound to one target directory.
 - scripts/lib/run-gate-capped.mjs [F:b014028f57]: Thin wrapper around spawnSync with a hard timeout and output-size cap.
@@ -506,8 +508,9 @@ Files: 823  Bytes: 2884069  Map tokens: 102087/120000
 - S:a0ea4d9d0f function computePacketId `export function computePacketId(packet)` L18
 - S:d2ef86c19f function packetIdMatches `export function packetIdMatches(packet)` L23
 ### tests/policy-attestation.test.mjs [F:137056535b]
-- S:4700befa2a function run `function run(args = [], env = {})` L13
-- S:bc56c13940 function preservingArtifact `function preservingArtifact(fn)` L19 : Restore the committed (current, unsigned) artifact after any test that writes to it, so the suite leaves no drift behind.
+- S:4700befa2a function run `function run(args = [], env = {})` L16
+- S:bc56c13940 function preservingArtifact `function preservingArtifact(fn)` L22 : Restore the committed (current, unsigned) artifact after any test that writes to it, so the suite leaves no drift behind.
+- S:2cd4d9571d function withTempFile `function withTempFile(name, content, fn)` L189
 ### .design-sync/previews/ProtectedPathRow.tsx [F:13d31b33ea]
 - S:5708b6bd2b function PendingApproval `export const PendingApproval = () => (` L4
 - S:4f265e8008 function Approved `export const Approved = () => (` L8
@@ -636,6 +639,8 @@ Files: 823  Bytes: 2884069  Map tokens: 102087/120000
 - S:93fa315ac7 function fail `function fail(code, message)` L41
 - S:8252cf2ba8 function warn `function warn(code, message)` L45
 - S:003e6c53c4 function info `function info(code, message)` L49
+### scripts/lib/cli-args.mjs [F:2d93cea2d4]
+- S:118e66be10 function flagValue `export function flagValue(argv, name)` L2 : Minimal argv helper shared by scripts that take `--flag value` pairs.
 ### scripts/build-compliance-evidence.mjs [F:2e327963ed]
 - S:4bacff1244 function fileExists `function fileExists(root, ...candidates)` L15
 - S:41050d03a4 function readIfExists `function readIfExists(root, rel)` L19
@@ -772,19 +777,20 @@ Files: 823  Bytes: 2884069  Map tokens: 102087/120000
 - S:5e08a11ce4 function startMockGitHubServer `export function startMockGitHubServer(options = {})` L19 : Start a mock GitHub API server. * * @param {object} [options] * @param {object} [options.pr] - The PR object returned by the pulls endpoint (title, body). * @param {Array<object>} [options.comments] -
 - S:2ea6241ebd function writeJson `function writeJson(res, status, body)` L68
 ### scripts/lib/policy-manifest.mjs [F:4db1101024]
-- S:a76a61b560 const MANIFEST_VERSION `export const MANIFEST_VERSION = 1;` L21
-- S:d4ed2d5fe7 const ATTESTATION_KIND `export const ATTESTATION_KIND = "policy-attestation";` L22
-- S:78dd5bd63d function sha256Hex `function sha256Hex(bytes)` L48
-- S:fc880b17bd function readOrNull `function readOrNull(root, rel)` L52
-- S:262e039096 function extractSection `export function extractSection(markdown, heading)` L64 : Extract a Markdown section body: the heading whose text matches `heading` (case-insensitive) and the lines beneath it, up to the next heading of the same or higher level. Returns null when no such hea
-- S:e6c1406727 function fingerprintDisclosureSources `function fingerprintDisclosureSources(root)` L87
-- S:41514ae74b function fingerprintPolicyFiles `function fingerprintPolicyFiles(root)` L97
-- S:cf9af1e29c function gatesFromVerify `export function gatesFromVerify(pkgJson)` L108 : The disclosed gate set is derived from the actual `verify` npm script so it cannot drift from what the project runs. One level of `npm run <name>` / `npm test` aliases is flattened so gates hidden beh
-- S:5f317ed26b function capabilities `function capabilities(config)` L123
-- S:f51dd29844 function normalizePaths `function normalizePaths(list)` L127
-- S:a92333a9ea function buildPolicyManifestBody `export function buildPolicyManifestBody({ root, config, pkgJson })` L135 : Build the deterministic manifest body (without the content_digest) from repo state.
-- S:c4e4845bcc function manifestDigest `export function manifestDigest(body)` L162 : Content digest over the canonical (RFC 8785 JCS) serialization of the body, so a re-serialized or key-reordered file yields the same digest and only a real policy change moves it.
-- S:b29d404deb function buildPolicyManifest `export function buildPolicyManifest({ root, config, pkgJson })` L167 : The full manifest: the body plus its self-describing content_digest.
+- S:a76a61b560 const MANIFEST_VERSION `export const MANIFEST_VERSION = 2;` L25 : v2 adds the required `generator` credit block (Phase 4: policy-pack adoption tooling, ADR-037). Because `generator` is required and content-digested, a vendored copy cannot silently drop credit to mod
+- S:d4ed2d5fe7 const ATTESTATION_KIND `export const ATTESTATION_KIND = "policy-attestation";` L26
+- S:78dd5bd63d function sha256Hex `function sha256Hex(bytes)` L52
+- S:fc880b17bd function readOrNull `function readOrNull(root, rel)` L56
+- S:262e039096 function extractSection `export function extractSection(markdown, heading)` L68 : Extract a Markdown section body: the heading whose text matches `heading` (case-insensitive) and the lines beneath it, up to the next heading of the same or higher level. Returns null when no such hea
+- S:e6c1406727 function fingerprintDisclosureSources `function fingerprintDisclosureSources(root)` L91
+- S:41514ae74b function fingerprintPolicyFiles `function fingerprintPolicyFiles(root)` L101
+- S:cf9af1e29c function gatesFromVerify `export function gatesFromVerify(pkgJson)` L112 : The disclosed gate set is derived from the actual `verify` npm script so it cannot drift from what the project runs. One level of `npm run <name>` / `npm test` aliases is flattened so gates hidden beh
+- S:5f317ed26b function capabilities `function capabilities(config)` L127
+- S:44c14f3d19 function generator `function generator(pkgJson)` L135 : The credit block (ADR-037). Populated from package.json, never hardcoded twice, so a rename in package.json is what moves this, not a second literal to keep in sync. The repository URL is stripped of 
+- S:f51dd29844 function normalizePaths `function normalizePaths(list)` L145
+- S:a92333a9ea function buildPolicyManifestBody `export function buildPolicyManifestBody({ root, config, pkgJson })` L153 : Build the deterministic manifest body (without the content_digest) from repo state.
+- S:c4e4845bcc function manifestDigest `export function manifestDigest(body)` L181 : Content digest over the canonical (RFC 8785 JCS) serialization of the body, so a re-serialized or key-reordered file yields the same digest and only a real policy change moves it.
+- S:b29d404deb function buildPolicyManifest `export function buildPolicyManifest({ root, config, pkgJson })` L186 : The full manifest: the body plus its self-describing content_digest.
 ### scripts/lib/learnings.mjs [F:4ebb5aa8a0]
 - S:72cb0b7406 const REQUIRED_FIELDS `export const REQUIRED_FIELDS = [` L9
 - S:005abb5200 const MAX_STAGED_ENTRIES `export const MAX_STAGED_ENTRIES = 20;` L24 : The Staged section is capped so it stays a short review queue, never a dumping ground. LEARNINGS.md documents this as "Cap at 20 staged entries... Never auto-evict." Until now nothing enforced it; app
@@ -948,17 +954,26 @@ Files: 823  Bytes: 2884069  Map tokens: 102087/120000
 ### tests/dry-run.test.mjs [F:778c33cdc0]
 - S:e15045d8a4 function dryRun `function dryRun(dir)` L13
 ### scripts/build-policy-attestation.mjs [F:780c791407]
-- S:f88498de73 const ATTESTATION_DOMAIN `export const ATTESTATION_DOMAIN = "modonome.policy-attestation.v1\n";` L40 : Domain separation binds a signature to this artifact type so it cannot be replayed as a knowledge packet or any other signed structure.
-- S:b455c897cf function rel `function rel(p)` L42
-- S:5b8a5996df function fail `function fail(msg)` L45
-- S:87013bd4c3 function loadInputs `export function loadInputs(r = root)` L50
-- S:aacff6bc1c function attestationBytes `export function attestationBytes(manifest)` L59 : The exact bytes a signature covers: the domain tag followed by the JCS of the manifest with its signature and content_digest removed (the content_digest is itself derived from that body, so signing th
-- S:120830c7dd function maybeSign `function maybeSign(manifest, env)` L66
-- S:5aff27256c function schema `function schema()` L84
-- S:cf413b97c8 function write `function write(env)` L88
-- S:53158831f9 function check `function check()` L100
-- S:e476893b3b function show `function show()` L120
-- S:acc91dc6fe function verifyCmd `function verifyCmd()` L136
+- S:f88498de73 const ATTESTATION_DOMAIN `export const ATTESTATION_DOMAIN = "modonome.policy-attestation.v1\n";` L58 : Domain separation binds a signature to this artifact type so it cannot be replayed as a knowledge packet or any other signed structure.
+- S:b455c897cf function rel `function rel(p)` L64 : Relative-to-root display path. Safe on any input: a path outside root (e.g. under ADOPT_ROOT when MODONOME_ADOPT_ROOT points elsewhere) is returned unchanged rather than sliced by a bare string-prefix
+- S:5b8a5996df function fail `function fail(msg)` L68
+- S:87013bd4c3 function loadInputs `export function loadInputs(r = root)` L73
+- S:aacff6bc1c function attestationBytes `export function attestationBytes(manifest)` L82 : The exact bytes a signature covers: the domain tag followed by the JCS of the manifest with its signature and content_digest removed (the content_digest is itself derived from that body, so signing th
+- S:120830c7dd function maybeSign `function maybeSign(manifest, env)` L89
+- S:5aff27256c function schema `function schema()` L107
+- S:cf413b97c8 function write `function write(env)` L111
+- S:de8e4d5857 function digestMismatch `function digestMismatch(m)` L126 : Recomputes a manifest body's digest and compares it to its own recorded content_digest. Shared by check(), verifyCmd(), and adoptCmd() so this self-consistency test is defined once; each caller still 
+- S:53158831f9 function check `function check()` L133
+- S:5ef4400e5e function generatorLine `function generatorLine(m)` L155 : The generator credit line, tolerant of a foreign pack that predates manifest_version 2: such a pack is shown honestly as claiming no credit rather than crashing on a missing field. homepage is guarded
+- S:2d4876abe2 function readPack `function readPack(path)` L160
+- S:ddc69b10ca function readForeignPack `function readForeignPack(path)` L168 : Reads and parses a caller-supplied pack file, failing with the tool's normal clean error instead of an uncaught exception. Every command that accepts a user-supplied path (--show, --verify, --diff, --
+- S:e476893b3b function show `function show(path)` L176
+- S:acc91dc6fe function verifyCmd `function verifyCmd(path)` L196
+- S:b9d44c6996 function diffSet `function diffSet(label, local, foreign)` L216 : Set-valued policy fields (denylist, protected paths, gates): report what the foreign pack adds and what it is missing relative to this repo's live policy.
+- S:0be1a2cd09 function diffCapabilities `function diffCapabilities(local, foreign)` L230
+- S:90b2cf611f function diffPosture `function diffPosture(local, foreign)` L241
+- S:d2a299acb3 function diffCmd `function diffCmd(path)` L252 : Read-only comparison of a foreign pack's disclosed policy against this repo's own live policy. Always succeeds (never a pass/fail gate); a human uses this to decide whether to adopt. The foreign pack'
+- S:8735f37dad function adoptCmd `function adoptCmd(path, alias)` L274 : Vendor a foreign policy pack into this repo, refusing on any integrity or credit failure. Order matters: schema validation catches a pack whose generator block was stripped outright (manifest_version 
 ### .design-sync/previews/Toast.tsx [F:7832db450f]
 - S:67852685cf function Info `export const Info = () => <Toast tone="info" title="Dry-run sweep queued" />;` L4
 - S:96c461f8cd function Success `export const Success = () => <Toast tone="ok" title="Merged" message="PAY-402 merged by merge authority" />;` L6
@@ -1529,10 +1544,10 @@ Files: 823  Bytes: 2884069  Map tokens: 102087/120000
 - S:a3bf9f1833 interface QueueBoardProps `export interface QueueBoardProps` L4
 - S:16975f80af function QueueBoard `export function QueueBoard({ items, onSelect }: QueueBoardProps)` L18 : The work queue as a board. Items are grouped into the columns of the durable state * machine (queued, claimed, making, checking, merge ready, done, escalated), with * rework folded into making and mer
 ### bin/modonome.mjs [F:f90930c3c3]
-- S:5835c8b608 function resolveArming `export function resolveArming(targetDir, env = process.env)` L53 : The authoritative arming gate. A config file the agent can write can never arm the engine on its own: arming requires the MODONOME_ARMED=true environment variable, which lives in CI or operator scope,
-- S:53b9eda0f8 function run `function run(script, args)` L74
-- S:214691c25d function targetDirFrom `function targetDirFrom(rest)` L84
-- S:9249714b12 function main `function main(argv)` L88
+- S:5835c8b608 function resolveArming `export function resolveArming(targetDir, env = process.env)` L55 : The authoritative arming gate. A config file the agent can write can never arm the engine on its own: arming requires the MODONOME_ARMED=true environment variable, which lives in CI or operator scope,
+- S:53b9eda0f8 function run `function run(script, args)` L76
+- S:214691c25d function targetDirFrom `function targetDirFrom(rest)` L86
+- S:9249714b12 function main `function main(argv)` L90
 ### tests/decisions-authority.test.mjs [F:f921eecad7]
 - S:b1b5323930 function runGate `function runGate(dir, args = [])` L77
 - S:0b25fbc8fe function plainDecisionsDir `function plainDecisionsDir(content)` L81
@@ -1767,6 +1782,7 @@ Files: 823  Bytes: 2884069  Map tokens: 102087/120000
 - design-system/src/components/AuditTimeline/AuditTimeline.tsx -> design-system/src/components/Icon/Icon.tsx
 - scripts/build-policy-attestation.mjs -> scripts/lib/yaml-lite.mjs
 - scripts/build-policy-attestation.mjs -> scripts/lib/canonical-json.mjs
+- scripts/build-policy-attestation.mjs -> scripts/lib/cli-args.mjs
 - scripts/build-policy-attestation.mjs -> scripts/lib/jsonschema.mjs
 - scripts/build-policy-attestation.mjs -> scripts/lib/policy-manifest.mjs
 - design-system/src/components/ArmingStateBadge/ArmingStateBadge.tsx -> design-system/src/lib/cx.ts
@@ -2020,54 +2036,54 @@ Files: 823  Bytes: 2884069  Map tokens: 102087/120000
 
 ## Attention (centrality + pagerank)
 
-1. design-system/src/lib/cx.ts centrality=32 pagerank=0.035212
-2. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.022827
-3. design-system/src/index.ts centrality=48 pagerank=0.000926
-4. scripts/lib/jsonschema.mjs centrality=10 pagerank=0.010733
-5. scripts/lib/yaml-lite.mjs centrality=13 pagerank=0.007265
-6. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.007768
-7. apps/control-panel/src/state/types.ts centrality=12 pagerank=0.00776
-8. scripts/agent/run-cycle.mjs centrality=17 pagerank=0.003483
-9. scripts/lib/learnings.mjs centrality=10 pagerank=0.007431
-10. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.005538
-11. scripts/validate-config.mjs centrality=12 pagerank=0.004552
-12. scripts/lib/canonical-json.mjs centrality=10 pagerank=0.005338
-13. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.005956
-14. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001549
-15. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.004466
-16. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.005182
-17. apps/control-panel/src/App.tsx centrality=11 pagerank=0.001319
-18. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002705
-19. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.003342
-20. scripts/lib/branch-name.mjs centrality=4 pagerank=0.004956
-21. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.004819
-22. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.003237
-23. scripts/validate-work-item.mjs centrality=6 pagerank=0.003155
-24. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001549
-25. scripts/lib/graph.mjs centrality=4 pagerank=0.004461
-26. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.002949
-27. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.005028
-28. scripts/agent/resolve-role.mjs centrality=6 pagerank=0.002703
-29. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001727
-30. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.004638
-31. scripts/snapshot.mjs centrality=8 pagerank=0.000926
-32. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002705
-33. design-system/src/lib/format.ts centrality=5 pagerank=0.002703
-34. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001727
-35. scripts/agent/providers.mjs centrality=3 pagerank=0.003689
-36. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.001038
-37. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001727
-38. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001727
-39. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.001727
-40. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.001727
-41. design-system/src/components/Modal/Modal.tsx centrality=4 pagerank=0.00246
-42. scripts/lib/remediate.mjs centrality=3 pagerank=0.003176
-43. design-system/src/components/TierBadge/TierBadge.tsx centrality=4 pagerank=0.002431
-44. examples/demo-app/src/index.js centrality=6 pagerank=0.000926
-45. design-system/src/components/Table/Table.tsx centrality=4 pagerank=0.002387
-46. design-system/src/components/IdentityChip/IdentityChip.tsx centrality=4 pagerank=0.002265
-47. scripts/lib/control-panel-audit.mjs centrality=3 pagerank=0.002873
-48. scripts/lib/git-scope.mjs centrality=3 pagerank=0.002578
-49. design-system/src/components/ArmingStateBadge/ArmingStateBadge.tsx centrality=4 pagerank=0.001727
-50. design-system/src/components/Checkbox/Checkbox.tsx centrality=4 pagerank=0.001727
+1. design-system/src/lib/cx.ts centrality=32 pagerank=0.035083
+2. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.022744
+3. design-system/src/index.ts centrality=48 pagerank=0.000922
+4. scripts/lib/jsonschema.mjs centrality=10 pagerank=0.010655
+5. scripts/lib/yaml-lite.mjs centrality=13 pagerank=0.007199
+6. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.00774
+7. apps/control-panel/src/state/types.ts centrality=12 pagerank=0.007732
+8. scripts/agent/run-cycle.mjs centrality=17 pagerank=0.003471
+9. scripts/lib/learnings.mjs centrality=10 pagerank=0.007404
+10. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.005517
+11. scripts/validate-config.mjs centrality=12 pagerank=0.004536
+12. scripts/lib/canonical-json.mjs centrality=10 pagerank=0.005269
+13. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.005935
+14. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001543
+15. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.00445
+16. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.005163
+17. apps/control-panel/src/App.tsx centrality=11 pagerank=0.001314
+18. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002695
+19. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.00333
+20. scripts/lib/branch-name.mjs centrality=4 pagerank=0.004926
+21. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.004801
+22. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.003225
+23. scripts/validate-work-item.mjs centrality=6 pagerank=0.003144
+24. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001544
+25. scripts/lib/graph.mjs centrality=4 pagerank=0.004444
+26. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.002939
+27. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.00501
+28. scripts/agent/resolve-role.mjs centrality=6 pagerank=0.002693
+29. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.00172
+30. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.004621
+31. scripts/snapshot.mjs centrality=8 pagerank=0.000922
+32. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002695
+33. design-system/src/lib/format.ts centrality=5 pagerank=0.002693
+34. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.00172
+35. scripts/agent/providers.mjs centrality=3 pagerank=0.003676
+36. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.001034
+37. design-system/src/components/Modal/Modal.tsx centrality=4 pagerank=0.002451
+38. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.00172
+39. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.00172
+40. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.00172
+41. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.00172
+42. scripts/lib/remediate.mjs centrality=3 pagerank=0.003164
+43. design-system/src/components/TierBadge/TierBadge.tsx centrality=4 pagerank=0.002422
+44. examples/demo-app/src/index.js centrality=6 pagerank=0.000922
+45. design-system/src/components/Table/Table.tsx centrality=4 pagerank=0.002378
+46. design-system/src/components/IdentityChip/IdentityChip.tsx centrality=4 pagerank=0.002257
+47. scripts/lib/control-panel-audit.mjs centrality=3 pagerank=0.002863
+48. scripts/lib/git-scope.mjs centrality=3 pagerank=0.002569
+49. design-system/src/components/ArmingStateBadge/ArmingStateBadge.tsx centrality=4 pagerank=0.00172
+50. design-system/src/components/Checkbox/Checkbox.tsx centrality=4 pagerank=0.00172
 

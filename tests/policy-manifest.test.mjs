@@ -33,6 +33,20 @@ test("builds a schema-valid manifest with the expected shape", () => {
   assert.match(m.content_digest, /^sha256:[0-9a-f]{64}$/);
 });
 
+test("carries a generator credit block sourced from package.json (ADR-037)", () => {
+  const m = buildPolicyManifest(inputs());
+  assert.strictEqual(m.generator.name, "modonome");
+  assert.strictEqual(m.generator.homepage, "https://modonome.com");
+  assert.strictEqual(m.generator.repository, "https://github.com/enumind/modonome");
+});
+
+test("the generator block is inside the digest: renaming the package moves it", () => {
+  const base = inputs();
+  const d0 = buildPolicyManifest(base).content_digest;
+  const renamed = buildPolicyManifest({ ...base, pkgJson: { ...base.pkgJson, name: "not-modonome" } }).content_digest;
+  assert.notStrictEqual(d0, renamed, "a generator claiming a different tool name must hash differently");
+});
+
 test("discloses every capability flag with a boolean default", () => {
   const m = buildPolicyManifest(inputs());
   assert.strictEqual(m.policy.capabilities.length, CAPABILITY_FLAGS.length);
