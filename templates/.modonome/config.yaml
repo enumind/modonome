@@ -68,7 +68,8 @@ runners:
   # in that environment. Optional: omit them and every runner is treated as able
   # to run the default anthropic roles. reachable_providers may contain "*".
   local:
-    labels: [self-hosted, mac-mini]
+    # Replace with your own self-hosted runner labels.
+    labels: [self-hosted]
     cli_path: claude
     environment: local-host
     # The self-hosted host can reach a local Ollama/llama.cpp endpoint and any
@@ -89,7 +90,8 @@ models:
     provider: anthropic
   local-default:
     provider: local
-    base_url: http://mac-mini.local:11434
+    # Point this at your local Ollama/llama.cpp endpoint.
+    base_url: http://localhost:11434
   # Off-by-default example: a free-tier gateway model. Uncomment and reference it
   # from a role's `model:` to run at zero cost (free cost class, no budget needed).
   # gh-gpt-4o-mini:

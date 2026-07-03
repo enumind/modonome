@@ -10,6 +10,8 @@
 //   node scripts/guard-ratchet.mjs <baseRef>     compare working tree to a git ref
 //   node scripts/guard-ratchet.mjs --diff <file> check a saved unified diff (for fixtures)
 //   node scripts/guard-ratchet.mjs --staged      check the index against HEAD (pre-commit hooks)
+// Add --json or --sarif (SARIF 2.1.0) to any of the above for machine-readable output
+// with stable MR### rule codes, for CI annotations and security dashboards.
 import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 
@@ -18,14 +20,28 @@ import { readFileSync } from "node:fs";
 // `..`/`...` range syntax the ratchet uses.
 const SAFE_REF = /^[A-Za-z0-9._/-]+$/;
 
+// Output format. The default (human) path prints to stderr and stays byte-identical
+// so the AgentProof scenarios that assert on the rejection text keep passing. The
+// --json and --sarif flags add machine-readable output for CI annotations, security
+// tabs (SARIF 2.1.0), and the attestation predicate, without touching the human path.
+// Format flags are stripped from the positional args getDiff reads, so they compose
+// with --diff/--staged/<ref> in any order.
+const RAW_ARGS = process.argv.slice(2);
+const FORMAT = (RAW_ARGS.includes("--sarif") || RAW_ARGS.includes("--format=sarif"))
+  ? "sarif"
+  : (RAW_ARGS.includes("--json") || RAW_ARGS.includes("--format=json"))
+    ? "json"
+    : "human";
+const ARGS = RAW_ARGS.filter((a) => !/^--(json|sarif|format=(json|sarif))$/.test(a));
+
 function normalizeLF(s) {
   return s.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
 }
 
 function getDiff() {
-  const arg = process.argv[2];
+  const arg = ARGS[0];
   if (arg === "--diff") {
-    return normalizeLF(readFileSync(process.argv[3], "utf8"));
+    return normalizeLF(readFileSync(ARGS[1], "utf8"));
   }
   if (arg === "--staged") {
     // A pre-commit hook runs before the commit exists: HEAD is still the parent,
@@ -526,6 +542,103 @@ for (const [file, { added, removed }] of Object.entries(files)) {
 // ---------------------------------------------------------------------------
 // Result
 // ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Machine-readable emitters (MR codes)
+// ---------------------------------------------------------------------------
+
+// Stable rule codes for the gate-weakening categories. These are the public IDs a
+// CI annotation, a security-tab alert, or the attestation predicate refer to, so
+// they must not be renumbered. Each resolves to https://modonome.com/codes/<CODE>.
+const MR_RULES = {
+  MR101: "assertion-removal",
+  MR102: "skip-injection",
+  MR103: "vacuous-assertion",
+  MR104: "coverage-lowering",
+  MR105: "type-escape",
+  MR106: "assertion-strength-downgrade",
+  MR107: "homoglyph-disguise",
+  MR100: "gate-weakening",
+};
+
+function classifyCode(msg) {
+  const m = msg.toLowerCase();
+  if (m.includes("homoglyph")) return "MR107";
+  if (m.includes("skipped or focused")) return "MR102";
+  if (m.includes("vacuous")) return "MR103";
+  if (m.includes("downgrades assertion strength")) return "MR106";
+  if (m.includes("coverage")) return "MR104";
+  if (m.includes("type escape") || m.includes("suppresswarnings")
+    || m.includes("pragma warning") || m.includes("typescript strictness")) return "MR105";
+  if (m.includes("removes more test assertions")) return "MR101";
+  return "MR100";
+}
+
+// Each problem message is "<file>: <detail>". Recover the file path for a location.
+function fileOf(msg) {
+  const i = msg.indexOf(": ");
+  return i > 0 ? msg.slice(0, i) : "";
+}
+
+function helpUri(code) {
+  return `https://modonome.com/codes/${code}`;
+}
+
+function toFindings(list) {
+  return list.map((message) => {
+    const code = classifyCode(message);
+    return { code, rule: MR_RULES[code], file: fileOf(message), message, helpUri: helpUri(code) };
+  });
+}
+
+function emitJson(findings) {
+  return JSON.stringify({
+    tool: "modonome-gate-integrity",
+    version: "1",
+    result: findings.length ? "fail" : "pass",
+    summary: findings.length
+      ? `${findings.length} gate-weakening finding(s)`
+      : "no weakened tests, skips, type escapes, or loosened gates",
+    findings,
+  }, null, 2);
+}
+
+function emitSarif(findings) {
+  const usedCodes = [...new Set(findings.map((f) => f.code))];
+  const rules = usedCodes.map((code) => ({
+    id: code,
+    name: MR_RULES[code],
+    shortDescription: { text: MR_RULES[code] },
+    helpUri: helpUri(code),
+  }));
+  const results = findings.map((f) => ({
+    ruleId: f.code,
+    level: "error",
+    message: { text: f.message },
+    partialFingerprints: { "modonomeGateIntegrity/v1": `${f.code}:${f.file}` },
+    locations: f.file
+      ? [{ physicalLocation: { artifactLocation: { uri: f.file }, region: { startLine: 1 } } }]
+      : [],
+  }));
+  return JSON.stringify({
+    $schema: "https://json.schemastore.org/sarif-2.1.0.json",
+    version: "2.1.0",
+    runs: [{
+      tool: { driver: { name: "Modonome", informationUri: "https://modonome.com", rules } },
+      results,
+    }],
+  }, null, 2);
+}
+
+// ---------------------------------------------------------------------------
+// Result
+// ---------------------------------------------------------------------------
+
+if (FORMAT !== "human") {
+  const findings = toFindings(problems);
+  process.stdout.write((FORMAT === "sarif" ? emitSarif(findings) : emitJson(findings)) + "\n");
+  process.exit(problems.length > 0 ? 1 : 0);
+}
 
 if (problems.length > 0) {
   console.error("Anti-gaming ratchet rejected this change:\n");

@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:b80b28b7bfb33287ddcde127d59a9bba10fc91ffbe465648d19475e67b46df4e
-Files: 804  Bytes: 2721237  Map tokens: 100742/120000
+Merkle root: sha256:c7bfcae6c22a86d9fda393d257e04db4f63d9a15c3fb86842d9178acf381658c
+Files: 809  Bytes: 2743135  Map tokens: 101484/120000
 
 ## Modules
 
@@ -278,9 +278,10 @@ Files: 804  Bytes: 2721237  Map tokens: 100742/120000
 - scripts/check-self-application.mjs [F:4096620673]: 4. The two protected-path surfaces must agree. CODEOWNERS is what GitHub enforces; protected_paths_extra is what the engine reads. If they disagree, a path is p
 - scripts/check-state-machine-acyclic.mjs [F:8b8d3c46b3]: Build the adjacency map { state: [to, ...] } from the transition list. When includeCapGuard is false, cap_guard edges are dropped: those are the sanctioned boun
 - scripts/check-style.mjs [F:ca0833ac73]: !/usr/bin/env node
+- scripts/connect.mjs [F:d6401dd73e]: !/usr/bin/env node
 - scripts/detect-near-miss.mjs [F:09ba331878]: Gather every near-miss across the branch name, commit identities, and commit bodies unique to this branch.
 - scripts/dry-run-sweep.mjs [F:6f247eb514]: Only fires when the swept repo actually has a control panel at apps/control-panel (auditCoverage/auditCoherence report `skipped: true` and this returns nothing 
-- scripts/guard-ratchet.mjs [F:8a10462927]: !/usr/bin/env node
+- scripts/guard-ratchet.mjs [F:8a10462927]: Each problem message is "<file>: <detail>". Recover the file path for a location.
 - scripts/hygiene.mjs [F:90e1fd2fd9]: Collect findings for the current branch, the commits unique to it, and the PR-body-shaped surfaces we can see locally (the commit bodies themselves).
 - scripts/install-hooks.mjs [F:a7ce0f6452]: True when targetRoot is modonome's own repo (not a host that merely depends on it or vendored a copy of these scripts). Checked by package.json name rather than
 - scripts/lib/attribution-fp-corpus.mjs [F:5a3543606b]: Branch names no layer may flag. These include descriptive names that merely contain a denylisted token as a substring of a longer word.
@@ -354,6 +355,7 @@ Files: 804  Bytes: 2721237  Map tokens: 100742/120000
 - tests/cli-dispatch.test.mjs [F:40e4f39b59]: function cli
 - tests/compliance-evidence.test.mjs [F:3ea503e7c0]: Helper reused by the mapping test.
 - tests/config-key-parity.test.mjs [F:5eff4122c0]: Extract the string literals inside a named list/set declaration, regardless of whether it is `new Set([...])` or `[...] as const`.
+- tests/connect.test.mjs [F:5956278014]: Tests for `modonome connect`, which registers the read-only MCP server with an agent
 - tests/decisions-authority.test.mjs [F:f921eecad7]: A repo with one commit (base: entry "a" only) and a second commit that adds a new Resolved entry "b" on top. Returns { dir, baseSha }.
 - tests/dependency.test.mjs [F:b70824b13e]: Read all .mjs files in a directory (non-recursive by default).
 - tests/dry-run.test.mjs [F:778c33cdc0]: function dryRun
@@ -375,6 +377,7 @@ Files: 804  Bytes: 2721237  Map tokens: 100742/120000
 - tests/promoted-learnings.test.mjs [F:ddd82fc886]: function withRoot
 - tests/provenance.test.mjs [F:ba97282cf5]: Base valid packet factory: returns a fresh object each call.
 - tests/providers.test.mjs [F:ee02e563c6]: function baseCfg
+- tests/ratchet-format.test.mjs [F:cede5f9fa2]: Tests for the machine-readable ratchet output (--json and --sarif). These lock in
 - tests/ratchet.test.mjs [F:f238d164c9]: function ratchet
 - tests/remediate.test.mjs [F:44a5987438]: Build a temp git repo whose origin/main is the base commit, then lay down a feature branch with one signature-in-message commit and one forbidden-identity commi
 - tests/report-impact.test.mjs [F:8a3433b070]: function tmp
@@ -822,6 +825,9 @@ Files: 804  Bytes: 2721237  Map tokens: 100742/120000
 ### scripts/lib/lang-adapters/generic.mjs [F:594f505f11]
 - S:bd63b1e408 function cleanSignature `function cleanSignature(line)` L15
 - S:21635cbeda const adapter `export const adapter =` L19
+### tests/connect.test.mjs [F:5956278014]
+- S:cf88d1486b function run `function run(...args)` L16
+- S:06c0c85d92 function tmp `function tmp()` L20
 ### tests/maker-checker.test.mjs [F:5994385869]
 - S:7d89fd8d95 function run `function run(script, args = [], env = {})` L13
 ### examples/demo-app/src/CartService.js [F:599f5b2f28]
@@ -1007,14 +1013,20 @@ Files: 804  Bytes: 2721237  Map tokens: 100742/120000
 - S:e89c164d25 function titleFromId `function titleFromId(id: string): string` L51
 - S:f0db7341e7 const productState `export const productState: PanelState =` L86
 ### scripts/guard-ratchet.mjs [F:8a10462927]
-- S:89e92655dd function normalizeLF `function normalizeLF(s)` L21
-- S:a34306cc67 function getDiff `function getDiff()` L25
-- S:974654287c function count `function count(lines, re)` L272
-- S:fd230402e2 function deconfuse `function deconfuse(line)` L291
-- S:457528354e function stripInlineComment `function stripInlineComment(line)` L299
-- S:a4c389d72a function isVacuousAssertion `function isVacuousAssertion(line)` L304
-- S:17945c542e function countBareAsserts `function countBareAsserts(lines)` L314
-- S:4d3ac94b7c function isVacuousPyAssert `function isVacuousPyAssert(line)` L322
+- S:89e92655dd function normalizeLF `function normalizeLF(s)` L37
+- S:a34306cc67 function getDiff `function getDiff()` L41
+- S:974654287c function count `function count(lines, re)` L288
+- S:fd230402e2 function deconfuse `function deconfuse(line)` L307
+- S:457528354e function stripInlineComment `function stripInlineComment(line)` L315
+- S:a4c389d72a function isVacuousAssertion `function isVacuousAssertion(line)` L320
+- S:17945c542e function countBareAsserts `function countBareAsserts(lines)` L330
+- S:4d3ac94b7c function isVacuousPyAssert `function isVacuousPyAssert(line)` L338
+- S:0b8ff85c9c function classifyCode `function classifyCode(msg)` L564
+- S:2358b05e12 function fileOf `function fileOf(msg)` L578 : Each problem message is "<file>: <detail>". Recover the file path for a location.
+- S:edb5058173 function helpUri `function helpUri(code)` L583
+- S:eff02f504b function toFindings `function toFindings(list)` L587
+- S:42188b3bb9 function emitJson `function emitJson(findings)` L594
+- S:1d0f5bc129 function emitSarif `function emitSarif(findings)` L606
 ### tests/report-impact.test.mjs [F:8a3433b070]
 - S:69f3537d3b function tmp `function tmp()` L13
 - S:1fe8548dac function fixture `function fixture()` L17
@@ -1228,16 +1240,16 @@ Files: 804  Bytes: 2721237  Map tokens: 100742/120000
 - S:00c956ccf3 interface ToastProps `export interface ToastProps` L6
 - S:5eb8ce722f function Toast `export function Toast({ tone = "info", title, message, onDismiss }: ToastProps)` L31 : A single notification card with a tone-colored left accent, an icon, a title and * optional message, and an optional dismiss control. Not a stacking provider: mount * one `Toast` per visible notificat
 ### scripts/mcp-server.mjs [F:ab5077147a]
-- S:55a57d9fd6 function toolRatchet `async function toolRatchet(args)` L167
-- S:a4d0ce8fea function toolValidateConfig `async function toolValidateConfig(args)` L214
-- S:2d1eeb5346 function toolValidateWorkItem `async function toolValidateWorkItem(args)` L239
-- S:6499fa18ee function toolStatus `async function toolStatus(args)` L263
-- S:2d2b3ccfa2 function toolCompliance `async function toolCompliance(args)` L317
-- S:f613554429 function toolVerifyAttestation `async function toolVerifyAttestation(args)` L326
-- S:521fca28ad function toolSnapshot `async function toolSnapshot(args)` L343
-- S:16d8c02a8e function send `function send(obj)` L371
-- S:2306976428 function errorResponse `function errorResponse(id, code, message)` L375
-- S:dd3b976184 function handleRequest `async function handleRequest(req)` L379
+- S:55a57d9fd6 function toolRatchet `async function toolRatchet(args)` L168
+- S:a4d0ce8fea function toolValidateConfig `async function toolValidateConfig(args)` L215
+- S:2d1eeb5346 function toolValidateWorkItem `async function toolValidateWorkItem(args)` L240
+- S:6499fa18ee function toolStatus `async function toolStatus(args)` L264
+- S:2d2b3ccfa2 function toolCompliance `async function toolCompliance(args)` L318
+- S:f613554429 function toolVerifyAttestation `async function toolVerifyAttestation(args)` L327
+- S:521fca28ad function toolSnapshot `async function toolSnapshot(args)` L344
+- S:16d8c02a8e function send `function send(obj)` L372
+- S:2306976428 function errorResponse `function errorResponse(id, code, message)` L376
+- S:dd3b976184 function handleRequest `async function handleRequest(req)` L380
 ### scripts/promote-learning.mjs [F:ac11b5379f]
 - S:a6ff0bb6d7 function slugifyId `function slugifyId(lesson)` L26 : Slugify a lesson into a deterministic ID.
 - S:928743a069 function buildLearningRecord `export function buildLearningRecord(opts = {})` L37 : Build a learning record from options.
@@ -1353,6 +1365,8 @@ Files: 804  Bytes: 2721237  Map tokens: 100742/120000
 ### scripts/lib/lang-adapters/tree-sitter.mjs [F:cecdb96382]
 - S:ad7d7732a1 function makeExtract `function makeExtract(Parser, grammar)` L24
 - S:464c90cba5 function registerTreeSitter `export async function registerTreeSitter(register)` L71 : Attempt to register tree-sitter adapters. `register` is the registry's registerAdapter. Returns true when at least one grammar was registered.
+### tests/ratchet-format.test.mjs [F:cede5f9fa2]
+- S:7c0d389b98 function runRatchet `function runRatchet(...args)` L17
 ### scripts/transition-work-item.mjs [F:d135cffeaa]
 - S:8d1ca74a54 function leaseHolder `function leaseHolder(item)` L23 : A lease is "live" if it has an owner and an unexpired lease_expires_at. The lease holder is recorded as lease_owner (the field this swap writes) or, for older items, the schema's `owner` field; either
 - S:87ca9c146a function leaseIsLive `function leaseIsLive(item, now)` L27
@@ -1365,6 +1379,8 @@ Files: 804  Bytes: 2721237  Map tokens: 100742/120000
 ### design-system/src/components/HelpHint/HelpHint.tsx [F:d5b496b125]
 - S:733f5fd096 interface HelpHintProps `export interface HelpHintProps` L5
 - S:e44c445050 function HelpHint `export function HelpHint({ label, children, size = 13 }: HelpHintProps)` L21 : A tiny circular help affordance: a `help` icon button that reveals its text in a * Tooltip on hover or keyboard focus. This is the pervasive "hover for context" * control placed next to section labels
+### scripts/connect.mjs [F:d6401dd73e]
+- S:c1c63b1bf8 function planFile `function planFile(editor)` L35
 ### tests/run-log.test.mjs [F:d7d4e8d2a9]
 - S:fe9c17eefa function tmp `function tmp()` L12
 - S:37a0d721be function run `function run(script, ...args)` L16
@@ -1503,10 +1519,10 @@ Files: 804  Bytes: 2721237  Map tokens: 100742/120000
 - S:a3bf9f1833 interface QueueBoardProps `export interface QueueBoardProps` L4
 - S:16975f80af function QueueBoard `export function QueueBoard({ items, onSelect }: QueueBoardProps)` L18 : The work queue as a board. Items are grouped into the columns of the durable state * machine (queued, claimed, making, checking, merge ready, done, escalated), with * rework folded into making and mer
 ### bin/modonome.mjs [F:f90930c3c3]
-- S:5835c8b608 function resolveArming `export function resolveArming(targetDir, env = process.env)` L49 : The authoritative arming gate. A config file the agent can write can never arm the engine on its own: arming requires the MODONOME_ARMED=true environment variable, which lives in CI or operator scope,
-- S:53b9eda0f8 function run `function run(script, args)` L70
-- S:214691c25d function targetDirFrom `function targetDirFrom(rest)` L80
-- S:9249714b12 function main `function main(argv)` L84
+- S:5835c8b608 function resolveArming `export function resolveArming(targetDir, env = process.env)` L52 : The authoritative arming gate. A config file the agent can write can never arm the engine on its own: arming requires the MODONOME_ARMED=true environment variable, which lives in CI or operator scope,
+- S:53b9eda0f8 function run `function run(script, args)` L73
+- S:214691c25d function targetDirFrom `function targetDirFrom(rest)` L83
+- S:9249714b12 function main `function main(argv)` L87
 ### tests/decisions-authority.test.mjs [F:f921eecad7]
 - S:b1b5323930 function runGate `function runGate(dir, args = [])` L77
 - S:0b25fbc8fe function plainDecisionsDir `function plainDecisionsDir(content)` L81
@@ -1994,54 +2010,54 @@ Files: 804  Bytes: 2721237  Map tokens: 100742/120000
 
 ## Attention (centrality + pagerank)
 
-1. design-system/src/lib/cx.ts centrality=32 pagerank=0.035842
-2. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.023236
-3. design-system/src/index.ts centrality=48 pagerank=0.000942
-4. scripts/lib/jsonschema.mjs centrality=10 pagerank=0.010925
-5. scripts/lib/yaml-lite.mjs centrality=13 pagerank=0.007395
-6. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.007908
-7. apps/control-panel/src/state/types.ts centrality=12 pagerank=0.007899
-8. scripts/agent/run-cycle.mjs centrality=17 pagerank=0.003546
-9. scripts/lib/learnings.mjs centrality=10 pagerank=0.007564
-10. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.005637
-11. scripts/validate-config.mjs centrality=12 pagerank=0.004634
-12. scripts/lib/canonical-json.mjs centrality=10 pagerank=0.005434
-13. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.006063
-14. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001577
-15. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.004546
-16. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.005275
-17. apps/control-panel/src/App.tsx centrality=11 pagerank=0.001343
-18. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002754
-19. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.003402
-20. scripts/lib/branch-name.mjs centrality=4 pagerank=0.005044
-21. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.004905
-22. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.003295
-23. scripts/validate-work-item.mjs centrality=6 pagerank=0.003212
-24. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001577
-25. scripts/lib/graph.mjs centrality=4 pagerank=0.004541
-26. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.003002
-27. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.005118
-28. scripts/agent/resolve-role.mjs centrality=6 pagerank=0.002752
-29. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001758
-30. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.004721
-31. scripts/snapshot.mjs centrality=8 pagerank=0.000942
-32. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002754
-33. design-system/src/lib/format.ts centrality=5 pagerank=0.002752
-34. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001758
-35. scripts/agent/providers.mjs centrality=3 pagerank=0.003755
-36. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.001057
-37. design-system/src/components/Modal/Modal.tsx centrality=4 pagerank=0.002505
-38. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001758
-39. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001758
-40. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.001758
-41. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.001758
-42. scripts/lib/remediate.mjs centrality=3 pagerank=0.003233
-43. design-system/src/components/TierBadge/TierBadge.tsx centrality=4 pagerank=0.002475
-44. examples/demo-app/src/index.js centrality=6 pagerank=0.000942
-45. design-system/src/components/Table/Table.tsx centrality=4 pagerank=0.00243
-46. design-system/src/components/IdentityChip/IdentityChip.tsx centrality=4 pagerank=0.002305
-47. scripts/lib/control-panel-audit.mjs centrality=3 pagerank=0.002925
-48. scripts/lib/git-scope.mjs centrality=3 pagerank=0.002624
-49. design-system/src/components/ArmingStateBadge/ArmingStateBadge.tsx centrality=4 pagerank=0.001758
-50. design-system/src/components/Checkbox/Checkbox.tsx centrality=4 pagerank=0.001758
+1. design-system/src/lib/cx.ts centrality=32 pagerank=0.035674
+2. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.023127
+3. design-system/src/index.ts centrality=48 pagerank=0.000938
+4. scripts/lib/jsonschema.mjs centrality=10 pagerank=0.010874
+5. scripts/lib/yaml-lite.mjs centrality=13 pagerank=0.00736
+6. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.00787
+7. apps/control-panel/src/state/types.ts centrality=12 pagerank=0.007862
+8. scripts/agent/run-cycle.mjs centrality=17 pagerank=0.003529
+9. scripts/lib/learnings.mjs centrality=10 pagerank=0.007529
+10. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.00561
+11. scripts/validate-config.mjs centrality=12 pagerank=0.004612
+12. scripts/lib/canonical-json.mjs centrality=10 pagerank=0.005408
+13. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.006035
+14. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001569
+15. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.004525
+16. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.00525
+17. apps/control-panel/src/App.tsx centrality=11 pagerank=0.001337
+18. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002741
+19. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.003386
+20. scripts/lib/branch-name.mjs centrality=4 pagerank=0.005021
+21. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.004882
+22. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.003279
+23. scripts/validate-work-item.mjs centrality=6 pagerank=0.003197
+24. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.00157
+25. scripts/lib/graph.mjs centrality=4 pagerank=0.004519
+26. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.002988
+27. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.005094
+28. scripts/agent/resolve-role.mjs centrality=6 pagerank=0.002739
+29. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001749
+30. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.004699
+31. scripts/snapshot.mjs centrality=8 pagerank=0.000938
+32. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002741
+33. design-system/src/lib/format.ts centrality=5 pagerank=0.002739
+34. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001749
+35. scripts/agent/providers.mjs centrality=3 pagerank=0.003738
+36. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.001052
+37. design-system/src/components/Modal/Modal.tsx centrality=4 pagerank=0.002493
+38. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001749
+39. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001749
+40. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.001749
+41. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.001749
+42. scripts/lib/remediate.mjs centrality=3 pagerank=0.003217
+43. design-system/src/components/TierBadge/TierBadge.tsx centrality=4 pagerank=0.002463
+44. examples/demo-app/src/index.js centrality=6 pagerank=0.000938
+45. design-system/src/components/Table/Table.tsx centrality=4 pagerank=0.002418
+46. design-system/src/components/IdentityChip/IdentityChip.tsx centrality=4 pagerank=0.002295
+47. scripts/lib/control-panel-audit.mjs centrality=3 pagerank=0.002911
+48. scripts/lib/git-scope.mjs centrality=3 pagerank=0.002612
+49. design-system/src/components/ArmingStateBadge/ArmingStateBadge.tsx centrality=4 pagerank=0.001749
+50. design-system/src/components/Checkbox/Checkbox.tsx centrality=4 pagerank=0.001749
 
