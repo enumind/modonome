@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "kind": "policy-attestation",
   "generator": {
-    "name": "modonome",
+    "name": "totally-not-modonome",
     "homepage": "https://modonome.com",
     "repository": "https://github.com/enumind/modonome"
   },
@@ -14,13 +14,13 @@
         "file": "README.md",
         "section": "Development practice",
         "found": true,
-        "sha256": "sha256:f36a5919bf1a05328bef6a0c863a3dff373d695aa54adb8d43ed47ae04d03223"
+        "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
       },
       {
         "file": "AGENTS.md",
         "section": "Commit messages",
         "found": true,
-        "sha256": "sha256:346bb69145712f5ebfa059754bb64b6c15716c632bcaa45100a3a726cd7c4f5a"
+        "sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
       }
     ]
   },
@@ -28,19 +28,19 @@
     "attribution_sources": [
       {
         "file": "scripts/lib/branch-name.mjs",
-        "sha256": "sha256:39eb059a2ae2d05ffea008a764c8ee54d4512f392d93c49cba0d1d0df7a26e78"
+        "sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
       },
       {
         "file": "scripts/lib/commit-identity.mjs",
-        "sha256": "sha256:cac7448be7d7d4dd22883cdcf78a7f351b926cd087505967814a1c2ff5dee2be"
+        "sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
       },
       {
         "file": "scripts/lib/detect-attribution.mjs",
-        "sha256": "sha256:ccc5c76cd7b844283a20f6e510b6aae9bf403f654cbb16bf1e632162e722a085"
+        "sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333"
       },
       {
         "file": "scripts/lib/near-miss.mjs",
-        "sha256": "sha256:4307069c0b1e149db9ea4c84cf37f5700e4f52630b42aa154214326b5acc279e"
+        "sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
       }
     ],
     "branch_denylist": [
@@ -65,7 +65,7 @@
       },
       {
         "name": "envisioner_enabled",
-        "default": false
+        "default": true
       },
       {
         "name": "remediation_apply_enabled",
@@ -73,34 +73,12 @@
       }
     ],
     "protected_paths_extra": [
-      ".github",
       "bin",
-      "prompts",
-      "schemas",
-      "scripts",
-      "site",
-      "templates"
+      "scripts"
     ],
     "gates": [
-      "agentproof",
-      "check-architecture-drift",
-      "check-attribution-fp-corpus",
-      "check-checker-engagement",
-      "check-control-panel-coherence",
-      "check-control-panel-coverage",
-      "check-decisions-authority",
       "check-drift",
-      "check-gate-dag",
-      "check-learning-traceability",
-      "check-md-governance",
-      "check-promotion-readiness",
-      "check-regex-safety",
-      "check-repo-hygiene",
-      "check-self-application",
       "check-style",
-      "check-work-items",
-      "policy-attestation-freshness",
-      "snapshot-freshness",
       "tests"
     ]
   },
@@ -108,5 +86,5 @@
     "autonomy_enabled": false,
     "dry_run": true
   },
-  "content_digest": "sha256:97ac729df01f680f8ac79e69df2eb6467899326e1634e9b479179b522a3588bb"
+  "content_digest": "sha256:ec61f1ac0373f28727bb7660854eb9e22c31e92b2472ac2c6f1ee3a48bd7ea4f"
 }

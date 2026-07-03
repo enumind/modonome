@@ -1,5 +1,5 @@
 {
-  "$comment": "Structured mirror of the features in site/repo-data.js. When a feature changes, update repo-data.js (the page's content source) and this file in the same PR. The automated sync workflow (sync-site-data.yml) updates version and AgentProof score automatically; feature copy is updated by hand since it involves editorial decisions.",
+  "$comment": "Structured mirror of the features in site/repo-data.js. This file is documentation only; the page does not load it. When a feature changes, update repo-data.js (the page's content source) and this file in the same PR. The version and AgentProof score fields below mirror site/repo-data.js meta, which the sync workflow maintains; feature copy is updated by hand since it involves editorial decisions.",
   "version": "v0.1.0-alpha",
   "agentproofScore": "25/25",
   "agentproofLevel": "HARDENED",
@@ -32,13 +32,31 @@
       "key": "learning",
       "icon": "refresh",
       "title": "Improves as it goes",
-      "summary": "Real corrections become staged lessons, and an owner promotes the durable ones into lasting rules and gates."
+      "summary": "Real corrections become staged lessons. Once an owner promotes one, it becomes a durable rule, the mechanism the loop is built to improve by."
     },
     {
       "key": "estate",
       "icon": "minus-square",
       "title": "Language-aware across your stack",
       "summary": "The anti-gaming ratchet is language-aware across JavaScript, Python, Java, and .NET today. Broader enterprise estates are on the roadmap."
+    },
+    {
+      "key": "control-panel",
+      "icon": "panel",
+      "title": "Operator control panel",
+      "summary": "In progress: a dashboard for gate status, governance events, and the levers an owner uses to arm, pause, and review autonomy, so control stays in plain sight."
+    },
+    {
+      "key": "snapshot",
+      "icon": "snapshot",
+      "title": "Verifiable repo context",
+      "summary": "Each agent works from a current, trustworthy map of the repository instead of rereading the whole tree. It is a compact snapshot, Merkle-verified so tampering cannot slip through unnoticed."
+    },
+    {
+      "key": "compliance",
+      "icon": "attest",
+      "title": "Compliance evidence on demand",
+      "summary": "An MCP server exposes attestation and evidence tools, so a host repository can produce a signed record of what ran and what held."
     }
   ]
 }

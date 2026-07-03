@@ -1,13 +1,23 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Modonome policy attestation",
-  "description": "A content-addressed, optionally Ed25519-signed manifest disclosing the governance policy this repo enforces and its AI-participation posture (ADR-036).",
+  "description": "A content-addressed, optionally Ed25519-signed manifest disclosing the governance policy this repo enforces and its AI-participation posture (ADR-036). Since manifest_version 2, it also carries a required generator credit block (ADR-037) so an adopted or vendored copy cannot silently drop credit to modonome without becoming schema-invalid or digest-inconsistent.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["manifest_version", "kind", "disclosure", "policy", "posture", "content_digest"],
+  "required": ["manifest_version", "kind", "generator", "disclosure", "policy", "posture", "content_digest"],
   "properties": {
     "manifest_version": { "type": "integer", "minimum": 1 },
     "kind": { "type": "string", "const": "policy-attestation" },
+    "generator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "homepage", "repository"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "homepage": { "type": "string", "minLength": 1 },
+        "repository": { "type": "string", "minLength": 1 }
+      }
+    },
     "disclosure": {
       "type": "object",
       "additionalProperties": false,

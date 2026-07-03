@@ -5,22 +5,33 @@
 // publishing or verifying a policy pack cannot weaken the base-pinned trust boundary.
 //
 // Usage:
-//   node scripts/build-policy-attestation.mjs           write the attestation
-//   node scripts/build-policy-attestation.mjs --check    fail if the committed file is stale or tampered
-//   node scripts/build-policy-attestation.mjs --show     print a human-readable summary
-//   node scripts/build-policy-attestation.mjs --verify   verify the embedded signature, if any
+//   node scripts/build-policy-attestation.mjs             write the attestation
+//   node scripts/build-policy-attestation.mjs --check      fail if the committed file is stale or tampered
+//   node scripts/build-policy-attestation.mjs --show [file]    print a human-readable summary (default: the local committed file)
+//   node scripts/build-policy-attestation.mjs --verify [file]  verify the embedded signature, if any (default: the local committed file)
+//   node scripts/build-policy-attestation.mjs --diff <file>    compare a foreign pack's policy against this repo's live policy
+//   node scripts/build-policy-attestation.mjs --adopt <file> --alias <name>   validate and vendor a foreign pack (ADR-037)
 //
 // Signing is optional and off by default. When MODONOME_SIGNING_KEY (base64 PKCS8 DER, a CI
 // secret injected like ANTHROPIC_API_KEY) is set at write time, an Ed25519 signature
 // envelope is attached over the domain-separated canonical body. The body and its
 // content_digest are identical whether or not the file is signed, so --check stays
 // deterministic and only a real policy change moves the digest.
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+//
+// --diff and --adopt are the Phase 4 policy-pack adoption tooling (ADR-037). Since
+// manifest_version 2, every manifest carries a required `generator` credit block, so
+// --adopt's schema and digest checks refuse a pack whose credit was stripped or altered
+// without also recomputing its digest. This is content-integrity and provenance
+// preservation, not a cryptographic trust system: the generator claim is self-asserted, the
+// same way a knowledge packet's classification is (ADR-018). For bilateral cryptographic
+// trust between repos, use the separate knowledge-packet signing and peer-keys.json path.
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { dirname, join } from "node:path";
+import { dirname, join, sep } from "node:path";
 import { canonicalize } from "./lib/canonical-json.mjs";
 import { parseFlatYaml } from "./lib/yaml-lite.mjs";
 import { validate } from "./lib/jsonschema.mjs";
+import { flagValue } from "./lib/cli-args.mjs";
 import { buildPolicyManifest, manifestDigest } from "./lib/policy-manifest.mjs";
 import {
   signMessage,
@@ -34,13 +45,25 @@ const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
 const ARTIFACT = join(root, ".modonome", "policy-attestation.json");
 const SCHEMA = join(root, "schemas", "policy-attestation.schema.json");
+// Scoped override for --adopt's write destination only (tests redirect vendored packs into
+// a temp dir this way). Deliberately a distinct env var from check-self-application.mjs's
+// MODONOME_ROOT, which overrides an entire script's root: SCHEMA/ARTIFACT/loadInputs() here
+// always resolve against the real installed package regardless of this override, since a
+// bare temp dir has no schemas/ or package.json of its own, so reusing MODONOME_ROOT's name
+// for a narrower purpose would wrongly imply the same full-root semantics.
+const ADOPT_ROOT = process.env.MODONOME_ADOPT_ROOT || root;
 
 // Domain separation binds a signature to this artifact type so it cannot be replayed as a
 // knowledge packet or any other signed structure.
 export const ATTESTATION_DOMAIN = "modonome.policy-attestation.v1\n";
 
+// Relative-to-root display path. Safe on any input: a path outside root (e.g. under
+// ADOPT_ROOT when MODONOME_ADOPT_ROOT points elsewhere) is returned unchanged rather than
+// sliced by a bare string-prefix match, which would treat a sibling directory sharing root's
+// leading characters (e.g. "modonome-sibling") as if it were inside root.
 function rel(p) {
-  return p.slice(root.length + 1);
+  const prefix = root.endsWith(sep) ? root : root + sep;
+  return p.startsWith(prefix) ? p.slice(prefix.length) : p;
 }
 function fail(msg) {
   console.error(`build-policy-attestation: ${msg}`);
@@ -97,32 +120,69 @@ function write(env) {
   console.log(`Wrote ${rel(ARTIFACT)} (digest ${manifest.content_digest}, ${manifest.signature ? "signed" : "unsigned"}).`);
 }
 
+// Recomputes a manifest body's digest and compares it to its own recorded content_digest.
+// Shared by check(), verifyCmd(), and adoptCmd() so this self-consistency test is defined
+// once; each caller still writes its own message around the mismatch.
+function digestMismatch(m) {
+  const { signature, content_digest, ...body } = m;
+  void signature;
+  const recomputed = manifestDigest(body);
+  return recomputed === content_digest ? null : { recomputed, content_digest };
+}
+
 function check() {
   if (!existsSync(ARTIFACT)) {
     fail(`${rel(ARTIFACT)} is missing. Run: node scripts/build-policy-attestation.mjs`);
   }
   const committed = JSON.parse(readFileSync(ARTIFACT, "utf8"));
-  const { signature, content_digest: committedDigest, ...committedBody } = committed;
-  void signature;
   // Self-consistency: the committed body must hash to its own recorded digest.
-  const recomputed = manifestDigest(committedBody);
-  if (recomputed !== committedDigest) {
-    fail(`${rel(ARTIFACT)} is internally inconsistent: content_digest ${committedDigest} does not match its body (${recomputed}). The file was edited by hand.`);
+  const mismatch = digestMismatch(committed);
+  if (mismatch) {
+    fail(`${rel(ARTIFACT)} is internally inconsistent: content_digest ${mismatch.content_digest} does not match its body (${mismatch.recomputed}). The file was edited by hand.`);
   }
   // Freshness: the committed digest must match a manifest rebuilt from live policy.
   const fresh = buildPolicyManifest(loadInputs());
-  if (committedDigest !== fresh.content_digest) {
-    fail(`${rel(ARTIFACT)} is stale: committed digest ${committedDigest} but current policy hashes to ${fresh.content_digest}. Run: node scripts/build-policy-attestation.mjs`);
+  if (committed.content_digest !== fresh.content_digest) {
+    fail(`${rel(ARTIFACT)} is stale: committed digest ${committed.content_digest} but current policy hashes to ${fresh.content_digest}. Run: node scripts/build-policy-attestation.mjs`);
   }
-  console.log(`PASS: ${rel(ARTIFACT)} is current (digest ${committedDigest}).`);
+  console.log(`PASS: ${rel(ARTIFACT)} is current (digest ${committed.content_digest}).`);
 }
 
-function show() {
-  const m = existsSync(ARTIFACT) ? JSON.parse(readFileSync(ARTIFACT, "utf8")) : buildPolicyManifest(loadInputs());
+// The generator credit line, tolerant of a foreign pack that predates manifest_version 2:
+// such a pack is shown honestly as claiming no credit rather than crashing on a missing field.
+// homepage is guarded the same way so a pack with a name but no homepage never prints the
+// literal string "undefined".
+function generatorLine(m) {
+  if (!m.generator || !m.generator.name) return "Generator:       none claimed (pre-v2 pack)";
+  return `Generator:       ${m.generator.name} (${m.generator.homepage || "no homepage claimed"})`;
+}
+
+function readPack(path) {
+  return JSON.parse(readFileSync(path, "utf8"));
+}
+
+// Reads and parses a caller-supplied pack file, failing with the tool's normal clean error
+// instead of an uncaught exception. Every command that accepts a user-supplied path (--show,
+// --verify, --diff, --adopt) goes through this, so a missing or malformed file behaves the
+// same way everywhere rather than only in the commands that happened to wrap it.
+function readForeignPack(path) {
+  try {
+    return readPack(path);
+  } catch (e) {
+    fail(`could not read or parse ${path}: ${e.message}`);
+  }
+}
+
+function show(path) {
+  const localExists = existsSync(ARTIFACT);
+  const m = path ? readForeignPack(path) : localExists ? readPack(ARTIFACT) : buildPolicyManifest(loadInputs());
+  const source = path || (localExists ? rel(ARTIFACT) : "(generated live; no committed artifact)");
   const caps = m.policy.capabilities.map((c) => `${c.name}=${c.default ? "on" : "off"}`).join(", ");
   console.log("Modonome policy attestation");
   console.log("===========================");
+  console.log(`Source:          ${source}`);
   console.log(`Digest:          ${m.content_digest}`);
+  console.log(generatorLine(m));
   console.log(`Signed:          ${m.signature ? `yes (${m.signature.key_alias})` : "no (content-addressed)"}`);
   console.log(`Disclosure:      ${m.disclosure.model}`);
   console.log(`Posture:         autonomy ${m.posture.autonomy_enabled ? "enabled" : "disabled"}, dry_run ${m.posture.dry_run ? "on" : "off"}`);
@@ -133,26 +193,128 @@ function show() {
   console.log(m.disclosure.statement);
 }
 
-function verifyCmd() {
-  if (!existsSync(ARTIFACT)) fail(`${rel(ARTIFACT)} is missing.`);
-  const m = JSON.parse(readFileSync(ARTIFACT, "utf8"));
-  const { signature, content_digest, ...body } = m;
-  if (manifestDigest(body) !== content_digest) {
-    fail("content_digest does not match the body; the attestation was edited by hand.");
+function verifyCmd(path) {
+  const target = path || ARTIFACT;
+  const label = path || rel(ARTIFACT);
+  if (!existsSync(target)) fail(`${label} is missing.`);
+  const m = readForeignPack(target);
+  const mismatch = digestMismatch(m);
+  if (mismatch) {
+    fail(`content_digest does not match the body in ${label}; the attestation was edited by hand.`);
   }
-  if (!signature) {
-    console.log(`${rel(ARTIFACT)} is content-addressed (digest ${content_digest}) and carries no signature. This is the default posture.`);
+  if (!m.signature) {
+    console.log(`${label} is content-addressed (digest ${m.content_digest}) and carries no signature. This is the default posture.`);
     return;
   }
-  const ok = verifyMessage(attestationBytes(m), signature.sig_b64, publicKeyFromB64(signature.pubkey_b64));
-  if (!ok) fail("signature does not verify against the embedded public key.");
-  console.log(`PASS: signature verifies (alg ${signature.alg}, key ${signature.key_alias}, digest ${content_digest}).`);
+  const ok = verifyMessage(attestationBytes(m), m.signature.sig_b64, publicKeyFromB64(m.signature.pubkey_b64));
+  if (!ok) fail(`signature does not verify against the embedded public key (${label}).`);
+  console.log(`PASS: signature verifies (alg ${m.signature.alg}, key ${m.signature.key_alias}, digest ${m.content_digest}).`);
+}
+
+// Set-valued policy fields (denylist, protected paths, gates): report what the foreign pack
+// adds and what it is missing relative to this repo's live policy.
+function diffSet(label, local, foreign) {
+  const l = new Set(local || []);
+  const f = new Set(foreign || []);
+  const added = [...f].filter((x) => !l.has(x)).sort();
+  const removed = [...l].filter((x) => !f.has(x)).sort();
+  if (!added.length && !removed.length) {
+    console.log(`${label}: identical (${local.length})`);
+    return;
+  }
+  console.log(`${label}:`);
+  if (added.length) console.log(`  + ${added.join(", ")}`);
+  if (removed.length) console.log(`  - ${removed.join(", ")}`);
+}
+
+function diffCapabilities(local, foreign) {
+  const toMap = (arr) => new Map((arr || []).map((c) => [c.name, c.default]));
+  const l = toMap(local);
+  const f = toMap(foreign);
+  const names = [...new Set([...l.keys(), ...f.keys()])].sort();
+  const lines = names
+    .filter((name) => l.get(name) !== f.get(name))
+    .map((name) => `  ${name}: local=${l.has(name) ? (l.get(name) ? "on" : "off") : "absent"} foreign=${f.has(name) ? (f.get(name) ? "on" : "off") : "absent"}`);
+  console.log(lines.length ? `Capabilities (differences):\n${lines.join("\n")}` : `Capabilities: identical (${names.length})`);
+}
+
+function diffPosture(local, foreign) {
+  const f = foreign || {};
+  const lines = ["autonomy_enabled", "dry_run"]
+    .filter((key) => local[key] !== f[key])
+    .map((key) => `  ${key}: local=${local[key]} foreign=${f[key]}`);
+  console.log(lines.length ? `Posture (differences):\n${lines.join("\n")}` : "Posture: identical");
+}
+
+// Read-only comparison of a foreign pack's disclosed policy against this repo's own live
+// policy. Always succeeds (never a pass/fail gate); a human uses this to decide whether to
+// adopt. The foreign pack's generator credit is always surfaced, never only its content.
+function diffCmd(path) {
+  if (!path) fail("--diff requires a file path.");
+  const foreign = readForeignPack(path);
+  const local = buildPolicyManifest(loadInputs());
+  console.log(`Comparing this repo's live policy to ${path}`);
+  console.log("=".repeat(48));
+  console.log(generatorLine(foreign));
+  console.log("");
+  diffSet("Branch denylist", local.policy.branch_denylist, foreign.policy && foreign.policy.branch_denylist);
+  diffSet("Protected paths", local.policy.protected_paths_extra, foreign.policy && foreign.policy.protected_paths_extra);
+  diffSet("Gates", local.policy.gates, foreign.policy && foreign.policy.gates);
+  diffCapabilities(local.policy.capabilities, foreign.policy && foreign.policy.capabilities);
+  diffPosture(local.posture, foreign.posture);
+}
+
+const ALIAS_RE = /^[a-zA-Z0-9][a-zA-Z0-9._-]*$/;
+
+// Vendor a foreign policy pack into this repo, refusing on any integrity or credit failure.
+// Order matters: schema validation catches a pack whose generator block was stripped
+// outright (manifest_version 2 requires it); digest self-consistency catches a pack whose
+// body was edited without recomputing content_digest; signature verification catches a
+// tampered signed pack. Only on all three passing does anything get written.
+function adoptCmd(path, alias) {
+  if (!path) fail("--adopt requires a file path.");
+  if (!alias) fail("--adopt requires --alias <name>.");
+  if (!ALIAS_RE.test(alias)) fail(`--alias "${alias}" must be a plain filesystem-safe name (letters, digits, dot, dash, underscore).`);
+  const pack = readForeignPack(path);
+  const schemaErrs = validate(schema(), pack);
+  if (schemaErrs.length) {
+    console.error(`build-policy-attestation: ${path} fails the policy-attestation schema; refusing to adopt:`);
+    for (const e of schemaErrs) console.error("  - " + e);
+    process.exit(1);
+  }
+  const mismatch = digestMismatch(pack);
+  if (mismatch) {
+    fail(`${path} is internally inconsistent: content_digest ${mismatch.content_digest} does not match its body (${mismatch.recomputed}). Refusing to adopt a pack that fails its own integrity check.`);
+  }
+  if (pack.signature) {
+    const ok = verifyMessage(attestationBytes(pack), pack.signature.sig_b64, publicKeyFromB64(pack.signature.pubkey_b64));
+    if (!ok) fail(`${path} carries a signature that does not verify. Refusing to adopt.`);
+  }
+  const destDir = join(ADOPT_ROOT, ".modonome", "policy-packs");
+  mkdirSync(destDir, { recursive: true });
+  const dest = join(destDir, `${alias}.json`);
+  writeFileSync(dest, JSON.stringify(pack, null, 2) + "\n");
+  console.log(`Imported policy pack from ${pack.generator.name} (${pack.generator.homepage}).`);
+  console.log(`Wrote ${rel(dest)}.`);
+  // Even a verified signature only proves whoever holds the matching private key signed
+  // this body, not that the key belongs to the claimed generator -- that still requires an
+  // independent, out-of-band check (the same "no TOFU" principle the knowledge-packet system
+  // applies to its peer keys). An unsigned pack has a strictly weaker guarantee: its digest
+  // proves the file was not carelessly hand-edited since generation, but says nothing about
+  // who produced it, since a determined actor can recompute a digest over an altered body.
+  console.log(
+    pack.signature
+      ? "Note: the generator credit is signed; altering it without the original private key would invalidate the signature. This does not by itself prove the key belongs to the claimed generator -- verify its fingerprint out of band if that matters for your use case."
+      : "Note: this pack is unsigned. Its generator credit is a self-asserted, digest-checked claim only -- a determined actor could recompute the digest after altering credit. Adopt only signed packs whose signing key you have independently verified if that guarantee matters for your use case."
+  );
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const argv = process.argv.slice(2);
   if (argv.includes("--check")) check();
-  else if (argv.includes("--show")) show();
-  else if (argv.includes("--verify")) verifyCmd();
+  else if (argv.includes("--diff")) diffCmd(flagValue(argv, "--diff"));
+  else if (argv.includes("--adopt")) adoptCmd(flagValue(argv, "--adopt"), flagValue(argv, "--alias"));
+  else if (argv.includes("--show")) show(flagValue(argv, "--show"));
+  else if (argv.includes("--verify")) verifyCmd(flagValue(argv, "--verify"));
   else write(process.env);
 }
