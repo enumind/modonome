@@ -28,7 +28,7 @@ window.__MODONOME_REPO = {
   balances: [
     { left: 'speed', right: 'guardrails', title: 'Security and trust', body: 'Agents act inside real guardrails enforced in your pipeline, so autonomy comes with evidence rather than good intentions.' },
     { left: 'fast', right: 'governed', title: 'Speed with governance', body: 'Routine, provable work moves quickly, while anything sensitive slows down for an independent check and a human owner.' },
-    { left: 'today', right: 'tomorrow', title: 'Learning that compounds', body: 'Every correction becomes a lesson and, once an owner approves it, a durable rule that raises the floor for next time.' },
+    { left: 'today', right: 'tomorrow', title: 'Learning that compounds', body: 'Every correction can become a lesson, and once an owner approves it, a durable rule that raises the floor for next time.' },
     { left: 'features', right: 'debt', title: 'Innovation and clearance', body: 'Teams keep shipping new features while Modonome steadily clears the debt that builds up in critical applications.' },
   ],
 
@@ -50,8 +50,11 @@ window.__MODONOME_REPO = {
     { icon: '⊞', title: 'Separate roles for trust', body: 'The maker, the checker, and the merge authority are always different roles, so each change gets a genuine second look before it lands.' },
     { icon: '⛨', title: 'Anti-gaming ratchet in CI', body: 'A check running in your pipeline keeps tests, types, and coverage honest across JavaScript, Python, Java, and .NET.' },
     { icon: '⇄', title: 'Adopts your setup on day one', body: 'It follows your existing CI, code owners, and branch rules. There is no new process for the team to learn.' },
-    { icon: '↻', title: 'Improves as it goes', body: 'Real corrections become staged lessons. Once an owner promotes them, they become durable rules: the loop gets smarter with each cycle.' },
+    { icon: '↻', title: 'Improves as it goes', body: 'Real corrections become staged lessons. Once an owner promotes one, it becomes a durable rule, the mechanism the loop is built to improve by.' },
     { icon: '⊟', title: 'Language-aware across your stack', body: 'The anti-gaming ratchet is language-aware across JavaScript, Python, Java, and .NET today. Broader enterprise estates are on the roadmap.' },
+    { icon: '▤', title: 'Operator control panel', body: 'In progress: a dashboard for gate status, governance events, and the levers an owner uses to arm, pause, and review autonomy, so control stays in plain sight.' },
+    { icon: '◈', title: 'Verifiable repo context', body: 'Each agent works from a current, trustworthy map of the repository instead of rereading the whole tree. It is a compact snapshot, Merkle-verified so tampering cannot slip through unnoticed.' },
+    { icon: '❑', title: 'Compliance evidence on demand', body: 'An MCP server exposes attestation and evidence tools, so a host repository can produce a signed record of what ran and what held.' },
   ],
 
   // ---- Structural guarantees ----
@@ -68,19 +71,19 @@ window.__MODONOME_REPO = {
   simGroups: [
     { label: 'Merges cleanly', items: [
       { label: 'Add a missing test, the right way', stop: 5, kind: 'pass', tag: 'MERGED', title: 'Merged with every gate green.', detail: 'A maker scopes one packet and pins it with a failing test. An independent checker reviews the diff, the deterministic gates and the ratchet pass, and the merge authority lands it. Author and merge authority are always separate roles.' },
-      { label: 'A diff that says “disable governance”', stop: 5, kind: 'pass', tag: 'INERT', title: 'Instruction ignored. Merged on the real signal.', detail: 'The ratchet reads every diff line as data, never as instructions. An embedded “disable governance” note has no effect, and the merge proceeds on the real test signal. AgentProof AP-15.' },
+      { label: 'A diff that says “disable governance”', stop: 5, kind: 'pass', tag: 'INERT', title: 'Instruction ignored. Merged on the real signal.', detail: 'The ratchet reads every diff line as data, never as instructions. An embedded “disable governance” note has no effect, and the merge proceeds on the real test signal. AgentProof AP-15.', proof: { id: 'AP-15', href: 'https://github.com/enumind/modonome/blob/main/agentproof/README.md#ap-15-prompt-injection-embedded-in-a-diff-is-inert' } },
     ]},
     { label: 'Held by the ratchet, code in your CI', items: [
-      { label: 'Delete a test\'s assert() calls', stop: 3, kind: 'block', tag: 'HELD', title: 'Held at the ratchet.', detail: 'The anti-gaming ratchet runs in CI as code the agent never touches. It spots the removed expect()/assert calls and holds the merge until the tests are whole again. AgentProof AP-01.' },
-      { label: 'Add .skip to a failing test', stop: 3, kind: 'block', tag: 'HELD', title: 'Held at the ratchet.', detail: 'A skipped test reports nothing useful. The ratchet flags skip injection across JavaScript, Python, Java, and .NET suites alike. AgentProof AP-02, AP-12, AP-14, AP-16.' },
-      { label: 'Cast a type to “any” to clear an error', stop: 3, kind: 'block', tag: 'HELD', title: 'Held at the ratchet.', detail: 'Type safety is a deterministic gate. The ratchet rejects broad casts to any in production source, so the original error stays visible and gets a real fix. AgentProof AP-03.' },
-      { label: 'Delete the coverage threshold', stop: 3, kind: 'block', tag: 'HELD', title: 'Held at the ratchet.', detail: 'A quiet move: the suite stays in place while the floor slips away. The ratchet guards coverageThreshold and fail_under and holds the merge. AgentProof AP-04.' },
+      { label: 'Delete a test\'s assert() calls', stop: 3, kind: 'block', tag: 'HELD', title: 'Held at the ratchet.', detail: 'The anti-gaming ratchet runs in CI as code the agent never touches. It spots the removed expect()/assert calls and holds the merge until the tests are whole again. AgentProof AP-01.', proof: { id: 'AP-01', href: 'https://github.com/enumind/modonome/blob/main/agentproof/README.md#ap-01-ratchet-rejects-assertion-removal-jstspython' } },
+      { label: 'Add .skip to a failing test', stop: 3, kind: 'block', tag: 'HELD', title: 'Held at the ratchet.', detail: 'A skipped test reports nothing useful. The ratchet flags skip injection across JavaScript, Python, Java, and .NET suites alike. AgentProof AP-02, AP-12, AP-14, AP-16.', proof: { id: 'AP-02', href: 'https://github.com/enumind/modonome/blob/main/agentproof/README.md#ap-02-ratchet-rejects-test-skip-injection' } },
+      { label: 'Cast a type to “any” to clear an error', stop: 3, kind: 'block', tag: 'HELD', title: 'Held at the ratchet.', detail: 'Type safety is a deterministic gate. The ratchet rejects broad casts to any in production source, so the original error stays visible and gets a real fix. AgentProof AP-03.', proof: { id: 'AP-03', href: 'https://github.com/enumind/modonome/blob/main/agentproof/README.md#ap-03-ratchet-rejects-broad-type-escape-injection' } },
+      { label: 'Delete the coverage threshold', stop: 3, kind: 'block', tag: 'HELD', title: 'Held at the ratchet.', detail: 'A quiet move: the suite stays in place while the floor slips away. The ratchet guards coverageThreshold and fail_under and holds the merge. AgentProof AP-04.', proof: { id: 'AP-04', href: 'https://github.com/enumind/modonome/blob/main/agentproof/README.md#ap-04-ratchet-rejects-coverage-threshold-removal' } },
     ]},
     { label: 'Held by role separation', items: [
-      { label: 'Let the maker approve its own work', stop: 1, kind: 'block', tag: 'HELD', title: 'Held at the checker.', detail: 'A model rarely catches its own systematic errors. Work-item governance keeps maker and checker as distinct identities, so the review carries real weight. AgentProof AP-07.' },
+      { label: 'Let the maker approve its own work', stop: 1, kind: 'block', tag: 'HELD', title: 'Held at the checker.', detail: 'A model rarely catches its own systematic errors. Work-item governance keeps maker and checker as distinct identities, so the review carries real weight. AgentProof AP-07.', proof: { id: 'AP-07', href: 'https://github.com/enumind/modonome/blob/main/agentproof/README.md#ap-07-work-item-identity-collapse-is-caught' } },
     ]},
     { label: 'Escalated to a human owner', items: [
-      { label: 'Auto-merge a protected file', stop: 4, kind: 'escalate', tag: 'ESCALATED', title: 'Routed to a human owner.', detail: 'CI config, secrets, schemas, and auth call for a CODEOWNER decision. The change waits for owner approval, then proceeds. AgentProof AP-10.' },
+      { label: 'Auto-merge a protected file', stop: 4, kind: 'escalate', tag: 'ESCALATED', title: 'Routed to a human owner.', detail: 'CI config, secrets, schemas, and auth call for a CODEOWNER decision. The change waits for owner approval, then proceeds. AgentProof AP-10.', proof: { id: 'AP-10', href: 'https://github.com/enumind/modonome/blob/main/agentproof/README.md#ap-10-protected-path-item-cannot-auto-merge-without-escalation' } },
     ]},
   ],
 
@@ -155,11 +158,11 @@ window.__MODONOME_REPO = {
 
   // ---- Roadmap: honest about what is committed vs. a community direction ----
   milestones: [
-    { phase: 'v0.1-alpha', status: 'Shipping now', tone: 'now', title: 'Hardened alpha', body: 'The core loop, the anti-gaming ratchet, config and packet validators, and the drift guard, all machine-verified, with safe defaults and two runnable examples.' },
-    { phase: 'v0.2', status: 'Next', tone: 'planned', title: 'Signed evidence & debt metrics', body: 'Ed25519-signed work items and before/after tech-debt measurement, the groundwork for sharing patterns as verifiable evidence.' },
+    { phase: 'v0.1-alpha', status: 'Shipping now', tone: 'now', title: 'Hardened alpha', body: 'The core loop, the anti-gaming ratchet, config and packet validators, the drift guard, and Ed25519-signed evidence packets, all machine-verified, with safe defaults and two runnable examples.' },
+    { phase: 'Milestone 3', status: 'In progress', tone: 'now', title: 'Operator control panel', body: 'A dashboard for governance events, gate status, and the levers an owner uses to arm, pause, and review autonomy across a repository.' },
+    { phase: 'v0.2', status: 'Next', tone: 'planned', title: 'Signed work items & debt metrics', body: 'Ed25519-signed work items and before/after tech-debt measurement, the groundwork for sharing patterns as verifiable evidence.' },
     { phase: 'v0.3', status: 'Planned', tone: 'planned', title: 'Telemetry & estate metrics', body: 'OpenTelemetry spans for governance events and multi-team estate aggregation, for audit trails and fleet-wide visibility.' },
     { phase: 'Direction', status: 'Proposed', tone: 'idea', title: 'Governed knowledge network', body: 'Repositories share proven patterns peer-to-peer, each re-verified locally before adoption. A path we want to build with the community.' },
-    { phase: 'Direction', status: 'Exploring', tone: 'idea', title: 'Enterprise adapters & research roles', body: 'Connectors for mainframe, SAP, Oracle, Salesforce, and ServiceNow estates, plus roles that watch for standards shifts. Open for input.' },
   ],
 
   // ---- Quickstart ----

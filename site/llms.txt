@@ -1,0 +1,33 @@
+# Modonome
+
+> Governance and guardrails for AI coding agents. Modonome is an off-by-default
+> engineering loop that keeps making, checking, and merging in separate hands,
+> runs every change through gates that live in your CI, and turns on only when a
+> repository owner arms it. It is a prompt and a set of scripts that run inside a
+> harness you already have: a coding agent, a CI job, or a human session.
+
+## What it does
+
+- Keeps the maker, the checker, and the merge authority as separate roles, so no agent approves its own work.
+- Runs an anti-gaming ratchet in CI, outside the agent's write scope, that holds a merge when tests, types, or coverage are weakened. Language-aware across JavaScript, Python, Java, and .NET.
+- Adopts your existing CI, code owners, and branch rules. There is no new process to learn.
+- Promotes real corrections into durable rules, so the loop improves over time.
+- Provides an operator control panel, a Merkle-verified repository snapshot for trustworthy agent context, and compliance evidence and attestation through an MCP server.
+
+## AgentProof
+
+AgentProof is the adversarial benchmark for agent gate-integrity. It runs a real attack for each scenario and confirms the control catches it. Modonome scores 25/25 HARDENED on the normative set, and 10/10 on the extended set, for 35/35 total. Conformance: HARDENED is 25/25 normative, PARTIAL is 20 to 24, UNHARDENED is 19 or fewer. Run it with `node agentproof/runner.mjs`.
+
+## Get started
+
+- Preview safely, writing nothing: `npx modonome dry-run .`
+- Scaffold local state, autonomy still at rest: `npx modonome scaffold . --write`
+- Prove the controls on your own setup: `node agentproof/runner.mjs`
+
+## Links
+
+- Site: https://modonome.com
+- Repository: https://github.com/enumind/modonome
+- AgentProof: https://modonome.com/agentproof/
+- Quickstart: https://modonome.com/quickstart/
+- License: MIT

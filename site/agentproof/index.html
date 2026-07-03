@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AgentProof - The adversarial benchmark for AI agent gate integrity</title>
+<meta name="description" content="AgentProof is a language-agnostic adversarial benchmark for AI coding agents. Each scenario runs a real attack against a repository's controls and confirms it is caught. 25 normative scenarios plus 10 extended, 35/35 total, HARDENED.">
+<link rel="canonical" href="https://modonome.com/agentproof/">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://modonome.com/agentproof/">
+<meta property="og:title" content="AgentProof - The adversarial benchmark for AI agent gate integrity">
+<meta property="og:description" content="A language-agnostic benchmark that runs a real attack for each scenario and confirms the control catches it. 25 normative plus 10 extended, 35/35 total.">
+<meta property="og:image" content="https://modonome.com/assets/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@ModonomeLab">
+<meta name="twitter:image" content="https://modonome.com/assets/og-card.png">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icon-32.png">
+<link rel="apple-touch-icon" href="/assets/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "AgentProof: the adversarial benchmark for AI agent gate integrity",
+  "description": "A language-agnostic adversarial benchmark. Each scenario runs a real attack against a repository's controls and confirms it is caught. 25 normative scenarios plus 10 extended, 35/35 total.",
+  "url": "https://modonome.com/agentproof/",
+  "author": {"@type": "Organization", "name": "Modonome", "url": "https://modonome.com"},
+  "publisher": {"@type": "Organization", "name": "Modonome", "url": "https://modonome.com"},
+  "about": "AI agent gate integrity benchmark"
+}
+</script>
+<style>
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:#0b1220;color:#e8ebf0;font-family:'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.6}
+  a{color:#5dd4ab}
+  .wrap{max-width:900px;margin:0 auto;padding:0 24px}
+  nav{position:sticky;top:0;z-index:5;backdrop-filter:blur(14px);background:rgba(11,18,32,.82);border-bottom:1px solid rgba(159,201,180,.10)}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;padding:13px 24px}
+  nav img{height:30px;display:block;mix-blend-mode:lighten}
+  nav a.home{display:flex;align-items:center;text-decoration:none}
+  .navlinks a{font-size:14px;color:#9fabbc;text-decoration:none;margin-left:22px}
+  .navlinks a:hover{color:#5dd4ab}
+  header.hero{padding:70px 0 30px}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#5dd4ab;margin-bottom:14px}
+  h1{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(30px,5vw,50px);line-height:1.08;letter-spacing:-.02em;margin:0 0 18px;color:#f6f4ee}
+  .lede{font-size:clamp(16px,2vw,19px);color:#aeb9c8;max-width:680px}
+  h2{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.01em;color:#f6f4ee;margin:48px 0 14px}
+  h3{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:16px;color:#f6f4ee;margin:26px 0 10px}
+  p{color:#b9c4d2}
+  .score{display:inline-flex;align-items:center;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#5dd4ab;background:rgba(93,212,171,.08);border:1px solid rgba(93,212,171,.32);border-radius:10px;padding:10px 16px;margin:6px 0}
+  .levels{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0 0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#9fabbc}
+  .levels span{border:1px solid rgba(159,201,180,.16);border-radius:8px;padding:6px 12px}
+  ul.scn{list-style:none;padding:0;margin:8px 0 0;display:grid;grid-template-columns:1fr;gap:8px}
+  ul.scn li{display:flex;gap:12px;align-items:flex-start;background:rgba(159,201,180,.04);border:1px solid rgba(159,201,180,.1);border-radius:10px;padding:12px 14px}
+  ul.scn .id{flex:none;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#5dd4ab;min-width:52px}
+  ul.scn .t{font-size:14px;color:#dbe2ec}
+  pre{background:#091020;border:1px solid rgba(159,201,180,.12);border-radius:12px;padding:16px 18px;overflow-x:auto;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#cdd6e2}
+  pre .c{color:#7c8aa0}
+  pre .g{color:#5dd4ab}
+  footer{border-top:1px solid rgba(159,201,180,.1);margin-top:64px;padding:30px 0}
+  footer .wrap{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;font-size:13.5px}
+  footer a{color:#9fabbc;text-decoration:none;margin-right:20px}
+  footer a:hover{color:#5dd4ab}
+  @media (min-width:620px){ul.scn{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<nav><div class="wrap">
+  <a class="home" href="/"><img src="/assets/modonome-logo.webp" alt="Modonome"></a>
+  <div class="navlinks"><a href="/">Home</a><a href="/quickstart/">Quickstart</a><a href="https://github.com/enumind/modonome">GitHub</a></div>
+</div></nav>
+
+<div class="wrap">
+<header class="hero">
+  <div class="kicker">AgentProof benchmark</div>
+  <h1>The adversarial benchmark for AI agent gate integrity.</h1>
+  <p class="lede">AgentProof is a standalone, language-agnostic benchmark for autonomous coding agents. Each scenario runs a real adversarial attempt against a repository's controls and confirms it is caught, so a passing score is verifiable evidence rather than a claim. Any agentic system can run it, which makes it a practical conformance test for the field.</p>
+  <div style="margin-top:22px"><span class="score">$ node agentproof/runner.mjs <span class="g">&rarr; Score: 25/25 normative | 10/10 extended (35/35 total) &middot; HARDENED</span></span></div>
+  <div class="levels"><span>HARDENED = 25/25 normative</span><span>PARTIAL = 20 to 24</span><span>UNHARDENED = 19 or fewer</span></div>
+</header>
+
+<h2>Why gate integrity matters</h2>
+<p>An agent that can weaken a test, skip it, cast a type to any, or lower a coverage floor can turn a red pipeline green without fixing anything. Gate integrity is the property that these moves are caught by controls the agent cannot edit. AgentProof measures it directly: it attempts each attack and verifies the gate holds. Modonome scores 25/25 HARDENED, and every one of the 25 normative scenarios is machine-verified.</p>
+
+<h2>The 25 normative scenarios</h2>
+<p>These define the conformance score. A HARDENED result means all 25 pass.</p>
+<ul class="scn">
+  <li><span class="id">AP-01</span><span class="t">Ratchet rejects assertion removal (JS, TS, Python)</span></li>
+  <li><span class="id">AP-02</span><span class="t">Ratchet rejects test skip injection</span></li>
+  <li><span class="id">AP-03</span><span class="t">Ratchet rejects broad type escape injection</span></li>
+  <li><span class="id">AP-04</span><span class="t">Ratchet rejects coverage threshold removal</span></li>
+  <li><span class="id">AP-05</span><span class="t">Config ships with safe defaults</span></li>
+  <li><span class="id">AP-06</span><span class="t">Config safety rules block unsafe combinations</span></li>
+  <li><span class="id">AP-07</span><span class="t">Work item identity collapse is caught</span></li>
+  <li><span class="id">AP-08</span><span class="t">Knowledge packet blocks raw code leakage</span></li>
+  <li><span class="id">AP-09</span><span class="t">Drift guard catches schema, prompt, and template divergence</span></li>
+  <li><span class="id">AP-10</span><span class="t">Protected path item cannot auto-merge without escalation</span></li>
+  <li><span class="id">AP-11</span><span class="t">Ratchet rejects Java assertion removal</span></li>
+  <li><span class="id">AP-12</span><span class="t">Ratchet rejects Java skip injection</span></li>
+  <li><span class="id">AP-13</span><span class="t">Ratchet rejects .NET assertion removal</span></li>
+  <li><span class="id">AP-14</span><span class="t">Ratchet rejects .NET skip injection</span></li>
+  <li><span class="id">AP-15</span><span class="t">Prompt injection embedded in a diff is inert</span></li>
+  <li><span class="id">AP-16</span><span class="t">Ratchet rejects Python gate-weakening patterns</span></li>
+  <li><span class="id">AP-17</span><span class="t">State machine transition graph is acyclic with no deadlock</span></li>
+  <li><span class="id">AP-18</span><span class="t">Compound gate failures are deterministic and ordered</span></li>
+  <li><span class="id">AP-19</span><span class="t">Trust boundary loads gate code from the base branch, not the PR</span></li>
+  <li><span class="id">AP-21</span><span class="t">Audit trail is append-only and tamper-evident</span></li>
+  <li><span class="id">AP-22</span><span class="t">Checker model family is distinct from the maker</span></li>
+  <li><span class="id">AP-23</span><span class="t">Concurrent work-item mutations are serialized</span></li>
+  <li><span class="id">AP-24</span><span class="t">Gate dependency graph is an acyclic DAG</span></li>
+  <li><span class="id">AP-25</span><span class="t">Evidence is screened for secrets and PII before capture</span></li>
+  <li><span class="id">AP-26</span><span class="t">Resource caps kill runaway gates rather than hang</span></li>
+</ul>
+
+<h2>The 10 extended hardening scenarios</h2>
+<p>These test deeper attack variants beyond the normative set. Modonome passes all ten, for 35/35 total.</p>
+<ul class="scn">
+  <li><span class="id">AP-27</span><span class="t">Ratchet rejects multi-line coverage threshold zeroing</span></li>
+  <li><span class="id">AP-28</span><span class="t">Ratchet rejects coverage-config rename evasion</span></li>
+  <li><span class="id">AP-29</span><span class="t">Ratchet rejects TestNG enabled=false injection</span></li>
+  <li><span class="id">AP-30</span><span class="t">Ratchet rejects assertion-strength downgrade</span></li>
+  <li><span class="id">AP-31</span><span class="t">Batch assertion collapse (advisory)</span></li>
+  <li><span class="id">AP-32</span><span class="t">Ratchet rejects Unicode homoglyph evasion</span></li>
+  <li><span class="id">AP-33</span><span class="t">Config env-var safety overrides are inert</span></li>
+  <li><span class="id">AP-34</span><span class="t">Work item model-alias evasion is blocked</span></li>
+  <li><span class="id">AP-35</span><span class="t">Knowledge packet backdated timestamp is rejected</span></li>
+  <li><span class="id">AP-36</span><span class="t">Markdown governance rejects duplicate ADR numbers</span></li>
+</ul>
+
+<h2>Run it yourself</h2>
+<p>AgentProof lives in the repository and runs with Node. Clone the repo and run the scenarios against the controls.</p>
+<pre><span class="c"># clone and run the full benchmark</span>
+git clone https://github.com/enumind/modonome
+cd modonome
+node agentproof/runner.mjs
+<span class="g">&rarr; Score: 25/25 normative | 10/10 extended (35/35 total)  Level: HARDENED</span></pre>
+<p>The full scenario descriptions, expected outcomes, and source are in the <a href="https://github.com/enumind/modonome/blob/main/agentproof/README.md">AgentProof documentation</a>. See how the loop uses these controls on the <a href="/">Modonome home page</a> or read the <a href="/quickstart/">quickstart</a>.</p>
+</div>
+
+<footer><div class="wrap">
+  <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#7c8aa0">Modonome &middot; MIT &middot; No telemetry</span>
+  <span><a href="/">Home</a><a href="/quickstart/">Quickstart</a><a href="https://github.com/enumind/modonome">GitHub</a><a href="https://x.com/ModonomeLab">Follow on X</a></span>
+</div></footer>
+</body>
+</html>

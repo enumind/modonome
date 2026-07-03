@@ -65,7 +65,7 @@ const NORMATIVE_TITLES = {
   "ap-26-resource-exhaustion-prevention.mjs":  "Resource caps: runaway gates killed, not allowed to hang",
 };
 
-// Extended suite: 9 additional hardening scenarios (AP-27 through AP-35).
+// Extended suite: 10 additional hardening scenarios (AP-27 through AP-36).
 // These test deeper attack variants beyond the normative 25.
 // All must pass for HARDENED, but they do not alter the normative 25/25 count.
 const EXTENDED_TITLES = {

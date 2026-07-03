@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quickstart - Run AI coding agents safely with Modonome</title>
+<meta name="description" content="Set up guardrails for AI coding agents in your repository. Modonome starts disabled and in dry-run: preview what it would do, scaffold local state, and prove the controls before autonomy is ever armed.">
+<link rel="canonical" href="https://modonome.com/quickstart/">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://modonome.com/quickstart/">
+<meta property="og:title" content="Quickstart - Run AI coding agents safely with Modonome">
+<meta property="og:description" content="Modonome starts disabled and in dry-run. Preview what it would do, scaffold local state, and prove the controls before autonomy is ever armed.">
+<meta property="og:image" content="https://modonome.com/assets/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@ModonomeLab">
+<meta name="twitter:image" content="https://modonome.com/assets/og-card.png">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icon-32.png">
+<link rel="apple-touch-icon" href="/assets/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "Run AI coding agents safely with Modonome",
+  "description": "Preview, scaffold, review, and prove the controls before arming autonomy.",
+  "url": "https://modonome.com/quickstart/",
+  "step": [
+    {"@type": "HowToStep", "name": "Preview safely", "text": "Run npx modonome dry-run . to read the repo and list proposed work. Nothing is written."},
+    {"@type": "HowToStep", "name": "Scaffold local state", "text": "Run npx modonome scaffold . --write to create the .modonome directory, disabled and in dry-run."},
+    {"@type": "HowToStep", "name": "Review the config", "text": "Confirm protected paths, gates, and caps. Validate with npx modonome validate .modonome/config.yaml."},
+    {"@type": "HowToStep", "name": "Prove the controls", "text": "Run node agentproof/runner.mjs to confirm every safeguard holds on your setup."}
+  ]
+}
+</script>
+<style>
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:#0b1220;color:#e8ebf0;font-family:'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.6}
+  a{color:#5dd4ab}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  nav{position:sticky;top:0;z-index:5;backdrop-filter:blur(14px);background:rgba(11,18,32,.82);border-bottom:1px solid rgba(159,201,180,.10)}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;padding:13px 24px;max-width:900px}
+  nav img{height:30px;display:block;mix-blend-mode:lighten}
+  nav a.home{display:flex;align-items:center;text-decoration:none}
+  .navlinks a{font-size:14px;color:#9fabbc;text-decoration:none;margin-left:22px}
+  .navlinks a:hover{color:#5dd4ab}
+  header.hero{padding:70px 0 24px}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#5dd4ab;margin-bottom:14px}
+  h1{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(30px,5vw,50px);line-height:1.08;letter-spacing:-.02em;margin:0 0 18px;color:#f6f4ee}
+  .lede{font-size:clamp(16px,2vw,19px);color:#aeb9c8}
+  .safe{display:inline-flex;align-items:center;gap:9px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#5dd4ab;background:rgba(93,212,171,.07);border:1px solid rgba(93,212,171,.25);border-radius:9px;padding:9px 14px;margin-top:18px}
+  h2{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(20px,3vw,26px);letter-spacing:-.01em;color:#f6f4ee;margin:44px 0 6px}
+  .step{font-family:'IBM Plex Mono',monospace;font-size:12px;color:#5dd4ab;letter-spacing:.08em}
+  p{color:#b9c4d2}
+  pre{background:#091020;border:1px solid rgba(159,201,180,.12);border-radius:12px;padding:15px 18px;overflow-x:auto;font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:#cdd6e2;margin:12px 0}
+  pre .c{color:#7c8aa0}
+  .note{background:rgba(159,201,180,.04);border:1px solid rgba(159,201,180,.12);border-left:3px solid #5dd4ab;border-radius:8px;padding:14px 16px;font-size:14px;color:#b9c4d2;margin:16px 0}
+  footer{border-top:1px solid rgba(159,201,180,.1);margin-top:60px;padding:30px 0}
+  footer .wrap{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;font-size:13.5px}
+  footer a{color:#9fabbc;text-decoration:none;margin-right:20px}
+  footer a:hover{color:#5dd4ab}
+</style>
+</head>
+<body>
+<nav><div class="wrap">
+  <a class="home" href="/"><img src="/assets/modonome-logo.webp" alt="Modonome"></a>
+  <div class="navlinks"><a href="/">Home</a><a href="/agentproof/">AgentProof</a><a href="https://github.com/enumind/modonome">GitHub</a></div>
+</div></nav>
+
+<div class="wrap">
+<header class="hero">
+  <div class="kicker">Quickstart</div>
+  <h1>Run AI coding agents safely.</h1>
+  <p class="lede">Modonome runs beside your repository. It starts disabled and in dry-run, so every step below is safe. You preview what it would do, adopt local state when ready, and prove the controls before autonomy is ever armed.</p>
+  <div class="safe">&#10003; Off by default &middot; nothing is written until you choose</div>
+</header>
+
+<h2><span class="step">STEP 1</span><br>See what it would do</h2>
+<p>The dry run reads your repository, detects the stack and gates, lists protected paths, and proposes a few bounded pieces of work. It writes nothing.</p>
+<pre><span class="c"># read-only, requires the published npm package</span>
+npx modonome dry-run .</pre>
+
+<h2><span class="step">STEP 2</span><br>Add local state</h2>
+<p>Scaffolding creates a <code>.modonome/</code> directory with a config and state files, all disabled and in dry-run. It leaves your existing files untouched. Add <code>--write</code> to apply, or run without it to preview. If your repo already uses <code>.autonomy/</code>, Modonome adopts it instead.</p>
+<pre>npx modonome scaffold . --write
+<span class="c">&rarr; .modonome/ created  &middot;  autonomy_enabled: false</span></pre>
+
+<h2><span class="step">STEP 3</span><br>Review and validate</h2>
+<p>Open <code>.modonome/config.yaml</code>. Confirm the protected paths, the gates, and the caps. Keep <code>autonomy_enabled</code> and <code>auto_merge</code> off. Then validate.</p>
+<pre>npx modonome validate .modonome/config.yaml</pre>
+
+<h2><span class="step">STEP 4</span><br>Prove the controls</h2>
+<p>Run AgentProof to confirm every safeguard holds on your own setup. It runs a real adversarial attempt for each scenario and confirms it is caught.</p>
+<pre>node agentproof/runner.mjs
+<span class="c">&rarr; Score: 25/25 normative | 10/10 extended (35/35 total)  Level: HARDENED</span></pre>
+<p>Read what each scenario proves on the <a href="/agentproof/">AgentProof page</a>.</p>
+
+<h2>Arming later</h2>
+<p>Armed mode is a deliberate, owner-only step. Autonomy turns on only when an owner sets <code>MODONOME_ARMED=true</code> in the CI or harness environment, and only after branch protection, required CI checks, and code owners are in place. Until then, Modonome stays at rest and proposes small, fenced, independently checked changes for human review.</p>
+<div class="note">Every change stays small and pinned by a test, the maker and checker are always different roles, and the gates run in your CI where the agent cannot edit them. That is what keeps autonomy trustworthy.</div>
+
+<p>The full guide, including the complete arming checklist, is in the <a href="https://github.com/enumind/modonome/blob/main/QUICKSTART.md">QUICKSTART documentation</a>. Back to the <a href="/">Modonome home page</a>.</p>
+</div>
+
+<footer><div class="wrap">
+  <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#7c8aa0">Modonome &middot; MIT &middot; No telemetry</span>
+  <span><a href="/">Home</a><a href="/agentproof/">AgentProof</a><a href="https://github.com/enumind/modonome">GitHub</a><a href="https://x.com/ModonomeLab">Follow on X</a></span>
+</div></footer>
+</body>
+</html>

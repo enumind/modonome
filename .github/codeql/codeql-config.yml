@@ -5,7 +5,18 @@ name: "CodeQL config"
 # sandboxed browser context, so new Function(), innerHTML assignments, and
 # fetch() of user-provided URLs are by design. Suppressing per-file keeps the
 # alert list actionable for the hand-written source files.
+# site/index.html uses a custom template attribute syntax, onClick="{{ expr }}",
+# consumed by the DC runtime in support.js (never executed as an inline browser
+# event handler). CodeQL's HTML extractor parses the mustache placeholder as
+# literal inline JavaScript, where "{{ x.y }}" is valid JS: two nested block
+# statements around the bare expression statement "x.y", which correctly has
+# no effect as JS since it is never JS. This idiom appears throughout the file
+# by design, so it is suppressed per-file rather than per-line.
 query-filters:
+  - exclude:
+      id: js/useless-expression
+      paths:
+        - "site/index.html"
   - exclude:
       id: js/code-injection
       paths:
