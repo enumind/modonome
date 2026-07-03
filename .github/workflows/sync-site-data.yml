@@ -1,7 +1,9 @@
-# Keeps site/repo-data.js in sync with the source docs (README, AgentProof, ROADMAP,
+# Keeps the site in sync with the source docs (README, AgentProof, ROADMAP,
 # package.json). Runs on push to main when any of those files change, updates
-# the fallback values in site/repo-data.js, and commits the result if anything
-# changed. The pages.yml deploy then triggers automatically on the commit.
+# the fallback values in site/repo-data.js and the engineBase line in
+# site/index.html, regenerates the repo snapshot so the Merkle gate stays green,
+# and commits the result if anything changed. The pages.yml deploy then triggers
+# automatically on the commit.
 name: sync-site-data
 
 on:
@@ -26,16 +28,23 @@ jobs:
       - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version: 20
-      - name: Sync site/repo-data.js from source docs
+      - name: Install dependencies
+        run: npm install
+      - name: Sync site data from source docs
         run: node scripts/sync-site-data.mjs
+      - name: Regenerate snapshot if site changed
+        run: |
+          if ! git diff --quiet site/; then
+            node scripts/snapshot.mjs .
+          fi
       - name: Commit if changed
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          if git diff --quiet site/repo-data.js; then
+          if git diff --quiet site/ .modonome/snapshot/; then
             echo "No changes to commit."
           else
-            git add site/repo-data.js
-            git commit -m "chore: sync site/repo-data.js from source docs"
+            git add site/index.html site/repo-data.js .modonome/snapshot/
+            git commit -m "chore: sync site data from source docs"
             git push
           fi

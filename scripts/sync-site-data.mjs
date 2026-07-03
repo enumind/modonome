@@ -1,11 +1,14 @@
 #!/usr/bin/env node
-// Sync live data from RELEASE-EVIDENCE.md and work items into site/index.html.
-// Pulls: gate count, work queue counts, promoted learnings, armed status.
+// Sync live data from source docs into the site.
+// Into site/index.html (engineBase): gate count, work queue counts, promoted
+// learnings, armed status, product version.
+// Into site/repo-data.js (meta): product version (package.json), AgentProof
+// normative score and level (agentproof/README.md).
 // Ensures site always reflects real repo state, never hand-edited fiction.
 //
 // Usage:
-//   node scripts/sync-site-data.mjs            read evidence and update site
-//   node scripts/sync-site-data.mjs --verify   fail if site data is stale
+//   node scripts/sync-site-data.mjs            read sources and update site
+//   node scripts/sync-site-data.mjs --verify   fail if engineBase is stale
 import { readFileSync, writeFileSync, existsSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -63,13 +66,47 @@ function countWorkItems() {
   return byState;
 }
 
-// Parse version from .modonome/version
+// Parse the product version from package.json. (.modonome/version holds a
+// schema version, not the product version, so it must not be used here.)
 function readVersion() {
-  const vPath = join(root, ".modonome", "version");
-  if (existsSync(vPath)) {
-    return readFileSync(vPath, "utf8").trim();
+  const pkgPath = join(root, "package.json");
+  if (existsSync(pkgPath)) {
+    try {
+      const v = JSON.parse(readFileSync(pkgPath, "utf8")).version;
+      if (v) return v.startsWith("v") ? v : "v" + v;
+    } catch (e) {
+      // fall through to default
+    }
   }
   return "v0.1.0";
+}
+
+// Parse the normative AgentProof score and level from agentproof/README.md.
+function parseAgentproof() {
+  const apPath = join(root, "agentproof", "README.md");
+  const out = { score: "25/25", level: "HARDENED" };
+  if (!existsSync(apPath)) return out;
+  const content = readFileSync(apPath, "utf8");
+  const scoreMatch = content.match(/Score:\s*(\d+\/\d+)\s*normative/i);
+  if (scoreMatch) out.score = scoreMatch[1];
+  const levelMatch = content.match(/Level:\s*([A-Z]+)/);
+  if (levelMatch) out.level = levelMatch[1];
+  return out;
+}
+
+// Update the meta block in site/repo-data.js (version, score, level).
+function updateRepoData(data) {
+  const dataPath = join(root, "site", "repo-data.js");
+  if (!existsSync(dataPath)) {
+    console.warn("site/repo-data.js not found; skipping update.");
+    return;
+  }
+  let js = readFileSync(dataPath, "utf8");
+  js = js.replace(/(version:\s*')[^']*(')/, `$1${data.version}$2`);
+  js = js.replace(/(agentproofScore:\s*')[^']*(')/, `$1${data.score}$2`);
+  js = js.replace(/(agentproofLevel:\s*')[^']*(')/, `$1${data.level}$2`);
+  writeFileSync(dataPath, js);
+  console.log("Updated site/repo-data.js meta (version, score, level).");
 }
 
 // Update site/index.html with live data
@@ -133,12 +170,15 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     const evidence = parseEvidence();
     const workItems = countWorkItems();
     const version = readVersion();
+    const agentproof = parseAgentproof();
 
     const data = {
       ...evidence,
       rules: workItems.completed || 0,
       queue: workItems.queued || 0,
       version,
+      score: agentproof.score,
+      level: agentproof.level,
     };
 
     if (verify) {
@@ -146,7 +186,8 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
       process.exit(ok ? 0 : 1);
     } else {
       updateSite(data);
-      console.log(`Synced: ${data.learnings.length} learnings, ${data.gates} gates, ${data.queue} queued, armed=${data.armed}`);
+      updateRepoData(data);
+      console.log(`Synced: ${data.learnings.length} learnings, ${data.gates} gates, ${data.queue} queued, armed=${data.armed}, version=${data.version}, score=${data.score} ${data.level}`);
       process.exit(0);
     }
   } catch (e) {

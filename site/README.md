@@ -44,12 +44,17 @@ Two layers keep the page in sync with the product:
 2. **Build-time (automated):** `.github/workflows/sync-site-data.yml` runs on every push to
    `main` that changes `README.md`, `ROADMAP.md`, `agentproof/README.md`, or `package.json`.
    It runs `scripts/sync-site-data.mjs`, which updates `meta.version`, `meta.agentproofScore`,
-   and `meta.agentproofLevel` in `site/repo-data.js`, commits, and pushes. The `pages.yml`
-   deploy then auto-triggers on the commit to `site/**`.
+   and `meta.agentproofLevel` in `site/repo-data.js` (from `package.json` and
+   `agentproof/README.md`) and the `engineBase` line in `site/index.html` (from
+   `RELEASE-EVIDENCE.md` and the work-item queue), regenerates the repo snapshot, then commits
+   and pushes. The `pages.yml` deploy auto-triggers on the commit to `site/**`.
 
 Feature copy changes (feature titles, body text, loop steps, roadmap milestones) are updated
 by editing `site/repo-data.js` and `site/content/features.json` in the same PR as the product
-change. The sync script handles structured fields only (version, score, level).
+change. The sync script handles structured fields only (version, score, level). Prose claims in
+`index.html` (the JSON-LD block, the `noscript` fallback, the AgentProof section, and the
+`/agentproof/` and `/quickstart/` content pages) are hand-maintained: update them in the same PR
+when scenario counts or scores change.
 
 ## Keeping it in sync with features
 

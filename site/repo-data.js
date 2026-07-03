@@ -155,11 +155,11 @@ window.__MODONOME_REPO = {
 
   // ---- Roadmap: honest about what is committed vs. a community direction ----
   milestones: [
-    { phase: 'v0.1-alpha', status: 'Shipping now', tone: 'now', title: 'Hardened alpha', body: 'The core loop, the anti-gaming ratchet, config and packet validators, and the drift guard, all machine-verified, with safe defaults and two runnable examples.' },
-    { phase: 'v0.2', status: 'Next', tone: 'planned', title: 'Signed evidence & debt metrics', body: 'Ed25519-signed work items and before/after tech-debt measurement, the groundwork for sharing patterns as verifiable evidence.' },
+    { phase: 'v0.1-alpha', status: 'Shipping now', tone: 'now', title: 'Hardened alpha', body: 'The core loop, the anti-gaming ratchet, config and packet validators, the drift guard, and Ed25519-signed evidence packets, all machine-verified, with safe defaults and two runnable examples.' },
+    { phase: 'Milestone 3', status: 'In progress', tone: 'now', title: 'Operator control panel', body: 'A dashboard for governance events, gate status, and the levers an owner uses to arm, pause, and review autonomy across a repository.' },
+    { phase: 'v0.2', status: 'Next', tone: 'planned', title: 'Signed work items & debt metrics', body: 'Ed25519-signed work items and before/after tech-debt measurement, the groundwork for sharing patterns as verifiable evidence.' },
     { phase: 'v0.3', status: 'Planned', tone: 'planned', title: 'Telemetry & estate metrics', body: 'OpenTelemetry spans for governance events and multi-team estate aggregation, for audit trails and fleet-wide visibility.' },
     { phase: 'Direction', status: 'Proposed', tone: 'idea', title: 'Governed knowledge network', body: 'Repositories share proven patterns peer-to-peer, each re-verified locally before adoption. A path we want to build with the community.' },
-    { phase: 'Direction', status: 'Exploring', tone: 'idea', title: 'Enterprise adapters & research roles', body: 'Connectors for mainframe, SAP, Oracle, Salesforce, and ServiceNow estates, plus roles that watch for standards shifts. Open for input.' },
   ],
 
   // ---- Quickstart ----
