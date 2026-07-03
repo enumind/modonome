@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:db8a8e930e8e8ce190421e0e410ef229f47e9f2fa64a546a2c94cf429dfb1dd8
-Files: 796  Bytes: 2681876  Map tokens: 98304/120000
+Merkle root: sha256:6d577b31f41b32f7f3d0e216b2a103708a89d846eb6a1667923f56e4e0347e04
+Files: 796  Bytes: 2683044  Map tokens: 98304/120000
 
 ## Modules
 
@@ -1216,7 +1216,7 @@ Files: 796  Bytes: 2681876  Map tokens: 98304/120000
 - S:7c716c856e function detectHotFiles `export function detectHotFiles(target = ".", { commits = 200, limit = 3 } = {})` L75 : Rank files by how often they changed in recent git history. The dry-run sweep uses the default limit of 3; the snapshot passes a larger limit to score churn across the whole tree. Returns [] when git 
 - S:7fe7ee7f43 function dedupe `function dedupe(arr)` L94
 ### site/index.html [F:aef9cf1e27]
-- S:52826c5034 class Component `class Component extends DCLogic` L613
+- S:52826c5034 class Component `class Component extends DCLogic` L616
 ### scripts/lib/run-gate-capped.mjs [F:b014028f57]
 - S:6122b96d0b function runGateCapped `export function runGateCapped(cmdArray, { timeoutMs = 30000, maxBuffer = 67108864 } = {})` L11
 ### tests/performance.test.mjs [F:b28f13b600]
