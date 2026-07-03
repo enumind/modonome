@@ -100,19 +100,26 @@ export function scaffold(target, write) {
   }
 
   // Copilot code review guidance, so GitHub's own reviewer flags gate-weakening in the
-  // ratchet's vocabulary. Never overwrite an existing instructions file.
+  // ratchet's vocabulary. Never overwrite an existing instructions file. Written with
+  // O_EXCL ("wx") so the existence check and the write are one syscall, the same
+  // TOCTOU-closing idiom the AGENTS.md pointer above uses, rather than a separate
+  // existsSync + writeFileSync that leaves a race window open.
   {
     const src = join(here, "..", "templates", ".github", "copilot-instructions.md");
     const dest = join(target, ".github", "copilot-instructions.md");
     const destRel = join(".github", "copilot-instructions.md");
-    if (existsSync(dest)) {
-      planned.push({ rel: destRel, action: "keep" });
-    } else {
-      planned.push({ rel: destRel, action: "create" });
-      if (write) {
-        mkdirSync(dirname(dest), { recursive: true });
-        writeFileSync(dest, readFileSync(src, "utf8"));
+    if (write) {
+      mkdirSync(dirname(dest), { recursive: true });
+      let created = false;
+      try {
+        writeFileSync(dest, readFileSync(src, "utf8"), { flag: "wx" });
+        created = true;
+      } catch (e) {
+        if (e.code !== "EEXIST") throw e;
       }
+      planned.push({ rel: destRel, action: created ? "create" : "keep" });
+    } else {
+      planned.push({ rel: destRel, action: existsSync(dest) ? "keep" : "create" });
     }
   }
 

@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:fd8d15054845108f84caeb8aaa120533c4c17789b105a3f10a02efa2d971076e
-Files: 812  Bytes: 2752236  Map tokens: 101777/120000
+Merkle root: sha256:a138afa3eb9a71dba1d016a6c3cadfe3856e4dd89a5f21cc2512d77ef51b2a3f
+Files: 812  Bytes: 2752619  Map tokens: 101777/120000
 
 ## Modules
 
@@ -862,7 +862,7 @@ Files: 812  Bytes: 2752236  Map tokens: 101777/120000
 - S:ea76c925e2 function enableSnapshot `function enableSnapshot(target, here)` L28 : Turn snapshot consumption on during adoption: generate the first snapshot, install a host pre-commit hook, and drop an AGENTS.md pointer when none exists. Skipped with --no-snapshot. Never overwrites 
 - S:8c6ccd3e8b function listTemplate `function listTemplate(dir, base = "")` L60
 - S:6dcbe228c5 function scaffold `export function scaffold(target, write)` L71
-- S:1856df868b function writeRunLog `function writeRunLog(runsDir, command, payload)` L122
+- S:1856df868b function writeRunLog `function writeRunLog(runsDir, command, payload)` L129
 ### tests/config-key-parity.test.mjs [F:5eff4122c0]
 - S:d6cf821403 function keysFromDeclaration `function keysFromDeclaration(source, declName)` L23 : Extract the string literals inside a named list/set declaration, regardless of whether it is `new Set([...])` or `[...] as const`.
 - S:da40a0864b function assertSameSet `function assertSameSet(a, b, label)` L33

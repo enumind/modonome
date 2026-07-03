@@ -59,7 +59,7 @@ function planFile(editor) {
 const plans = editors.map(planFile);
 
 for (const p of plans) {
-  const { file, label } = EDITORS[p.editor];
+  const { label } = EDITORS[p.editor];
   if (p.action === "skip") {
     console.log(`skip   ${p.dest}: ${p.reason}`);
     continue;
