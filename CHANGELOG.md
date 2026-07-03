@@ -9,6 +9,28 @@ or CVE identifier where one exists.
 
 ## Unreleased
 
+### Governed Remediation Phase 4: policy-pack adoption tooling
+
+- Added a required `generator` credit block (`name`, `homepage`, `repository`, sourced from
+  `package.json`) to the policy-attestation manifest and bumped `manifest_version` to 2.
+  Because the field is both schema-required and inside the hashed body, a vendored pack
+  cannot drop credit to modonome and remain schema-valid, and cannot have its credit altered
+  without either recomputing `content_digest` (a distinguishable case, covered by signing) or
+  being caught immediately by the existing self-consistency check.
+- Added three commands to `scripts/build-policy-attestation.mjs` (`modonome attest`):
+  `--diff <file>` compares a foreign pack's disclosed policy against this repo's live policy
+  and always surfaces its generator credit; `--adopt <file> --alias <name>` schema-validates,
+  digest-checks, and signature-verifies a foreign pack before vendoring it to
+  `.modonome/policy-packs/<alias>.json`, refusing and writing nothing on any failure. `--show`
+  and `--verify` now accept an optional foreign file path (defaulting to today's local-only
+  behavior), and both surface the generator credit.
+- No new capability flag, no CI wiring: `--diff`/`--adopt` are on-demand tooling, not a
+  repo-local invariant, so `check-promotion-readiness.mjs` is not involved and the existing
+  `--check` gate's behavior is unchanged apart from now also covering `generator`. See
+  ADR-037, which also states plainly what this tooling does not guarantee: a plain content
+  digest cannot stop a determined actor from recomputing a new, self-consistent digest over a
+  re-credited body; signing (already optional and reused as-is) is what closes that gap.
+
 ### Governed Remediation Phase 3: policy-pack manifest and disclosure attestation
 
 - Added `scripts/lib/policy-manifest.mjs` (pure builder) and
