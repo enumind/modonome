@@ -52,6 +52,9 @@ window.__MODONOME_REPO = {
     { icon: '⇄', title: 'Adopts your setup on day one', body: 'It follows your existing CI, code owners, and branch rules. There is no new process for the team to learn.' },
     { icon: '↻', title: 'Improves as it goes', body: 'Real corrections become staged lessons. Once an owner promotes them, they become durable rules: the loop gets smarter with each cycle.' },
     { icon: '⊟', title: 'Language-aware across your stack', body: 'The anti-gaming ratchet is language-aware across JavaScript, Python, Java, and .NET today. Broader enterprise estates are on the roadmap.' },
+    { icon: '▤', title: 'Operator control panel', body: 'A dashboard shows gate status, governance events, and the levers an owner uses to arm, pause, and review autonomy, so control stays in plain sight.' },
+    { icon: '◈', title: 'Verifiable repo context', body: 'A Merkle-verified snapshot gives each agent a compact, tamper-evident map of the repository, so its context is current and trustworthy without rereading the whole tree.' },
+    { icon: '❑', title: 'Compliance evidence on demand', body: 'An MCP server exposes attestation and evidence tools, so a host repository can produce a signed record of what ran and what held.' },
   ],
 
   // ---- Structural guarantees ----

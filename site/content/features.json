@@ -32,13 +32,31 @@
       "key": "learning",
       "icon": "refresh",
       "title": "Improves as it goes",
-      "summary": "Real corrections become staged lessons, and an owner promotes the durable ones into lasting rules and gates."
+      "summary": "Real corrections become staged lessons. Once an owner promotes them, they become durable rules: the loop gets smarter with each cycle."
     },
     {
       "key": "estate",
       "icon": "minus-square",
       "title": "Language-aware across your stack",
       "summary": "The anti-gaming ratchet is language-aware across JavaScript, Python, Java, and .NET today. Broader enterprise estates are on the roadmap."
+    },
+    {
+      "key": "control-panel",
+      "icon": "panel",
+      "title": "Operator control panel",
+      "summary": "A dashboard shows gate status, governance events, and the levers an owner uses to arm, pause, and review autonomy, so control stays in plain sight."
+    },
+    {
+      "key": "snapshot",
+      "icon": "snapshot",
+      "title": "Verifiable repo context",
+      "summary": "A Merkle-verified snapshot gives each agent a compact, tamper-evident map of the repository, so its context is current and trustworthy without rereading the whole tree."
+    },
+    {
+      "key": "compliance",
+      "icon": "attest",
+      "title": "Compliance evidence on demand",
+      "summary": "An MCP server exposes attestation and evidence tools, so a host repository can produce a signed record of what ran and what held."
     }
   ]
 }

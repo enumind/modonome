@@ -39,7 +39,10 @@
   }
 }
 </script>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b1220'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%235dd4ab' stroke-width='2'/%3E%3Cpath d='M13 16l2 2 4-4' fill='none' stroke='%235dd4ab' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/icon-32.png">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="manifest" href="site.webmanifest">
 <link rel="preconnect" href="https://unpkg.com" crossorigin>
 <script crossorigin defer src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin defer src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -168,10 +171,11 @@
       </div>
       <div class="mn-satin" style="--satin-mask:url('assets/modonome-logo.webp');display:block;margin:0 auto 30px;width:min(440px,82%)"><img src="assets/modonome-logo.webp" alt="Modonome" style="width:100%;display:block;mix-blend-mode:lighten"></div>
       <h1 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(34px,5.4vw,62px);line-height:1.06;letter-spacing:-.02em;margin:0 0 22px;color:#f6f4ee">The Governed Autonomous<br>Engineering Loop.</h1>
-      <p style="max-width:700px;margin:0 auto 38px;font-size:clamp(16px,2vw,19px);line-height:1.6;color:#aeb9c8">Modonome enforces the structural separation between making, checking, and merging: the governance layer that keeps autonomous coding loops honest. It runs inside a harness you already have: a coding agent, a CI job, or a human session. The implementation is a prompt and a set of scripts. A declarative rule set governs each agent's operating boundaries, context scope, and model selection, so maker, checker, and merge authority can each run on the model that fits the task.</p>
+      <p style="max-width:700px;margin:0 auto 38px;font-size:clamp(16px,2vw,19px);line-height:1.6;color:#aeb9c8">Coding agents ship changes fast. The hard part is trusting them: a diff no one reviewed, tests that pass because they were quietly weakened, an agent that signs off on its own work. Modonome is the governance layer that keeps making, checking, and merging in separate hands. Every change runs through gates that live in your CI, and autonomy turns on only when you say so.</p>
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:0 0 32px">
         <a href="https://github.com/enumind/modonome" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:9px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#9fabbc;background:rgba(159,201,180,.05);border:1px solid rgba(159,201,180,.16);border-radius:8px;padding:7px 14px;text-decoration:none;transition:border-color .2s,color .2s" style-hover="border-color:rgba(93,212,171,.5);color:#5dd4ab"><svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor" style="color:#5dd4ab;flex-shrink:0" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg> github.com/enumind/modonome</a>
         <a href="https://x.com/ModonomeLab" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:9px;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:#e8ebf0;background:rgba(93,212,171,.1);border:1px solid rgba(93,212,171,.4);border-radius:8px;padding:7px 14px;text-decoration:none;transition:border-color .2s,background .2s" style-hover="border-color:#5dd4ab;background:rgba(93,212,171,.18)"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color:#5dd4ab;flex-shrink:0" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg> Follow @ModonomeLab</a>
+        <a href="https://github.com/enumind/modonome" target="_blank" rel="noopener noreferrer" aria-label="Star Modonome on GitHub" style="display:inline-flex;align-items:center;gap:9px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#9fabbc;background:rgba(159,201,180,.05);border:1px solid rgba(159,201,180,.16);border-radius:8px;padding:7px 14px;text-decoration:none;transition:border-color .2s,color .2s" style-hover="border-color:rgba(93,212,171,.5);color:#5dd4ab"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color:#f5b14a;flex-shrink:0" aria-hidden="true"><path d="M12 2.5l2.9 6.06 6.6.86-4.85 4.55 1.24 6.53L12 18.9l-5.89 3.1 1.24-6.53L2.5 9.42l6.6-.86z"/></svg> Star on GitHub</a>
       </div>
       <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
         <a href="#simulator" style="display:inline-flex;align-items:center;gap:9px;font-weight:600;font-size:15px;color:#0b1220;background:#5dd4ab;padding:14px 26px;border-radius:11px;text-decoration:none;transition:transform .2s,box-shadow .2s" style-hover="transform:translateY(-2px);box-shadow:0 14px 34px rgba(93,212,171,.34)">Run the simulator →</a>
@@ -187,7 +191,7 @@
     <div style="text-align:center;max-width:720px;margin:0 auto 44px">
       <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#5dd4ab;margin-bottom:14px">Why it matters</div>
       <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(28px,3.6vw,40px);line-height:1.1;letter-spacing:-.02em;margin:0 0 14px;color:#f6f4ee">Built for the real balances of autonomous engineering.</h2>
-      <p style="font-size:16px;line-height:1.6;color:#aeb9c8;margin:0">Autonomy is only useful when it is trustworthy. Modonome is built to hold the tensions that matter in steady balance.</p>
+      <p style="font-size:16px;line-height:1.6;color:#aeb9c8;margin:0">Green tests that were quietly gutted, reviews no one has time for, an agent that grades its own homework: these are the failures that erode trust. Autonomy is only useful when it is trustworthy, so Modonome is built to hold the tensions that matter in steady balance.</p>
     </div>
     <div class="mn-cols" style="display:grid;gap:14px;--cols:repeat(4,1fr);--cols-md:repeat(2,1fr);--cols-sm:1fr">
       <sc-for list="{{ balances }}" as="bl" hint-placeholder-count="4">
@@ -671,10 +675,14 @@
     <div style="max-width:1180px;margin:0 auto;padding:34px 24px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap">
       <div style="display:flex;align-items:center;gap:14px">
         <span class="mn-satin" style="--satin-mask:url('assets/modonome-logo.webp')"><img src="assets/modonome-logo.webp" alt="Modonome" style="height:24px;display:block;mix-blend-mode:lighten"></span>
-        <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#54627a">MIT · {{ version }} · No telemetry</span>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#7c8aa0">MIT · {{ version }} · No telemetry</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#54627a">This site ships from the product repo and clears the same gates: style, CodeQL, OpenSSF Scorecard, and a Merkle-checked snapshot.</span>
+        </div>
       </div>
       <div style="display:flex;gap:24px;font-size:13.5px;align-items:center">
         <a href="https://github.com/enumind/modonome" target="_blank" rel="noopener noreferrer" style="color:#9fabbc;text-decoration:none;transition:color .2s" style-hover="color:#5dd4ab">GitHub</a>
+        <a href="https://github.com/enumind/modonome/stargazers" target="_blank" rel="noopener noreferrer" style="color:#9fabbc;text-decoration:none;transition:color .2s" style-hover="color:#5dd4ab">Star</a>
         <a href="https://github.com/enumind/modonome/discussions" target="_blank" rel="noopener noreferrer" style="color:#9fabbc;text-decoration:none;transition:color .2s" style-hover="color:#5dd4ab">Discussions</a>
         <a href="https://x.com/ModonomeLab" target="_blank" rel="noopener noreferrer" aria-label="Follow Modonome on X" style="display:inline-flex;align-items:center;gap:7px;color:#9fabbc;text-decoration:none;transition:color .2s" style-hover="color:#5dd4ab"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Follow on X</a>
       </div>
@@ -789,6 +797,9 @@ class Component extends DCLogic {
       plug: [R('path',{key:1,d:'M9 7.5V4 M15 7.5V4'}), R('path',{key:2,d:'M7 7.5h10v3.2a5 5 0 0 1-10 0z'}), R('path',{key:3,d:'M12 15.4V20'})],
       loop: [R('path',{key:1,d:'M5 12a7 7 0 0 1 12-4.9'}), R('path',{key:2,d:'M17 3.2V7.4h-4.2'}), R('path',{key:3,d:'M19 12a7 7 0 0 1-12 4.9'}), R('path',{key:4,d:'M7 20.8V16.6h4.2'})],
       estate: [R('path',{key:1,d:'M12 3l8 4-8 4-8-4z'}), R('path',{key:2,d:'M4 12l8 4 8-4'}), R('path',{key:3,d:'M4 16.5l8 4 8-4'})],
+      panel: [R('rect',{key:1,x:4,y:5,width:16,height:14,rx:1.5}), R('path',{key:2,d:'M4 9.2h16'}), R('path',{key:3,d:'M7.5 13h4 M7.5 16h7'})],
+      snapshot: [R('circle',{key:1,cx:12,cy:5,r:1.9}), R('circle',{key:2,cx:6,cy:18,r:1.9}), R('circle',{key:3,cx:18,cy:18,r:1.9}), R('path',{key:4,d:'M12 6.9v3.6 M12 10.5L6.7 16 M12 10.5L17.3 16'})],
+      attest: [R('circle',{key:1,cx:12,cy:9.5,r:5}), R('path',{key:2,d:'M9.6 13.4L8.4 20l3.6-2 3.6 2-1.2-6.6'}), R('path',{key:3,d:'M9.8 9.4l1.6 1.6 3-3.2'})],
     };
     return R('svg', base, sets[name] || sets.changes);
   }
@@ -1098,7 +1109,7 @@ class Component extends DCLogic {
       kindBadgeStyle:`display:inline-flex;align-items:center;gap:4px;position:absolute;top:11px;left:14px;font-size:10px;color:${s.kindColor||'#5dd4ab'};background:${(s.kindColor||'#5dd4ab')}18;border:1px solid ${(s.kindColor||'#5dd4ab')}44;border-radius:4px;padding:1px 5px;font-family:'IBM Plex Mono',monospace;letter-spacing:.03em;line-height:1.4` }));
 
     const guarantees = R.guarantees || [];
-    const featIcons = ['changes','roles','shield','plug','loop','estate'];
+    const featIcons = ['changes','roles','shield','plug','loop','estate','panel','snapshot','attest'];
     const features = (R.features || []).map((f,i) => ({ title:f.title, body:f.body, iconEl:this.svgIcon(featIcons[i] || 'changes') }));
     const balances = R.balances || [];
     const qsteps = R.quickstart || [];
