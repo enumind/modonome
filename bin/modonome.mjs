@@ -37,6 +37,7 @@ Usage:
   npx modonome hygiene fix <dir>         apply the safe, local, metadata-only remedy (branch rename).
   npx modonome remediate plan            preview the metadata-only commit-history rewrite. Read-only, changes nothing.
   npx modonome remediate apply           rewrite commit metadata to strip attribution. Armed and capability-gated only.
+  npx modonome attest [--check|--show]   write or verify the policy-pack and disclosure attestation for this repo.
   npx modonome help                      show this message.
 
 Modonome stays off until an owner arms it through the environment or CI.`;
@@ -160,6 +161,9 @@ function main(argv) {
       break;
     case "remediate":
       run("remediate.mjs", rest);
+      break;
+    case "attest":
+      run("build-policy-attestation.mjs", rest);
       break;
     case "help":
     case "--help":
