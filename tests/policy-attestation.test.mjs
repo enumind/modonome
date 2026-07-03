@@ -1,10 +1,10 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { readFileSync, writeFileSync, mkdtempSync, rmSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdtempSync, mkdirSync, rmSync } from "node:fs";
 import { generateKeyPairSync } from "node:crypto";
 import { fileURLToPath } from "node:url";
-import { dirname, join } from "node:path";
+import { dirname, join, basename } from "node:path";
 import { tmpdir } from "node:os";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -129,10 +129,10 @@ test("--diff fails cleanly on an unreadable path", () => {
   assert.match(r.stderr, /could not read or parse/);
 });
 
-test("--adopt vendors a clean pack into MODONOME_ROOT's .modonome/policy-packs/<alias>.json", () => {
+test("--adopt vendors a clean pack into MODONOME_ADOPT_ROOT's .modonome/policy-packs/<alias>.json", () => {
   const tmp = mkdtempSync(join(tmpdir(), "modonome-adopt-"));
   try {
-    const r = run(["--adopt", VALID_FIXTURE, "--alias", "peer-a"], { MODONOME_ROOT: tmp });
+    const r = run(["--adopt", VALID_FIXTURE, "--alias", "peer-a"], { MODONOME_ADOPT_ROOT: tmp });
     assert.strictEqual(r.status, 0, r.stderr);
     assert.match(r.stdout, /Imported policy pack from modonome/);
     const vendored = JSON.parse(readFileSync(join(tmp, ".modonome", "policy-packs", "peer-a.json"), "utf8"));
@@ -145,7 +145,7 @@ test("--adopt vendors a clean pack into MODONOME_ROOT's .modonome/policy-packs/<
 test("--adopt refuses a pack whose generator was altered without recomputing the digest, and writes nothing", () => {
   const tmp = mkdtempSync(join(tmpdir(), "modonome-adopt-"));
   try {
-    const r = run(["--adopt", TAMPERED_FIXTURE, "--alias", "peer-evil"], { MODONOME_ROOT: tmp });
+    const r = run(["--adopt", TAMPERED_FIXTURE, "--alias", "peer-evil"], { MODONOME_ADOPT_ROOT: tmp });
     assert.notStrictEqual(r.status, 0);
     assert.match(r.stderr, /internally inconsistent/);
     assert.throws(() => readFileSync(join(tmp, ".modonome", "policy-packs", "peer-evil.json")));
@@ -161,7 +161,7 @@ test("--adopt refuses a pack that fails schema validation (e.g. generator stripp
     delete pack.generator;
     const noGenPath = join(tmp, "no-generator.json");
     writeFileSync(noGenPath, JSON.stringify(pack, null, 2) + "\n");
-    const r = run(["--adopt", noGenPath, "--alias", "peer-b"], { MODONOME_ROOT: tmp });
+    const r = run(["--adopt", noGenPath, "--alias", "peer-b"], { MODONOME_ADOPT_ROOT: tmp });
     assert.notStrictEqual(r.status, 0);
     assert.match(r.stderr, /fails the policy-attestation schema/);
     assert.match(r.stderr, /generator/);
@@ -177,4 +177,85 @@ test("--adopt requires --alias and rejects a path-unsafe alias", () => {
   const badAlias = run(["--adopt", VALID_FIXTURE, "--alias", "../../escape"]);
   assert.notStrictEqual(badAlias.status, 0);
   assert.match(badAlias.stderr, /filesystem-safe name/);
+});
+
+// ---------------------------------------------------------------------------
+// Regressions from code review: --show/--verify on a foreign path used to bypass the clean
+// error handling diffCmd/adoptCmd already had, generatorLine printed the literal string
+// "undefined" for a homepage-less generator, --show's fallback branch mislabeled its data
+// source, and adoptCmd's display path broke on a MODONOME_ADOPT_ROOT sibling directory.
+// ---------------------------------------------------------------------------
+
+function withTempFile(name, content, fn) {
+  const tmp = mkdtempSync(join(tmpdir(), "modonome-regress-"));
+  try {
+    const p = join(tmp, name);
+    writeFileSync(p, content);
+    fn(p, tmp);
+  } finally {
+    rmSync(tmp, { recursive: true, force: true });
+  }
+}
+
+test("--show fails cleanly (not an uncaught exception) on a malformed foreign file", () => {
+  withTempFile("bad.json", "not json", (p) => {
+    const r = run(["--show", p]);
+    assert.notStrictEqual(r.status, 0);
+    assert.match(r.stderr, /could not read or parse/);
+    assert.ok(!r.stderr.includes("SyntaxError"), "should not leak a raw Node stack trace");
+  });
+});
+
+test("--verify fails cleanly (not an uncaught exception) on a malformed foreign file that exists", () => {
+  withTempFile("bad.json", "not json", (p) => {
+    const r = run(["--verify", p]);
+    assert.notStrictEqual(r.status, 0);
+    assert.match(r.stderr, /could not read or parse/);
+    assert.ok(!r.stderr.includes("SyntaxError"), "should not leak a raw Node stack trace");
+  });
+});
+
+test("generatorLine never prints the literal string \"undefined\" for a homepage-less generator", () => {
+  const pack = JSON.parse(readFileSync(VALID_FIXTURE, "utf8"));
+  delete pack.generator.homepage;
+  withTempFile("no-homepage.json", JSON.stringify(pack, null, 2), (p) => {
+    const r = run(["--show", p]);
+    assert.strictEqual(r.status, 0, r.stderr);
+    assert.match(r.stdout, /Generator:\s+modonome \(no homepage claimed\)/);
+    assert.ok(!r.stdout.includes("undefined"));
+  });
+});
+
+test("--show reports honestly when it falls back to a freshly computed manifest", () => {
+  preservingArtifact(() => {
+    const missing = artifact + ".missing-for-test";
+    writeFileSync(missing, readFileSync(artifact));
+    rmSync(artifact);
+    try {
+      const r = run(["--show"]);
+      assert.strictEqual(r.status, 0, r.stderr);
+      assert.match(r.stdout, /Source:\s+\(generated live; no committed artifact\)/);
+    } finally {
+      writeFileSync(artifact, readFileSync(missing));
+      rmSync(missing);
+    }
+  });
+});
+
+test("--adopt prints the correct absolute path when MODONOME_ADOPT_ROOT is a sibling of the real repo root, not a subdirectory of it", () => {
+  // A directory whose name shares root's leading characters (e.g. "modonome-sibling-test"
+  // alongside a repo directory named "modonome") must never be mistaken for a path inside
+  // root by a bare string-prefix check.
+  const sibling = join(dirname(root), `${basename(root)}-sibling-test`);
+  rmSync(sibling, { recursive: true, force: true });
+  mkdirSync(sibling, { recursive: true });
+  try {
+    const r = run(["--adopt", VALID_FIXTURE, "--alias", "peer-x"], { MODONOME_ADOPT_ROOT: sibling });
+    assert.strictEqual(r.status, 0, r.stderr);
+    const expected = join(sibling, ".modonome", "policy-packs", "peer-x.json");
+    assert.match(r.stdout, new RegExp(`Wrote ${expected.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\.`));
+    assert.doesNotThrow(() => readFileSync(expected));
+  } finally {
+    rmSync(sibling, { recursive: true, force: true });
+  }
 });

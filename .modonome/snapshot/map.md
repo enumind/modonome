@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:d9f2a3deccb47786bc5c222b521406fa0a5f39bdd2f8617e1f85d5d69d642c21
-Files: 807  Bytes: 2748950  Map tokens: 101596/120000
+Merkle root: sha256:b4630ccded05983a9c0bfa7f9bb8b308a96ffdb4b1524eab22b3d7d7e977191f
+Files: 808  Bytes: 2756687  Map tokens: 102026/120000
 
 ## Modules
 
@@ -288,6 +288,7 @@ Files: 807  Bytes: 2748950  Map tokens: 101596/120000
 - scripts/lib/branch-name.mjs [F:6e0bd62fa3]: True when the first path segment of a branch name equals a denylisted token. * Matching is case-insensitive. "feature/ai-adapter" is allowed because the * first
 - scripts/lib/canonical-json.mjs [F:245efb551c]: Domain separation tag binds a signature to this packet type and version so a signature over one structure cannot be replayed as another.
 - scripts/lib/capability-flags.mjs [F:98529ba7ea]: The capability flags that expand the engine's authority and trust boundary (ADR-024). A single source of truth shared by the promotion-readiness gate (scripts/c
+- scripts/lib/cli-args.mjs [F:2d93cea2d4]: Minimal argv helper shared by scripts that take `--flag value` pairs.
 - scripts/lib/commit-identity.mjs [F:e4ff19bbe2]: True when a name or email belongs to a denylisted agent or vendor identity. * Real automation such as dependabot is allowed; only coding-agent and model * vendo
 - scripts/lib/control-panel-audit.mjs [F:1a19f02364]: Today's real high-water mark is 7 (Arming & Safety, Caps & budget tab). The budget is set a few above that: a real ratchet against regression, not an arbitrary 
 - scripts/lib/detect-attribution.mjs [F:4a7eaceb5c]: True when any path segment of a branch name exactly equals a denylisted token. * This is a strict superset of isModelIdentifierBranch (which checks only the fir
@@ -503,6 +504,7 @@ Files: 807  Bytes: 2748950  Map tokens: 101596/120000
 ### tests/policy-attestation.test.mjs [F:137056535b]
 - S:4700befa2a function run `function run(args = [], env = {})` L16
 - S:bc56c13940 function preservingArtifact `function preservingArtifact(fn)` L22 : Restore the committed (current, unsigned) artifact after any test that writes to it, so the suite leaves no drift behind.
+- S:2cd4d9571d function withTempFile `function withTempFile(name, content, fn)` L189
 ### .design-sync/previews/ProtectedPathRow.tsx [F:13d31b33ea]
 - S:5708b6bd2b function PendingApproval `export const PendingApproval = () => (` L4
 - S:4f265e8008 function Approved `export const Approved = () => (` L8
@@ -631,6 +633,8 @@ Files: 807  Bytes: 2748950  Map tokens: 101596/120000
 - S:93fa315ac7 function fail `function fail(code, message)` L41
 - S:8252cf2ba8 function warn `function warn(code, message)` L45
 - S:003e6c53c4 function info `function info(code, message)` L49
+### scripts/lib/cli-args.mjs [F:2d93cea2d4]
+- S:118e66be10 function flagValue `export function flagValue(argv, name)` L2 : Minimal argv helper shared by scripts that take `--flag value` pairs.
 ### scripts/build-compliance-evidence.mjs [F:2e327963ed]
 - S:4bacff1244 function fileExists `function fileExists(root, ...candidates)` L15
 - S:41050d03a4 function readIfExists `function readIfExists(root, rel)` L19
@@ -941,25 +945,26 @@ Files: 807  Bytes: 2748950  Map tokens: 101596/120000
 ### tests/dry-run.test.mjs [F:778c33cdc0]
 - S:e15045d8a4 function dryRun `function dryRun(dir)` L13
 ### scripts/build-policy-attestation.mjs [F:780c791407]
-- S:f88498de73 const ATTESTATION_DOMAIN `export const ATTESTATION_DOMAIN = "modonome.policy-attestation.v1\n";` L55 : Domain separation binds a signature to this artifact type so it cannot be replayed as a knowledge packet or any other signed structure.
-- S:b455c897cf function rel `function rel(p)` L57
-- S:5b8a5996df function fail `function fail(msg)` L60
-- S:87013bd4c3 function loadInputs `export function loadInputs(r = root)` L65
-- S:aacff6bc1c function attestationBytes `export function attestationBytes(manifest)` L74 : The exact bytes a signature covers: the domain tag followed by the JCS of the manifest with its signature and content_digest removed (the content_digest is itself derived from that body, so signing th
-- S:120830c7dd function maybeSign `function maybeSign(manifest, env)` L81
-- S:5aff27256c function schema `function schema()` L99
-- S:cf413b97c8 function write `function write(env)` L103
-- S:53158831f9 function check `function check()` L115
-- S:5ef4400e5e function generatorLine `function generatorLine(m)` L137 : The generator credit line, tolerant of a foreign pack that predates manifest_version 2: such a pack is shown honestly as claiming no credit rather than crashing on a missing field.
-- S:2d4876abe2 function readPack `function readPack(path)` L142
-- S:e476893b3b function show `function show(path)` L146
-- S:acc91dc6fe function verifyCmd `function verifyCmd(path)` L164
-- S:b9d44c6996 function diffSet `function diffSet(label, local, foreign)` L184 : Set-valued policy fields (denylist, protected paths, gates): report what the foreign pack adds and what it is missing relative to this repo's live policy.
-- S:0be1a2cd09 function diffCapabilities `function diffCapabilities(local, foreign)` L198
-- S:90b2cf611f function diffPosture `function diffPosture(local, foreign)` L209
-- S:d2a299acb3 function diffCmd `function diffCmd(path)` L220 : Read-only comparison of a foreign pack's disclosed policy against this repo's own live policy. Always succeeds (never a pass/fail gate); a human uses this to decide whether to adopt. The foreign pack'
-- S:8735f37dad function adoptCmd `function adoptCmd(path, alias)` L247 : Vendor a foreign policy pack into this repo, refusing on any integrity or credit failure. Order matters: schema validation catches a pack whose generator block was stripped outright (manifest_version 
-- S:349327c8e5 function flagValue `function flagValue(argv, name)` L281
+- S:f88498de73 const ATTESTATION_DOMAIN `export const ATTESTATION_DOMAIN = "modonome.policy-attestation.v1\n";` L58 : Domain separation binds a signature to this artifact type so it cannot be replayed as a knowledge packet or any other signed structure.
+- S:b455c897cf function rel `function rel(p)` L64 : Relative-to-root display path. Safe on any input: a path outside root (e.g. under ADOPT_ROOT when MODONOME_ADOPT_ROOT points elsewhere) is returned unchanged rather than sliced by a bare string-prefix
+- S:5b8a5996df function fail `function fail(msg)` L68
+- S:87013bd4c3 function loadInputs `export function loadInputs(r = root)` L73
+- S:aacff6bc1c function attestationBytes `export function attestationBytes(manifest)` L82 : The exact bytes a signature covers: the domain tag followed by the JCS of the manifest with its signature and content_digest removed (the content_digest is itself derived from that body, so signing th
+- S:120830c7dd function maybeSign `function maybeSign(manifest, env)` L89
+- S:5aff27256c function schema `function schema()` L107
+- S:cf413b97c8 function write `function write(env)` L111
+- S:de8e4d5857 function digestMismatch `function digestMismatch(m)` L126 : Recomputes a manifest body's digest and compares it to its own recorded content_digest. Shared by check(), verifyCmd(), and adoptCmd() so this self-consistency test is defined once; each caller still 
+- S:53158831f9 function check `function check()` L133
+- S:5ef4400e5e function generatorLine `function generatorLine(m)` L155 : The generator credit line, tolerant of a foreign pack that predates manifest_version 2: such a pack is shown honestly as claiming no credit rather than crashing on a missing field. homepage is guarded
+- S:2d4876abe2 function readPack `function readPack(path)` L160
+- S:ddc69b10ca function readForeignPack `function readForeignPack(path)` L168 : Reads and parses a caller-supplied pack file, failing with the tool's normal clean error instead of an uncaught exception. Every command that accepts a user-supplied path (--show, --verify, --diff, --
+- S:e476893b3b function show `function show(path)` L176
+- S:acc91dc6fe function verifyCmd `function verifyCmd(path)` L196
+- S:b9d44c6996 function diffSet `function diffSet(label, local, foreign)` L216 : Set-valued policy fields (denylist, protected paths, gates): report what the foreign pack adds and what it is missing relative to this repo's live policy.
+- S:0be1a2cd09 function diffCapabilities `function diffCapabilities(local, foreign)` L230
+- S:90b2cf611f function diffPosture `function diffPosture(local, foreign)` L241
+- S:d2a299acb3 function diffCmd `function diffCmd(path)` L252 : Read-only comparison of a foreign pack's disclosed policy against this repo's own live policy. Always succeeds (never a pass/fail gate); a human uses this to decide whether to adopt. The foreign pack'
+- S:8735f37dad function adoptCmd `function adoptCmd(path, alias)` L274 : Vendor a foreign policy pack into this repo, refusing on any integrity or credit failure. Order matters: schema validation catches a pack whose generator block was stripped outright (manifest_version 
 ### .design-sync/previews/Toast.tsx [F:7832db450f]
 - S:67852685cf function Info `export const Info = () => <Toast tone="info" title="Dry-run sweep queued" />;` L4
 - S:96c461f8cd function Success `export const Success = () => <Toast tone="ok" title="Merged" message="PAY-402 merged by merge authority" />;` L6
@@ -1751,6 +1756,7 @@ Files: 807  Bytes: 2748950  Map tokens: 101596/120000
 - design-system/src/components/AuditTimeline/AuditTimeline.tsx -> design-system/src/components/Icon/Icon.tsx
 - scripts/build-policy-attestation.mjs -> scripts/lib/yaml-lite.mjs
 - scripts/build-policy-attestation.mjs -> scripts/lib/canonical-json.mjs
+- scripts/build-policy-attestation.mjs -> scripts/lib/cli-args.mjs
 - scripts/build-policy-attestation.mjs -> scripts/lib/jsonschema.mjs
 - scripts/build-policy-attestation.mjs -> scripts/lib/policy-manifest.mjs
 - design-system/src/components/ArmingStateBadge/ArmingStateBadge.tsx -> design-system/src/lib/cx.ts
@@ -2004,54 +2010,54 @@ Files: 807  Bytes: 2748950  Map tokens: 101596/120000
 
 ## Attention (centrality + pagerank)
 
-1. design-system/src/lib/cx.ts centrality=32 pagerank=0.035741
-2. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.02317
-3. design-system/src/index.ts centrality=48 pagerank=0.00094
-4. scripts/lib/jsonschema.mjs centrality=10 pagerank=0.010894
-5. scripts/lib/yaml-lite.mjs centrality=13 pagerank=0.007374
-6. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.007885
-7. apps/control-panel/src/state/types.ts centrality=12 pagerank=0.007877
-8. scripts/agent/run-cycle.mjs centrality=17 pagerank=0.003536
-9. scripts/lib/learnings.mjs centrality=10 pagerank=0.007543
-10. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.005621
-11. scripts/validate-config.mjs centrality=12 pagerank=0.004621
-12. scripts/lib/canonical-json.mjs centrality=10 pagerank=0.005419
-13. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.006046
-14. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001572
-15. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.004533
-16. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.00526
-17. apps/control-panel/src/App.tsx centrality=11 pagerank=0.001339
-18. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002746
-19. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.003393
-20. scripts/lib/branch-name.mjs centrality=4 pagerank=0.00503
-21. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.004891
-22. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.003285
-23. scripts/validate-work-item.mjs centrality=6 pagerank=0.003203
-24. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001573
-25. scripts/lib/graph.mjs centrality=4 pagerank=0.004528
-26. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.002994
-27. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.005104
-28. scripts/agent/resolve-role.mjs centrality=6 pagerank=0.002744
-29. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001753
-30. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.004707
-31. scripts/snapshot.mjs centrality=8 pagerank=0.00094
-32. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002746
-33. design-system/src/lib/format.ts centrality=5 pagerank=0.002744
-34. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001753
-35. scripts/agent/providers.mjs centrality=3 pagerank=0.003745
-36. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.001054
-37. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001753
-38. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001753
-39. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.001753
-40. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.001753
-41. design-system/src/components/Modal/Modal.tsx centrality=4 pagerank=0.002497
-42. scripts/lib/remediate.mjs centrality=3 pagerank=0.003223
-43. design-system/src/components/TierBadge/TierBadge.tsx centrality=4 pagerank=0.002468
-44. examples/demo-app/src/index.js centrality=6 pagerank=0.00094
-45. design-system/src/components/Table/Table.tsx centrality=4 pagerank=0.002423
-46. design-system/src/components/IdentityChip/IdentityChip.tsx centrality=4 pagerank=0.002299
-47. scripts/lib/control-panel-audit.mjs centrality=3 pagerank=0.002917
-48. scripts/lib/git-scope.mjs centrality=3 pagerank=0.002617
-49. design-system/src/components/ArmingStateBadge/ArmingStateBadge.tsx centrality=4 pagerank=0.001753
-50. design-system/src/components/Checkbox/Checkbox.tsx centrality=4 pagerank=0.001753
+1. design-system/src/lib/cx.ts centrality=32 pagerank=0.035709
+2. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.023149
+3. design-system/src/index.ts centrality=48 pagerank=0.000939
+4. scripts/lib/jsonschema.mjs centrality=10 pagerank=0.010845
+5. scripts/lib/yaml-lite.mjs centrality=13 pagerank=0.007327
+6. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.007878
+7. apps/control-panel/src/state/types.ts centrality=12 pagerank=0.007869
+8. scripts/agent/run-cycle.mjs centrality=17 pagerank=0.003532
+9. scripts/lib/learnings.mjs centrality=10 pagerank=0.007536
+10. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.005616
+11. scripts/validate-config.mjs centrality=12 pagerank=0.004617
+12. scripts/lib/canonical-json.mjs centrality=10 pagerank=0.005363
+13. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.00604
+14. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001571
+15. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.004529
+16. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.005255
+17. apps/control-panel/src/App.tsx centrality=11 pagerank=0.001338
+18. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002743
+19. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.003389
+20. scripts/lib/branch-name.mjs centrality=4 pagerank=0.005014
+21. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.004887
+22. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.003282
+23. scripts/validate-work-item.mjs centrality=6 pagerank=0.0032
+24. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001571
+25. scripts/lib/graph.mjs centrality=4 pagerank=0.004524
+26. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.002991
+27. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.005099
+28. scripts/agent/resolve-role.mjs centrality=6 pagerank=0.002741
+29. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001751
+30. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.004703
+31. scripts/snapshot.mjs centrality=8 pagerank=0.000939
+32. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002743
+33. design-system/src/lib/format.ts centrality=5 pagerank=0.002742
+34. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001751
+35. scripts/agent/providers.mjs centrality=3 pagerank=0.003742
+36. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.001053
+37. design-system/src/components/Modal/Modal.tsx centrality=4 pagerank=0.002495
+38. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001751
+39. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001751
+40. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.001751
+41. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.001751
+42. scripts/lib/remediate.mjs centrality=3 pagerank=0.003221
+43. design-system/src/components/TierBadge/TierBadge.tsx centrality=4 pagerank=0.002465
+44. examples/demo-app/src/index.js centrality=6 pagerank=0.000939
+45. design-system/src/components/Table/Table.tsx centrality=4 pagerank=0.002421
+46. design-system/src/components/IdentityChip/IdentityChip.tsx centrality=4 pagerank=0.002297
+47. scripts/lib/control-panel-audit.mjs centrality=3 pagerank=0.002914
+48. scripts/lib/git-scope.mjs centrality=3 pagerank=0.002615
+49. design-system/src/components/ArmingStateBadge/ArmingStateBadge.tsx centrality=4 pagerank=0.001751
+50. design-system/src/components/Checkbox/Checkbox.tsx centrality=4 pagerank=0.001751
 

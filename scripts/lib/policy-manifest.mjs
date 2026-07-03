@@ -136,9 +136,9 @@ function generator(pkgJson) {
   const pkg = pkgJson || {};
   const repoUrl = typeof pkg.repository === "string" ? pkg.repository : pkg.repository && pkg.repository.url;
   return {
-    name: pkg.name || null,
-    homepage: pkg.homepage || null,
-    repository: repoUrl ? repoUrl.replace(/^git\+/, "").replace(/\.git$/, "") : null,
+    name: pkg.name,
+    homepage: pkg.homepage,
+    repository: repoUrl && repoUrl.replace(/^git\+/, "").replace(/\.git$/, ""),
   };
 }
 

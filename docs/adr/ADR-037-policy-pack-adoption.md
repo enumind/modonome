@@ -82,7 +82,24 @@ existing machinery rather than introducing new cryptography:
   not created or committed here; a committed, fabricated "adopted" file would be the same
   self-application smell `check-self-application.mjs` already forbids for a committed
   `metrics.jsonl` (shipping synthetic activity as real). Tests exercise `--adopt` against a
-  temp directory via a scoped `MODONOME_ROOT` override, never the real repository tree.
+  temp directory via a scoped `MODONOME_ADOPT_ROOT` override, distinct from
+  `check-self-application.mjs`'s `MODONOME_ROOT` (which overrides an entire script's root):
+  reusing that name here would wrongly imply `--check`/`--show`/`write()` also read from the
+  override, when only `--adopt`'s destination does.
+- `adoptCmd`'s success message differentiates a signed pack from an unsigned one, rather than
+  printing one static disclaimer regardless: an unsigned pack's guarantee stops at "not
+  carelessly hand-edited since generation" (the digest-only case above), while a signed pack
+  additionally cannot be re-derived with different credit without the original private key.
+  Neither, on its own, proves the signing key belongs to the claimed generator; that still
+  requires an out-of-band fingerprint check, the same "no TOFU" principle ADR-017 applies to
+  peer keys. The tool states this distinction plainly rather than treating "signed" and
+  "unsigned" as interchangeable once a pack has passed `--adopt`.
+- `manifest_version` bumped 1 to 2 with no migration path, unlike `schema_version`'s
+  additive, backfilled migration in `migrate-config.mjs`. This is deliberate, not an
+  oversight: the artifact is one day old with this repository its only publisher, so no real
+  `manifest_version: 1` pack exists anywhere to migrate. If a `manifest_version: 3` is ever
+  needed, that bump should not repeat this shortcut without re-justifying it; a recurrence
+  would mean a real migration convention for this artifact is overdue.
 
 ## Related
 
