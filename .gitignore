@@ -8,3 +8,4 @@ fixtures/**/.modonome/
 .env.*
 *.pem
 *.key
+coverage/
