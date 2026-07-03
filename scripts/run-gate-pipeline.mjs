@@ -92,7 +92,7 @@ export function runPipeline(order, fixtures) {
   return failures;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const graph = JSON.parse(readFileSync(GATE_GRAPH_PATH, "utf8"));
   const order = gateOrder(graph);
   const fixtures = parseArgs(process.argv.slice(2));

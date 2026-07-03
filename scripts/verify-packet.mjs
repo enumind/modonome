@@ -10,6 +10,7 @@
 //
 // Usage: node scripts/verify-packet.mjs <packet.json> [peer-keys.json]
 import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { signedBytes } from './lib/canonical-json.mjs';
 import { verifyMessage, publicKeyFromB64, fingerprint } from './lib/ed25519.mjs';
 import { validatePacket } from './validate-knowledge-packet.mjs';
@@ -59,7 +60,7 @@ export function verifyPacket(packet, peerKeys, { now = new Date(), skipContentGa
   return { ok: true, key_alias: sig.key_alias, fingerprint: fingerprint(sig.pubkey_b64) };
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const [packetPath, keysPath = '.modonome/peer-keys.json'] = process.argv.slice(2);
   if (!packetPath) {
     console.error('Usage: node scripts/verify-packet.mjs <packet.json> [peer-keys.json]');
