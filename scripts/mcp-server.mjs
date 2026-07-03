@@ -11,6 +11,7 @@
  *   modonome_status         : return the current governance posture of a repo
  *   modonome_compliance     : return a read-only OpenSSF, SLSA, and NIST evidence pack
  *   modonome_verify_attestation : verify a signed knowledge packet against the allowlist
+ *   modonome_snapshot       : return the tiered, Merkle-verified repo snapshot for context
  *
  * Tools are read-only or validation-only and inherit the caller's scope (ADR-009);
  * none elevate privileges or arm the engine.
@@ -31,7 +32,7 @@ import { spawnSync } from "node:child_process";
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
 
-// Cache AgentProof results for 5 minutes to avoid re-running the full 16-scenario
+// Cache AgentProof results for 5 minutes to avoid re-running the full 25-scenario
 // suite on every modonome_status poll (each run takes ~2s and consumes CI quota).
 const apCache = new Map(); // key: repoPath -> { result, expiresAt }
 const AP_CACHE_TTL_MS = 5 * 60 * 1000;
