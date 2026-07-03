@@ -1,7 +1,7 @@
 ---
 status: active
 owner: "@nateshpp"
-last_reviewed: 2026-07-01
+last_reviewed: 2026-07-03
 canonical: [openssf-badge-evidence]
 ---
 

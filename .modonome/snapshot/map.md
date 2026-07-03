@@ -2,7 +2,7 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:382c9e337d56ce7a33ae5cacfb3a0798b12d7c17d47f1a334458c4e1242c86fd
+Merkle root: sha256:73d822b339ce450f785ef273f9d5c7e8e429b872f54d89fee781b2a89c5b2cbb
 Files: 816  Bytes: 2788069  Map tokens: 103062/120000
 
 ## Modules
