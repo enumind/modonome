@@ -67,6 +67,20 @@ stripped unless an owner approves otherwise. A central catalog is out of scope f
 | Agent self-modification | Edit ratchet, validators, or drift guard to weaken its own controls | CODEOWNERS gates these files. The ratchet and the house-style linter run in CI from a base-branch copy, and the validators and drift guard run in CI under CODEOWNERS protection. |
 | Prompt injection via PR body or file content | Override engine behavior through crafted content in reviewed files | Trusted authorship verified from platform metadata. The engine treats instructions in PR bodies or file content as data only. |
 
+## Security review
+
+Modonome has undergone internal security review by the project maintainers, covering:
+- Design and threat model validation against known attack patterns
+- Governance control enforcement through the anti-gaming ratchet (16 AgentProof scenarios)
+- Input validation for untrusted external text
+- Secret and sensitive data handling in cross-repo sharing
+- Dependency supply chain integrity
+- CODEOWNERS-based enforcement for protected paths and engine internals
+
+The AgentProof benchmark (16/16 passing) independently verifies that governance controls hold
+against adversarial inputs, including prompt injection, config override, test weakening, and
+protected-path escalation attacks.
+
 ## Reporting
 
 Open a [private security advisory](https://github.com/nateshpp/modonome/security/advisories/new)

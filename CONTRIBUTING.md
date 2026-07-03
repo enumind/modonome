@@ -68,6 +68,16 @@ dependency audit reaches the npm registry to check for known vulnerabilities.
 - Keep changes small and test-fenced.
 - A change that touches a schema, a script, or the prompt needs owner review.
 - Update the changelog when you change a default lever.
+- At least 50% of all modifications must be reviewed by a person other than the author
+  before release. Code review is mandatory on all PRs; maintainers review and approve
+  before merge.
+
+## Two-factor authentication
+
+Maintainers with write access to this repository are strongly recommended to enable
+two-factor authentication (2FA) on their GitHub account using a Time-based One-Time
+Password (TOTP) application (such as Google Authenticator, Authy, or Microsoft
+Authenticator) rather than SMS-based 2FA, which is not encrypted end-to-end.
 
 ## Adding a config lever end to end
 
