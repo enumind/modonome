@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:5c5a39f087c5dd8d3e0418b247ca384e560a669a220688433c4dfc35ea8062f8
-Files: 823  Bytes: 2883111  Map tokens: 101956/120000
+Merkle root: sha256:87659c1d37ee7de5d4a3c818c96b2f52b24ffa7cf320df215c3ad99c05a23099
+Files: 823  Bytes: 2884069  Map tokens: 102087/120000
 
 ## Modules
 
@@ -333,7 +333,7 @@ Files: 823  Bytes: 2883111  Map tokens: 101956/120000
 - scripts/score-proposals.mjs [F:e11f907cba]: Fill in missing signal fields with the documented neutral value and clamp every field to the [SIGNAL_MIN, SIGNAL_MAX] scale.
 - scripts/sign-packet.mjs [F:7b3e38c9a6]: Pure: attach a signature object to a packet using the given private key.
 - scripts/snapshot.mjs [F:a0d489df6d]: Resolve incremental build inputs. --full forces a from-scratch rebuild. Otherwise load the cache and ask git what changed; a missing cache or unusable git yield
-- scripts/sync-site-data.mjs [F:8abf9e432a]: Parse RELEASE-EVIDENCE.md to extract gate counts and autonomy status
+- scripts/sync-site-data.mjs [F:8abf9e432a]: Read a file, returning null if it does not exist. Reads directly instead of checking existsSync first, so there is no window between the check and the read wher
 - scripts/test-prompt-behavior.mjs [F:23917c6197]: Concatenate the committed prompt source files into one searchable string. * @param {string} root repository root that contains the prompts directory * @returns 
 - scripts/transition-work-item.mjs [F:d135cffeaa]: A lease is "live" if it has an owner and an unexpired lease_expires_at. The lease holder is recorded as lease_owner (the field this swap writes) or, for older i
 - scripts/validate-config.mjs [F:932d33be00]: Safety rules beyond structural validation. These keep a config from claiming an armed posture without the controls that make arming safe. Note on arming levers:
@@ -1061,13 +1061,14 @@ Files: 823  Bytes: 2883111  Map tokens: 101956/120000
 - S:0b70780ca5 interface TooltipProps `export interface TooltipProps` L14
 - S:7bdca9af48 function Tooltip `export function Tooltip({ content, children, side = "top" }: TooltipProps)` L30 : A small dark hint bubble anchored to a trigger element. Opens on mouse hover and on * keyboard focus of the trigger (never hover-only, so keyboard users see the same * information), and closes on blur
 ### scripts/sync-site-data.mjs [F:8abf9e432a]
-- S:c44c6a3e42 function parseEvidence `function parseEvidence()` L21 : Parse RELEASE-EVIDENCE.md to extract gate counts and autonomy status
-- S:208ce5b839 function countWorkItems `function countWorkItems()` L51 : Count work items by state
-- S:370b67baf2 function readVersion `function readVersion()` L71 : Parse the product version from package.json. (.modonome/version holds a schema version, not the product version, so it must not be used here.)
-- S:4afb276004 function parseAgentproof `function parseAgentproof()` L85 : Parse the normative AgentProof score and level from agentproof/README.md.
-- S:172b08e199 function updateRepoData `function updateRepoData(data)` L98 : Update the meta block in site/repo-data.js (version, score, level).
-- S:ee17355d71 function updateSite `function updateSite(data)` L113 : Update site/index.html with live data
-- S:03b000e190 function verifySiteData `function verifySiteData(data)` L134 : Verify site data matches evidence (used in CI gate)
+- S:55fc57e799 function readIfExists `function readIfExists(path)` L17 : Read a file, returning null if it does not exist. Reads directly instead of checking existsSync first, so there is no window between the check and the read where the file could be removed out from und
+- S:c44c6a3e42 function parseEvidence `function parseEvidence()` L33 : Parse RELEASE-EVIDENCE.md to extract gate counts and autonomy status
+- S:208ce5b839 function countWorkItems `function countWorkItems()` L63 : Count work items by state
+- S:370b67baf2 function readVersion `function readVersion()` L88 : Parse the product version from package.json. (.modonome/version holds a schema version, not the product version, so it must not be used here.)
+- S:4afb276004 function parseAgentproof `function parseAgentproof()` L103 : Parse the normative AgentProof score and level from agentproof/README.md.
+- S:172b08e199 function updateRepoData `function updateRepoData(data)` L116 : Update the meta block in site/repo-data.js (version, score, level).
+- S:ee17355d71 function updateSite `function updateSite(data)` L131 : Update site/index.html with live data
+- S:03b000e190 function verifySiteData `function verifySiteData(data)` L151 : Verify site data matches evidence (used in CI gate)
 ### design-system/src/components/Button/Button.tsx [F:8b122c449e]
 - S:c0c2347579 type ButtonVariant `export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";` L5
 - S:05e617fb30 type ButtonSize `export type ButtonSize = "sm" | "md" | "lg";` L6

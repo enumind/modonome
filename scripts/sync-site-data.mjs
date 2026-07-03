@@ -9,7 +9,19 @@
 // Usage:
 //   node scripts/sync-site-data.mjs            read sources and update site
 //   node scripts/sync-site-data.mjs --verify   fail if engineBase is stale
-import { readFileSync, writeFileSync, existsSync, readdirSync } from "node:fs";
+import { readFileSync, writeFileSync, readdirSync } from "node:fs";
+
+// Read a file, returning null if it does not exist. Reads directly instead of
+// checking existsSync first, so there is no window between the check and the
+// read where the file could be removed out from under the process.
+function readIfExists(path) {
+  try {
+    return readFileSync(path, "utf8");
+  } catch (e) {
+    if (e.code === "ENOENT") return null;
+    throw e;
+  }
+}
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
@@ -20,11 +32,11 @@ const verify = process.argv.includes("--verify");
 // Parse RELEASE-EVIDENCE.md to extract gate counts and autonomy status
 function parseEvidence() {
   const evidencePath = join(root, "RELEASE-EVIDENCE.md");
-  if (!existsSync(evidencePath)) {
+  const content = readIfExists(evidencePath);
+  if (content == null) {
     return { gates: 0, armed: false, learnings: [] };
   }
 
-  const content = readFileSync(evidencePath, "utf8");
   let gateCount = 0;
   let armed = false;
   const learnings = [];
@@ -50,10 +62,15 @@ function parseEvidence() {
 // Count work items by state
 function countWorkItems() {
   const wiDir = join(root, ".modonome", "work-items");
-  if (!existsSync(wiDir)) return {};
+  let files;
+  try {
+    files = readdirSync(wiDir);
+  } catch (e) {
+    return {};
+  }
 
   const byState = {};
-  for (const f of readdirSync(wiDir).filter((f) => f.endsWith(".json"))) {
+  for (const f of files.filter((f) => f.endsWith(".json"))) {
     try {
       const item = JSON.parse(readFileSync(join(wiDir, f), "utf8"));
       const state = item.state || "unknown";
@@ -70,9 +87,10 @@ function countWorkItems() {
 // schema version, not the product version, so it must not be used here.)
 function readVersion() {
   const pkgPath = join(root, "package.json");
-  if (existsSync(pkgPath)) {
+  const content = readIfExists(pkgPath);
+  if (content != null) {
     try {
-      const v = JSON.parse(readFileSync(pkgPath, "utf8")).version;
+      const v = JSON.parse(content).version;
       if (v) return v.startsWith("v") ? v : "v" + v;
     } catch (e) {
       // fall through to default
@@ -85,8 +103,8 @@ function readVersion() {
 function parseAgentproof() {
   const apPath = join(root, "agentproof", "README.md");
   const out = { score: "25/25", level: "HARDENED" };
-  if (!existsSync(apPath)) return out;
-  const content = readFileSync(apPath, "utf8");
+  const content = readIfExists(apPath);
+  if (content == null) return out;
   const scoreMatch = content.match(/Score:\s*(\d+\/\d+)\s*normative/i);
   if (scoreMatch) out.score = scoreMatch[1];
   const levelMatch = content.match(/Level:\s*([A-Z]+)/);
@@ -97,11 +115,11 @@ function parseAgentproof() {
 // Update the meta block in site/repo-data.js (version, score, level).
 function updateRepoData(data) {
   const dataPath = join(root, "site", "repo-data.js");
-  if (!existsSync(dataPath)) {
+  let js = readIfExists(dataPath);
+  if (js == null) {
     console.warn("site/repo-data.js not found; skipping update.");
     return;
   }
-  let js = readFileSync(dataPath, "utf8");
   js = js.replace(/(version:\s*')[^']*(')/, `$1${data.version}$2`);
   js = js.replace(/(agentproofScore:\s*')[^']*(')/, `$1${data.score}$2`);
   js = js.replace(/(agentproofLevel:\s*')[^']*(')/, `$1${data.level}$2`);
@@ -112,12 +130,11 @@ function updateRepoData(data) {
 // Update site/index.html with live data
 function updateSite(data) {
   const sitePath = join(root, "site", "index.html");
-  if (!existsSync(sitePath)) {
+  let html = readIfExists(sitePath);
+  if (html == null) {
     console.warn("site/index.html not found; skipping update.");
     return;
   }
-
-  let html = readFileSync(sitePath, "utf8");
 
   // Replace engineBase values
   const engineLine = `this.engineBase = { lessons: ${data.learnings.length}, rules: ${data.rules || 0}, gates: ${data.gates}, queue: ${data.queue || 0}, version: '${data.version}', armed: ${data.armed} };`;
@@ -133,12 +150,12 @@ function updateSite(data) {
 // Verify site data matches evidence (used in CI gate)
 function verifySiteData(data) {
   const sitePath = join(root, "site", "index.html");
-  if (!existsSync(sitePath)) {
+  const html = readIfExists(sitePath);
+  if (html == null) {
     console.error("site/index.html not found.");
     return false;
   }
 
-  const html = readFileSync(sitePath, "utf8");
   const match = html.match(/this\.engineBase\s*=\s*\{\s*lessons:\s*(\d+),\s*rules:\s*(\d+),\s*gates:\s*(\d+),\s*queue:\s*(\d+)/);
 
   if (!match) {
