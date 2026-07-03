@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://raw.githubusercontent.com https://api.github.com; base-uri 'self'">
 <title>Modonome - Guardrails for AI coding agents in CI</title>
 <meta name="description" content="Governance and guardrails for AI coding agents: an off-by-default engineering loop with separate maker, checker, and merge roles, CI gate-integrity checks that stop weakened tests from merging, and the AgentProof benchmark. Off by default. MIT licensed.">
 <link rel="canonical" href="https://modonome.com/">
@@ -65,9 +66,9 @@
 <link rel="icon" type="image/png" sizes="32x32" href="assets/icon-32.png">
 <link rel="apple-touch-icon" href="assets/icon-180.png">
 <link rel="manifest" href="site.webmanifest">
-<link rel="preconnect" href="https://unpkg.com" crossorigin>
-<script crossorigin defer src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script crossorigin defer src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<link rel="preload" as="image" href="assets/modonome-logo.webp">
+<script defer src="vendor/react.production.min.js"></script>
+<script defer src="vendor/react-dom.production.min.js"></script>
 <script defer src="./support.js"></script>
 </head>
 <body>
@@ -181,7 +182,7 @@
 
   <nav style="position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);background:rgba(11,18,32,.82);border-bottom:1px solid rgba(159,201,180,.10)">
     <div class="mn-nav-in" style="max-width:1180px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:24px">
-      <a href="#top" style="display:flex;align-items:center;text-decoration:none"><span><img class="mn-nav-logo" src="assets/modonome-logo.webp" alt="Modonome" style="display:block;mix-blend-mode:lighten"></span></a>
+      <a href="#top" style="display:flex;align-items:center;text-decoration:none"><span><img class="mn-nav-logo" src="assets/modonome-logo.webp" alt="Modonome" width="880" height="284" style="width:auto;display:block;mix-blend-mode:lighten"></span></a>
       <div class="mn-nav-actions" style="display:flex;align-items:center">
         <sc-for list="{{ topNav }}" as="t" hint-placeholder-count="6">
           <a class="mn-nav-link" href="{{ t.href }}" style="{{ t.style }}" style-hover="color:#f6f4ee">{{ t.label }}</a>
@@ -197,7 +198,7 @@
       <div style="display:inline-flex;align-items:center;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#5dd4ab;border:1px solid rgba(93,212,171,.30);border-radius:999px;padding:7px 16px;margin-bottom:34px;background:rgba(62,201,138,.06)">
         <span style="width:7px;height:7px;border-radius:50%;background:#5dd4ab;box-shadow:0 0 10px #5dd4ab"></span>The governed autonomy standard · {{ scoreBadge }}
       </div>
-      <div class="mn-satin" style="--satin-mask:url('assets/modonome-logo.webp');display:block;margin:0 auto 30px;width:min(440px,82%)"><img src="assets/modonome-logo.webp" alt="Modonome" style="width:100%;display:block;mix-blend-mode:lighten"></div>
+      <div class="mn-satin" style="--satin-mask:url('assets/modonome-logo.webp');display:block;margin:0 auto 30px;width:min(440px,82%)"><img src="assets/modonome-logo.webp" alt="Modonome" width="880" height="284" style="width:100%;height:auto;display:block;mix-blend-mode:lighten"></div>
       <h1 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(34px,5.4vw,62px);line-height:1.06;letter-spacing:-.02em;margin:0 0 22px;color:#f6f4ee">The Governed Autonomous<br>Engineering Loop.</h1>
       <p style="max-width:700px;margin:0 auto 38px;font-size:clamp(16px,2vw,19px);line-height:1.6;color:#aeb9c8">Coding agents ship changes fast. The hard part is trusting them: a diff no one reviewed, tests that pass because they were quietly weakened, an agent that signs off on its own work. Modonome is the governance layer that keeps making, checking, and merging in separate hands. Every change runs through gates that live in your CI, and autonomy turns on only when you say so.</p>
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:0 0 32px">
@@ -704,7 +705,7 @@
   <footer style="position:relative;z-index:1;border-top:1px solid rgba(159,201,180,.1)">
     <div style="max-width:1180px;margin:0 auto;padding:34px 24px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap">
       <div style="display:flex;align-items:center;gap:14px">
-        <span class="mn-satin" style="--satin-mask:url('assets/modonome-logo.webp')"><img src="assets/modonome-logo.webp" alt="Modonome" style="height:24px;display:block;mix-blend-mode:lighten"></span>
+        <span class="mn-satin" style="--satin-mask:url('assets/modonome-logo.webp')"><img src="assets/modonome-logo.webp" alt="Modonome" width="880" height="284" style="height:24px;width:auto;display:block;mix-blend-mode:lighten"></span>
         <div style="display:flex;flex-direction:column;gap:4px">
           <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#7c8aa0">MIT · {{ version }} · No telemetry</span>
           <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#54627a">This site ships from the product repo and clears the same gates: style, CodeQL, OpenSSF Scorecard, and a Merkle-checked snapshot.</span>

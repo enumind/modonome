@@ -20,10 +20,13 @@ can update the page in the same commit, so the page never drifts from the produc
 ## Runtime dependencies
 
 The page requires:
-- **React 18** and **ReactDOM 18** (loaded from `unpkg.com` CDN in `index.html`)
+- **React 18** and **ReactDOM 18** (self-hosted UMD builds under `vendor/`, referenced from `index.html`)
 - **Google Fonts** (Space Grotesk, IBM Plex Sans, IBM Plex Mono, loaded from `fonts.googleapis.com`)
 
-Both are loaded at runtime. A no-JS fallback is not provided by this design.
+React is served from the repo, so the page has no third-party script origin. The
+`noscript` block carries a static text fallback for crawlers and no-JS visitors, and the
+`/agentproof/` and `/quickstart/` pages render without any JavaScript. `index.html` also
+carries a `meta` Content-Security-Policy (GitHub Pages does not apply the `_headers` file).
 
 ## Deploy
 
