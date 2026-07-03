@@ -6,7 +6,7 @@
 // arming stays a two-key act split between this command and a human running the
 // printed CI-secret command.
 // Usage: node scripts/arm.mjs [dir]
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, openSync, closeSync, readFileSync, writeSync, ftruncateSync } from "node:fs";
 import { join } from "node:path";
 import { parseFlatYaml, patchTopLevelYaml } from "./lib/yaml-lite.mjs";
 import { modelFamily } from "./validate-work-item.mjs";
@@ -24,16 +24,27 @@ function fail(msg) {
   ok = false;
 }
 
-if (!existsSync(configPath)) {
-  console.error(`No config found at ${configPath}. Run \`npx modonome scaffold ${target} --write\` first.`);
-  process.exit(1);
+// Open once and keep the descriptor for both the read and the eventual write.
+// A descriptor is bound to the inode at open time, so nothing between here and
+// the write below (a symlink swap, a concurrent rewrite) can redirect the write
+// to a different file than the one this command inspected.
+let configFd;
+try {
+  configFd = openSync(configPath, "r+");
+} catch (e) {
+  if (e.code === "ENOENT") {
+    console.error(`No config found at ${configPath}. Run \`npx modonome scaffold ${target} --write\` first.`);
+    process.exit(1);
+  }
+  throw e;
 }
 
-const rawText = readFileSync(configPath, "utf8");
+const rawText = readFileSync(configFd, "utf8");
 let config;
 try {
   config = parseFlatYaml(rawText);
 } catch (e) {
+  closeSync(configFd);
   console.error(`Config at ${configPath} does not parse: ${e.message}`);
   process.exit(1);
 }
@@ -97,13 +108,19 @@ for (const key of [
 
 console.log("");
 if (!ok) {
+  closeSync(configFd);
   console.error("Arming refused: fix the failed check(s) above, then re-run `npx modonome arm`.");
   process.exit(1);
 }
 
 const wasArmed = config.autonomy_enabled === true;
 const patched = patchTopLevelYaml(rawText, { autonomy_enabled: true });
-if (patched !== rawText) writeFileSync(configPath, patched);
+if (patched !== rawText) {
+  const buf = Buffer.from(patched, "utf8");
+  writeSync(configFd, buf, 0, buf.length, 0);
+  ftruncateSync(configFd, buf.length);
+}
+closeSync(configFd);
 
 console.log(
   wasArmed
