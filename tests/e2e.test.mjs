@@ -1,3 +1,5 @@
+// Copyright Modonome contributors.
+// SPDX-License-Identifier: MIT
 /**
  * End-to-end integration test. Proves the full governance chain works as a
  * connected system, proving the chain holds end to end.
@@ -10,7 +12,7 @@
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";

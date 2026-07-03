@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// Copyright Modonome contributors.
+// SPDX-License-Identifier: MIT
 // Expire stale in-flight work items whose lease_expires_at has passed.
 // Requeues the item if attempts remain; escalates if max_attempts is reached.
 // Usage: node scripts/tick.mjs [stateDir]

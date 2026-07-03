@@ -1,3 +1,5 @@
+// Copyright Modonome contributors.
+// SPDX-License-Identifier: MIT
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync } from "node:fs";

@@ -1,3 +1,5 @@
+// Copyright Modonome contributors.
+// SPDX-License-Identifier: MIT
 /**
  * AP-01: Ratchet rejects assertion removal and vacuous assertions
  *

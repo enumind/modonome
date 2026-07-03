@@ -1,3 +1,5 @@
+// Copyright Modonome contributors.
+// SPDX-License-Identifier: MIT
 /**
  * AP-03: Ratchet rejects broad type escape injection
  *

@@ -1,3 +1,6 @@
+# Copyright Modonome contributors.
+# SPDX-License-Identifier: MIT
+
 # Modonome configuration. Safe defaults. Edit with care.
 # The arming levers (autonomy_enabled, auto_merge, max_merges_per_day,
 # repo_network_enabled) are read from the environment or CI in armed mode, so

@@ -1,5 +1,8 @@
 <!-- modonome:bundle GENERATED. Do not edit by hand. Run: node scripts/build-prompt.mjs --write -->
 
+<!-- Copyright Modonome contributors. -->
+<!-- SPDX-License-Identifier: MIT -->
+
 <!-- modonome:core -->
 # Modonome Master Prompt (core)
 
@@ -123,6 +126,9 @@ Load these from `prompts/modules/` as needed:
 - `network.md`: the cross-repo knowledge network. Load only when `repo_network_enabled` is
   set.
 
+<!-- Copyright Modonome contributors. -->
+<!-- SPDX-License-Identifier: MIT -->
+
 <!-- modonome:module adoption -->
 ## Adoption pass
 
@@ -202,6 +208,9 @@ Last updated: YYYY-MM-DD
 `LEARNINGS.md` is the staged, bounded, owner-promoted queue described in `gates.md`.
 
 `NETWORK.md` is optional and disabled by default. See `network.md`.
+
+<!-- Copyright Modonome contributors. -->
+<!-- SPDX-License-Identifier: MIT -->
 
 <!-- modonome:module state-machine -->
 ## Durable state machine
@@ -312,6 +321,9 @@ End: resolve or record every conflict, update durable status, stage candidate le
 when evidence exists, commit and push when repo policy requires it, and leave no required
 next step hidden in chat.
 
+<!-- Copyright Modonome contributors. -->
+<!-- SPDX-License-Identifier: MIT -->
+
 <!-- modonome:module roles -->
 ## Agent roles
 
@@ -379,6 +391,9 @@ Code owners may be advisory on some plans, so the real enforcement is that the m
 is never the author. Without branch protection, merge only after the checks API reports
 green. Do not rely on platform auto-merge to wait for checks unless protection makes it safe.
 
+<!-- Copyright Modonome contributors. -->
+<!-- SPDX-License-Identifier: MIT -->
+
 <!-- modonome:module gates -->
 ## Deterministic gates
 
@@ -443,6 +458,9 @@ score = safety + user_value + repo_fit + reuse + evidence - effort - blast_radiu
 
 A high score means route for review, not merge automatically.
 
+<!-- Copyright Modonome contributors. -->
+<!-- SPDX-License-Identifier: MIT -->
+
 <!-- modonome:module control-panel -->
 ## Operator control panel
 
@@ -476,6 +494,9 @@ UX requirements: operational and scannable, host tokens and components, accessib
 only signal), responsive from 375px up with no horizontal scroll, stable layout with no shift,
 explicit loading and empty and error and permission-denied states, subtle motion that respects
 reduced-motion, and confirmation on every destructive control.
+
+<!-- Copyright Modonome contributors. -->
+<!-- SPDX-License-Identifier: MIT -->
 
 <!-- modonome:module network -->
 ## Cross-repo knowledge network

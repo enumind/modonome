@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// Copyright Modonome contributors.
+// SPDX-License-Identifier: MIT
 // Version-aware config migration. Adds new levers with safe defaults and bumps
 // schema_version while preserving every host override. A missing lever always
 // migrates to the disabled, dry-run value, so an upgrade never arms an engine.

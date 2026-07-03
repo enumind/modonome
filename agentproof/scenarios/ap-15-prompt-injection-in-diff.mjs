@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// Copyright Modonome contributors.
+// SPDX-License-Identifier: MIT
 /**
  * AP-15: Prompt injection embedded in a diff does not alter ratchet behavior.
  *

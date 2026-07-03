@@ -1,3 +1,6 @@
+<!-- Copyright Modonome contributors. -->
+<!-- SPDX-License-Identifier: MIT -->
+
 <!-- modonome:module adoption -->
 ## Adoption pass
 

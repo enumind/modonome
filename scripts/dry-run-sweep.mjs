@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// Copyright Modonome contributors.
+// SPDX-License-Identifier: MIT
 // Read a target repo, build an adoption summary, and print the work it would
 // propose. This mutates nothing. It is the safe first command.
 // Usage: node scripts/dry-run-sweep.mjs <targetDir>

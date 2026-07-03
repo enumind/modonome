@@ -1,10 +1,12 @@
+// Copyright Modonome contributors.
+// SPDX-License-Identifier: MIT
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
-import { validate } from "../scripts/lib/jsonschema.mjs";
+import { validate, loadSchema } from "../scripts/lib/jsonschema.mjs";
 import { validateConfig, loadConfig } from "../scripts/validate-config.mjs";
 import { migrate } from "../scripts/migrate-config.mjs";
 import { parseFlatYaml } from "../scripts/lib/yaml-lite.mjs";
@@ -12,7 +14,7 @@ import { parseFlatYaml } from "../scripts/lib/yaml-lite.mjs";
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
 const fx = join(root, "fixtures");
-const readJson = (p) => JSON.parse(readFileSync(p, "utf8"));
+const readJson = (p) => loadSchema(readFileSync(p, "utf8"));
 const files = (dir) => readdirSync(dir).map((f) => join(dir, f));
 
 test("valid configs pass, invalid configs fail", () => {

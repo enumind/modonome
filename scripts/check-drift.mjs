@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// Copyright Modonome contributors.
+// SPDX-License-Identifier: MIT
 // Drift guard. Proves the prompt, the schema, the template, and the migration
 // defaults describe the same set of config levers, and that the prompt bundle is
 // up to date. One source of truth, checked by machine.
@@ -7,6 +9,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { parseFlatYaml } from "./lib/yaml-lite.mjs";
+import { loadSchema } from "./lib/jsonschema.mjs";
 import { SAFE_DEFAULTS } from "./migrate-config.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -23,7 +26,7 @@ function coreLevers() {
 }
 
 function schemaLevers() {
-  const schema = JSON.parse(readFileSync(join(root, "schemas", "config.schema.json"), "utf8"));
+  const schema = loadSchema(readFileSync(join(root, "schemas", "config.schema.json"), "utf8"));
   return new Set(Object.keys(schema.properties));
 }
 
@@ -50,7 +53,7 @@ for (const [name, set] of Object.entries(sets)) {
 
 try {
   execSync("node scripts/build-prompt.mjs --check", { cwd: root, stdio: "pipe" });
-} catch (e) {
+} catch {
   problems.push("prompt bundle is out of date. Run: node scripts/build-prompt.mjs --write");
 }
 

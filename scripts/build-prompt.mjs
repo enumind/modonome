@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// Copyright Modonome contributors.
+// SPDX-License-Identifier: MIT
 // Build the single-file prompt bundle from the core plus modules.
 // The bundle is the portability guarantee. The core plus modules are what a
 // capable harness loads on demand. CI runs this with --check to prove they agree.

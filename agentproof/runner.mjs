@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// Copyright Modonome contributors.
+// SPDX-License-Identifier: MIT
 /**
  * AgentProof runner. Executes all 16 governance scenarios and prints a score card.
  *
@@ -10,7 +12,7 @@
 import { spawnSync } from "node:child_process";
 import { readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { dirname, join, basename } from "node:path";
+import { dirname, join } from "node:path";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const scenarioDir = join(here, "scenarios");
@@ -60,7 +62,6 @@ if (!jsonMode) {
 
 for (const file of scenarios) {
   const title = SCENARIO_TITLES[file] || file;
-  const id = file.replace(".mjs", "").toUpperCase().replace(/-/g, " ").slice(0, 5);
   const label = file.slice(0, 5).toUpperCase();
 
   const result = spawnSync("node", [join(scenarioDir, file)], { encoding: "utf8", timeout: 30000 });

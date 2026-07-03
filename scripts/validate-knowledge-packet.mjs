@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// Copyright Modonome contributors.
+// SPDX-License-Identifier: MIT
 // Validate a knowledge packet against the schema and a deterministic redaction
 // scan. Publishing is blocked when sensitive content is present. Cross-repo
 // sharing is off by default; this gate exists so that enabling it stays safe.
@@ -6,10 +8,10 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { validate } from "./lib/jsonschema.mjs";
+import { validate, loadSchema } from "./lib/jsonschema.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
-const schema = JSON.parse(readFileSync(join(here, "..", "schemas", "knowledge-packet.schema.json"), "utf8"));
+const schema = loadSchema(readFileSync(join(here, "..", "schemas", "knowledge-packet.schema.json"), "utf8"));
 
 const SECRET_PATTERNS = [
   { name: "private key", re: /-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----/ },

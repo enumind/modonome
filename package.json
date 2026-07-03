@@ -14,9 +14,12 @@
     "check:prompt": "node scripts/build-prompt.mjs --check",
     "check:drift": "node scripts/check-drift.mjs",
     "check:style": "node scripts/check-style.mjs .",
+    "check:lint": "eslint .",
+    "check:audit": "npm audit --audit-level=moderate",
+    "check:coverage": "c8 --reporter=text --lines=80 --functions=80 --check-coverage node --test tests/*.test.mjs",
     "test": "node --test tests/*.test.mjs",
     "govbench": "node agentproof/runner.mjs",
-    "verify": "npm run check:drift && npm run check:style && npm test && npm run agentproof",
+    "verify": "npm run check:drift && npm run check:style && npm run check:lint && npm run check:audit && npm test && npm run agentproof",
     "dry-run": "node scripts/dry-run-sweep.mjs",
     "scaffold": "node scripts/scaffold.mjs",
     "agentproof": "node agentproof/runner.mjs",
@@ -55,5 +58,9 @@
     "autonomy",
     "ratchet",
     "agentproof"
-  ]
+  ],
+  "devDependencies": {
+    "c8": "^11.0.0",
+    "eslint": "^9.39.4"
+  }
 }

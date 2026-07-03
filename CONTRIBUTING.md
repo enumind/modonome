@@ -18,7 +18,7 @@ We use GitHub pull requests for all contributions. Here is the process:
 
 All contributions require:
 - Pull request review from a maintainer
-- Passing automated tests and checks (drift guard, style, tests, AgentProof)
+- Passing automated tests and checks (drift guard, style, lint, dependency audit, tests, AgentProof)
 - External contributors cannot merge changes; maintainer approval required
 
 For bug reports and feature requests, open an issue on GitHub instead of submitting a pull request.
@@ -38,7 +38,23 @@ For bug reports and feature requests, open an issue on GitHub instead of submitt
 npm run verify
 ```
 
-This runs the drift guard, the style check, and the tests. It needs no network or secrets.
+This runs the drift guard, the style check, ESLint, a dependency audit, the tests, and
+AgentProof. The drift guard, style check, and tests need no network or secrets; the
+dependency audit reaches the npm registry to check for known vulnerabilities.
+
+## Static analysis and vulnerability handling
+
+- **ESLint** (`npm run check:lint`) runs on every push and pull request and must pass
+  with zero errors before merge.
+- **`npm audit`** (`npm run check:audit`) runs in CI at the `moderate` severity floor and
+  must pass before merge.
+- Any finding from either tool with a CVSS base score of 4.0 (medium) or higher must be
+  fixed, or documented as an accepted false positive with a written justification, before
+  the pull request that introduced it can merge. Critical findings are fixed immediately,
+  not queued.
+- Coverage (`npm run check:coverage`) is measured on every run; the project targets 80%+
+  line and function coverage. Coverage regressions are called out in review even where
+  not hard-gated in CI.
 
 ## House style
 

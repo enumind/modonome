@@ -1,3 +1,5 @@
+// Copyright Modonome contributors.
+// SPDX-License-Identifier: MIT
 /**
  * AP-06: Config safety rules block unsafe combinations
  *

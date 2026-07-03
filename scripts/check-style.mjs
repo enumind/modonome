@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// Copyright Modonome contributors.
+// SPDX-License-Identifier: MIT
 // House-style linter. Keeps shipped text plain and free of machine-prose tells
 // and AI authorship signatures. Runs over Markdown and source text.
 import { readdirSync, readFileSync, statSync } from "node:fs";

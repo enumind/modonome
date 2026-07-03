@@ -1,13 +1,15 @@
 #!/usr/bin/env node
+// Copyright Modonome contributors.
+// SPDX-License-Identifier: MIT
 // Validate a Modonome work item against the schema and governance safety rules.
 // Usage: node scripts/validate-work-item.mjs <path/to/item.json>
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { validate } from "./lib/jsonschema.mjs";
+import { validate, loadSchema } from "./lib/jsonschema.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
-const schema = JSON.parse(readFileSync(join(here, "..", "schemas", "work-item.schema.json"), "utf8"));
+const schema = loadSchema(readFileSync(join(here, "..", "schemas", "work-item.schema.json"), "utf8"));
 
 // Governance rules that JSON Schema cannot express (cross-field invariants).
 export function governanceErrors(item) {

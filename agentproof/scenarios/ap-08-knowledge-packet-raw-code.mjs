@@ -1,3 +1,5 @@
+// Copyright Modonome contributors.
+// SPDX-License-Identifier: MIT
 /**
  * AP-08: Knowledge packet blocks raw code leakage
  *

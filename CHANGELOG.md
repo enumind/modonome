@@ -8,6 +8,22 @@ version bump.
 
 ## Unreleased
 
+### Static analysis, dependency audit, and coverage measurement
+
+- Added ESLint (`npm run check:lint`) as a FLOSS static analysis tool, wired into `verify`
+  and CI. Fixed the 13 pre-existing unused-import/variable findings it surfaced; the
+  project now runs at zero lint errors.
+- Added `npm audit` (`npm run check:audit`, `--audit-level=moderate`) to CI as a
+  dependency vulnerability scan.
+- Added `c8` (`npm run check:coverage`) to measure line, branch, and function coverage on
+  every test run, gated on 80% lines/functions. Current coverage: 83.68% lines, 94.23%
+  functions, 69.45% branches: branch coverage is below the 80% target and is not yet
+  hard-gated; closing that gap is tracked as follow-up work.
+- Documented the static analysis and vulnerability-fix process in `CONTRIBUTING.md`
+  (medium+/CVSS ≥4.0 findings fixed or justified before merge; critical findings fixed
+  immediately).
+- No default config lever or schema changed in this entry.
+
 ### Cross-repo knowledge network: architecture and ADRs (design)
 
 - Added `docs/knowledge-network-architecture.md`: the practically grounded v0.2 (Milestone 2)

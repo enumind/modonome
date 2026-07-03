@@ -1,3 +1,5 @@
+// Copyright Modonome contributors.
+// SPDX-License-Identifier: MIT
 // A minimal reader for flat "key: value" YAML, enough for .modonome/config.yaml.
 // It supports comments, booleans, integers, floats, quoted strings, empty arrays,
 // and inline string arrays like [a, b]. Nested structures are out of scope here;

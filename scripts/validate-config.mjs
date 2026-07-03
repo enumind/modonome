@@ -1,14 +1,16 @@
 #!/usr/bin/env node
+// Copyright Modonome contributors.
+// SPDX-License-Identifier: MIT
 // Validate a Modonome config against the schema and the safety rules.
 // Usage: node scripts/validate-config.mjs <path/to/config.yaml|.json>
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join, extname } from "node:path";
-import { validate } from "./lib/jsonschema.mjs";
+import { validate, loadSchema } from "./lib/jsonschema.mjs";
 import { parseFlatYaml } from "./lib/yaml-lite.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
-const schema = JSON.parse(readFileSync(join(here, "..", "schemas", "config.schema.json"), "utf8"));
+const schema = loadSchema(readFileSync(join(here, "..", "schemas", "config.schema.json"), "utf8"));
 
 export function loadConfig(path) {
   const text = readFileSync(path, "utf8");

@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// Copyright Modonome contributors.
+// SPDX-License-Identifier: MIT
 // Drop the .modonome state templates into a target repo. Boots disabled and
 // dry-run. Never overwrites an existing file. Touches nothing else.
 // Usage: node scripts/scaffold.mjs <targetDir> [--write]

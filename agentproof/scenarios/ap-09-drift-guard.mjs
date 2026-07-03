@@ -1,3 +1,5 @@
+// Copyright Modonome contributors.
+// SPDX-License-Identifier: MIT
 /**
  * AP-09: Drift guard catches schema/prompt/template divergence
  *
@@ -16,7 +18,7 @@
  * Expected outcome: check-drift.mjs exits 0 on the current repo state,
  * and the CI configuration includes the drift guard in its pipeline.
  */
-import { spawnSync, execSync } from "node:child_process";
+import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";

@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// Copyright Modonome contributors.
+// SPDX-License-Identifier: MIT
 // Anti-gaming ratchet. Rejects diffs that make gates pass by weakening the gates.
 // Runs in CI, outside the agent loop. Zero-false-positive checks only.
 // Supports: JavaScript/TypeScript, Python, Java (JUnit/Mockito/JaCoCo),

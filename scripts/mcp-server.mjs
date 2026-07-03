@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// Copyright Modonome contributors.
+// SPDX-License-Identifier: MIT
 /**
  * Modonome MCP server (MCP 1.0, stdio transport).
  *

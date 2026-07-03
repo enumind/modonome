@@ -1,3 +1,5 @@
+// Copyright Modonome contributors.
+// SPDX-License-Identifier: MIT
 // A small, dependency-free JSON Schema validator.
 // It supports the subset this project uses: type, enum, const, required,
 // properties, additionalProperties (boolean), items, minimum, maximum,
@@ -79,4 +81,14 @@ export function validate(schema, value, path = "$", errors = []) {
   }
 
   return errors;
+}
+
+export function loadSchema(content) {
+  const lines = content.split('\n');
+  let startIndex = 0;
+  while (startIndex < lines.length && lines[startIndex].trim().startsWith('//')) {
+    startIndex++;
+  }
+  const jsonContent = lines.slice(startIndex).join('\n');
+  return JSON.parse(jsonContent);
 }

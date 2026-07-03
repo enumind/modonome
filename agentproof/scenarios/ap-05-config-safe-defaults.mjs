@@ -1,3 +1,5 @@
+// Copyright Modonome contributors.
+// SPDX-License-Identifier: MIT
 /**
  * AP-05: Config ships with safe defaults
  *
@@ -15,13 +17,11 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { createRequire } from "node:module";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "../..");
 
 // Load the yaml-lite parser the same way the validator does.
-const require = createRequire(import.meta.url);
 const { parseFlatYaml } = await import(join(root, "scripts/lib/yaml-lite.mjs"));
 
 const templatePath = join(root, "templates/.modonome/config.yaml");

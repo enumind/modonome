@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// Copyright Modonome contributors.
+// SPDX-License-Identifier: MIT
 // Modonome command line. Safe by default. The two commands you need first are
 // `dry-run` (changes nothing) and `scaffold` (drops disabled, dry-run state).
 import { spawnSync } from "node:child_process";

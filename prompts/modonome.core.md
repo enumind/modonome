@@ -1,3 +1,6 @@
+<!-- Copyright Modonome contributors. -->
+<!-- SPDX-License-Identifier: MIT -->
+
 <!-- modonome:core -->
 # Modonome Master Prompt (core)
 
