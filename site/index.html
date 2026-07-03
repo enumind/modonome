@@ -3,7 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://raw.githubusercontent.com https://api.github.com; base-uri 'self'">
+<!-- An enforced meta CSP was tried here and reverted: it broke script-src
+     'unsafe-eval' on the live host in production, even though this file's
+     own tag included it, most likely because a CSP served by the host or
+     an intermediary combined restrictively with this tag (browsers enforce
+     the intersection of every applicable CSP). Local `npx serve` testing
+     cannot reproduce a host-level CSP, so re-enforcing here needs
+     verification against the live response headers, in addition to a
+     local Playwright pass. See site/_headers for the intended policy. -->
 <title>Modonome - Guardrails for AI coding agents in CI</title>
 <meta name="description" content="Governance and guardrails for AI coding agents: an off-by-default engineering loop with separate maker, checker, and merge roles, CI gate-integrity checks that stop weakened tests from merging, and the AgentProof benchmark. Off by default. MIT licensed.">
 <link rel="canonical" href="https://modonome.com/">
