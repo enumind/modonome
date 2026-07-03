@@ -18,7 +18,11 @@ import { canonicalize } from "./canonical-json.mjs";
 import { DENYLISTED_PREFIXES } from "./branch-name.mjs";
 import { CAPABILITY_FLAGS } from "./capability-flags.mjs";
 
-export const MANIFEST_VERSION = 1;
+// v2 adds the required `generator` credit block (Phase 4: policy-pack adoption tooling,
+// ADR-037). Because `generator` is required and content-digested, a vendored copy cannot
+// silently drop credit to modonome without either invalidating its digest or becoming
+// schema-invalid outright.
+export const MANIFEST_VERSION = 2;
 export const ATTESTATION_KIND = "policy-attestation";
 
 // The deterministic attribution detectors whose exact bytes define the enforced policy.
@@ -124,6 +128,20 @@ function capabilities(config) {
   return CAPABILITY_FLAGS.map((name) => ({ name, default: config[name] === true }));
 }
 
+// The credit block (ADR-037). Populated from package.json, never hardcoded twice, so a
+// rename in package.json is what moves this, not a second literal to keep in sync. The
+// repository URL is stripped of its "git+" prefix and ".git" suffix for a plain, clickable
+// link.
+function generator(pkgJson) {
+  const pkg = pkgJson || {};
+  const repoUrl = typeof pkg.repository === "string" ? pkg.repository : pkg.repository && pkg.repository.url;
+  return {
+    name: pkg.name || null,
+    homepage: pkg.homepage || null,
+    repository: repoUrl ? repoUrl.replace(/^git\+/, "").replace(/\.git$/, "") : null,
+  };
+}
+
 function normalizePaths(list) {
   return (Array.isArray(list) ? list : [])
     .map((p) => String(p).replace(/\/+$/, ""))
@@ -137,6 +155,7 @@ export function buildPolicyManifestBody({ root, config, pkgJson }) {
   return {
     manifest_version: MANIFEST_VERSION,
     kind: ATTESTATION_KIND,
+    generator: generator(pkgJson),
     disclosure: {
       model: "architectural",
       statement: DISCLOSURE_STATEMENT,
