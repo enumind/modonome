@@ -22,6 +22,10 @@ inputs:
     description: 'Path to write the SARIF 2.1.0 report.'
     required: false
     default: 'modonome-gate-integrity.sarif'
+  receipt:
+    description: 'Emit and keyless-sign an in-toto gate-integrity receipt (needs id-token: write and attestations: write).'
+    required: false
+    default: 'false'
 
 runs:
   using: 'composite'
@@ -64,3 +68,25 @@ runs:
       with:
         sarif_file: ${{ inputs.sarif-file }}
         category: modonome-gate-integrity
+
+    # Optional: an in-toto receipt of the verdict, keyless-signed via Sigstore and logged
+    # in Rekor, so a downstream verifier can confirm the tests were not weakened. Runs on
+    # success and failure so the receipt records either outcome.
+    - name: Gate integrity receipt
+      if: ${{ always() && inputs.receipt == 'true' }}
+      shell: bash
+      env:
+        MODONOME_ACTION_PATH: ${{ github.action_path }}
+      run: |
+        set -uo pipefail
+        BASE="${GITHUB_BASE_REF:+origin/$GITHUB_BASE_REF}"
+        node "$MODONOME_ACTION_PATH/scripts/ratchet-attestation.mjs" "${BASE:-origin/HEAD}" \
+          --out modonome-gate-integrity.intoto.json
+
+    - name: Sign the receipt
+      if: ${{ always() && inputs.receipt == 'true' }}
+      uses: actions/attest@v2
+      with:
+        subject-name: gate-integrity
+        predicate-type: 'https://modonome.com/attestation/gate-integrity/v1'
+        predicate-path: modonome-gate-integrity.intoto.json

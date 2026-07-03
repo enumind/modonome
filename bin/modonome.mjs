@@ -39,6 +39,7 @@ Usage:
   npx modonome remediate plan            preview the metadata-only commit-history rewrite. Read-only, changes nothing.
   npx modonome remediate apply           rewrite commit metadata to strip attribution. Armed and capability-gated only.
   npx modonome attest [--check|--show]   write or verify the policy-pack and disclosure attestation for this repo.
+  npx modonome receipt [baseRef]         emit an in-toto gate-integrity attestation (sign it with actions/attest in CI).
   npx modonome mcp                       run the read-only governance MCP server (stdio) for any MCP harness.
   npx modonome connect [dir]             register the MCP server with your agent (.mcp.json). Add --write to apply.
   npx modonome help                      show this message.
@@ -152,6 +153,9 @@ function main(argv) {
       break;
     case "ratchet":
       run("guard-ratchet.mjs", rest);
+      break;
+    case "receipt":
+      run("ratchet-attestation.mjs", rest);
       break;
     case "mcp":
       run("mcp-server.mjs", rest);
