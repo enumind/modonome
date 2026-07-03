@@ -59,6 +59,7 @@ export interface ModonomeConfig {
   repo_network_dry_run: boolean;
   share_raw_code_across_repos: boolean;
   share_repo_identifiers_by_default: boolean;
+  remediation_apply_enabled: boolean;
   roles: Record<
     string,
     { runner: string; model: string; provider?: string; transport?: string; trigger?: string; execution_target?: string }
@@ -159,6 +160,27 @@ export interface DecisionVM {
   defaultHold: boolean;
 }
 
+/** One commit the metadata-only remediator would rewrite, and why. */
+export interface RemediationProposalVM {
+  sha: string;
+  reasons: string[];
+}
+
+/**
+ * The armed metadata-only remediator (ADR-035) as a read-only surface plus one owner
+ * lever. `applyEnabled` mirrors the config flag; `ready` is true only when every arming
+ * condition is met, and `blockers` names the ones that are not. `proposals` is what
+ * `remediate plan` would rewrite on the current branch (empty when history is clean).
+ */
+export interface RemediationVM {
+  applyEnabled: boolean;
+  ready: boolean;
+  blockers: string[];
+  proposalCount: number;
+  proposals: RemediationProposalVM[];
+  fingerprint?: string;
+}
+
 export type AuditKind =
   | "dry_run"
   | "report"
@@ -219,6 +241,8 @@ export interface PanelState {
   costTrend: TrendPoint[];
   qualityTrend: TrendPoint[];
   agentProofScore: number;
+  /** Optional so a state assembled without it (older fixture, partial read) still types. */
+  remediation?: RemediationVM;
 }
 
 /**

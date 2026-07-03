@@ -30,6 +30,7 @@ const config: ModonomeConfig = {
   repo_network_dry_run: true,
   share_raw_code_across_repos: false,
   share_repo_identifiers_by_default: false,
+  remediation_apply_enabled: false,
   roles: {
     maker: { runner: "container", model: "claude-sonnet-4-6" },
     checker: { runner: "container", model: "claude-opus-4-8" },
@@ -185,4 +186,16 @@ export const productState: PanelState = {
     { label: "Fri", value: 25 },
   ],
   agentProofScore: 25,
+  remediation: {
+    applyEnabled: false,
+    ready: false,
+    blockers: [
+      "autonomy_enabled is off",
+      "dry_run is on",
+      "remediation_apply_enabled is off",
+      "MODONOME_ARMED is not set in the environment",
+    ],
+    proposalCount: 0,
+    proposals: [],
+  },
 };

@@ -10,6 +10,7 @@ import { join, basename } from "node:path";
 import { execFileSync } from "node:child_process";
 import yaml from "js-yaml";
 import { parseStagedLine } from "./learningsFormat.mjs";
+import { buildRemediationView } from "./remediationView.mjs";
 
 const GATE_STATUS_RANK = { fail: 0, flaky: 1, running: 2, pending: 3, pass: 4 };
 
@@ -44,6 +45,12 @@ export function readModonomeState(modonomeDir, { mode }) {
     protectedPaths: buildProtectedPaths(config, items),
     ...buildTrends(runs),
     agentProofScore: latestAgentProofScore(runs),
+    remediation: buildRemediationView({
+      config,
+      envArmed: process.env.MODONOME_ARMED === "true",
+      commits: gitCommits(repoRoot),
+      identity: gitIdentity(repoRoot),
+    }),
   };
 }
 
@@ -75,6 +82,7 @@ function readConfig(modonomeDir) {
     repo_network_dry_run: raw.repo_network_dry_run !== false,
     share_raw_code_across_repos: Boolean(raw.share_raw_code_across_repos),
     share_repo_identifiers_by_default: Boolean(raw.share_repo_identifiers_by_default),
+    remediation_apply_enabled: Boolean(raw.remediation_apply_enabled),
     roles: raw.roles ?? {},
     models: raw.models ?? {},
     runners: raw.runners ?? {},
@@ -443,6 +451,44 @@ function gitInfo(repoRoot) {
     return { branch, repo: m ? m[1] : basename(repoRoot) };
   } catch {
     return { branch: "unknown", repo: basename(repoRoot) };
+  }
+}
+
+// The unpublished commit range (origin/main..HEAD) with the identity and message fields
+// the remediation planner reads. Bounded to origin/main so the panel only ever proposes
+// over history that has not been published; a repo without origin/main yields nothing
+// rather than a guess. Any git failure degrades to an empty list, never an error.
+function gitCommits(repoRoot) {
+  try {
+    execFileSync("git", ["rev-parse", "--verify", "--quiet", "origin/main"], { cwd: repoRoot, stdio: "ignore" });
+    const out = execFileSync(
+      "git",
+      ["log", "origin/main..HEAD", "--no-merges", "--format=%H%x1f%an%x1f%ae%x1f%cn%x1f%ce"],
+      { cwd: repoRoot, encoding: "utf8" },
+    ).trim();
+    if (!out) return [];
+    return out
+      .split("\n")
+      .filter(Boolean)
+      .map((line) => {
+        const [sha, an, ae, cn, ce] = line.split("\x1f");
+        const message = execFileSync("git", ["show", "-s", "--format=%B", sha], { cwd: repoRoot, encoding: "utf8" });
+        return { sha, an, ae, cn, ce, message };
+      });
+  } catch {
+    return [];
+  }
+}
+
+// The repository's own git identity, the target a reauthor rewrite would use. Empty when
+// unset, which the planner and the CLI both treat as "not usable for apply".
+function gitIdentity(repoRoot) {
+  try {
+    const name = execFileSync("git", ["config", "user.name"], { cwd: repoRoot, encoding: "utf8" }).trim();
+    const email = execFileSync("git", ["config", "user.email"], { cwd: repoRoot, encoding: "utf8" }).trim();
+    return { name, email };
+  } catch {
+    return { name: "", email: "" };
   }
 }
 

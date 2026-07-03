@@ -55,6 +55,7 @@ repo_network_enabled: false    # env or CI only
 repo_network_dry_run: true
 share_raw_code_across_repos: false
 share_repo_identifiers_by_default: false
+remediation_apply_enabled: false   # armed history remediator; env or CI only
 snapshot:
   ci_mode: warn
   sign: false

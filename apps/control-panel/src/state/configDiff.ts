@@ -28,6 +28,7 @@ const SCALAR_KEYS = [
   "repo_network_dry_run",
   "share_raw_code_across_repos",
   "share_repo_identifiers_by_default",
+  "remediation_apply_enabled",
 ] as const satisfies readonly (keyof ModonomeConfig)[];
 
 const ARRAY_KEYS = ["trusted_author_allowlist", "protected_paths_extra"] as const satisfies readonly (keyof ModonomeConfig)[];

@@ -16,6 +16,7 @@ const TABS = [
   { id: "trust", label: "Trusted authors & paths", icon: "lock" as const },
   { id: "network", label: "Cross-repo network", icon: "branch" as const },
   { id: "market", label: "Market scan", icon: "activity" as const },
+  { id: "remediation", label: "Remediation", icon: "shield" as const },
 ];
 
 interface ModelRow {
@@ -376,6 +377,68 @@ export function SettingsScreen({ state, write }: { state: PanelState; write: Wri
             />
           </div>
         </Card>
+      ) : null}
+
+      {tab === "remediation" ? (
+        <div className="stack-lg">
+          <Card
+            title="Metadata-only remediator"
+            help="The armed remediator (ADR-035) rewrites commit metadata to strip attribution signatures, and is proven to change no file content (every rewritten commit keeps its tree). Apply is a CLI action; this panel enables the capability and shows its readiness."
+          >
+            <div className="stack-lg">
+              <p className="mdn-faint">
+                Off by default. Even with the capability on, apply stays inert until the engine is
+                armed through the environment, so turning this on is a deliberate owner-level decision.
+              </p>
+              <Toggle
+                label="Remediation apply enabled"
+                tone="owner"
+                hint="Lets `modonome remediate apply` rewrite commit metadata, but only once the engine is also armed with MODONOME_ARMED, which the panel cannot set."
+                checked={config.remediation_apply_enabled}
+                onCheckedChange={(v) => set("remediation_apply_enabled", v)}
+              />
+              <div>
+                <StatusPill tone={state.remediation?.ready ? "ok" : "attention"} size="sm">
+                  {state.remediation?.ready ? "Apply is ready" : "Apply is inert"}
+                </StatusPill>
+                {state.remediation && state.remediation.blockers.length > 0 ? (
+                  <ul className="mdn-faint" style={{ marginTop: 8 }}>
+                    {state.remediation.blockers.map((b) => (
+                      <li key={b}>{b}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="mdn-faint" style={{ marginTop: 8 }}>
+                    Every arming condition is met. Apply would run against unpublished commits only.
+                  </p>
+                )}
+              </div>
+            </div>
+          </Card>
+          <Card
+            title="Proposed rewrites"
+            help="What `remediate plan` would rewrite on the current branch: unpublished commits carrying an agent identity or an attribution signature. Read-only; nothing is applied from here."
+          >
+            {!state.remediation || state.remediation.proposalCount === 0 ? (
+              <p className="mdn-faint">No commit on the current branch needs a metadata rewrite.</p>
+            ) : (
+              <div className="stack-lg">
+                <p className="mdn-faint">
+                  {state.remediation.proposalCount} commit(s) would be rewritten. Fingerprint{" "}
+                  <code className="mdn-mono">{state.remediation.fingerprint}</code>.
+                </p>
+                <div className="list-plain">
+                  {state.remediation.proposals.map((p) => (
+                    <div key={p.sha} style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                      <span className="mdn-mono">{p.sha.slice(0, 9)}</span>
+                      <span className="mdn-faint">{p.reasons.join(", ")}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </Card>
+        </div>
       ) : null}
     </div>
   );

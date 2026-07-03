@@ -35,6 +35,7 @@ export const SAFE_DEFAULTS = {
   repo_network_dry_run: true,
   share_raw_code_across_repos: false,
   share_repo_identifiers_by_default: false,
+  remediation_apply_enabled: false,
   // Snapshot utility levers. Safe defaults: freshness check only warns, snapshots
   // are unsigned, and the dependency-free parser is used.
   snapshot: {

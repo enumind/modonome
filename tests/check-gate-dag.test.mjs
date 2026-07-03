@@ -85,6 +85,17 @@ test("a detector importing the widener transitively (one hop) is caught", () => 
   }
 });
 
+test("a detector importing the remediation applier is caught", () => {
+  const tmp = makeBoundaryFixture('import "./remediate.mjs";\n');
+  try {
+    const errors = determinismBoundaryErrors(tmp);
+    assert.equal(errors.length, 1);
+    assert.match(errors[0], /detect-attribution\.mjs can reach scripts\/lib\/remediate\.mjs/);
+  } finally {
+    rmSync(tmp, { recursive: true, force: true });
+  }
+});
+
 test("the allowed reverse edge (widener imports a detector) does not trip the check", () => {
   // detect-attribution.mjs imports nothing forbidden; near-miss.mjs imports it. That
   // reverse direction is required and safe, so the boundary must stay clean.

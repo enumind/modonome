@@ -36,6 +36,12 @@ repo_network_dry_run: true
 share_raw_code_across_repos: false
 share_repo_identifiers_by_default: false
 
+# Governed Remediation (ADR-035): arm the metadata-only commit-history remediator's
+# apply step (scripts/remediate.mjs). Off by default and capability-gated. Even with the
+# engine armed (autonomy_enabled + MODONOME_ARMED), apply stays disabled until this is
+# true. Rewriting history is reserved for an owner-approved promotion backed by evidence.
+remediation_apply_enabled: false
+
 # Snapshot utility levers. Host admins tune these. ci_mode warn keeps a stale
 # snapshot from failing CI; fail makes the freshness gate blocking. Modonome runs
 # fail on itself (dogfooding) while the shipped template default stays warn.

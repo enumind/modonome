@@ -31,6 +31,7 @@
     "repo_network_dry_run": { "type": "boolean" },
     "share_raw_code_across_repos": { "type": "boolean" },
     "share_repo_identifiers_by_default": { "type": "boolean" },
+    "remediation_apply_enabled": { "type": "boolean" },
     "snapshot": {
       "type": "object",
       "additionalProperties": false,
