@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:a999f3e05002e06c4dad61292cca6c4342938aad02a3c5549be121388a6998e9
-Files: 834  Bytes: 2993302  Map tokens: 105797/120000
+Merkle root: sha256:915c87034cfe6e7355325ed558c06ccbf5ce1689b4da7a1935fc7b66ac72a83a
+Files: 834  Bytes: 2999783  Map tokens: 105811/120000
 
 ## Modules
 
@@ -362,7 +362,7 @@ Files: 834  Bytes: 2993302  Map tokens: 105797/120000
 - tests/compliance-evidence.test.mjs [F:3ea503e7c0]: Helper reused by the mapping test.
 - tests/config-key-parity.test.mjs [F:5eff4122c0]: Extract the string literals inside a named list/set declaration, regardless of whether it is `new Set([...])` or `[...] as const`.
 - tests/connect.test.mjs [F:5956278014]: Tests for `modonome connect`, which registers the read-only MCP server with an agent
-- tests/control-panel-writer-nested.test.mjs [F:8b2f3dbcba]: Every test operates on a scratch copy of this repo's own real, hand-commented config.yaml, never the file itself, so a bug here can never corrupt real state.
+- tests/control-panel-writer-nested.test.mjs [F:8b2f3dbcba]: Every test operates on a scratch copy of a real config.yaml, never the file itself, so a bug here can never corrupt real state.
 - tests/decisions-authority.test.mjs [F:f921eecad7]: A repo with one commit (base: entry "a" only) and a second commit that adds a new Resolved entry "b" on top. Returns { dir, baseSha }.
 - tests/dependency.test.mjs [F:b70824b13e]: Read all .mjs files in a directory (non-recursive by default).
 - tests/dry-run.test.mjs [F:778c33cdc0]: function dryRun
@@ -1110,8 +1110,8 @@ Files: 834  Bytes: 2993302  Map tokens: 105797/120000
 - S:c928d805b5 interface ButtonProps `export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>` L8
 - S:b1bbb81b82 function Button `export function Button(` L30 : The standard action control. Use `primary` for the main action on a screen, * `secondary` for supporting actions, `ghost` for low-emphasis inline actions, and * `danger` for anything that arms, delete
 ### tests/control-panel-writer-nested.test.mjs [F:8b2f3dbcba]
-- S:6c4ca00b53 function scratchModonomeDir `function scratchModonomeDir()` L23 : Every test operates on a scratch copy of this repo's own real, hand-commented config.yaml, never the file itself, so a bug here can never corrupt real state.
-- S:a57f8c1bdc function otherLines `function otherLines(originalText, touchedTopKeys)` L32 : Lines present in the original file that are untouched by a given patch: every line outside the blocks the patch's keys live in. Used to assert a patch changes only what it says it changes.
+- S:6c4ca00b53 function scratchModonomeDir `function scratchModonomeDir(sourcePath = realConfigPath)` L30 : Every test operates on a scratch copy of a real config.yaml, never the file itself, so a bug here can never corrupt real state.
+- S:a57f8c1bdc function otherLines `function otherLines(originalText, touchedTopKeys)` L39 : Lines present in the original file that are untouched by a given patch: every line outside the blocks the patch's keys live in. Used to assert a patch changes only what it says it changes.
 ### scripts/agent/providers.mjs [F:8b5a1f94c4]
 - S:542af83b15 const BUILTIN_PROVIDERS `export const BUILTIN_PROVIDERS =` L11 : Built-in providers. A config's `providers` map (see resolveProvider) is merged on top, so a host repo can add or override entries without a code change here.
 - S:6ee308cae0 function resolveProvider `export function resolveProvider(name, providersOverride)` L39 : Resolve a provider descriptor by name. Built-ins are merged with an optional * config-provided override map (cfg.providers), so a host repo can redefine or * add providers without touching this file. 
@@ -1855,7 +1855,9 @@ Files: 834  Bytes: 2993302  Map tokens: 105797/120000
 - design-system/src/components/Button/Button.tsx -> design-system/src/components/Icon/Icon.tsx
 - tests/control-panel-writer-nested.test.mjs -> scripts/lib/yaml-lite.mjs
 - tests/control-panel-writer-nested.test.mjs -> apps/control-panel/server/modonomeWriter.mjs
+- tests/control-panel-writer-nested.test.mjs -> scripts/agent/resolve-role.mjs
 - tests/control-panel-writer-nested.test.mjs -> scripts/lib/config-validate.mjs
+- tests/control-panel-writer-nested.test.mjs -> scripts/agent/run-cycle.mjs
 - scripts/check-state-machine-acyclic.mjs -> scripts/lib/graph.mjs
 - examples/demo-app/src/index.js -> examples/demo-app/src/OrderService.js
 - examples/demo-app/src/index.js -> examples/demo-app/src/CheckoutService.js
@@ -2083,54 +2085,54 @@ Files: 834  Bytes: 2993302  Map tokens: 105797/120000
 
 ## Attention (centrality + pagerank)
 
-1. design-system/src/lib/cx.ts centrality=32 pagerank=0.034541
-2. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.022392
+1. design-system/src/lib/cx.ts centrality=32 pagerank=0.034538
+2. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.02239
 3. design-system/src/index.ts centrality=48 pagerank=0.000908
-4. scripts/lib/yaml-lite.mjs centrality=17 pagerank=0.00931
-5. scripts/lib/jsonschema.mjs centrality=10 pagerank=0.011587
-6. apps/control-panel/src/state/types.ts centrality=12 pagerank=0.007663
-7. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.007621
-8. scripts/agent/run-cycle.mjs centrality=17 pagerank=0.003417
-9. scripts/lib/learnings.mjs centrality=10 pagerank=0.00729
+4. scripts/lib/yaml-lite.mjs centrality=17 pagerank=0.009148
+5. scripts/lib/jsonschema.mjs centrality=10 pagerank=0.011538
+6. scripts/agent/run-cycle.mjs centrality=18 pagerank=0.003571
+7. apps/control-panel/src/state/types.ts centrality=12 pagerank=0.007662
+8. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.00762
+9. scripts/lib/learnings.mjs centrality=10 pagerank=0.007301
 10. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.005432
-11. scripts/lib/canonical-json.mjs centrality=10 pagerank=0.005187
-12. scripts/validate-config.mjs centrality=11 pagerank=0.004466
-13. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.005843
+11. scripts/validate-config.mjs centrality=11 pagerank=0.004477
+12. scripts/lib/canonical-json.mjs centrality=10 pagerank=0.005187
+13. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.005842
 14. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001519
 15. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.004381
-16. scripts/validate-work-item.mjs centrality=8 pagerank=0.003739
+16. scripts/validate-work-item.mjs centrality=8 pagerank=0.003738
 17. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.005083
-18. scripts/lib/config-validate.mjs centrality=5 pagerank=0.00576
+18. scripts/lib/config-validate.mjs centrality=5 pagerank=0.005623
 19. apps/control-panel/src/App.tsx centrality=11 pagerank=0.001294
-20. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002654
-21. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.003279
-22. scripts/lib/branch-name.mjs centrality=4 pagerank=0.00485
-23. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.004727
-24. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.003175
-25. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.00152
-26. scripts/lib/graph.mjs centrality=4 pagerank=0.004376
-27. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.002821
-28. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.004932
-29. scripts/agent/resolve-role.mjs centrality=6 pagerank=0.002652
+20. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002653
+21. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.003278
+22. scripts/agent/resolve-role.mjs centrality=7 pagerank=0.002818
+23. scripts/lib/branch-name.mjs centrality=4 pagerank=0.00485
+24. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.004727
+25. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.003175
+26. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.00152
+27. scripts/lib/graph.mjs centrality=4 pagerank=0.004375
+28. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.002821
+29. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.004932
 30. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001694
 31. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.004549
 32. scripts/snapshot.mjs centrality=8 pagerank=0.000908
-33. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002654
+33. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002653
 34. design-system/src/lib/format.ts centrality=5 pagerank=0.002652
 35. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001694
-36. scripts/agent/providers.mjs centrality=3 pagerank=0.003619
+36. scripts/agent/providers.mjs centrality=3 pagerank=0.003772
 37. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.001018
-38. design-system/src/components/Modal/Modal.tsx centrality=4 pagerank=0.002414
-39. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001694
-40. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001694
-41. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.001694
-42. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.001694
+38. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001694
+39. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001694
+40. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.001694
+41. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.001694
+42. design-system/src/components/Modal/Modal.tsx centrality=4 pagerank=0.002413
 43. scripts/lib/remediate.mjs centrality=3 pagerank=0.003115
 44. design-system/src/components/TierBadge/TierBadge.tsx centrality=4 pagerank=0.002385
 45. examples/demo-app/src/index.js centrality=6 pagerank=0.000908
-46. design-system/src/components/Table/Table.tsx centrality=4 pagerank=0.002342
+46. design-system/src/components/Table/Table.tsx centrality=4 pagerank=0.002341
 47. scripts/dry-run-sweep.mjs centrality=5 pagerank=0.001551
-48. design-system/src/components/IdentityChip/IdentityChip.tsx centrality=4 pagerank=0.002222
-49. scripts/lib/control-panel-audit.mjs centrality=3 pagerank=0.002892
-50. apps/control-panel/server/modonomeWriter.mjs centrality=4 pagerank=0.00188
+48. design-system/src/components/IdentityChip/IdentityChip.tsx centrality=4 pagerank=0.002221
+49. scripts/lib/control-panel-audit.mjs centrality=3 pagerank=0.002891
+50. scripts/lib/git-scope.mjs centrality=3 pagerank=0.002529
 
