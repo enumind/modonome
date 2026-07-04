@@ -13,6 +13,8 @@
 - Adopts your existing CI, code owners, and branch rules. There is no new process to learn.
 - Promotes real corrections into durable rules, so the loop improves over time.
 - Provides an operator control panel, a Merkle-verified repository snapshot for trustworthy agent context, and compliance evidence and attestation through an MCP server.
+- Ships a GitHub Action that runs the gate check from a pinned, trusted copy and can produce a signed receipt of the result.
+- Lets a repository disclose the governance policy it enforces as one verifiable file, and lets another repository review and adopt it, with integrity and credit checks.
 
 ## AgentProof
 
@@ -30,4 +32,5 @@ AgentProof is the adversarial benchmark for agent gate-integrity. It runs a real
 - Repository: https://github.com/enumind/modonome
 - AgentProof: https://modonome.com/agentproof/
 - Quickstart: https://modonome.com/quickstart/
+- Articles: https://modonome.com/articles/
 - License: MIT

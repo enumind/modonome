@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:d29d9c16a79e1dd4c85d589fccc6e0b5a6b100daa530893cad8a6e1c764805f4
-Files: 855  Bytes: 3131892  Map tokens: 111431/120000
+Merkle root: sha256:21b96872a33cbeb7664cb3843e77058ddc4d722197e805d53b53e66e85f1f1fc
+Files: 862  Bytes: 3197750  Map tokens: 111886/120000
 
 ## Modules
 
@@ -151,6 +151,7 @@ Files: 855  Bytes: 3131892  Map tokens: 111431/120000
 - design-system/src/lib/cx.ts [F:7c8d518693]: Join class names, dropping falsy values. A tiny classnames helper.
 - design-system/src/lib/format.ts [F:86838d35ac]: Format an ISO timestamp as a short relative string, for example "3m ago" or "in 12m".
 - design-system/src/tokens/tokens.ts [F:c64c042051]: CSS custom-property name for an arming mode color.
+- docs/LEXICON.md [F:e5e9ec402f]: Lexicon
 - docs/README.md [F:0b5ca119d2]: Modonome documentation
 - docs/adr/ADR-001-self-governance-pipeline.md [F:6e4b629d3c]: ADR-001: Self-Governance Pipeline
 - docs/adr/ADR-002-shadow-mode.md [F:64c5acf802]: ADR-002: Shadow Mode
@@ -286,7 +287,7 @@ Files: 855  Bytes: 3131892  Map tokens: 111431/120000
 - scripts/check-repo-hygiene.mjs [F:61296e720c]: Helper
 - scripts/check-self-application.mjs [F:4096620673]: 4. The two protected-path surfaces must agree. CODEOWNERS is what GitHub enforces; protected_paths_extra is what the engine reads. If they disagree, a path is p
 - scripts/check-state-machine-acyclic.mjs [F:8b8d3c46b3]: Build the adjacency map { state: [to, ...] } from the transition list. When includeCapGuard is false, cap_guard edges are dropped: those are the sanctioned boun
-- scripts/check-style.mjs [F:ca0833ac73]: !/usr/bin/env node
+- scripts/check-style.mjs [F:ca0833ac73]: Escape a literal phrase for use inside a RegExp, then require a word boundary on each side so "workpacket" (no space) can't false-positive on the banned phrase 
 - scripts/connect.mjs [F:d6401dd73e]: !/usr/bin/env node
 - scripts/detect-near-miss.mjs [F:09ba331878]: Gather every near-miss across the branch name, commit identities, and commit bodies unique to this branch.
 - scripts/dry-run-sweep.mjs [F:6f247eb514]: Only fires when the swept repo actually has a control panel at apps/control-panel (auditCoverage/auditCoherence report `skipped: true` and this returns nothing 
@@ -366,6 +367,7 @@ Files: 855  Bytes: 3131892  Map tokens: 111431/120000
 - tests/check-architecture-drift.test.mjs [F:564b053598]: function makeMinimalRepo
 - tests/check-gate-dag.test.mjs [F:df4b55ecef]: Build a temp repo whose detect-attribution.mjs imports whatever `daImports` says.
 - tests/check-md-governance.test.mjs [F:0391f3b249]: Build a minimal repo that satisfies the root allow-list, protected-file manifest, link integrity, and audit-naming checks, so only the ADR-number logic under te
+- tests/check-style-lexicon.test.mjs [F:e359adb110]: Tests for the Lexicon Gate wired into scripts/check-style.mjs: a banned term from
 - tests/cli-dispatch.test.mjs [F:40e4f39b59]: function cli
 - tests/compliance-evidence.test.mjs [F:3ea503e7c0]: Helper reused by the mapping test.
 - tests/config-key-parity.test.mjs [F:5eff4122c0]: Extract the string literals inside a named list/set declaration, regardless of whether it is `new Set([...])` or `[...] as const`.
@@ -1363,7 +1365,7 @@ Files: 855  Bytes: 3131892  Map tokens: 111431/120000
 - S:7c716c856e function detectHotFiles `export function detectHotFiles(target = ".", { commits = 200, limit = 3 } = {})` L75 : Rank files by how often they changed in recent git history. The dry-run sweep uses the default limit of 3; the snapshot passes a larger limit to score churn across the whole tree. Returns [] when git 
 - S:7fe7ee7f43 function dedupe `function dedupe(arr)` L94
 ### site/index.html [F:aef9cf1e27]
-- S:52826c5034 class Component `class Component extends DCLogic` L733
+- S:52826c5034 class Component `class Component extends DCLogic` L766
 ### scripts/lib/run-gate-capped.mjs [F:b014028f57]
 - S:6122b96d0b function runGateCapped `export function runGateCapped(cmdArray, { timeoutMs = 30000, maxBuffer = 67108864 } = {})` L11
 ### tests/performance.test.mjs [F:b28f13b600]
@@ -1431,7 +1433,9 @@ Files: 855  Bytes: 3131892  Map tokens: 111431/120000
 ### scripts/audit-learnings.mjs [F:c9493b5275]
 - S:9299cd9a70 function matches `function matches(l)` L29
 ### scripts/check-style.mjs [F:ca0833ac73]
-- S:ee9b2c90d1 function walk `function walk(dir, out = [])` L25
+- S:3696870ce9 function literalPhraseRe `function literalPhraseRe(phrase)` L20 : Escape a literal phrase for use inside a RegExp, then require a word boundary on each side so "workpacket" (no space) can't false-positive on the banned phrase "packet".
+- S:55eb1af9ca function loadLexicon `function loadLexicon()` L28 : docs/LEXICON.md explains the rationale; this loads the terms it documents. A grandfathered term (see lexicon.json) warns instead of failing, so an approved rename can ship before every pre-existing fi
+- S:ee9b2c90d1 function walk `function walk(dir, out = [])` L49
 ### .design-sync/previews/Sparkline.tsx [F:ca13fe2a5b]
 - S:aa4de9995b function Trends `export const Trends = () => (` L4
 ### scripts/lib/work-item-validate.mjs [F:cb3c5f7715]
@@ -1564,6 +1568,9 @@ Files: 855  Bytes: 3131892  Map tokens: 111431/120000
 - S:ba347c9b77 function Beside `export const Beside = () => (` L4
 ### tests/role-registry.test.mjs [F:e2f1b5ac07]
 - S:e1813dcc71 function baseCfg `function baseCfg(extra = {})` L25 : A single-environment config with no runner reachability declared, so routing stays inline for every role (matching the shipped default posture). Crew roles are added by extending `roles`, `models`, an
+### tests/check-style-lexicon.test.mjs [F:e359adb110]
+- S:170d5cf4ef function tmp `function tmp()` L18
+- S:85083e2f79 function run `function run(dir)` L22
 ### apps/control-panel/src/screens/ArmingScreen.tsx [F:e40ce1af48]
 - S:870a14c796 function ArmingScreen `export function ArmingScreen({ state, write }: { state: PanelState; write: WriteActions })` L35 : The control screen. Three tabs keep one conceptual area on screen at a time: the * activation ladder (the primary daily view), caps and budget, and the separation-of- * duties governance rules. The la
 ### scripts/lib/commit-identity.mjs [F:e4ff19bbe2]
@@ -2164,54 +2171,54 @@ Files: 855  Bytes: 3131892  Map tokens: 111431/120000
 
 ## Attention (centrality + pagerank)
 
-1. design-system/src/lib/cx.ts centrality=32 pagerank=0.033503
-2. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.021719
-3. design-system/src/index.ts centrality=48 pagerank=0.000881
-4. scripts/lib/yaml-lite.mjs centrality=17 pagerank=0.009206
-5. scripts/lib/jsonschema.mjs centrality=10 pagerank=0.012367
-6. scripts/agent/run-cycle.mjs centrality=18 pagerank=0.003464
-7. apps/control-panel/src/state/types.ts centrality=12 pagerank=0.007394
-8. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.007391
-9. scripts/validate-config.mjs centrality=13 pagerank=0.005107
-10. scripts/lib/learnings.mjs centrality=10 pagerank=0.007082
-11. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.005269
-12. scripts/lib/canonical-json.mjs centrality=10 pagerank=0.005031
-13. scripts/agent/resolve-role.mjs centrality=10 pagerank=0.003872
-14. scripts/lib/config-validate.mjs centrality=6 pagerank=0.006381
-15. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001474
-16. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.00425
-17. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.005596
-18. scripts/validate-work-item.mjs centrality=8 pagerank=0.003564
-19. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.00493
-20. apps/control-panel/src/App.tsx centrality=10 pagerank=0.001255
-21. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002574
-22. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.00318
-23. scripts/lib/branch-name.mjs centrality=4 pagerank=0.004674
-24. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.004585
-25. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.00308
-26. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001474
-27. scripts/lib/graph.mjs centrality=4 pagerank=0.004244
-28. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.002769
-29. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.004784
-30. scripts/agent/providers.mjs centrality=3 pagerank=0.004627
-31. scripts/lib/work-item-validate.mjs centrality=3 pagerank=0.004545
-32. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001643
-33. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.004382
-34. scripts/snapshot.mjs centrality=8 pagerank=0.000881
-35. apps/control-panel/server/modonomeWriter.mjs centrality=6 pagerank=0.002241
-36. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002574
-37. design-system/src/lib/format.ts centrality=5 pagerank=0.002572
-38. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001643
-39. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.000999
-40. design-system/src/components/Modal/Modal.tsx centrality=4 pagerank=0.002341
-41. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001643
-42. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001643
-43. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.001643
-44. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.001643
-45. design-system/src/components/TierBadge/TierBadge.tsx centrality=4 pagerank=0.002313
-46. examples/demo-app/src/index.js centrality=6 pagerank=0.000881
-47. design-system/src/components/Table/Table.tsx centrality=4 pagerank=0.002271
-48. scripts/lib/remediate.mjs centrality=3 pagerank=0.002938
-49. design-system/src/components/IdentityChip/IdentityChip.tsx centrality=4 pagerank=0.002155
-50. scripts/dry-run-sweep.mjs centrality=5 pagerank=0.001442
+1. design-system/src/lib/cx.ts centrality=32 pagerank=0.033298
+2. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.021586
+3. design-system/src/index.ts centrality=48 pagerank=0.000875
+4. scripts/lib/yaml-lite.mjs centrality=17 pagerank=0.009149
+5. scripts/lib/jsonschema.mjs centrality=10 pagerank=0.012291
+6. scripts/agent/run-cycle.mjs centrality=18 pagerank=0.003443
+7. apps/control-panel/src/state/types.ts centrality=12 pagerank=0.007348
+8. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.007346
+9. scripts/validate-config.mjs centrality=13 pagerank=0.005076
+10. scripts/lib/learnings.mjs centrality=10 pagerank=0.007039
+11. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.005237
+12. scripts/lib/canonical-json.mjs centrality=10 pagerank=0.005
+13. scripts/agent/resolve-role.mjs centrality=10 pagerank=0.003848
+14. scripts/lib/config-validate.mjs centrality=6 pagerank=0.006342
+15. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001465
+16. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.004223
+17. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.005562
+18. scripts/validate-work-item.mjs centrality=8 pagerank=0.003542
+19. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.0049
+20. apps/control-panel/src/App.tsx centrality=10 pagerank=0.001248
+21. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002558
+22. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.003161
+23. scripts/lib/branch-name.mjs centrality=4 pagerank=0.004646
+24. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.004557
+25. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.003061
+26. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001465
+27. scripts/lib/graph.mjs centrality=4 pagerank=0.004218
+28. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.002752
+29. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.004755
+30. scripts/agent/providers.mjs centrality=3 pagerank=0.004599
+31. scripts/lib/work-item-validate.mjs centrality=3 pagerank=0.004517
+32. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001633
+33. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.004356
+34. scripts/snapshot.mjs centrality=8 pagerank=0.000875
+35. apps/control-panel/server/modonomeWriter.mjs centrality=6 pagerank=0.002227
+36. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002558
+37. design-system/src/lib/format.ts centrality=5 pagerank=0.002556
+38. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001633
+39. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.000993
+40. design-system/src/components/Modal/Modal.tsx centrality=4 pagerank=0.002327
+41. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001633
+42. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001633
+43. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.001633
+44. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.001633
+45. design-system/src/components/TierBadge/TierBadge.tsx centrality=4 pagerank=0.002299
+46. examples/demo-app/src/index.js centrality=6 pagerank=0.000875
+47. design-system/src/components/Table/Table.tsx centrality=4 pagerank=0.002257
+48. scripts/lib/remediate.mjs centrality=3 pagerank=0.00292
+49. design-system/src/components/IdentityChip/IdentityChip.tsx centrality=4 pagerank=0.002142
+50. scripts/dry-run-sweep.mjs centrality=5 pagerank=0.001434
 
