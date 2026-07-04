@@ -150,8 +150,8 @@ flowchart LR
   classDef stop fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
 
   queue[["Durable work queue<br/>.modonome/work-items/"]]
-  packet["Work packet<br/>claimed and leased"]
-  maker["Maker<br/>one packet, test-fenced"]
+  item["Work item<br/>claimed and leased"]
+  maker["Maker<br/>one item, test-fenced"]
   checker["Checker<br/>independent pass"]
   gates["Gates<br/>all pass before merge"]
   owner["Owner review<br/>CODEOWNERS"]
@@ -160,9 +160,9 @@ flowchart LR
   learn["Staged learnings<br/>LESSONS.md"]
   escalated[["Escalated<br/>cap exceeded, parked for owner"]]
 
-  queue -->|claim and lease| packet
-  packet --> maker
-  packet -.->|lease expires: crash recovery| queue
+  queue -->|claim and lease| item
+  item --> maker
+  item -.->|lease expires: crash recovery| queue
   maker -->|diff and rationale| checker
   checker -->|rework below cap| maker
   checker -->|attempts exceeded| escalated
@@ -175,7 +175,7 @@ flowchart LR
   gates -->|evidence| learn
   learn -->|owner promotes| repo
 
-  class queue,packet queue
+  class queue,item queue
   class maker,checker,owner role
   class gates gate
   class repo,learn sink
@@ -183,7 +183,7 @@ flowchart LR
 ```
 
 The diagram's roles and stages map onto the literal `state` field in
-`schemas/work-item.schema.json`: queue is `queued`, packet is `claimed`, the maker's turn
+`schemas/work-item.schema.json`: queue is `queued`, item is `claimed`, the maker's turn
 is `making`, the checker's turn is `checking`, gates and merge cover `merge_ready` and
 `merging`, and a landed item is `done`. `rework` and `escalated` are named directly on the
 diagram. `prompts/modules/state-machine.md` is the normative source for the full transition
@@ -222,7 +222,7 @@ flowchart TB
   subgraph engine ["Modonome engine (agent scope)"]
     adopt["Adopt<br/>read instructions, CI, CODEOWNERS"]
     sweep["Dry-run sweep<br/>propose bounded work"]
-    maker["Maker<br/>one packet, test-fenced"]
+    maker["Maker<br/>one item, test-fenced"]
     checker["Checker<br/>independent pass"]
     gates["Gates<br/>all pass before a pull request"]
     merge["Merge authority"]
