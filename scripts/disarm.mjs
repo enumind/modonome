@@ -7,9 +7,11 @@
 import { openSync, closeSync, readFileSync, writeSync, ftruncateSync } from "node:fs";
 import { join } from "node:path";
 import { parseFlatYaml, patchTopLevelYaml } from "./lib/yaml-lite.mjs";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 const target = process.argv[2] && !process.argv[2].startsWith("-") ? process.argv[2] : ".";
 const configPath = join(target, ".modonome", "config.yaml");
+const overrides = loadMessageOverrides(join(target, ".modonome"));
 
 // Open once and keep the descriptor for both the read and the eventual write. A
 // descriptor is bound to the inode at open time, so nothing between here and the
@@ -20,7 +22,7 @@ try {
   configFd = openSync(configPath, "r+");
 } catch (e) {
   if (e.code === "ENOENT") {
-    console.error(`No config found at ${configPath}. There is nothing to disarm.`);
+    console.error(formatMessage("agent-run.disarm.no-config", { path: configPath }, overrides).message);
     process.exit(1);
   }
   throw e;
@@ -32,7 +34,7 @@ try {
   config = parseFlatYaml(rawText);
 } catch (e) {
   closeSync(configFd);
-  console.error(`Config at ${configPath} does not parse: ${e.message}`);
+  console.error(formatMessage("agent-run.disarm.config-parse-error", { path: configPath, error: e.message }, overrides).message);
   process.exit(1);
 }
 

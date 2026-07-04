@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:6f22295d783d39a72a62275a8fb043e5fc97301abe4853eb2268b8fdb7fec376
-Files: 884  Bytes: 3118444  Map tokens: 111802/120000
+Merkle root: sha256:a67665b91f30909ec1f63a7d4542b4792ca57d46cf39df31d4e2c52824954da9
+Files: 890  Bytes: 3127709  Map tokens: 112981/120000
 
 ## Modules
 
@@ -309,11 +309,17 @@ Files: 884  Bytes: 3118444  Map tokens: 111802/120000
 - scripts/lib/learnings.mjs [F:4ebb5aa8a0]: The Staged section is capped so it stays a short review queue, never a dumping ground. LEARNINGS.md documents this as "Cap at 20 staged entries... Never auto-ev
 - scripts/lib/merkle.mjs [F:2b9c43b0ca]: Hash raw file bytes (Buffer or string) into a prefixed digest.
 - scripts/lib/message-catalog/advisory/detect-near-miss.mjs [F:c6bd51a324]: const MESSAGES
+- scripts/lib/message-catalog/agent-run/action-queue.mjs [F:da9133a29d]: const MESSAGES
+- scripts/lib/message-catalog/agent-run/arm.mjs [F:aa27d254da]: Arming-precondition failures. All non_suppressible: arming waives real separation-of-duties guarantees, so an operator can retune wording but not silence or dow
+- scripts/lib/message-catalog/agent-run/disarm.mjs [F:9616513cb6]: const MESSAGES
 - scripts/lib/message-catalog/agent-run/openai-client.mjs [F:9803feef4a]: const MESSAGES
 - scripts/lib/message-catalog/agent-run/promote-learning.mjs [F:e948251d2b]: const MESSAGES
 - scripts/lib/message-catalog/agent-run/queue.mjs [F:5d52d97b8a]: const MESSAGES
 - scripts/lib/message-catalog/agent-run/release.mjs [F:a5822fdd03]: const MESSAGES
+- scripts/lib/message-catalog/agent-run/remediate.mjs [F:33c4d744f3]: Governed Remediation (ADR-035) apply-path refusals. All non_suppressible: each guards the metadata-only rewrite's safety invariants (arming, branch protection, 
 - scripts/lib/message-catalog/agent-run/render-prompt.mjs [F:59b2499e4e]: const MESSAGES
+- scripts/lib/message-catalog/agent-run/route-action.mjs [F:e2025a4e0c]: const MESSAGES
+- scripts/lib/message-catalog/agent-run/run-cycle.mjs [F:acc3f6b466]: Agent run-cycle (WS-B) planning and execution failures. All non_suppressible: each represents a separation-of-duties, budget, or turn-cap guarantee, not an advi
 - scripts/lib/message-catalog/agent-run/tool-loop-adapter.mjs [F:313bcfac46]: const MESSAGES
 - scripts/lib/message-catalog/agent-run/transition-work-item.mjs [F:6a86908a3e]: const MESSAGES
 - scripts/lib/message-catalog/gate/assert-governed-change.mjs [F:1127892e72]: const MESSAGES
@@ -470,7 +476,7 @@ Files: 884  Bytes: 3118444  Map tokens: 111802/120000
 - S:bac2ebbef5 function gitCommit `function gitCommit(tmp, message)` L53
 - S:cd2e7eba8f function gitCommitAt `function gitCommitAt(tmp, message, isoDate)` L61 : Commit with an explicit, backdated timestamp, so staleness tests do not depend on same-day wall-clock ordering between setup commits and a `last_reviewed` stamp (git's `--since` treats a bare date as 
 ### scripts/lib/message-catalog/index.mjs [F:03f476958e]
-- S:405ee38bbe const CATALOG_PARTIALS `export const CATALOG_PARTIALS = [` L46
+- S:405ee38bbe const CATALOG_PARTIALS `export const CATALOG_PARTIALS = [` L52
 ### examples/demo-app/tests/OrderService.test.js [F:044b762a79]
 - S:949f988c9e function makeDb `function makeDb(orders = new Map())` L10
 ### scripts/lib/message-catalog/gate/check-edit-set-compliance.mjs [F:05a0f0d5a5]
@@ -627,21 +633,21 @@ Files: 884  Bytes: 3118444  Map tokens: 111802/120000
 - S:c68bb17ca2 interface TabsProps `export interface TabsProps` L17
 - S:bd1a0a35f8 function Tabs `export function Tabs({ tabs, active, onChange, className }: TabsProps)` L35 : An accessible horizontal tab list. Implements the WAI-ARIA tabs pattern: the * container carries `role="tablist"`, each tab carries `role="tab"` and * `aria-selected`, and only the active tab is in th
 ### scripts/remediate.mjs [F:1e5ef6ba70]
-- S:d737cd7277 function flagValue `function flagValue(argv, name)` L51
-- S:8f93f4689a function armState `function armState(root, env = process.env)` L59 : Resolve the full arming posture. Config values are advisory; the MODONOME_ARMED environment variable is authoritative (ADR-004). The capability flag layers ADR-024: even an armed engine will not rewri
-- S:46d884501c function armingBlockers `function armingBlockers(arm)` L74
-- S:baa16abe42 function targetIdentity `function targetIdentity(argv)` L83
-- S:6140d7ae56 function identityUsable `function identityUsable(id)` L89
-- S:edeb959111 function gatherRange `function gatherRange()` L96 : Gather the branch-unique commit range oldest-first with the fields the applier needs: tree object, first parent, author and committer identity and dates, and raw message. Enforces the protected-histor
-- S:4bc9723575 function advisoryRange `function advisoryRange()` L120 : Advisory range for `plan`: tolerant of a missing origin/main so the proposal works in a fresh clone. Newest-first from git log; reversed to oldest-first for stable output.
-- S:59807c1a98 function buildPlan `function buildPlan(branch, commits, identity)` L133
-- S:2484ffb006 function printPlan `function printPlan(plan, identity)` L141
-- S:e7f49cafe1 function isDirtyTracked `function isDirtyTracked()` L167
-- S:e2861b1099 function rollback `function rollback(savedHead)` L172
-- S:e8b27564c5 function applyPlan `function applyPlan(commits, plan)` L179 : Replay the range from the first changed commit forward, reusing each original tree object so the rewrite is metadata-only. Verifies tree-SHA invariance per commit and rolls back on any failure. Return
-- S:b97efe3854 function cmdPlan `function cmdPlan(argv)` L231
-- S:69db4ad7cc function cmdApply `function cmdApply(argv, root)` L243
-- S:602e030d27 function main `function main(argv)` L294
+- S:d737cd7277 function flagValue `function flagValue(argv, name)` L52
+- S:8f93f4689a function armState `function armState(root, env = process.env)` L60 : Resolve the full arming posture. Config values are advisory; the MODONOME_ARMED environment variable is authoritative (ADR-004). The capability flag layers ADR-024: even an armed engine will not rewri
+- S:46d884501c function armingBlockers `function armingBlockers(arm)` L75
+- S:baa16abe42 function targetIdentity `function targetIdentity(argv)` L84
+- S:6140d7ae56 function identityUsable `function identityUsable(id)` L90
+- S:edeb959111 function gatherRange `function gatherRange()` L97 : Gather the branch-unique commit range oldest-first with the fields the applier needs: tree object, first parent, author and committer identity and dates, and raw message. Enforces the protected-histor
+- S:4bc9723575 function advisoryRange `function advisoryRange()` L121 : Advisory range for `plan`: tolerant of a missing origin/main so the proposal works in a fresh clone. Newest-first from git log; reversed to oldest-first for stable output.
+- S:59807c1a98 function buildPlan `function buildPlan(branch, commits, identity)` L134
+- S:2484ffb006 function printPlan `function printPlan(plan, identity)` L142
+- S:e7f49cafe1 function isDirtyTracked `function isDirtyTracked()` L168
+- S:e2861b1099 function rollback `function rollback(savedHead)` L173
+- S:e8b27564c5 function applyPlan `function applyPlan(commits, plan)` L180 : Replay the range from the first changed commit forward, reusing each original tree object so the rewrite is metadata-only. Verifies tree-SHA invariance per commit and rolls back on any failure. Return
+- S:b97efe3854 function cmdPlan `function cmdPlan(argv)` L232
+- S:69db4ad7cc function cmdApply `function cmdApply(argv, root)` L244
+- S:602e030d27 function main `function main(argv)` L297
 ### examples/demo-app/src/OrderService.js [F:1ecd18c4b9]
 - S:5a6c3aef24 class OrderService `export class OrderService` L7
 ### .design-sync/previews/Slider.tsx [F:1f40b6eb6e]
@@ -759,6 +765,8 @@ Files: 884  Bytes: 3118444  Map tokens: 111802/120000
 ### .design-sync/previews/SafetyStrip.tsx [F:3319e5c923]
 - S:a63cef8ef8 function Armed `export const Armed = () => (` L4
 - S:e25d17a09c function SafeDefaults `export const SafeDefaults = () => (` L17
+### scripts/lib/message-catalog/agent-run/remediate.mjs [F:33c4d744f3]
+- S:457f8a5e17 const MESSAGES `export const MESSAGES =` L4 : Governed Remediation (ADR-035) apply-path refusals. All non_suppressible: each guards the metadata-only rewrite's safety invariants (arming, branch protection, clean tree, usable identity, provable hi
 ### scripts/lib/jsonschema.mjs [F:34cb2b6c48]
 - S:f794e6adf4 function typeOf `function typeOf(value)` L6
 - S:0768a4cf0f function matchesType `function matchesType(value, type)` L13
@@ -781,10 +789,10 @@ Files: 884  Bytes: 3118444  Map tokens: 111802/120000
 ### examples/demo-app/tests/PaymentProcessor.test.js [F:373a946d5c]
 - S:442c9dff6c function makeGateway `function makeGateway()` L5
 ### scripts/agent/route-action.mjs [F:37f4a5c04e]
-- S:af1450421c function classifyEndpoint `export function classifyEndpoint(role)` L19 : Classify a role's model endpoint into a coarse reachability descriptor: kind: "local" self-hosted / private-host endpoint (Ollama, llama.cpp) kind: "github" the github-models provider (needs models:re
-- S:cbbe6a270b function isPrivateHost `function isPrivateHost(baseUrl)` L33 : A base_url points at a private/self-hosted host when its hostname is localhost, a loopback address, a *.local mDNS name, or an RFC1918 range.
-- S:ff45c441d1 function canReach `export function canReach(target, roleEndpoint)` L62 : Decide whether a runner target can reach a role's endpoint. A target declares * its reach with optional fields on its config entry: * reachable_providers: provider names it can call (for example ["loc
-- S:55ee648216 function resolveExecutionTarget `export function resolveExecutionTarget(role, cfg)` L91 : Resolve the required execution target (environment id) for a role's model * endpoint. Reads cfg.runners and returns the first target that both declares an * environment and can reach the endpoint, pre
+- S:af1450421c function classifyEndpoint `export function classifyEndpoint(role)` L24 : Classify a role's model endpoint into a coarse reachability descriptor: kind: "local" self-hosted / private-host endpoint (Ollama, llama.cpp) kind: "github" the github-models provider (needs models:re
+- S:cbbe6a270b function isPrivateHost `function isPrivateHost(baseUrl)` L38 : A base_url points at a private/self-hosted host when its hostname is localhost, a loopback address, a *.local mDNS name, or an RFC1918 range.
+- S:ff45c441d1 function canReach `export function canReach(target, roleEndpoint)` L67 : Decide whether a runner target can reach a role's endpoint. A target declares * its reach with optional fields on its config entry: * reachable_providers: provider names it can call (for example ["loc
+- S:55ee648216 function resolveExecutionTarget `export function resolveExecutionTarget(role, cfg, overrides = {})` L97 : Resolve the required execution target (environment id) for a role's model * endpoint. Reads cfg.runners and returns the first target that both declares an * environment and can reach the endpoint, pre
 ### scripts/lib/message-catalog/gate/check-learning-traceability.mjs [F:3835919e8e]
 - S:2a28972ca4 const MESSAGES `export const MESSAGES =` L1
 ### scripts/report.mjs [F:3b382f95c0]
@@ -939,19 +947,19 @@ Files: 884  Bytes: 3118444  Map tokens: 111802/120000
 - S:7bfb1bf049 const SAFE_TEXT_SNIPPETS `export const SAFE_TEXT_SNIPPETS = [` L46 : Free-text snippets (PR-body/commit-body shaped) no layer may flag. These exercise the ordinary-English and in-repo-vocabulary collisions that bare-word or substring matching would trip on.
 - S:9ef12b47d5 const DOCUMENTED_STRICT_OVERBLOCKS `export const DOCUMENTED_STRICT_OVERBLOCKS = [` L63 : Inputs the STRICT detector intentionally flags today. This is a documented, deliberate over-block, not a false positive: the corpus locks the current behavior so any future change to it is a conscious
 ### scripts/agent/action-queue.mjs [F:5b113a0914]
-- S:bfb04089fa const DEFAULT_QUEUE_DIR `export const DEFAULT_QUEUE_DIR = join(root, ".modonome", "queue");` L18
-- S:04f5060b44 const DEFAULT_LEASE_MINUTES `export const DEFAULT_LEASE_MINUTES = 30;` L19
-- S:7bc320f853 function assertValid `function assertValid(record)` L25 : Validate a record against the action-queue schema. Throws with the collected errors so a malformed action can never be enqueued.
-- S:556ab0a4ef function recordPath `function recordPath(dir, id)` L32
-- S:29fd3ef66c function writeAtomic `function writeAtomic(dir, id, record)` L39 : Atomic write: serialize to a temp file in the same directory, then rename over the destination. Rename is atomic on the same filesystem, so a reader never observes a partial record.
-- S:2102bdee1c function readRecord `function readRecord(dir, file)` L47
-- S:a364864213 function listRecords `function listRecords(dir)` L51
-- S:96b040bf38 function enqueue `export function enqueue(action, dir = DEFAULT_QUEUE_DIR)` L74 : Enqueue an action. Fills schema_version, state, and created_at when omitted, * validates the record, and writes it atomically. Returns the stored record. * * @param {object} action - At least id, targ
-- S:852d083fcb function listQueued `export function listQueued(dir = DEFAULT_QUEUE_DIR)` L94 : List queued (not claimed/done/failed) actions, oldest first by created_at. * * @param {string} [dir] * @returns {object[]}
-- S:ba017108fd function leaseIsLive `function leaseIsLive(record, now)` L101 : A lease is live if the record is claimed and its expiry is strictly in the future.
-- S:6b0614bdf6 function claim `export function claim(workerEnv, dir = DEFAULT_QUEUE_DIR, now = new Date(), leaseMinutes = DEFAULT_LEASE_MINUTES)` L124 : Atomically lease the oldest queued action this worker environment can serve. * A record is servable when its target equals the worker env or appears in the * worker env's served set. Sets state to cla
-- S:194e854c70 function complete `export function complete(id, result, dir = DEFAULT_QUEUE_DIR, ok = true)` L153 : Mark a claimed action done or failed, attaching an optional result object. * * @param {string} id * @param {object|null} result * @param {string} [dir] * @param {boolean} [ok] - true marks done, false
-- S:ed1db0b6bb function reclaimStale `export function reclaimStale(dir = DEFAULT_QUEUE_DIR, now = new Date())` L173 : Revert every claimed record whose lease has expired back to queued, clearing * its owner and expiry. Returns the list of reclaimed records. * * @param {string} [dir] * @param {Date} [now] * @returns {
+- S:bfb04089fa const DEFAULT_QUEUE_DIR `export const DEFAULT_QUEUE_DIR = join(root, ".modonome", "queue");` L19
+- S:04f5060b44 const DEFAULT_LEASE_MINUTES `export const DEFAULT_LEASE_MINUTES = 30;` L20
+- S:7bc320f853 function assertValid `function assertValid(record)` L27 : Validate a record against the action-queue schema. Throws with the collected errors so a malformed action can never be enqueued.
+- S:556ab0a4ef function recordPath `function recordPath(dir, id)` L34
+- S:29fd3ef66c function writeAtomic `function writeAtomic(dir, id, record)` L41 : Atomic write: serialize to a temp file in the same directory, then rename over the destination. Rename is atomic on the same filesystem, so a reader never observes a partial record.
+- S:2102bdee1c function readRecord `function readRecord(dir, file)` L49
+- S:a364864213 function listRecords `function listRecords(dir)` L53
+- S:96b040bf38 function enqueue `export function enqueue(action, dir = DEFAULT_QUEUE_DIR)` L76 : Enqueue an action. Fills schema_version, state, and created_at when omitted, * validates the record, and writes it atomically. Returns the stored record. * * @param {object} action - At least id, targ
+- S:852d083fcb function listQueued `export function listQueued(dir = DEFAULT_QUEUE_DIR)` L97 : List queued (not claimed/done/failed) actions, oldest first by created_at. * * @param {string} [dir] * @returns {object[]}
+- S:ba017108fd function leaseIsLive `function leaseIsLive(record, now)` L104 : A lease is live if the record is claimed and its expiry is strictly in the future.
+- S:6b0614bdf6 function claim `export function claim(workerEnv, dir = DEFAULT_QUEUE_DIR, now = new Date(), leaseMinutes = DEFAULT_LEASE_MINUTES)` L127 : Atomically lease the oldest queued action this worker environment can serve. * A record is servable when its target equals the worker env or appears in the * worker env's served set. Sets state to cla
+- S:194e854c70 function complete `export function complete(id, result, dir = DEFAULT_QUEUE_DIR, ok = true)` L156 : Mark a claimed action done or failed, attaching an optional result object. * * @param {string} id * @param {object|null} result * @param {string} [dir] * @param {boolean} [ok] - true marks done, false
+- S:ed1db0b6bb function reclaimStale `export function reclaimStale(dir = DEFAULT_QUEUE_DIR, now = new Date())` L176 : Revert every claimed record whose lease has expired back to queued, clearing * its owner and expiry. Returns the list of reclaimed records. * * @param {string} [dir] * @param {Date} [now] * @returns {
 ### scripts/lib/message-catalog/gate/run-gate-pipeline.mjs [F:5b5b4ddcae]
 - S:26ee7911e3 const MESSAGES `export const MESSAGES =` L5 : Only the gate-graph-cycle failure is catalogued here: runPipeline()'s per-gate `reason` strings are a JSON data contract other tooling parses by exact text (agentproof, CI log scraping), not a human-f
 ### scripts/lib/message-catalog/agent-run/queue.mjs [F:5d52d97b8a]
@@ -969,8 +977,9 @@ Files: 884  Bytes: 3118444  Map tokens: 111802/120000
 - S:d6cf821403 function keysFromDeclaration `function keysFromDeclaration(source, declName)` L23 : Extract the string literals inside a named list/set declaration, regardless of whether it is `new Set([...])` or `[...] as const`.
 - S:da40a0864b function assertSameSet `function assertSameSet(a, b, label)` L33
 ### scripts/arm.mjs [F:5f7910375b]
-- S:397210a79e function pass `function pass(msg)` L19
-- S:4bd4d449f1 function fail `function fail(msg)` L22
+- S:0a677c2e37 function msg `function msg(id, params)` L19
+- S:397210a79e function pass `function pass(msg)` L24
+- S:4bd4d449f1 function fail `function fail(msg)` L27
 ### tests/arming.test.mjs [F:60548316f5]
 - S:5d58defc25 function tmpRepo `function tmpRepo(configBody)` L14
 - S:580f464240 function runStatus `function runStatus(dir, env)` L23
@@ -1277,6 +1286,8 @@ Files: 884  Bytes: 3118444  Map tokens: 111802/120000
 ### apps/control-panel/src/state/adapter.ts [F:95d4304133]
 - S:7b984e047b function finalizeState `export function finalizeState(base: PanelState): PanelState` L18
 - S:559455c526 function loadPanelState `export async function loadPanelState(mode: PanelMode, dir?: string): Promise<PanelState>` L25
+### scripts/lib/message-catalog/agent-run/disarm.mjs [F:9616513cb6]
+- S:b8ed1c85bb const MESSAGES `export const MESSAGES =` L1
 ### scripts/lib/message-catalog/gate/build-policy-attestation.mjs [F:964f89b6cc]
 - S:8fe737eaa0 const MESSAGES `export const MESSAGES =` L1
 ### .design-sync/previews/RoleBadge.tsx [F:973aaa9d86]
@@ -1382,6 +1393,8 @@ Files: 884  Bytes: 3118444  Map tokens: 111802/120000
 - S:49158af5a6 type IconButtonSize `export type IconButtonSize = "sm" | "md";` L6
 - S:b4354229d8 interface IconButtonProps `export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>` L8
 - S:8c83339acb function IconButton `export function IconButton(` L25 : A square, icon-only button. Always carries an `aria-label` built from the required * `label` prop so the control has an accessible name even though no text is visible. * Use for compact affordances su
+### scripts/lib/message-catalog/agent-run/arm.mjs [F:aa27d254da]
+- S:d31fd4dafa const MESSAGES `export const MESSAGES =` L4 : Arming-precondition failures. All non_suppressible: arming waives real separation-of-duties guarantees, so an operator can retune wording but not silence or downgrade a failed precondition.
 ### scripts/agent/tool-loop-adapter.mjs [F:aa77f227a6]
 - S:170dcaab55 function resolveAdapterCommand `export function resolveAdapterCommand(adapterEntry)` L34 : Resolve the command the external adapter is invoked as. Precedence: an explicit * adapterEntry.command, then adapterEntry.name, then a bare fallback. The value is * a bare command name resolved agains
 - S:d7a4f68100 function containedCwd `export function containedCwd(root, target)` L52 : Enforce ADR-009 path containment. The adapter's working directory must resolve * to exactly the target directory (resolve(root, plan.target)); a cwd outside the * target, reached via ".." or an absolu
@@ -1407,6 +1420,8 @@ Files: 884  Bytes: 3118444  Map tokens: 111802/120000
 - S:a6ff0bb6d7 function slugifyId `function slugifyId(lesson)` L28 : Slugify a lesson into a deterministic ID.
 - S:928743a069 function buildLearningRecord `export function buildLearningRecord(opts = {})` L39 : Build a learning record from options.
 - S:562052e079 function validateLearningRecord `export function validateLearningRecord(record)` L63 : Validate a learning record. Returns an array of error strings. Empty array means valid.
+### scripts/lib/message-catalog/agent-run/run-cycle.mjs [F:acc3f6b466]
+- S:ba65eaae5b const MESSAGES `export const MESSAGES =` L4 : Agent run-cycle (WS-B) planning and execution failures. All non_suppressible: each represents a separation-of-duties, budget, or turn-cap guarantee, not an advisory notice.
 ### scripts/check-evidence-secrets.mjs [F:ace169adc4]
 - S:e19487a8ae function resolveFiles `function resolveFiles(argPath)` L22 : Resolve the list of files to scan. If a path argument is supplied use it directly; otherwise walk examples/runs/metrics.jsonl via readdirSync.
 ### scripts/lib/repo-detect.mjs [F:ae46bbab81]
@@ -1558,6 +1573,8 @@ Files: 884  Bytes: 3118444  Map tokens: 111802/120000
 - S:1274d7cf4b type Tier `export type Tier = 1 | 2 | 3 | 4;` L3
 - S:fea88d42b6 interface TierBadgeProps `export interface TierBadgeProps` L5
 - S:f3d272846b function TierBadge `export function TierBadge({ tier, showLabel = true }: TierBadgeProps)` L24 : A small pill identifying a risk tier (1-4) by its dedicated tier color, with a * title tooltip summarizing what the tier permits. Used on work items, policies, and * anywhere a change's review require
+### scripts/lib/message-catalog/agent-run/action-queue.mjs [F:da9133a29d]
+- S:7070a0d16e const MESSAGES `export const MESSAGES =` L1
 ### design-system/src/components/NumberField/NumberField.tsx [F:db651caf76]
 - S:4eb7e87341 interface NumberFieldProps `export interface NumberFieldProps` L5
 - S:50b0879e24 function clamp `function clamp(n: number, min?: number, max?: number): number` L28
@@ -1579,22 +1596,23 @@ Files: 884  Bytes: 3118444  Map tokens: 111802/120000
 ### tests/promoted-learnings.test.mjs [F:ddd82fc886]
 - S:e0832e1baa function withRoot `function withRoot(learningsBody)` L8
 ### scripts/agent/run-cycle.mjs [F:ddeb486c49]
-- S:1d6822da4e function resolveRoleSequence `export function resolveRoleSequence(cfg)` L48 : Derive the ordered list of roles the cycle executes. An explicit cfg.role_sequence (a non-empty array of role names) is honored so a crew role added in config runs with no code change; otherwise it de
-- S:4b76f865fa function resolveExecMode `export function resolveExecMode(cfg, model)` L58 : Resolve a role's execution mode from its model's config entry. The default is "patch" (the WI-029 single-shot-diff path) whenever exec_mode is absent, so existing configs behave exactly as before. Onl
-- S:41689151ff function parseArgs `export function parseArgs(argv)` L63
-- S:15286656f4 function localEnv `function localEnv(opts, env)` L84 : The execution environment this process is running in. Routing compares each role's required target against this to decide inline vs enqueue. Precedence: an explicit --worker-env flag, then MODONOME_WO
-- S:959be959f7 function planCycle `export function planCycle(opts, cfg, runId)` L91 : Resolve and validate a full cycle plan without calling any model. Pure: it reads the passed config and runId and throws on any policy violation. This is the testable core of the harness; the execute p
-- S:a75126f856 function buildRunnerEnv `export function buildRunnerEnv(baseEnv, role)` L177 : Build the child-process environment for a role invocation. When the resolved model carries a base_url (a local, self-hosted, or gateway endpoint), route the CLI there by setting ANTHROPIC_BASE_URL, wh
-- S:9b986c2d8a function buildRolePrompt `function buildRolePrompt(plan, role, env)` L187 : Render the role prompt with the same variables regardless of transport: identity/model placeholders, the run branch, and promoted learnings.
-- S:9f59110fda function writeTranscriptAndMetric `function writeTranscriptAndMetric(plan, role, r, transcriptText, extra = {})` L207 : Write the transcript log and append the schema-conformant metric shared by every transport. `extra` merges additional fields into the metric record (for example whether an openai-http patch applied).
-- S:fe41df17f9 function invokeRoleClaudeCli `function invokeRoleClaudeCli(plan, role, env)` L235
-- S:c028c053e3 function invokeRoleOpenAI `export async function invokeRoleOpenAI(plan, role, env, deps = {})` L257 : Provider-native single-shot execution: render the same prompt, call an OpenAI-compatible chat-completions endpoint once, and turn the response into file changes deterministically by extracting a unifi
-- S:8f6d716f36 function loadAdapterEntry `function loadAdapterEntry(deps = {})` L291 : Load the single agentic-CLI adapter entry from adapters.json for the tool-loop path. Returns the first declared adapter, or null when the manifest is empty or absent (which makes tool-loop degrade to 
-- S:83b3a2ab69 function invokeRoleToolLoop `export async function invokeRoleToolLoop(plan, role, env, deps = {})` L311 : Agentic tool-loop execution: spawn the declared external coding CLI (adapt-first, ADR-032) pointed at the resolved OpenAI-compatible endpoint. Containment, the turn cap, and the wall-clock timeout are
-- S:f8004b7b76 function invokeRole `function invokeRole(plan, role, env, deps)` L343
-- S:4f43d4e206 function runCycle `export function runCycle(opts, { execute, cfg, runId, env = process.env, queueDir, deps })` L357 : Execute a plan. Refuses a hosted run when the budget is zero. Runs the maker, then the checker, each as a distinct CLI invocation with its own model and identity. `deps` (chatCompletionImpl/applyPatch
-- S:d33c2c4d3e function runRoles `function runRoles(plan, roles, env, deps)` L402 : Invoke each role in turn and produce the "executed" result. A role's transport decides whether invokeRole returns a status number synchronously (anthropic-cli) or a Promise (openai-http, which awaits 
-- S:f71a25079c function main `async function main()` L417
+- S:81887ab665 function msg `function msg(id, params)` L37
+- S:1d6822da4e function resolveRoleSequence `export function resolveRoleSequence(cfg)` L53 : Derive the ordered list of roles the cycle executes. An explicit cfg.role_sequence (a non-empty array of role names) is honored so a crew role added in config runs with no code change; otherwise it de
+- S:4b76f865fa function resolveExecMode `export function resolveExecMode(cfg, model)` L63 : Resolve a role's execution mode from its model's config entry. The default is "patch" (the WI-029 single-shot-diff path) whenever exec_mode is absent, so existing configs behave exactly as before. Onl
+- S:41689151ff function parseArgs `export function parseArgs(argv)` L68
+- S:15286656f4 function localEnv `function localEnv(opts, env)` L89 : The execution environment this process is running in. Routing compares each role's required target against this to decide inline vs enqueue. Precedence: an explicit --worker-env flag, then MODONOME_WO
+- S:959be959f7 function planCycle `export function planCycle(opts, cfg, runId)` L96 : Resolve and validate a full cycle plan without calling any model. Pure: it reads the passed config and runId and throws on any policy violation. This is the testable core of the harness; the execute p
+- S:a75126f856 function buildRunnerEnv `export function buildRunnerEnv(baseEnv, role)` L183 : Build the child-process environment for a role invocation. When the resolved model carries a base_url (a local, self-hosted, or gateway endpoint), route the CLI there by setting ANTHROPIC_BASE_URL, wh
+- S:9b986c2d8a function buildRolePrompt `function buildRolePrompt(plan, role, env)` L193 : Render the role prompt with the same variables regardless of transport: identity/model placeholders, the run branch, and promoted learnings.
+- S:9f59110fda function writeTranscriptAndMetric `function writeTranscriptAndMetric(plan, role, r, transcriptText, extra = {})` L213 : Write the transcript log and append the schema-conformant metric shared by every transport. `extra` merges additional fields into the metric record (for example whether an openai-http patch applied).
+- S:fe41df17f9 function invokeRoleClaudeCli `function invokeRoleClaudeCli(plan, role, env)` L241
+- S:c028c053e3 function invokeRoleOpenAI `export async function invokeRoleOpenAI(plan, role, env, deps = {})` L263 : Provider-native single-shot execution: render the same prompt, call an OpenAI-compatible chat-completions endpoint once, and turn the response into file changes deterministically by extracting a unifi
+- S:8f6d716f36 function loadAdapterEntry `function loadAdapterEntry(deps = {})` L297 : Load the single agentic-CLI adapter entry from adapters.json for the tool-loop path. Returns the first declared adapter, or null when the manifest is empty or absent (which makes tool-loop degrade to 
+- S:83b3a2ab69 function invokeRoleToolLoop `export async function invokeRoleToolLoop(plan, role, env, deps = {})` L317 : Agentic tool-loop execution: spawn the declared external coding CLI (adapt-first, ADR-032) pointed at the resolved OpenAI-compatible endpoint. Containment, the turn cap, and the wall-clock timeout are
+- S:f8004b7b76 function invokeRole `function invokeRole(plan, role, env, deps)` L349
+- S:4f43d4e206 function runCycle `export function runCycle(opts, { execute, cfg, runId, env = process.env, queueDir, deps })` L363 : Execute a plan. Refuses a hosted run when the budget is zero. Runs the maker, then the checker, each as a distinct CLI invocation with its own model and identity. `deps` (chatCompletionImpl/applyPatch
+- S:d33c2c4d3e function runRoles `function runRoles(plan, roles, env, deps)` L408 : Invoke each role in turn and produce the "executed" result. A role's transport decides whether invokeRole returns a status number synchronously (anthropic-cli) or a Promise (openai-http, which awaits 
+- S:f71a25079c function main `async function main()` L425
 ### scripts/lib/message-catalog/gate/check-self-application.mjs [F:de188c1b79]
 - S:2bd83b1706 const MESSAGES `export const MESSAGES =` L1
 ### tests/scaffold-adoption.test.mjs [F:de5ebbf586]
@@ -1617,6 +1635,8 @@ Files: 884  Bytes: 3118444  Map tokens: 111802/120000
 - S:3cceb8dc09 function deriveSignals `export function deriveSignals(proposalText, context = {})` L96 : Heuristic, deterministic signal derivation from a proposal string and a simple context object. This is a convenience default, not a source of truth: callers with better signals should pass them direct
 ### .design-sync/previews/HelpHint.tsx [F:e19aab09cb]
 - S:ba347c9b77 function Beside `export const Beside = () => (` L4
+### scripts/lib/message-catalog/agent-run/route-action.mjs [F:e2025a4e0c]
+- S:fdf5ba078f const MESSAGES `export const MESSAGES =` L1
 ### tests/role-registry.test.mjs [F:e2f1b5ac07]
 - S:e1813dcc71 function baseCfg `function baseCfg(extra = {})` L25 : A single-environment config with no runner reachability declared, so routing stays inline for every role (matching the shipped default posture). Crew roles are added by extending `roles`, `models`, an
 ### apps/control-panel/src/screens/ArmingScreen.tsx [F:e40ce1af48]
@@ -1773,6 +1793,7 @@ Files: 884  Bytes: 3118444  Map tokens: 111802/120000
 - scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/gate/check-evidence-secrets.mjs
 - scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/gate/check-checker-engagement.mjs
 - scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/agent-run/tool-loop-adapter.mjs
+- scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/agent-run/remediate.mjs
 - scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/gate/check-attribution-fp-corpus.mjs
 - scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/gate/check-learning-traceability.mjs
 - scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/gate/check-licenses.mjs
@@ -1783,6 +1804,7 @@ Files: 884  Bytes: 3118444  Map tokens: 111802/120000
 - scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/agent-run/queue.mjs
 - scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/agent-run/transition-work-item.mjs
 - scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/gate/guard-ratchet.mjs
+- scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/agent-run/disarm.mjs
 - scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/gate/build-policy-attestation.mjs
 - scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/gate/check-promotion-readiness.mjs
 - scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/agent-run/openai-client.mjs
@@ -1790,6 +1812,8 @@ Files: 884  Bytes: 3118444  Map tokens: 111802/120000
 - scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/gate/test-prompt-behavior.mjs
 - scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/agent-run/release.mjs
 - scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/gate/check-control-panel-coherence.mjs
+- scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/agent-run/arm.mjs
+- scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/agent-run/run-cycle.mjs
 - scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/gate/check-md-governance.mjs
 - scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/gate/check-trust-boundary.mjs
 - scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/gate/check-regex-safety.mjs
@@ -1797,7 +1821,9 @@ Files: 884  Bytes: 3118444  Map tokens: 111802/120000
 - scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/gate/validate-work-item.mjs
 - scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/advisory/detect-near-miss.mjs
 - scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/gate/check-drift.mjs
+- scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/agent-run/action-queue.mjs
 - scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/gate/check-self-application.mjs
+- scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/agent-run/route-action.mjs
 - scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/gate/check-work-items.mjs
 - scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/agent-run/promote-learning.mjs
 - scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/gate/validate-config.mjs
@@ -1864,6 +1890,7 @@ Files: 884  Bytes: 3118444  Map tokens: 111802/120000
 - design-system/src/components/Tabs/Tabs.tsx -> design-system/src/components/Icon/Icon.tsx
 - tests/github-api.test.mjs -> tests/helpers/mock-github-server.mjs
 - tests/github-api.test.mjs -> scripts/lib/github-api.mjs
+- scripts/remediate.mjs -> scripts/lib/messages.mjs
 - scripts/remediate.mjs -> scripts/lib/detect-attribution.mjs
 - scripts/remediate.mjs -> scripts/lib/remediate.mjs
 - scripts/remediate.mjs -> scripts/validate-config.mjs
@@ -1902,6 +1929,7 @@ Files: 884  Bytes: 3118444  Map tokens: 111802/120000
 - design-system/src/components/RoleBadge/RoleBadge.tsx -> design-system/src/components/Icon/Icon.tsx
 - examples/demo-app/tests/PaymentProcessor.test.js -> examples/demo-app/src/PaymentProcessor.js
 - design-system/src/components/WorkItemDrawer/index.ts -> design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx
+- scripts/agent/route-action.mjs -> scripts/lib/messages.mjs
 - tests/ws-h-config.test.mjs -> scripts/lib/yaml-lite.mjs
 - tests/ws-h-config.test.mjs -> scripts/agent/resolve-role.mjs
 - tests/ws-h-config.test.mjs -> scripts/validate-config.mjs
@@ -1938,6 +1966,7 @@ Files: 884  Bytes: 3118444  Map tokens: 111802/120000
 - apps/control-panel/src/screens/SettingsScreen.tsx -> apps/control-panel/src/state/types.ts
 - apps/control-panel/src/screens/SettingsScreen.tsx -> apps/control-panel/src/state/configDiff.ts
 - apps/control-panel/src/screens/SettingsScreen.tsx -> apps/control-panel/src/lib/confirm.tsx
+- scripts/disarm.mjs -> scripts/lib/messages.mjs
 - scripts/disarm.mjs -> scripts/lib/yaml-lite.mjs
 - design-system/src/components/RoleBadge/index.ts -> design-system/src/components/RoleBadge/RoleBadge.tsx
 - tests/openai-client.test.mjs -> tests/helpers/mock-openai-server.mjs
@@ -1953,9 +1982,11 @@ Files: 884  Bytes: 3118444  Map tokens: 111802/120000
 - design-system/src/components/DecisionCard/DecisionCard.tsx -> design-system/src/components/Button/Button.tsx
 - design-system/src/components/Modal/index.ts -> design-system/src/components/Modal/Modal.tsx
 - tests/maker-checker.test.mjs -> scripts/validate-work-item.mjs
+- scripts/agent/action-queue.mjs -> scripts/lib/messages.mjs
 - scripts/agent/action-queue.mjs -> scripts/lib/jsonschema.mjs
 - apps/control-panel/server/remediationView.mjs -> scripts/lib/remediate.mjs
 - scripts/scaffold.mjs -> scripts/install-hooks.mjs
+- scripts/arm.mjs -> scripts/lib/messages.mjs
 - scripts/arm.mjs -> scripts/lib/yaml-lite.mjs
 - scripts/arm.mjs -> scripts/validate-work-item.mjs
 - design-system/src/components/LearningCard/index.ts -> design-system/src/components/LearningCard/LearningCard.tsx
@@ -2224,6 +2255,7 @@ Files: 884  Bytes: 3118444  Map tokens: 111802/120000
 - scripts/lib/snapshot-core.mjs -> scripts/lib/repo-detect.mjs
 - scripts/lib/snapshot-core.mjs -> scripts/lib/snapshot-walk.mjs
 - tests/promoted-learnings.test.mjs -> scripts/lib/learnings.mjs
+- scripts/agent/run-cycle.mjs -> scripts/lib/messages.mjs
 - scripts/agent/run-cycle.mjs -> scripts/agent/resolve-role.mjs
 - scripts/agent/run-cycle.mjs -> scripts/agent/route-action.mjs
 - scripts/agent/run-cycle.mjs -> scripts/lib/learnings.mjs
@@ -2283,54 +2315,54 @@ Files: 884  Bytes: 3118444  Map tokens: 111802/120000
 
 ## Attention (centrality + pagerank)
 
-1. scripts/lib/messages.mjs centrality=45 pagerank=0.026838
-2. design-system/src/lib/cx.ts centrality=32 pagerank=0.031679
-3. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.020537
-4. scripts/lib/message-catalog/index.mjs centrality=39 pagerank=0.008437
-5. design-system/src/index.ts centrality=48 pagerank=0.000833
-6. scripts/lib/yaml-lite.mjs centrality=20 pagerank=0.01564
-7. scripts/lib/jsonschema.mjs centrality=11 pagerank=0.015472
-8. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.006989
-9. apps/control-panel/src/state/types.ts centrality=12 pagerank=0.006981
-10. scripts/agent/run-cycle.mjs centrality=17 pagerank=0.003134
-11. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.004982
-12. scripts/validate-config.mjs centrality=13 pagerank=0.004096
-13. scripts/lib/learnings.mjs centrality=10 pagerank=0.00576
-14. scripts/lib/canonical-json.mjs centrality=10 pagerank=0.004707
-15. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001384
-16. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.004018
-17. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.004684
-18. scripts/validate-work-item.mjs centrality=9 pagerank=0.003252
-19. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.004662
-20. apps/control-panel/src/App.tsx centrality=11 pagerank=0.001187
-21. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002434
-22. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.003007
-23. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.002912
-24. scripts/snapshot.mjs centrality=9 pagerank=0.000833
-25. scripts/lib/branch-name.mjs centrality=4 pagerank=0.004037
-26. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001383
-27. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.003981
-28. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.002654
-29. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.004524
-30. scripts/agent/resolve-role.mjs centrality=6 pagerank=0.002432
-31. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001553
-32. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.003768
-33. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002434
-34. design-system/src/lib/format.ts centrality=5 pagerank=0.002432
-35. scripts/lib/graph.mjs centrality=4 pagerank=0.002886
-36. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001553
-37. scripts/agent/providers.mjs centrality=3 pagerank=0.003319
-38. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.000934
-39. design-system/src/components/Modal/Modal.tsx centrality=4 pagerank=0.002214
-40. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001553
-41. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001553
-42. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.001553
-43. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.001553
-44. design-system/src/components/TierBadge/TierBadge.tsx centrality=4 pagerank=0.002187
-45. examples/demo-app/src/index.js centrality=6 pagerank=0.000833
-46. scripts/build-policy-attestation.mjs centrality=6 pagerank=0.000833
-47. design-system/src/components/Table/Table.tsx centrality=4 pagerank=0.002148
-48. design-system/src/components/IdentityChip/IdentityChip.tsx centrality=4 pagerank=0.002038
-49. scripts/dry-run-sweep.mjs centrality=5 pagerank=0.001364
-50. scripts/agent/render-prompt.mjs centrality=4 pagerank=0.002019
+1. scripts/lib/messages.mjs centrality=51 pagerank=0.028791
+2. design-system/src/lib/cx.ts centrality=32 pagerank=0.031429
+3. scripts/lib/message-catalog/index.mjs centrality=45 pagerank=0.008984
+4. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.020375
+5. design-system/src/index.ts centrality=48 pagerank=0.000826
+6. scripts/lib/yaml-lite.mjs centrality=20 pagerank=0.015646
+7. scripts/lib/jsonschema.mjs centrality=11 pagerank=0.015436
+8. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.006934
+9. apps/control-panel/src/state/types.ts centrality=12 pagerank=0.006926
+10. scripts/agent/run-cycle.mjs centrality=18 pagerank=0.003109
+11. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.004943
+12. scripts/validate-config.mjs centrality=13 pagerank=0.004008
+13. scripts/lib/learnings.mjs centrality=10 pagerank=0.005694
+14. scripts/lib/canonical-json.mjs centrality=10 pagerank=0.00467
+15. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.003986
+16. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001373
+17. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.004583
+18. scripts/validate-work-item.mjs centrality=9 pagerank=0.003109
+19. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.004625
+20. apps/control-panel/src/App.tsx centrality=11 pagerank=0.001178
+21. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002414
+22. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.002983
+23. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.002889
+24. scripts/lib/branch-name.mjs centrality=4 pagerank=0.003978
+25. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.003949
+26. scripts/snapshot.mjs centrality=9 pagerank=0.000826
+27. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.004488
+28. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.002633
+29. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001372
+30. scripts/agent/resolve-role.mjs centrality=6 pagerank=0.002393
+31. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001541
+32. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.00371
+33. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002414
+34. design-system/src/lib/format.ts centrality=5 pagerank=0.002413
+35. scripts/lib/graph.mjs centrality=4 pagerank=0.002863
+36. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001541
+37. scripts/agent/providers.mjs centrality=3 pagerank=0.003256
+38. design-system/src/components/Modal/Modal.tsx centrality=4 pagerank=0.002196
+39. design-system/src/components/TierBadge/TierBadge.tsx centrality=4 pagerank=0.00217
+40. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.000926
+41. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001541
+42. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001541
+43. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.001541
+44. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.001541
+45. design-system/src/components/Table/Table.tsx centrality=4 pagerank=0.002131
+46. examples/demo-app/src/index.js centrality=6 pagerank=0.000826
+47. scripts/build-policy-attestation.mjs centrality=6 pagerank=0.000826
+48. design-system/src/components/IdentityChip/IdentityChip.tsx centrality=4 pagerank=0.002021
+49. scripts/lib/remediate.mjs centrality=3 pagerank=0.002622
+50. scripts/agent/render-prompt.mjs centrality=4 pagerank=0.001983
 

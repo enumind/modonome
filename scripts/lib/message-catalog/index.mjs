@@ -34,11 +34,17 @@ import { MESSAGES as M_GATE_RUN_GATE_PIPELINE } from "./gate/run-gate-pipeline.m
 import { MESSAGES as M_GATE_TEST_PROMPT_BEHAVIOR } from "./gate/test-prompt-behavior.mjs";
 import { MESSAGES as M_GATE_VALIDATE_CONFIG } from "./gate/validate-config.mjs";
 import { MESSAGES as M_GATE_VALIDATE_WORK_ITEM } from "./gate/validate-work-item.mjs";
+import { MESSAGES as M_AGENT_RUN_ACTION_QUEUE } from "./agent-run/action-queue.mjs";
+import { MESSAGES as M_AGENT_RUN_ARM } from "./agent-run/arm.mjs";
+import { MESSAGES as M_AGENT_RUN_DISARM } from "./agent-run/disarm.mjs";
 import { MESSAGES as M_AGENT_RUN_OPENAI_CLIENT } from "./agent-run/openai-client.mjs";
 import { MESSAGES as M_AGENT_RUN_PROMOTE_LEARNING } from "./agent-run/promote-learning.mjs";
 import { MESSAGES as M_AGENT_RUN_QUEUE } from "./agent-run/queue.mjs";
 import { MESSAGES as M_AGENT_RUN_RELEASE } from "./agent-run/release.mjs";
+import { MESSAGES as M_AGENT_RUN_REMEDIATE } from "./agent-run/remediate.mjs";
 import { MESSAGES as M_AGENT_RUN_RENDER_PROMPT } from "./agent-run/render-prompt.mjs";
+import { MESSAGES as M_AGENT_RUN_ROUTE_ACTION } from "./agent-run/route-action.mjs";
+import { MESSAGES as M_AGENT_RUN_RUN_CYCLE } from "./agent-run/run-cycle.mjs";
 import { MESSAGES as M_AGENT_RUN_TOOL_LOOP_ADAPTER } from "./agent-run/tool-loop-adapter.mjs";
 import { MESSAGES as M_AGENT_RUN_TRANSITION_WORK_ITEM } from "./agent-run/transition-work-item.mjs";
 import { MESSAGES as M_ADVISORY_DETECT_NEAR_MISS } from "./advisory/detect-near-miss.mjs";
@@ -74,11 +80,17 @@ export const CATALOG_PARTIALS = [
   M_GATE_TEST_PROMPT_BEHAVIOR,
   M_GATE_VALIDATE_CONFIG,
   M_GATE_VALIDATE_WORK_ITEM,
+  M_AGENT_RUN_ACTION_QUEUE,
+  M_AGENT_RUN_ARM,
+  M_AGENT_RUN_DISARM,
   M_AGENT_RUN_OPENAI_CLIENT,
   M_AGENT_RUN_PROMOTE_LEARNING,
   M_AGENT_RUN_QUEUE,
   M_AGENT_RUN_RELEASE,
+  M_AGENT_RUN_REMEDIATE,
   M_AGENT_RUN_RENDER_PROMPT,
+  M_AGENT_RUN_ROUTE_ACTION,
+  M_AGENT_RUN_RUN_CYCLE,
   M_AGENT_RUN_TOOL_LOOP_ADAPTER,
   M_AGENT_RUN_TRANSITION_WORK_ITEM,
   M_ADVISORY_DETECT_NEAR_MISS,
