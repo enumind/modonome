@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>From code review to continuous authorization</title>
+<meta name="description" content="Code review was built as a single gate at merge time. As coding agents take on more autonomy, oversight is evolving into a continuous, layered authorization model, borrowing directly from zero trust security.">
+<link rel="canonical" href="https://modonome.com/articles/autonomy-governance-checklist/">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://modonome.com/articles/autonomy-governance-checklist/">
+<meta property="og:title" content="From code review to continuous authorization">
+<meta property="og:description" content="Oversight is evolving from a single review gate into a continuous, layered authorization model as coding agents gain autonomy.">
+<meta property="og:image" content="https://modonome.com/assets/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@ModonomeLab">
+<meta name="twitter:image" content="https://modonome.com/assets/og-card.png">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icon-32.png">
+<link rel="apple-touch-icon" href="/assets/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "From code review to continuous authorization",
+  "description": "Code review was built as a single gate at merge time. As coding agents take on more autonomy, oversight is evolving into a continuous, layered authorization model.",
+  "url": "https://modonome.com/articles/autonomy-governance-checklist/",
+  "about": "Continuous authorization and progressive trust for autonomous coding agents"
+}
+</script>
+<style>
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:#0b1220;color:#e8ebf0;font-family:'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.6}
+  a{color:#5dd4ab}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  nav{position:sticky;top:0;z-index:5;backdrop-filter:blur(14px);background:rgba(11,18,32,.82);border-bottom:1px solid rgba(159,201,180,.10)}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;padding:13px 24px;max-width:900px}
+  nav img{height:30px;display:block;mix-blend-mode:lighten}
+  nav a.home{display:flex;align-items:center;text-decoration:none}
+  .navlinks a{font-size:14px;color:#9fabbc;text-decoration:none;margin-left:22px}
+  .navlinks a:hover{color:#5dd4ab}
+  .banner{margin:0 0 8px;border-radius:16px;overflow:hidden;border:1px solid rgba(159,201,180,.14);background:linear-gradient(180deg,rgba(93,212,171,.06),rgba(11,18,32,0))}
+  .banner svg{display:block;width:100%;height:auto}
+  header.hero{padding:34px 0 24px}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#5dd4ab;margin-bottom:14px}
+  h1{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(28px,4.6vw,46px);line-height:1.14;letter-spacing:-.02em;margin:0 0 18px;color:#f6f4ee}
+  .lede{font-size:clamp(16px,2vw,19px);color:#aeb9c8}
+  h2{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(20px,3vw,26px);letter-spacing:-.01em;color:#f6f4ee;margin:44px 0 6px}
+  p{color:#b9c4d2}
+  figure{margin:22px 0;padding:20px 18px 16px;background:rgba(159,201,180,.04);border:1px solid rgba(159,201,180,.12);border-radius:14px}
+  figure svg{display:block;width:100%;height:auto}
+  figcaption{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#7c8aa0;margin-top:10px;text-align:center}
+  footer{border-top:1px solid rgba(159,201,180,.1);margin-top:60px;padding:30px 0}
+  footer .wrap{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;font-size:13.5px}
+  footer a{color:#9fabbc;text-decoration:none;margin-right:20px}
+  footer a:hover{color:#5dd4ab}
+</style>
+</head>
+<body>
+<nav><div class="wrap">
+  <a class="home" href="/"><img src="/assets/modonome-logo.webp" alt="Modonome"></a>
+  <div class="navlinks"><a href="/">Home</a><a href="/articles/">Articles</a><a href="https://github.com/enumind/modonome">GitHub</a></div>
+</div></nav>
+
+<div class="wrap">
+<div class="banner">
+<svg viewBox="0 0 1200 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A single large checkpoint on the left transitioning into a mesh of smaller connected checks on the right, illustrating continuous authorization">
+  <rect width="1200" height="260" fill="#0b1220"/>
+  <circle cx="230" cy="130" r="70" fill="rgba(159,201,180,.06)" stroke="rgba(159,201,180,.35)" stroke-width="2"/>
+  <circle cx="230" cy="130" r="14" fill="#7c8aa0"/>
+  <g stroke="rgba(93,212,171,.35)" stroke-width="1.5" stroke-dasharray="3 6">
+    <line x1="330" y1="130" x2="430" y2="130"/>
+  </g>
+  <g stroke="#5dd4ab" stroke-width="1.4" opacity=".7">
+    <line x1="520" y1="70" x2="640" y2="110"/>
+    <line x1="640" y1="110" x2="760" y2="70"/>
+    <line x1="520" y1="70" x2="600" y2="190"/>
+    <line x1="640" y1="110" x2="600" y2="190"/>
+    <line x1="640" y1="110" x2="800" y2="190"/>
+    <line x1="760" y1="70" x2="900" y2="120"/>
+    <line x1="800" y1="190" x2="900" y2="120"/>
+    <line x1="600" y1="190" x2="800" y2="190"/>
+    <line x1="900" y1="120" x2="1010" y2="80"/>
+    <line x1="900" y1="120" x2="1010" y2="170"/>
+  </g>
+  <g fill="#5dd4ab">
+    <circle cx="520" cy="70" r="7"/>
+    <circle cx="640" cy="110" r="7"/>
+    <circle cx="760" cy="70" r="7"/>
+    <circle cx="600" cy="190" r="7"/>
+    <circle cx="800" cy="190" r="7"/>
+    <circle cx="900" cy="120" r="7"/>
+    <circle cx="1010" cy="80" r="7"/>
+    <circle cx="1010" cy="170" r="7"/>
+  </g>
+  <g font-family="IBM Plex Mono, monospace" font-size="13">
+    <text x="230" y="225" text-anchor="middle" fill="#9fabbc">one gate, once</text>
+    <text x="765" y="240" text-anchor="middle" fill="#5dd4ab">many checks, continuously</text>
+  </g>
+</svg>
+</div>
+<header class="hero">
+  <div class="kicker">Articles &middot; Continuous authorization</div>
+  <h1>From code review to continuous authorization.</h1>
+  <p class="lede">Code review was built as a single gate: a change arrives, a person reads it, and a decision gets made once. That design assumed a fairly steady trickle of human contributions. Feed it a contributor that never sleeps and the single gate starts to resemble the thing network security spent the last decade dismantling: a perimeter that means less every year.</p>
+</header>
+
+<h2>One good decision does not scale into a thousand good decisions</h2>
+<p>Peer review always did two jobs at once: catching mistakes, and establishing that a specific accountable person actually looked. Both jobs assumed a workload a person could keep up with. An agent capable of a steady stream of individually reasonable changes strains the second job first. The gate still fires. Someone, or something, still clicks approve. But "someone looked at this" quietly stops describing what happened, because looking at forty things with the attention meant for four is not looking at all, it is skimming with a rubber stamp in hand.</p>
+
+<h2>The perimeter model, and why it keeps failing the same way</h2>
+<p>Enterprise networks spent years assuming that anything already inside the firewall could be trusted by default, the same way engineering teams have long assumed that anything a known contributor proposes deserves an ordinary amount of scrutiny. Both assumptions broke for the same underlying reason: a boundary check performed once at the door tells you nothing about what happens after someone walks through it. The security industry's answer was zero trust: authenticate and authorize every request on its own merits, continuously, regardless of where it originated or what was true five minutes earlier. Engineering workflows are quietly adopting the identical shape. A change is not "reviewed" as a single past-tense event so much as continuously authorized, by role separation, by an automated gate, by a scope check that runs every time, with a human still in the loop for the narrow slice of decisions that still need one.</p>
+
+<figure>
+<svg viewBox="0 0 700 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Timeline comparing a single review checkpoint at merge time to continuous checks spread across the whole lifecycle of a change">
+  <g font-family="IBM Plex Mono, monospace" font-size="12">
+    <line x1="40" y1="55" x2="660" y2="55" stroke="rgba(159,201,180,.2)" stroke-width="2"/>
+    <circle cx="640" cy="55" r="10" fill="rgba(159,201,180,.15)" stroke="#7c8aa0" stroke-width="2"/>
+    <text x="330" y="35" text-anchor="middle" fill="#9fabbc">one checkpoint, at merge</text>
+    <line x1="40" y1="150" x2="660" y2="150" stroke="rgba(93,212,171,.25)" stroke-width="2"/>
+    <circle cx="130" cy="150" r="9" fill="rgba(93,212,171,.18)" stroke="#5dd4ab" stroke-width="2"/>
+    <circle cx="280" cy="150" r="9" fill="rgba(93,212,171,.18)" stroke="#5dd4ab" stroke-width="2"/>
+    <circle cx="430" cy="150" r="9" fill="rgba(93,212,171,.18)" stroke="#5dd4ab" stroke-width="2"/>
+    <circle cx="580" cy="150" r="9" fill="rgba(93,212,171,.18)" stroke="#5dd4ab" stroke-width="2"/>
+    <text x="330" y="188" text-anchor="middle" fill="#5dd4ab">checks continuously, at every step</text>
+  </g>
+</svg>
+<figcaption>The same authority, spread across the whole path instead of concentrated at the end of it.</figcaption>
+</figure>
+
+<h2>Trust that accrues instead of trust that is assumed</h2>
+<p>The other half of the shift is progressive rather than binary. Instead of granting an agent a fixed scope on day one and hoping it holds up, capability expands as evidence accumulates: a narrow scope proves itself reliable, and only then does a slightly wider one get authorized, each step earned by what the previous step actually demonstrated. It is the same logic that replaced flipping a feature on for every user simultaneously, and the same logic behind staged permission grants that replaced handing out broad access on the assumption that it would probably be fine. Earn trust in increments small enough that any single mistake stays cheap, and always keep the door open to roll one increment back.</p>
+
+<h2>The reframe worth keeping</h2>
+<p>Treated as a workflow question, this feels like an ever-growing checklist. Treated as a security question, it becomes a lot more tractable, because security already learned this lesson once. Oversight stops being something completed before an agent starts working and becomes a property the system maintains for as long as the agent keeps working, the same way a zero trust network never considers a device permanently cleared. Teams that already think this way about people tend to adapt fastest, because extending the same discipline to a new kind of contributor turns out to be the easy part.</p>
+
+<h2>References</h2>
+<p style="font-size:13.5px">Rose, S., Borchert, O., Mitchell, S., &amp; Connelly, S. (2020). "Zero Trust Architecture." <em>NIST Special Publication 800-207</em>. National Institute of Standards and Technology. &middot; Ward, R., &amp; Beyer, B. (2014). "BeyondCorp: A New Approach to Enterprise Security." <em>USENIX ;login:</em>, 39(6). &middot; OWASP Foundation. "Access Control Cheat Sheet." OWASP.org.</p>
+</div>
+
+<footer><div class="wrap">
+  <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#7c8aa0">Modonome &middot; MIT &middot; No telemetry</span>
+  <span><a href="/">Home</a><a href="/articles/">Articles</a><a href="https://github.com/enumind/modonome">GitHub</a><a href="https://x.com/ModonomeLab">Follow on X</a></span>
+</div></footer>
+</body>
+</html>
