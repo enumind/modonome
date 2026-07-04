@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "id": "WI-044-research-to-backlog-gate",
-  "state": "queued",
+  "state": "done",
   "type": "develop-feature",
   "assigned_role": "checker",
   "attempts": 0,

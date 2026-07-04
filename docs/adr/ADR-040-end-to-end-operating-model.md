@@ -91,13 +91,17 @@ Built and live:
 - The researcher as a capability profile (ADR-039), with skills, tools, and a prioritized
   model list, ready to run on local models.
 
-The one gap:
+Checkpoint 1, closing the gap (WI-044):
 
-- **Checkpoint 1 does not exist as a gated path.** Today work items are created by a
-  deterministic sweep (`scripts/dry-run-sweep.mjs`, `proposalToWorkItem`) with no independent
-  check before they enter the backlog. The intended model puts a check between a researcher's
-  proposals and the backlog, the same way Checkpoint 2 sits between a maker's diff and `main`.
-  This is tracked as WI-044.
+- The deterministic half already existed: `queue.mjs` runs `validateWorkItem` (schema and the
+  separation-of-duties rules) before writing an item. The agentic half now ships as
+  `scripts/agent/review-proposals.mjs`, the same author-agnostic checker at the backlog boundary
+  that `review-diff.mjs` is at the merge boundary. `queue.mjs` gates on it with `--review`
+  (advisory: report the verdict, still queue) and `--review-execute` (enforcing: skip a rejected
+  proposal). A proposal enters the backlog only on an explicit approval; a garbled or markerless
+  review fails closed. Enforcement is off by default and, like Checkpoint 2's agentic review,
+  needs a configured local or gateway checker to run live; wiring it into the scheduled channel
+  by default is the remaining follow-up.
 
 Deployment note for the scheduled channel: `modonome-auto.yml` runs on `ubuntu-latest`, which
 cannot reach a LAN-only local model on the Mac. Running the scheduled loop on local models needs

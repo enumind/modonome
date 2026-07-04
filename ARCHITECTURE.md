@@ -126,7 +126,9 @@ default until an owner arms it.
   the same checker decoupled from the maker: an author-agnostic, review-only pass over any
   diff (a human's, an agent session's, or the internal maker's), run on every pull request by
   `.github/workflows/modonome-review.yml` so a change gets an independent review before merge
-  regardless of who produced it.
+  regardless of who produced it. `review-proposals.mjs` (ADR-040, WI-044) is the same checker
+  at Checkpoint 1: it vets a proposal before it becomes a work item, so `queue.mjs` can gate
+  the backlog the way the pull request gates `main`.
 - The snapshot utility (`scripts/snapshot.mjs` plus `scripts/lib/snapshot-*.mjs` and
   `scripts/lib/lang-adapters/`). A dependency-free pipeline (walk, Merkle hash, per-file
   signature extraction, redaction, import graph with PageRank, tier assembly, deterministic

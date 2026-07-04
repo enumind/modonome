@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:10873948e8232a5db189661519f373deae2149ac9200b4aa451392215cee4840
-Files: 853  Bytes: 3120137  Map tokens: 110826/120000
+Merkle root: sha256:d29d9c16a79e1dd4c85d589fccc6e0b5a6b100daa530893cad8a6e1c764805f4
+Files: 855  Bytes: 3131892  Map tokens: 111431/120000
 
 ## Modules
 
@@ -259,6 +259,7 @@ Files: 853  Bytes: 3120137  Map tokens: 110826/120000
 - scripts/agent/render-prompt.mjs [F:fd660a117b]: Build a compact repository-snapshot context block from the committed Tier 0 signature, so every rendered role prompt starts pre-oriented and an agent can read t
 - scripts/agent/resolve-role.mjs [F:304ce7b89d]: The role's primary model: an explicit `model`, else the head of its prioritized `models` fallback list, else the role default. Keeping `model` authoritative whe
 - scripts/agent/review-diff.mjs [F:2d6ef08990]: Build the review prompt. The diff is fenced and explicitly framed as untrusted data, never as instructions, so a change cannot prompt-inject the checker into ap
+- scripts/agent/review-proposals.mjs [F:2127a8caca]: The proposal text is fenced and framed as untrusted data, so a proposal cannot prompt-inject the checker into approving itself. Same hardening as review-diff.mj
 - scripts/agent/route-action.mjs [F:37f4a5c04e]: Classify a role's model endpoint into a coarse reachability descriptor: kind: "local" self-hosted / private-host endpoint (Ollama, llama.cpp) kind: "github" the
 - scripts/agent/run-cycle.mjs [F:ddeb486c49]: Derive the ordered list of roles the cycle executes. An explicit cfg.role_sequence (a non-empty array of role names) is honored so a crew role added in config r
 - scripts/agent/tool-loop-adapter.mjs [F:aa77f227a6]: Resolve the command the external adapter is invoked as. Precedence: an explicit * adapterEntry.command, then adapterEntry.name, then a bare fallback. The value 
@@ -601,6 +602,11 @@ Files: 853  Bytes: 3120137  Map tokens: 110826/120000
 - S:5a6c3aef24 class OrderService `export class OrderService` L7
 ### .design-sync/previews/Slider.tsx [F:1f40b6eb6e]
 - S:a2fef04067 function Budget `export const Budget = () => (` L4
+### scripts/agent/review-proposals.mjs [F:2127a8caca]
+- S:8c2cd9c54f function buildProposalReviewPrompt `export function buildProposalReviewPrompt(proposal, checkerModel, authorLabel)` L26 : The proposal text is fenced and framed as untrusted data, so a proposal cannot prompt-inject the checker into approving itself. Same hardening as review-diff.mjs.
+- S:ebd259dfef function planProposalReview `export function planProposalReview(cfg, { proposal, authorLabel = "an external author" } = {})` L43 : Resolve the checker and plan its review of a proposal, without calling a model. * * @returns {{ checker: object, authorLabel: string, proposal: string, prompt: string }}
+- S:a1cc5660fe function parseProposalVerdict `export function parseProposalVerdict(text)` L56 : A garbled review, or one with no explicit marker, must NOT read as an approval: a proposal is admitted to the backlog only on an explicit APPROVE: yes. Fail closed.
+- S:3fc87c5f7e function reviewProposal `export async function reviewProposal(cfg, { proposal, authorLabel, execute = false } = {}, deps = {})` L73 : Plan the proposal review and, under execute:true, run the checker on its endpoint. * The live path supports the openai-http transport (a local or free/gateway model), * matching the local-first cost s
 ### design-system/src/components/Toggle/Toggle.tsx [F:214cc0a5f4]
 - S:537ea4dfe0 type ToggleTone `export type ToggleTone = "primary" | "info" | "owner";` L5
 - S:cd836c2fc7 interface ToggleProps `export interface ToggleProps` L7
@@ -1764,6 +1770,9 @@ Files: 853  Bytes: 3120137  Map tokens: 110826/120000
 - scripts/remediate.mjs -> scripts/lib/remediate.mjs
 - scripts/remediate.mjs -> scripts/validate-config.mjs
 - scripts/remediate.mjs -> scripts/lib/git-scope.mjs
+- scripts/agent/review-proposals.mjs -> scripts/agent/resolve-role.mjs
+- scripts/agent/review-proposals.mjs -> scripts/agent/openai-client.mjs
+- scripts/agent/review-proposals.mjs -> scripts/validate-config.mjs
 - design-system/src/components/Toggle/Toggle.tsx -> design-system/src/lib/cx.ts
 - design-system/src/components/Toggle/Toggle.tsx -> design-system/src/components/HelpHint/HelpHint.tsx
 - apps/control-panel/server/modonomeWriter.mjs -> apps/control-panel/server/learningsFormat.mjs
@@ -2050,6 +2059,7 @@ Files: 853  Bytes: 3120137  Map tokens: 110826/120000
 - design-system/src/components/WorkItemCard/WorkItemCard.tsx -> design-system/src/components/Icon/Icon.tsx
 - design-system/src/components/Checkbox/index.ts -> design-system/src/components/Checkbox/Checkbox.tsx
 - scripts/queue.mjs -> scripts/lib/yaml-lite.mjs
+- scripts/queue.mjs -> scripts/agent/review-proposals.mjs
 - scripts/queue.mjs -> scripts/dry-run-sweep.mjs
 - scripts/queue.mjs -> scripts/validate-work-item.mjs
 - tests/provenance.test.mjs -> scripts/validate-knowledge-packet.mjs
@@ -2154,54 +2164,54 @@ Files: 853  Bytes: 3120137  Map tokens: 110826/120000
 
 ## Attention (centrality + pagerank)
 
-1. design-system/src/lib/cx.ts centrality=32 pagerank=0.033612
-2. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.02179
-3. design-system/src/index.ts centrality=48 pagerank=0.000884
-4. scripts/lib/yaml-lite.mjs centrality=17 pagerank=0.009189
-5. scripts/lib/jsonschema.mjs centrality=10 pagerank=0.012343
-6. scripts/agent/run-cycle.mjs centrality=18 pagerank=0.003475
-7. apps/control-panel/src/state/types.ts centrality=12 pagerank=0.007418
-8. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.007416
-9. scripts/lib/learnings.mjs centrality=10 pagerank=0.007105
-10. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.005286
-11. scripts/validate-config.mjs centrality=12 pagerank=0.004821
-12. scripts/lib/canonical-json.mjs centrality=10 pagerank=0.005048
-13. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001478
-14. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.004263
-15. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.005615
-16. scripts/lib/config-validate.mjs centrality=6 pagerank=0.006144
-17. scripts/agent/resolve-role.mjs centrality=9 pagerank=0.003581
-18. scripts/validate-work-item.mjs centrality=8 pagerank=0.003638
-19. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.004946
-20. apps/control-panel/src/App.tsx centrality=10 pagerank=0.001259
-21. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002582
-22. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.00319
-23. scripts/lib/branch-name.mjs centrality=4 pagerank=0.00469
-24. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.0046
-25. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.00309
-26. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001479
-27. scripts/lib/graph.mjs centrality=4 pagerank=0.004258
-28. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.002778
-29. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.0048
-30. scripts/lib/work-item-validate.mjs centrality=3 pagerank=0.004613
-31. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001648
-32. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.004397
-33. scripts/snapshot.mjs centrality=8 pagerank=0.000884
-34. scripts/agent/providers.mjs centrality=3 pagerank=0.004384
-35. apps/control-panel/server/modonomeWriter.mjs centrality=6 pagerank=0.002248
-36. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002582
-37. design-system/src/lib/format.ts centrality=5 pagerank=0.002581
-38. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001648
-39. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.001003
-40. design-system/src/components/Modal/Modal.tsx centrality=4 pagerank=0.002349
-41. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001648
-42. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001648
-43. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.001648
-44. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.001648
-45. design-system/src/components/TierBadge/TierBadge.tsx centrality=4 pagerank=0.002321
-46. examples/demo-app/src/index.js centrality=6 pagerank=0.000884
-47. design-system/src/components/Table/Table.tsx centrality=4 pagerank=0.002279
-48. scripts/lib/remediate.mjs centrality=3 pagerank=0.002948
-49. scripts/dry-run-sweep.mjs centrality=5 pagerank=0.00151
-50. design-system/src/components/IdentityChip/IdentityChip.tsx centrality=4 pagerank=0.002162
+1. design-system/src/lib/cx.ts centrality=32 pagerank=0.033503
+2. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.021719
+3. design-system/src/index.ts centrality=48 pagerank=0.000881
+4. scripts/lib/yaml-lite.mjs centrality=17 pagerank=0.009206
+5. scripts/lib/jsonschema.mjs centrality=10 pagerank=0.012367
+6. scripts/agent/run-cycle.mjs centrality=18 pagerank=0.003464
+7. apps/control-panel/src/state/types.ts centrality=12 pagerank=0.007394
+8. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.007391
+9. scripts/validate-config.mjs centrality=13 pagerank=0.005107
+10. scripts/lib/learnings.mjs centrality=10 pagerank=0.007082
+11. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.005269
+12. scripts/lib/canonical-json.mjs centrality=10 pagerank=0.005031
+13. scripts/agent/resolve-role.mjs centrality=10 pagerank=0.003872
+14. scripts/lib/config-validate.mjs centrality=6 pagerank=0.006381
+15. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001474
+16. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.00425
+17. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.005596
+18. scripts/validate-work-item.mjs centrality=8 pagerank=0.003564
+19. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.00493
+20. apps/control-panel/src/App.tsx centrality=10 pagerank=0.001255
+21. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002574
+22. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.00318
+23. scripts/lib/branch-name.mjs centrality=4 pagerank=0.004674
+24. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.004585
+25. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.00308
+26. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001474
+27. scripts/lib/graph.mjs centrality=4 pagerank=0.004244
+28. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.002769
+29. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.004784
+30. scripts/agent/providers.mjs centrality=3 pagerank=0.004627
+31. scripts/lib/work-item-validate.mjs centrality=3 pagerank=0.004545
+32. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001643
+33. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.004382
+34. scripts/snapshot.mjs centrality=8 pagerank=0.000881
+35. apps/control-panel/server/modonomeWriter.mjs centrality=6 pagerank=0.002241
+36. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002574
+37. design-system/src/lib/format.ts centrality=5 pagerank=0.002572
+38. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001643
+39. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.000999
+40. design-system/src/components/Modal/Modal.tsx centrality=4 pagerank=0.002341
+41. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001643
+42. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001643
+43. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.001643
+44. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.001643
+45. design-system/src/components/TierBadge/TierBadge.tsx centrality=4 pagerank=0.002313
+46. examples/demo-app/src/index.js centrality=6 pagerank=0.000881
+47. design-system/src/components/Table/Table.tsx centrality=4 pagerank=0.002271
+48. scripts/lib/remediate.mjs centrality=3 pagerank=0.002938
+49. design-system/src/components/IdentityChip/IdentityChip.tsx centrality=4 pagerank=0.002155
+50. scripts/dry-run-sweep.mjs centrality=5 pagerank=0.001442
 
