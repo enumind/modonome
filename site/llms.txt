@@ -15,7 +15,6 @@
 - Provides an operator control panel, a Merkle-verified repository snapshot for trustworthy agent context, and compliance evidence and attestation through an MCP server.
 - Ships a GitHub Action that runs the gate check from a pinned, trusted copy and can produce a signed receipt of the result.
 - Lets a repository disclose the governance policy it enforces as one verifiable file, and lets another repository review and adopt it, with integrity and credit checks.
-- Detects and safely clears AI-attribution traces from commit history, proven to leave the underlying code untouched.
 
 ## AgentProof
 
