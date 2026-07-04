@@ -112,7 +112,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for the full picture and
 ## How it learns and keeps up
 
 When a gate fails, a reviewer corrects the engine, or a change gets reverted, a follower role
-captures one generalized, evidence-backed lesson and stages it in `.modonome/LEARNINGS.md`.
+captures one generalized, evidence-backed lesson and stages it in `.modonome/LESSONS.md`.
 An owner promotes durable lessons into canonical rules, config, or tests, then adds a
 deterministic gate when one fits. The queue stays capped, dated, and owner-controlled. The
 engine rewrites its own rules only with a human in the loop. Promoted lessons are validated in

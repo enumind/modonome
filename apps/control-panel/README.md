@@ -50,7 +50,7 @@ MODONOME_PANEL_WRITE=1 npm run dev
 With write mode on, three actions edit real files, each behind its existing confirm dialog:
 saving configuration (patches `config.yaml` in place, preserving comments), releasing a
 lease (clears `owner`/`lease_expires_at` on the work-item JSON), and pruning a staged
-learning (removes the line from `LEARNINGS.md`). Promoting a learning, resolving a decision,
+learning (removes the line from `LESSONS.md`). Promoting a learning, resolving a decision,
 and approving a protected path stay local acknowledgments on purpose: those need an operator
 to author real content (a gate description, an actual answer), which a one-click button
 should not fabricate. `MODONOME_ARMED`, the CI secret that actually arms the engine, is never

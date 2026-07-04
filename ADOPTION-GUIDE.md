@@ -86,7 +86,7 @@ correction promoted into a convention, or a manual release step turned into a ga
 ## Strengthening Modonome
 
 Modonome improves through recorded evidence that an owner promotes. It captures lessons only from real
-correction signals, stages them in `.modonome/LEARNINGS.md`, and an owner promotes the durable
+correction signals, stages them in `.modonome/LESSONS.md`, and an owner promotes the durable
 ones into docs, config, tests, or templates. Quality is measured by adoption and reduced
 repeat failure.
 
