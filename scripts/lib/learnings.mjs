@@ -5,6 +5,7 @@
 // appending a new candidate line (the only writer the near-miss widener uses).
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { formatMessage, loadMessageOverrides } from "./messages.mjs";
 
 export const REQUIRED_FIELDS = [
   "id",
@@ -41,7 +42,8 @@ export function readPromotedLearnings(root) {
   if (fenceStart === -1) return [];
   const bodyStart = fenceStart + "```json".length;
   const fenceEnd = text.indexOf("```", bodyStart);
-  if (fenceEnd === -1) throw new Error("LEARNINGS.md: unterminated ```json block under ## Promoted");
+  if (fenceEnd === -1)
+    throw new Error(formatMessage("advisory.learnings.unterminated-promoted-block", {}, loadMessageOverrides(join(root, ".modonome"))).message);
   return JSON.parse(text.slice(bodyStart, fenceEnd));
 }
 
@@ -61,25 +63,22 @@ export function readStagedEntries(root) {
 // cap. Never evicts: a full section throws so a human promotes or prunes first.
 // Idempotent on an exact-duplicate line. Returns { added, reason }.
 export function appendStagedEntry(root, line) {
+  const overrides = loadMessageOverrides(join(root, ".modonome"));
   if (typeof line !== "string" || !STAGED_LINE_RE.test(line)) {
-    throw new Error(
-      `appendStagedEntry: line does not match the staged format ` +
-        `"- [YYYY-MM-DD] (signal: gate|review|incident|rework) lesson - evidence: ref": ${line}`,
-    );
+    throw new Error(formatMessage("advisory.learnings.staged-format-invalid", { line }, overrides).message);
   }
   const existing = readStagedEntries(root);
   if (existing.includes(line)) return { added: false, reason: "duplicate" };
   if (existing.length >= MAX_STAGED_ENTRIES) {
     throw new Error(
-      `LEARNINGS.md Staged section is full (${existing.length}/${MAX_STAGED_ENTRIES}). ` +
-        `Promote or prune an entry before adding a new one; entries are never auto-evicted.`,
+      formatMessage("advisory.learnings.staged-section-full", { count: existing.length, max: MAX_STAGED_ENTRIES }, overrides).message
     );
   }
   const path = learningsPath(root);
   const lines = readFileSync(path, "utf8").split("\n");
   const promotedLineIdx = lines.findIndex((l) => l.startsWith("## Promoted"));
   if (promotedLineIdx === -1) {
-    throw new Error("LEARNINGS.md: no ## Promoted heading found; cannot locate the Staged section end.");
+    throw new Error(formatMessage("advisory.learnings.no-promoted-heading", {}, overrides).message);
   }
   // Insert just after the last non-blank line of the Staged section (the last
   // bullet, or the "## Staged" heading when the section is empty), preserving the

@@ -47,7 +47,19 @@ import { MESSAGES as M_AGENT_RUN_ROUTE_ACTION } from "./agent-run/route-action.m
 import { MESSAGES as M_AGENT_RUN_RUN_CYCLE } from "./agent-run/run-cycle.mjs";
 import { MESSAGES as M_AGENT_RUN_TOOL_LOOP_ADAPTER } from "./agent-run/tool-loop-adapter.mjs";
 import { MESSAGES as M_AGENT_RUN_TRANSITION_WORK_ITEM } from "./agent-run/transition-work-item.mjs";
+import { MESSAGES as M_ADVISORY_AUDIT_LEARNINGS } from "./advisory/audit-learnings.mjs";
+import { MESSAGES as M_ADVISORY_BUILD_PROMPT } from "./advisory/build-prompt.mjs";
+import { MESSAGES as M_ADVISORY_BUILD_RELEASE_EVIDENCE } from "./advisory/build-release-evidence.mjs";
 import { MESSAGES as M_ADVISORY_DETECT_NEAR_MISS } from "./advisory/detect-near-miss.mjs";
+import { MESSAGES as M_ADVISORY_GITHUB_API } from "./advisory/github-api.mjs";
+import { MESSAGES as M_ADVISORY_HYGIENE } from "./advisory/hygiene.mjs";
+import { MESSAGES as M_ADVISORY_LEARNINGS } from "./advisory/learnings.mjs";
+import { MESSAGES as M_ADVISORY_MIGRATE_CONFIG } from "./advisory/migrate-config.mjs";
+import { MESSAGES as M_ADVISORY_PREFLIGHT_EMBEDDING } from "./advisory/preflight-embedding.mjs";
+import { MESSAGES as M_ADVISORY_SIGN_PACKET } from "./advisory/sign-packet.mjs";
+import { MESSAGES as M_ADVISORY_SYNC_SITE_DATA } from "./advisory/sync-site-data.mjs";
+import { MESSAGES as M_ADVISORY_VALIDATE_KNOWLEDGE_PACKET } from "./advisory/validate-knowledge-packet.mjs";
+import { MESSAGES as M_ADVISORY_VERIFY_PACKET } from "./advisory/verify-packet.mjs";
 import { MESSAGES as M_PANEL_CONTROL_PANEL } from "./panel/control-panel.mjs";
 
 export const CATALOG_PARTIALS = [
@@ -94,6 +106,18 @@ export const CATALOG_PARTIALS = [
   M_AGENT_RUN_RUN_CYCLE,
   M_AGENT_RUN_TOOL_LOOP_ADAPTER,
   M_AGENT_RUN_TRANSITION_WORK_ITEM,
+  M_ADVISORY_AUDIT_LEARNINGS,
+  M_ADVISORY_BUILD_PROMPT,
+  M_ADVISORY_BUILD_RELEASE_EVIDENCE,
   M_ADVISORY_DETECT_NEAR_MISS,
+  M_ADVISORY_GITHUB_API,
+  M_ADVISORY_HYGIENE,
+  M_ADVISORY_LEARNINGS,
+  M_ADVISORY_MIGRATE_CONFIG,
+  M_ADVISORY_PREFLIGHT_EMBEDDING,
+  M_ADVISORY_SIGN_PACKET,
+  M_ADVISORY_SYNC_SITE_DATA,
+  M_ADVISORY_VALIDATE_KNOWLEDGE_PACKET,
+  M_ADVISORY_VERIFY_PACKET,
   M_PANEL_CONTROL_PANEL,
 ];

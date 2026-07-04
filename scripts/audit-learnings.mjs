@@ -12,9 +12,11 @@
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { readPromotedLearnings } from "./lib/learnings.mjs";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
+const overrides = loadMessageOverrides(join(root, ".modonome"));
 const query = (process.argv[2] || "").toLowerCase();
 
 // surface a clean error if LEARNINGS.md is missing rather than crashing.
@@ -22,7 +24,7 @@ let learnings;
 try {
   learnings = readPromotedLearnings(root);
 } catch (e) {
-  console.error(`audit-learnings: ${e.message}`);
+  console.error(formatMessage("advisory.audit-learnings.failed", { error: e.message }, overrides).message);
   process.exit(1);
 }
 

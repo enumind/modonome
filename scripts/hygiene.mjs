@@ -24,6 +24,8 @@
  * destructive operation reserved for the armed, gated remediator (later phase).
  */
 
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
 import {
   detectBranch,
   detectCommits,
@@ -32,6 +34,10 @@ import {
 } from "./lib/detect-attribution.mjs";
 import { git, currentBranch, commitsInRange } from "./lib/git-scope.mjs";
 import { createGitHubClient } from "./lib/github-api.mjs";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
+
+const here = dirname(fileURLToPath(import.meta.url));
+const overrides = loadMessageOverrides(join(here, "..", ".modonome"));
 
 // Collect findings for the current branch, the commits unique to it, and the
 // PR-body-shaped surfaces we can see locally (the commit bodies themselves).
@@ -62,7 +68,7 @@ function applyFix(branch, findings) {
       if (rename.status === 0) {
         applied.push(`renamed branch ${branch} -> ${target} (tree unchanged)`);
       } else {
-        remaining.push(`could not rename branch: ${rename.err}`);
+        remaining.push(formatMessage("advisory.hygiene.branch-rename-failed", { error: rename.err }, overrides).message);
       }
     } else {
       remaining.push(`[${f.kind}] ${f.where}: ${f.remedy.suggestion}`);
@@ -79,7 +85,7 @@ function parsePrNumber(rest) {
   const val = rest[i + 1];
   const n = Number(val);
   if (!val || !Number.isInteger(n) || n <= 0) {
-    throw new Error(`--pr requires a positive integer PR number (got: ${val ?? "nothing"}).`);
+    throw new Error(formatMessage("advisory.hygiene.pr-flag-invalid", { val: val ?? "nothing" }, overrides).message);
   }
   return n;
 }
@@ -112,8 +118,7 @@ async function main(argv) {
     process.exit(2);
   }
   if (prNumber !== null && sub === "fix") {
-    console.error("hygiene fix does not support --pr: editing a PR body or comment via the API is a");
-    console.error("mutating, non-local operation and is out of scope. Use check or explain.");
+    console.error(formatMessage("advisory.hygiene.fix-no-pr-support", {}, overrides).message);
     process.exit(2);
   }
 
@@ -123,7 +128,7 @@ async function main(argv) {
     try {
       findings.push(...(await collectPrFindings(prNumber)));
     } catch (e) {
-      console.error(`Could not scan PR #${prNumber}: ${e.message}`);
+      console.error(formatMessage("advisory.hygiene.pr-scan-failed", { prNumber, error: e.message }, overrides).message);
       process.exit(2);
     }
   }
@@ -135,9 +140,7 @@ async function main(argv) {
     }
     console.error(formatRemedy(findings));
     if (sub === "explain") {
-      console.error("Why: these signatures put model or tool identity into the branch,");
-      console.error("commit history, or review record. The author graph should reflect human");
-      console.error("ownership; run `modonome hygiene fix` to apply the safe local remedy.");
+      console.error(formatMessage("advisory.hygiene.explain-why", {}, overrides).message);
     }
     process.exit(1);
   }
@@ -159,7 +162,7 @@ async function main(argv) {
     process.exit(0);
   }
 
-  console.error(`Unknown hygiene subcommand: ${sub}. Use check | explain | fix.`);
+  console.error(formatMessage("advisory.hygiene.unknown-subcommand", { sub }, overrides).message);
   process.exit(2);
 }
 

@@ -30,6 +30,8 @@
 
 import { readFile, readdir, stat } from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 const SEVERITY = { ERROR: "ERROR", WARN: "WARN", INFO: "INFO" };
 
@@ -561,16 +563,18 @@ function renderHuman(report) {
 }
 
 async function main() {
+  const here = path.dirname(fileURLToPath(import.meta.url));
+  const overrides = loadMessageOverrides(path.join(here, "..", ".modonome"));
   const args = process.argv.slice(2);
   const json = args.includes("--json");
   const idx = args.indexOf("--target-dir");
   if (idx === -1 || !args[idx + 1]) {
-    console.error("Usage: node scripts/preflight-embedding.mjs --target-dir <path> [--json]");
+    console.error(formatMessage("advisory.preflight-embedding.usage", {}, overrides).message);
     process.exit(2);
   }
   const targetDir = args[idx + 1];
   if (!(await exists(targetDir))) {
-    console.error(`Target directory does not exist: ${targetDir}`);
+    console.error(formatMessage("advisory.preflight-embedding.target-dir-missing", { targetDir }, overrides).message);
     process.exit(2);
   }
 
