@@ -198,13 +198,7 @@ test("host mode: wiring the first-ever roles/models block into a bare scaffold",
   const finalConfig = yaml.load(after);
   assert.deepStrictEqual(finalConfig.models, { "lmstudio-maker": { provider: "local", base_url: "http://192.168.1.20:1234/v1" } });
   assert.deepStrictEqual(finalConfig.roles.maker, { runner: "local", model: "lmstudio-maker" });
-  // Not a full validateConfig() call here: this fixture's trusted_author_allowlist and
-  // protected_paths_extra use block-style "- item" YAML sequences, which
-  // scripts/lib/yaml-lite.mjs's parseFlatYaml does not parse (documented as
-  // out-of-scope; it only reads inline "[a, b]" arrays). That is a pre-existing gap in
-  // the shipped example — `node scripts/validate-config.mjs examples/demo-app/.modonome/config.yaml`
-  // fails today on main, unrelated to this writer — so this test only asserts on the
-  // fields the panel actually wrote (models, roles), which parse correctly regardless.
+  assert.deepStrictEqual(validateConfig(finalConfig), []);
   assert.strictEqual(resolveRole(finalConfig, "maker").transport, "openai-http");
 
   // Every pre-existing scalar/array line (the arming levers, caps, trusted authors,

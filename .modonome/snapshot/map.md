@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:915c87034cfe6e7355325ed558c06ccbf5ce1689b4da7a1935fc7b66ac72a83a
-Files: 834  Bytes: 2999783  Map tokens: 105811/120000
+Merkle root: sha256:778024f9a5230bc32eef72765f9cfb28447be9efa8c62ff3f27b8f6f762ce557
+Files: 834  Bytes: 3003011  Map tokens: 105832/120000
 
 ## Modules
 
@@ -526,14 +526,14 @@ Files: 834  Bytes: 2999783  Map tokens: 105811/120000
 - S:30eded078f interface ActivationLadderProps `export interface ActivationLadderProps` L17
 - S:73a3da9f65 function ActivationLadder `export function ActivationLadder(` L46 : The activation ladder: the three-rung progression from Disabled to Dry-run to Armed, * paired with the armed-mode gate checklist. Arming is only allowed when every * prerequisite holds. Items marked o
 ### scripts/lib/yaml-lite.mjs [F:1575110130]
-- S:237d74cadf function parseScalar `function parseScalar(raw)` L15
-- S:299c43d83e function stripQuotes `function stripQuotes(s)` L33
-- S:0b7b39d873 function extractRawValue `function extractRawValue(afterColon)` L42 : Parse a raw value string from after the colon, handling inline comments and quoted strings. Returns the trimmed scalar text or empty string.
-- S:b4a3093fe9 function indentOf `function indentOf(line)` L59 : Count leading spaces to determine nesting depth.
-- S:bec355e18a function parseEntries `function parseEntries(entries, start, minIndent)` L67 : Parse an array of non-empty, non-comment lines into a nested object. Each entry is { indent, key, rawValue }.
-- S:8990e6571f function parseFlatYaml `export function parseFlatYaml(text)` L99
-- S:5bac9ae6d5 function formatScalarForYaml `function formatScalarForYaml(value)` L120
-- S:efe9cb11d4 function patchTopLevelYaml `export function patchTopLevelYaml(text, patch)` L131 : Patch one or more top-level (zero-indent) scalar keys in a config.yaml's raw text, line by line. Every other line, including every comment, is left untouched, so a hand-written config file survives an
+- S:237d74cadf function parseScalar `function parseScalar(raw)` L21
+- S:299c43d83e function stripQuotes `function stripQuotes(s)` L39
+- S:0b7b39d873 function extractRawValue `function extractRawValue(afterColon)` L48 : Parse a raw value string from after the colon, handling inline comments and quoted strings. Returns the trimmed scalar text or empty string.
+- S:b4a3093fe9 function indentOf `function indentOf(line)` L65 : Count leading spaces to determine nesting depth.
+- S:bec355e18a function parseEntries `function parseEntries(entries, start, minIndent)` L74 : Parse an array of non-empty, non-comment lines into a nested object. Each entry is { indent, key, rawValue, isItem }, where a sequence-item line ("- value") has isItem: true and key: null.
+- S:8990e6571f function parseFlatYaml `export function parseFlatYaml(text)` L117
+- S:5bac9ae6d5 function formatScalarForYaml `function formatScalarForYaml(value)` L150
+- S:efe9cb11d4 function patchTopLevelYaml `export function patchTopLevelYaml(text, patch)` L161 : Patch one or more top-level (zero-indent) scalar keys in a config.yaml's raw text, line by line. Every other line, including every comment, is left untouched, so a hand-written config file survives an
 ### tests/action-queue.test.mjs [F:195e9217ca]
 - S:0064b473e6 function tmpQueue `function tmpQueue()` L14
 - S:d240732a9d function sampleAction `function sampleAction(id, target = "ci")` L18
