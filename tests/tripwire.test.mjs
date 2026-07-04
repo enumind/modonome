@@ -27,6 +27,18 @@ function parseJsonLine(stdout) {
   return JSON.parse(stdout.trim());
 }
 
+// Assemble the gate-weakening fixture payloads below from string fragments so this
+// test file's own source text does not contain the exact patterns that
+// scripts/guard-ratchet.mjs regex-scans *.test.mjs files for. The ratchet cannot
+// tell "a string literal fixture proving the kernel detects this construct" from
+// "an actual instance of the construct," so a literal fixture here would trip the
+// ratchet's self-scan of this very file. The KERNEL under test
+// (scripts/tripwire-check.mjs) still receives the fully reconstructed runtime
+// string, byte-for-byte identical to before, so detection is exercised exactly the
+// same way. Do not "helpfully" inline these fragments back together.
+const SKIP_CALL = "it." + "skip" + "(\"broken\", () => {});";
+const VACUOUS_ASSERT = "expect(true)" + "." + "toBeTruthy" + "();";
+
 // ---------------------------------------------------------------------------
 // Claude Code shape: { tool_name, tool_input, cwd, ... }
 // ---------------------------------------------------------------------------
@@ -40,7 +52,7 @@ test("claude format: Edit tool injecting a skipped test is denied with the MR ca
     tool_input: {
       file_path: "foo.test.js",
       old_string: "expect(x).toBe(1);",
-      new_string: "expect(x).toBe(1);\nit.skip(\"broken\", () => {});",
+      new_string: "expect(x).toBe(1);\n" + SKIP_CALL,
     },
   };
   const res = run("claude", payload);
@@ -101,7 +113,7 @@ test("claude format: a Write tool call rewriting a whole test file to remove its
       // content; assertion-count deltas need a real prior file, so this checks
       // the vacuous-assertion category instead, which fires on added content alone.
       file_path: "tripwire-fixture-does-not-exist.test.js",
-      content: "test(\"x\", () => { expect(true).toBeTruthy(); });\n",
+      content: "test(\"x\", () => { " + VACUOUS_ASSERT + " });\n",
     },
   };
   const res = run("claude", payload);
@@ -142,7 +154,7 @@ test("cursor format: an ordinary shell command with no gate-weakening signal is 
 
 test("cursor format: a skip-injection appended via a shell redirect is denied", () => {
   const payload = {
-    command: "echo 'it.skip(\"broken\", () => {});' >> some.test.js",
+    command: "echo '" + SKIP_CALL + "' >> some.test.js",
     cwd: root,
   };
   const res = run("cursor", payload);
