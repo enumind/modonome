@@ -57,7 +57,6 @@ window.__MODONOME_REPO = {
     { icon: '❑', title: 'Compliance evidence on demand', body: 'An MCP server exposes attestation and evidence tools, so a host repository can produce a signed record of what ran and what held.' },
     { icon: '⛨', title: 'A drop-in CI gate check, with a signed receipt', body: 'A GitHub Action runs the gate check from a pinned, trusted copy, so the pull request under review can never judge itself. It can also produce a signed receipt of the result.' },
     { icon: '⇵', title: 'Disclose and adopt policy as signed evidence', body: 'A repository can state the governance policy it enforces in one verifiable file, and another repository can review and adopt it, with integrity and credit checks that refuse anything that fails.' },
-    { icon: '✦', title: 'Scrubs its own AI fingerprints', body: 'A safe, verified way to clear AI-attribution traces from commit history, proven to leave the underlying code untouched.' },
   ],
 
   // ---- Structural guarantees ----
@@ -192,7 +191,9 @@ window.__MODONOME_REPO = {
 
   // ---- Recently shipped: newest-first, kept in sync by hand alongside CHANGELOG.md.
   // Source PRs (internal reference, not shown on the page): #105, #104, #102, #102,
-  // #102, #101, #93, #99, #99, #95, #96, #97, #98, #94, #94, #89, #85, #69, #70, #75.
+  // #102, #101, #93, #96, #97, #98, #94, #94, #89, #85, #69, #70, #75.
+  // The AI-attribution-hygiene removal/cleanup capability (formerly here, sourced
+  // from #99) is intentionally not surfaced on the public site.
   recentReleases: [
     { title: 'A guided, two-key start for autonomy', body: 'A guided, two-key process for turning on autonomy, plus a simple way to turn scored proposals into real work items.' },
     { title: 'Safely adopt another repo\'s policy', body: 'Safely adopt another repository\'s governance policy, with integrity and credit checks that refuse anything that doesn\'t pass.' },
@@ -201,8 +202,6 @@ window.__MODONOME_REPO = {
     { title: 'Connect any editor in one command', body: 'Connect any editor\'s AI assistant to Modonome\'s governance tools with a single command.' },
     { title: 'A repository can disclose its policy', body: 'A repository can now disclose its enforced governance policy as one verifiable file.' },
     { title: 'The project\'s own rules get reviewed too', body: 'Changes to the project\'s own decision record now go through the same independent review as everything else.' },
-    { title: 'A safe way to clear AI fingerprints', body: 'A safe, verified way to clear AI-attribution traces from commit history without touching the underlying code.' },
-    { title: 'See a cleanup before it runs', body: 'See exactly what a history cleanup would change before anyone approves it.' },
     { title: 'A plain statement on AI participation', body: 'A clear, public statement of how AI participates in building this project.' },
     { title: 'AI signatures caught automatically', body: 'AI-attribution signatures are now caught automatically in branch names and commits before they land.' },
     { title: 'A living list keeps detection current', body: 'A living, human-approved list of AI-attribution patterns keeps detection current.' },
