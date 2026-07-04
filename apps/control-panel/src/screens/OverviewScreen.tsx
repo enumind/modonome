@@ -36,7 +36,7 @@ export function OverviewScreen({
   onConnectHostDir: (dir: string) => void;
   onRefresh: () => void;
 }) {
-  const { subject, config, arming, queue, cost, audit, agentProofScore, costTrend, source } = state;
+  const { subject, config, arming, queue, cost, audit, agentProofScore, gauntletScore, gauntletApplicable, costTrend, source } = state;
   const active = queue.filter((i) => i.state !== "done").length;
   const escalated = queue.filter((i) => i.state === "escalated").length;
   const blocking = arming.checklist.filter((c) => !c.ok).length;
@@ -143,6 +143,16 @@ export function OverviewScreen({
           hint="Score on the adversarial gate-integrity benchmark. 25 of 25 is fully hardened against known gaming patterns."
           sub="Gate integrity"
         />
+        {gauntletScore !== undefined && (
+          <MetricTile
+            label="Gauntlet"
+            value={`${gauntletScore}/${gauntletApplicable}`}
+            icon="check-circle"
+            tone={gauntletScore === gauntletApplicable ? "ok" : "attention"}
+            hint="Would this repo's own configured gate catch a real gate-weakening attack? Run npx modonome gauntlet to update."
+            sub="Your gates, replayed"
+          />
+        )}
       </div>
 
       <div className="section">
