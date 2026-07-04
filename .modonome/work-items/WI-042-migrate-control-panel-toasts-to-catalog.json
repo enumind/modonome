@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "id": "WI-042-migrate-control-panel-toasts-to-catalog",
+  "state": "queued",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": false,
+  "allowed_edit_set": [
+    "apps/control-panel/src/screens/SettingsScreen.tsx",
+    "apps/control-panel/src/screens/GatesScreen.tsx",
+    "apps/control-panel/src/screens/ArmingScreen.tsx",
+    "apps/control-panel/src/screens/WorkQueueScreen.tsx",
+    "apps/control-panel/src/screens/LearningsScreen.tsx",
+    "apps/control-panel/src/lib/messages.ts",
+    "apps/control-panel/src/lib/messages.test.ts"
+  ],
+  "gates": [
+    "npm run check:frontend",
+    "npm run check:control-panel",
+    "npm run verify"
+  ],
+  "queued_at": "2026-07-04"
+}

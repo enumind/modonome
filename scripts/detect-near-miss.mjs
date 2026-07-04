@@ -31,9 +31,11 @@ import {
   formatStagedLine,
 } from "./lib/near-miss.mjs";
 import { appendStagedEntry } from "./lib/learnings.mjs";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
+const overrides = loadMessageOverrides(join(root, ".modonome"));
 
 function today() {
   return new Date().toISOString().slice(0, 10);
@@ -82,16 +84,14 @@ function main(argv) {
     process.exit(0);
   }
 
-  console.log(`Found ${proposals.length} near-miss attribution token(s). These are PROPOSALS`);
-  console.log("for human review, not blocking findings. Promotion into the deterministic");
-  console.log("denylist stays human-only and must pass the corpus and regex-safety gates.\n");
+  console.log(formatMessage("advisory.near-miss.findings-summary", { count: proposals.length }, overrides).message);
 
   const date = today();
   let wrote = 0;
   for (const p of proposals) {
     const line = formatStagedLine(p, { date, evidence: `${p.surface} near-miss at ${p.where}` });
-    console.log(`  [tier ${p.tier} ${p.surface}] token "${p.token}"  (${p.where})`);
-    console.log(`    staged proposal: ${line}`);
+    console.log(formatMessage("advisory.near-miss.finding-line", { tier: p.tier, surface: p.surface, token: p.token, where: p.where }, overrides).message);
+    console.log(formatMessage("advisory.near-miss.staged-proposal-line", { line }, overrides).message);
     if (write) {
       try {
         const res = appendStagedEntry(root, line);
@@ -103,7 +103,7 @@ function main(argv) {
         }
       } catch (e) {
         // A full or malformed Staged section is a real error on --write.
-        console.error(`\nCould not write proposal: ${e.message}`);
+        console.error(formatMessage("advisory.near-miss.write-failed", { reason: e.message }, overrides).message);
         process.exit(1);
       }
     }

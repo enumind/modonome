@@ -17,6 +17,8 @@
  * Usage: node scripts/check-attribution-fp-corpus.mjs
  */
 
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
 import { branchHasModelSegment, isForbiddenIdentity, AI_SIGNATURE_RE } from "./lib/detect-attribution.mjs";
 import { matchNearMissBranch, matchNearMissIdentity, matchNearMissText } from "./lib/near-miss.mjs";
 import {
@@ -25,6 +27,11 @@ import {
   SAFE_TEXT_SNIPPETS,
   DOCUMENTED_STRICT_OVERBLOCKS,
 } from "./lib/attribution-fp-corpus.mjs";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
+
+const here = dirname(fileURLToPath(import.meta.url));
+const root = join(here, "..");
+const overrides = loadMessageOverrides(join(root, ".modonome"));
 
 /**
  * Run the corpus through the two layers. The detector predicates are injected so the
@@ -35,19 +42,19 @@ export function corpusProblems({ strictBranch, fuzzyBranch, strictId, fuzzyId, s
   const problems = [];
 
   for (const name of SAFE_BRANCH_NAMES) {
-    if (strictBranch(name)) problems.push(`strict detector flags safe branch "${name}".`);
-    if (fuzzyBranch(name)) problems.push(`near-miss widener flags safe branch "${name}".`);
+    if (strictBranch(name)) problems.push(formatMessage("gate.attribution-fp-corpus.strict-flags-safe-branch", { name }, overrides).message);
+    if (fuzzyBranch(name)) problems.push(formatMessage("gate.attribution-fp-corpus.fuzzy-flags-safe-branch", { name }, overrides).message);
   }
 
   for (const { name, email } of SAFE_IDENTITIES) {
     const who = `${name} <${email}>`;
-    if (strictId(name, email)) problems.push(`strict detector flags safe identity "${who}".`);
-    if (fuzzyId(name, email)) problems.push(`near-miss widener flags safe identity "${who}".`);
+    if (strictId(name, email)) problems.push(formatMessage("gate.attribution-fp-corpus.strict-flags-safe-identity", { who }, overrides).message);
+    if (fuzzyId(name, email)) problems.push(formatMessage("gate.attribution-fp-corpus.fuzzy-flags-safe-identity", { who }, overrides).message);
   }
 
   for (const snippet of SAFE_TEXT_SNIPPETS) {
-    if (strictText(snippet)) problems.push(`strict detector flags safe text: "${snippet}".`);
-    if (fuzzyText(snippet)) problems.push(`near-miss widener flags safe text: "${snippet}".`);
+    if (strictText(snippet)) problems.push(formatMessage("gate.attribution-fp-corpus.strict-flags-safe-text", { snippet }, overrides).message);
+    if (fuzzyText(snippet)) problems.push(formatMessage("gate.attribution-fp-corpus.fuzzy-flags-safe-text", { snippet }, overrides).message);
   }
 
   // Documented over-blocks must STILL be flagged by strict. If one stops being
@@ -55,8 +62,7 @@ export function corpusProblems({ strictBranch, fuzzyBranch, strictId, fuzzyId, s
   for (const { branch, reason } of DOCUMENTED_STRICT_OVERBLOCKS) {
     if (!strictBranch(branch)) {
       problems.push(
-        `documented over-block "${branch}" is no longer flagged by the strict detector. ` +
-          `This known trade-off changed (${reason}). Update the corpus deliberately if intended.`,
+        formatMessage("gate.attribution-fp-corpus.documented-overblock-unflagged", { branch, reason }, overrides).message,
       );
     }
   }
@@ -85,8 +91,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     );
     process.exit(0);
   }
-  console.error(`FAIL: ${problems.length} false-positive regression(s):\n`);
+  console.error(formatMessage("gate.attribution-fp-corpus.fail-summary", { count: problems.length }, overrides).message);
   for (const p of problems) console.error("  - " + p);
-  console.error("\nA promotion must not flag legitimate input. Narrow the pattern or add an allowlist entry.");
+  console.error(formatMessage("gate.attribution-fp-corpus.fail-footer", {}, overrides).message);
   process.exit(1);
 }

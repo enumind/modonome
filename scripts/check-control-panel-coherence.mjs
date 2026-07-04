@@ -7,9 +7,11 @@
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { auditCoherence } from "./lib/control-panel-audit.mjs";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
+const overrides = loadMessageOverrides(join(root, ".modonome"));
 
 const result = auditCoherence(root);
 if (result.skipped) {
@@ -18,9 +20,9 @@ if (result.skipped) {
 }
 
 if (result.violations.length > 0) {
-  console.error("Control-panel coherence violation(s):\n");
+  console.error(formatMessage("gate.control-panel-coherence.violations-header", {}, overrides).message);
   for (const v of result.violations) console.error(`  [${v.kind}] ${v.detail}`);
-  console.error(`\n${result.violations.length} violation(s). See scripts/lib/control-panel-audit.mjs for the budget.`);
+  console.error(formatMessage("gate.control-panel-coherence.violations-summary", { count: result.violations.length }, overrides).message);
   process.exit(1);
 }
 console.log("PASS: every screen is within the control-density budget and every lever has a hint.");

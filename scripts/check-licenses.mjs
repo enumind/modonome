@@ -8,6 +8,11 @@
 import { readFileSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
+
+const here = dirname(fileURLToPath(import.meta.url));
+const root = join(here, "..");
+const overrides = loadMessageOverrides(join(root, ".modonome"));
 
 // Permissive licenses accepted outright (case-insensitive; common short spellings too).
 const ALLOWED = new Set([
@@ -32,15 +37,14 @@ export function checkLicenses(pkg, manifest) {
   const depNames = Object.keys(deps);
   if (depNames.length > 0) {
     problems.push(
-      `package.json declares runtime dependencies (${depNames.join(", ")}). ` +
-        "The published package must stay at zero runtime dependencies; move these behind an adapter boundary."
+      formatMessage("gate.licenses.runtime-deps-declared", { depNames: depNames.join(", ") }, overrides).message
     );
   }
 
   if (manifest !== undefined && manifest !== null) {
     const adapters = Array.isArray(manifest) ? manifest : manifest.adapters;
     if (!Array.isArray(adapters)) {
-      problems.push('adapters.json must have an "adapters" array (or be a top-level array).');
+      problems.push(formatMessage("gate.licenses.manifest-missing-adapters-array", {}, overrides).message);
       return problems;
     }
     adapters.forEach((a, i) => {
@@ -48,23 +52,23 @@ export function checkLicenses(pkg, manifest) {
       const lic = normalizeLicense(a && a.license);
 
       if (!a || !a.license) {
-        problems.push(`${label}: missing license.`);
+        problems.push(formatMessage("gate.licenses.missing-license", { label }, overrides).message);
       } else if (REFUSED_PREFIXES.some((p) => lic === p || lic.startsWith(p + "-") || lic.startsWith(p + " "))) {
-        problems.push(`${label}: license "${a.license}" is copyleft or source-available and is refused.`);
+        problems.push(formatMessage("gate.licenses.refused-license", { label, license: a.license }, overrides).message);
       } else if (ALLOWED.has(lic)) {
         // permissive, accepted
       } else if (ALLOWED_WITH_ADR.has(lic)) {
         if (!a.adr) {
-          problems.push(`${label}: Apache-2.0 is allowed only with a truthy "adr" owner note. Add an adr reference.`);
+          problems.push(formatMessage("gate.licenses.apache-missing-adr", { label }, overrides).message);
         }
       } else {
-        problems.push(`${label}: license "${a.license}" is not on the permissive allowlist (MIT, ISC, BSD-2/3-Clause; Apache-2.0 with an adr note).`);
+        problems.push(formatMessage("gate.licenses.not-on-allowlist", { label, license: a.license }, overrides).message);
       }
 
       if (!a || !a.boundary) {
-        problems.push(`${label}: missing boundary.`);
+        problems.push(formatMessage("gate.licenses.missing-boundary", { label }, overrides).message);
       } else if (!BOUNDARIES.has(a.boundary)) {
-        problems.push(`${label}: boundary "${a.boundary}" is not permitted (use process, sidecar, or ci-native).`);
+        problems.push(formatMessage("gate.licenses.boundary-not-permitted", { label, boundary: a.boundary }, overrides).message);
       }
     });
   }
@@ -74,8 +78,6 @@ export function checkLicenses(pkg, manifest) {
 
 // CLI: read package.json and adapters.json from the repo root and report PASS/FAIL.
 function runCli() {
-  const here = dirname(fileURLToPath(import.meta.url));
-  const root = join(here, "..");
   const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
   const manifestPath = join(root, "adapters.json");
   const manifest = existsSync(manifestPath) ? JSON.parse(readFileSync(manifestPath, "utf8")) : undefined;
@@ -89,7 +91,7 @@ function runCli() {
     console.log(`PASS: zero runtime dependencies; ${count} declared adapter(s) permissive and boundary-safe.`);
     process.exit(0);
   }
-  console.error(`FAIL: ${problems.length} license/adapter problem(s):\n`);
+  console.error(formatMessage("gate.licenses.fail-summary", { count: problems.length }, overrides).message);
   for (const p of problems) console.error("  - " + p);
   process.exit(1);
 }

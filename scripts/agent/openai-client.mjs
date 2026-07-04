@@ -6,6 +6,13 @@
 // Retries HTTP 429 and 5xx with a small fixed number of attempts and a fixed
 // (non-random) exponential backoff, since Math.random is banned. Any other
 // non-2xx status throws immediately without retrying.
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+import { formatMessage, loadMessageOverrides } from "../lib/messages.mjs";
+
+const here = dirname(fileURLToPath(import.meta.url));
+const root = join(here, "..", "..");
+const overrides = loadMessageOverrides(join(root, ".modonome"));
 
 const DEFAULT_TIMEOUT_MS = 60000;
 const DEFAULT_MAX_RETRIES = 3;
@@ -19,7 +26,7 @@ const DEFAULT_RETRY_BASE_MS = 10;
  * @returns {string}
  */
 export function buildChatCompletionsUrl(baseUrl) {
-  if (!baseUrl) throw new Error("openai-client: baseUrl is required.");
+  if (!baseUrl) throw new Error(formatMessage("agent-run.openai-client.missing-base-url", {}, overrides).message);
   const trimmed = baseUrl.replace(/\/+$/, "");
   if (trimmed.endsWith("/chat/completions")) return trimmed;
   return `${trimmed}/chat/completions`;
@@ -66,7 +73,7 @@ export function buildRequestBody(model, messages, maxTokens) {
 export function normalizeResponse(data) {
   const choice = data && Array.isArray(data.choices) ? data.choices[0] : undefined;
   if (!choice || !choice.message || typeof choice.message.content !== "string") {
-    throw new Error("openai-client: malformed response (missing choices[0].message.content).");
+    throw new Error(formatMessage("agent-run.openai-client.malformed-response", {}, overrides).message);
   }
   return {
     text: choice.message.content,
@@ -127,7 +134,7 @@ export async function chatCompletion({
       res = await fetchImpl(url, { method: "POST", headers, body, signal: controller.signal });
     } catch (e) {
       if (e && e.name === "AbortError") {
-        throw new Error(`openai-client: request timed out after ${timeoutMs}ms.`);
+        throw new Error(formatMessage("agent-run.openai-client.request-timed-out", { timeoutMs }, overrides).message);
       }
       throw e;
     } finally {
@@ -141,12 +148,15 @@ export async function chatCompletion({
 
     if (!isRetryableStatus(res.status) || attempt === maxRetries) {
       const text = await res.text().catch(() => "");
-      throw new Error(`openai-client: request failed with status ${res.status}${text ? `: ${text}` : ""}.`);
+      const statusText = text ? `: ${text}` : "";
+      throw new Error(formatMessage("agent-run.openai-client.request-failed", { status: res.status, statusText }, overrides).message);
     }
 
-    lastError = new Error(`openai-client: retryable status ${res.status} on attempt ${attempt + 1}.`);
+    lastError = new Error(
+      formatMessage("agent-run.openai-client.retryable-status", { status: res.status, attempt: attempt + 1 }, overrides).message,
+    );
     await sleep(retryBaseMs * Math.pow(2, attempt));
   }
   // Unreachable in practice: the loop above always returns or throws.
-  throw lastError ?? new Error("openai-client: exhausted retries.");
+  throw lastError ?? new Error(formatMessage("agent-run.openai-client.exhausted-retries", {}, overrides).message);
 }

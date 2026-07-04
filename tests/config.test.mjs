@@ -62,6 +62,8 @@ test("yaml-lite parser handles edge cases correctly", () => {
   // inline arrays
   assert.deepEqual(parseFlatYaml("trusted_author_allowlist: [bot, ci]").trusted_author_allowlist, ["bot", "ci"]);
   assert.deepEqual(parseFlatYaml("trusted_author_allowlist: []").trusted_author_allowlist, []);
+  // inline empty mapping
+  assert.deepEqual(parseFlatYaml("overrides: {}").overrides, {});
   // comment lines must be ignored
   const parsed = parseFlatYaml("# this is a comment\nkey: value");
   assert.equal(parsed.key, "value");

@@ -7,7 +7,7 @@ import { existsSync } from "node:fs";
 import { resolve, join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { readModonomeState } from "./modonomeReader.mjs";
-import { patchConfig, releaseLease, pruneLearning } from "./modonomeWriter.mjs";
+import { patchConfig, releaseLease, pruneLearning, patchMessages } from "./modonomeWriter.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, "../../..");
@@ -77,6 +77,14 @@ export function modonomeApiPlugin() {
         const body = await readBody(req);
         const { dir, mode } = resolveModonomeDir(body.mode, body.dir);
         patchConfig(dir, body.patch ?? {});
+        return sendJson(res, 200, stateWithSource(dir, mode, writable));
+      }
+
+      if (url.pathname === "/api/modonome/messages" && req.method === "POST") {
+        if (!writable) return writeGuard(res);
+        const body = await readBody(req);
+        const { dir, mode } = resolveModonomeDir(body.mode, body.dir);
+        patchMessages(dir, body.patch ?? {});
         return sendJson(res, 200, stateWithSource(dir, mode, writable));
       }
 

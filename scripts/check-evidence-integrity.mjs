@@ -14,9 +14,11 @@ import { readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
+const overrides = loadMessageOverrides(join(root, ".modonome"));
 
 const ledgerPath = process.argv[2] || join(root, "RELEASE-EVIDENCE.ledger.jsonl");
 
@@ -36,24 +38,24 @@ try {
     try {
       entry = JSON.parse(lines[i]);
     } catch (e) {
-      console.error(`FAIL: line ${i + 1} is not valid JSON: ${e.message}`);
+      console.error(formatMessage("gate.evidence-integrity.invalid-json", { line: i + 1, reason: e.message }, overrides).message);
       process.exit(1);
     }
 
     const { seq, content_sha256, prev_sha256 } = entry;
 
     if (seq === undefined || content_sha256 === undefined || prev_sha256 === undefined) {
-      console.error(`FAIL: line ${i + 1} missing required fields (seq, content_sha256, prev_sha256)`);
+      console.error(formatMessage("gate.evidence-integrity.missing-fields", { line: i + 1 }, overrides).message);
       process.exit(1);
     }
 
     if (seq !== i + 1) {
-      console.error(`FAIL: sequence gap at seq ${i + 1} (expected ${seq})`);
+      console.error(formatMessage("gate.evidence-integrity.sequence-gap", { line: i + 1, seq }, overrides).message);
       process.exit(1);
     }
 
     if (prev_sha256 !== prevHash) {
-      console.error(`FAIL: broken hash chain at seq ${i + 1}. Expected prev_sha256=${prevHash}, got ${prev_sha256}`);
+      console.error(formatMessage("gate.evidence-integrity.broken-chain", { seq: i + 1, expected: prevHash, got: prev_sha256 }, overrides).message);
       process.exit(1);
     }
 
@@ -63,6 +65,6 @@ try {
   console.log(`OK: ledger chain is valid (${lines.length} entries, no gaps, hashes verified)`);
   process.exit(0);
 } catch (e) {
-  console.error(`FAIL: ${e.message}`);
+  console.error(formatMessage("gate.evidence-integrity.error", { reason: e.message }, overrides).message);
   process.exit(1);
 }

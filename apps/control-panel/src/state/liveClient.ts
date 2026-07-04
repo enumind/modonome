@@ -5,7 +5,7 @@
  * operator started the server with MODONOME_PANEL_WRITE=1. Callers decide what a
  * failure means (adapter.ts falls back to demo data; write actions surface the error).
  */
-import type { PanelMode, PanelState } from "./types";
+import type { MessageOverridePatch, PanelMode, PanelState } from "./types";
 
 export class LiveApiError extends Error {}
 
@@ -54,5 +54,17 @@ export function pruneLearningLive(mode: PanelMode, lesson: string, dir?: string)
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ mode, dir, lesson }),
+  });
+}
+
+export function saveMessagesLive(
+  mode: PanelMode,
+  patch: Record<string, MessageOverridePatch>,
+  dir?: string,
+): Promise<PanelState> {
+  return call<PanelState>("/api/modonome/messages", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ mode, dir, patch }),
   });
 }

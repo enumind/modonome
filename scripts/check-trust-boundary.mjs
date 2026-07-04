@@ -10,9 +10,11 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
+const overrides = loadMessageOverrides(join(root, ".modonome"));
 const workflowPath = process.argv[2] || join(root, ".github", "workflows", "ci.yml");
 
 const TRUST_BOUNDARY_GATES = ["scripts/check-style.mjs", "scripts/guard-ratchet.mjs"];
@@ -37,15 +39,15 @@ for (const gate of TRUST_BOUNDARY_GATES) {
   });
 
   if (runLine === -1) {
-    problems.push(`${gate} is never executed in the workflow (nothing to guard, or the gate was removed).`);
+    problems.push(formatMessage("gate.trust-boundary.not-executed", { gate }, overrides).message);
     continue;
   }
   if (guardLine === -1) {
-    problems.push(`${gate} runs without a base-branch checkout guard. Add a step that runs: git checkout "origin/\${{ github.base_ref }}" -- ${gate}`);
+    problems.push(formatMessage("gate.trust-boundary.missing-guard", { gate }, overrides).message);
     continue;
   }
   if (guardLine > runLine) {
-    problems.push(`${gate} is executed (line ${runLine + 1}) before it is loaded from the base branch (line ${guardLine + 1}). The guard must come first.`);
+    problems.push(formatMessage("gate.trust-boundary.guard-after-run", { gate, runLine: runLine + 1, guardLine: guardLine + 1 }, overrides).message);
   }
 }
 
@@ -55,6 +57,6 @@ if (problems.length === 0) {
   console.log(`PASS: ${TRUST_BOUNDARY_GATES.length} trust-boundary gate(s) loaded from the base branch before execution.`);
   process.exit(0);
 }
-console.error(`FAIL: ${problems.length} unguarded gate(s):\n`);
+console.error(formatMessage("gate.trust-boundary.fail-summary", { count: problems.length }, overrides).message);
 for (const p of problems) console.error("  - " + p);
 process.exit(1);

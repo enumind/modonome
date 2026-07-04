@@ -10,6 +10,7 @@ import { join } from "node:path";
 import { sweepTarget, proposalToWorkItem } from "./dry-run-sweep.mjs";
 import { validateWorkItem } from "./validate-work-item.mjs";
 import { parseFlatYaml } from "./lib/yaml-lite.mjs";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 const args = process.argv.slice(2);
 const all = args.includes("--all");
@@ -23,6 +24,11 @@ const skipIdx = maxIdx !== -1 ? new Set([maxIdx + 1]) : new Set();
 const positionals = args.filter((a, i) => !a.startsWith("-") && !skipIdx.has(i));
 const selectorArg = positionals.find((a) => /^\d+(,\d+)*$/.test(a));
 const target = positionals.find((a) => a !== selectorArg) || ".";
+
+// This command's .modonome state (config, work-items, and message overrides)
+// lives under the target dir being operated on, not this script's own install
+// location, since a single modonome install can be pointed at many repos.
+const overrides = loadMessageOverrides(join(target, ".modonome"));
 
 const { scored } = sweepTarget(target);
 
@@ -54,13 +60,15 @@ if (typeof max === "number" && !Number.isNaN(max)) {
 
 const invalid = selectedIndices.filter((i) => i < 0 || i >= scored.length);
 if (invalid.length > 0) {
-  console.error(`Invalid selection: only ${scored.length} proposal(s) exist. Valid range is 1-${scored.length}.`);
+  console.error(
+    formatMessage("agent-run.queue.invalid-selection", { count: scored.length }, overrides).message
+  );
   process.exit(1);
 }
 
 const stateDir = join(target, ".modonome");
 if (!existsSync(stateDir)) {
-  console.error(`No ${stateDir} directory. Run \`npx modonome scaffold ${target} --write\` first.`);
+  console.error(formatMessage("agent-run.queue.no-state-dir", { stateDir, target }, overrides).message);
   process.exit(1);
 }
 
@@ -86,7 +94,9 @@ for (const i of selectedIndices) {
 
   const errors = validateWorkItem(item, config);
   if (errors.length > 0) {
-    console.error(`skip   ${id}: ${errors.join("; ")}`);
+    console.error(
+      formatMessage("agent-run.queue.item-skipped", { id, errors: errors.join("; ") }, overrides).message
+    );
     continue;
   }
 

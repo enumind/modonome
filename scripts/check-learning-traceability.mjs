@@ -10,9 +10,11 @@ import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { readPromotedLearnings, REQUIRED_FIELDS } from "./lib/learnings.mjs";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
+const overrides = loadMessageOverrides(join(root, ".modonome"));
 const problems = [];
 
 // Minimum days a lesson must stay staged before promotion. Owners may raise this.
@@ -25,13 +27,13 @@ let learnings;
 try {
   learnings = readPromotedLearnings(root);
 } catch (e) {
-  console.error(`Learning traceability: ${e.message}`);
+  console.error(formatMessage("gate.learning-traceability.read-error", { reason: e.message }, overrides).message);
   process.exit(1);
 }
 
 // an absent or empty Promoted block cannot certify traceability.
 if (learnings.length === 0) {
-  console.error("FAIL: no promoted learnings found; Promoted block is absent or empty. Gate cannot certify an empty record.");
+  console.error(formatMessage("gate.learning-traceability.no-learnings", {}, overrides).message);
   process.exit(1);
 }
 
@@ -41,31 +43,37 @@ for (const l of learnings) {
 
   for (const f of REQUIRED_FIELDS) {
     if (l[f] === undefined || l[f] === null || String(l[f]).trim() === "") {
-      problems.push(`${tag}: missing or empty required field "${f}".`);
+      problems.push(formatMessage("gate.learning-traceability.missing-field", { tag, field: f }, overrides).message);
     }
   }
 
   if (l.id) {
-    if (seen.has(l.id)) problems.push(`${tag}: duplicate learning id.`);
+    if (seen.has(l.id)) problems.push(formatMessage("gate.learning-traceability.duplicate-id", { tag }, overrides).message);
     seen.add(l.id);
   }
 
   for (const f of ["observation_date", "promotion_date"]) {
     if (l[f] && !DATE_RE.test(l[f])) {
-      problems.push(`${tag}: ${f} "${l[f]}" is not YYYY-MM-DD.`);
+      problems.push(formatMessage("gate.learning-traceability.bad-date-format", { tag, field: f, value: l[f] }, overrides).message);
     } else if (l[f] && DATE_RE.test(l[f]) && isNaN(Date.parse(l[f]))) {
       // reject calendar-invalid dates like 2026-99-99 that match the regex but
       // are not real calendar dates.
-      problems.push(`${tag}: ${f} "${l[f]}" is not a valid calendar date.`);
+      problems.push(formatMessage("gate.learning-traceability.invalid-calendar-date", { tag, field: f, value: l[f] }, overrides).message);
     }
   }
   if (DATE_RE.test(l.observation_date || "") && DATE_RE.test(l.promotion_date || "")) {
     const obs = Date.parse(l.observation_date);
     const prom = Date.parse(l.promotion_date);
-    if (prom < obs) problems.push(`${tag}: promotion_date precedes observation_date.`);
+    if (prom < obs) problems.push(formatMessage("gate.learning-traceability.promotion-precedes-observation", { tag }, overrides).message);
     const stagedDays = Math.floor((prom - obs) / 86400000);
     if (stagedDays < MIN_STAGE_DAYS) {
-      problems.push(`${tag}: staged ${stagedDays} day(s), below MODONOME_MIN_STAGE_DAYS=${MIN_STAGE_DAYS}.`);
+      problems.push(
+        formatMessage(
+          "gate.learning-traceability.understaged",
+          { tag, stagedDays, minStageDays: MIN_STAGE_DAYS },
+          overrides
+        ).message
+      );
     }
   }
 
@@ -76,9 +84,9 @@ for (const l of learnings) {
     const GATE_DIRS = ["scripts/", "tests/", ".github/"];
     const underGateDir = GATE_DIRS.some((dir) => path.startsWith(dir));
     if (!underGateDir) {
-      problems.push(`${tag}: gate_location "${path}" must be under scripts/, tests/, or .github/ (got: "${path}").`);
+      problems.push(formatMessage("gate.learning-traceability.gate-location-wrong-dir", { tag, path }, overrides).message);
     } else if (!existsSync(join(root, path))) {
-      problems.push(`${tag}: gate_location "${path}" does not exist.`);
+      problems.push(formatMessage("gate.learning-traceability.gate-location-missing", { tag, path }, overrides).message);
     }
   }
 
@@ -88,9 +96,9 @@ for (const l of learnings) {
   if (l.correction_signal_id) {
     const sigId = String(l.correction_signal_id);
     if (!sigId.includes("/")) {
-      problems.push(`${tag}: correction_signal_id "${sigId}" is not a repo-relative path. All references must be committed documents so the audit trail is self-contained (e.g. docs/audits/claims-audit-2026-06-25.md).`);
+      problems.push(formatMessage("gate.learning-traceability.signal-not-path", { tag, sigId }, overrides).message);
     } else if (!existsSync(join(root, sigId))) {
-      problems.push(`${tag}: correction_signal_id "${sigId}" looks like a path but does not exist.`);
+      problems.push(formatMessage("gate.learning-traceability.signal-missing", { tag, sigId }, overrides).message);
     }
   }
 }
@@ -101,6 +109,6 @@ if (problems.length === 0) {
   console.log(`PASS: ${learnings.length} promoted learning(s), all fully traceable.`);
   process.exit(0);
 }
-console.error(`FAIL: ${problems.length} traceability problem(s):\n`);
+console.error(formatMessage("gate.learning-traceability.fail-summary", { count: problems.length }, overrides).message);
 for (const p of problems) console.error("  - " + p);
 process.exit(1);

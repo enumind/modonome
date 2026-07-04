@@ -1,0 +1,80 @@
+export const MESSAGES = {
+  "gate.portability.usage": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "Usage: node scripts/check-portability.mjs --fixture <path>",
+  },
+  "gate.portability.fixture-not-found": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "Fixture path does not exist: {path}",
+  },
+  "gate.portability.schema-version-missing": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: ".modonome/config.yaml exists but has no schema_version field",
+  },
+  "gate.portability.schema-version-mismatch": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: ".modonome/config.yaml has schema_version: {version}, Modonome requires schema_version: 1",
+  },
+  "gate.portability.schema-type-mismatch": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: ".modonome/config.yaml has {field}: {value} (must be boolean true or false)",
+  },
+  "gate.portability.schema-unknown-key": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: '.modonome/config.yaml contains unknown key "{key}" (may be a foreign config)',
+  },
+  "gate.portability.ci-job-conflict": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: '{file} defines job "{job}" which conflicts with Modonome\'s CI job of the same name',
+  },
+  "gate.portability.prompt-injection-pattern": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "{file} contains governance injection pattern: {pattern}",
+  },
+  "gate.portability.script-shadow-attack": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "scripts/{script} exists in host repo and appears to be a permissive stub that shadows Modonome's script",
+  },
+  "gate.portability.script-shadow-warn": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "scripts/{script} exists in host repo at the same path as Modonome's script. Verify it is not a shadow.",
+  },
+  "gate.portability.env-pollution-controls": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: ".env sets {varName}={value} which could affect Modonome's safety controls",
+  },
+  "gate.portability.env-pollution-dry-run": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: ".env sets {varName}={value} which could disable dry-run mode",
+  },
+  "gate.portability.env-pollution-git-dir": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: ".env sets {varName}={value} which could redirect git operations",
+  },
+};
