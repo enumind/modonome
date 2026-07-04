@@ -40,10 +40,12 @@ governs where docs live.
 
 ## Architecture Decision Records
 
-- [adr/](adr/): 34 ADRs covering the major design decisions (25 Accepted, 9 Proposed,
-  mostly the cross-repo knowledge network series). The markdown governance decision is
+- [adr/](adr/): the ADRs covering the major design decisions, mostly the cross-repo
+  knowledge network series. The markdown governance decision is
   [adr/ADR-031-markdown-governance.md](adr/ADR-031-markdown-governance.md).
   The repo snapshot decision is [adr/ADR-033-repo-snapshot.md](adr/ADR-033-repo-snapshot.md).
+  The end-to-end governed operating model (many producers, two checkpoints, common CI) is
+  [adr/ADR-040-end-to-end-operating-model.md](adr/ADR-040-end-to-end-operating-model.md).
 
 ## Audits
 

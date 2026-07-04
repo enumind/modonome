@@ -30,7 +30,7 @@ be added here once the owner arms the loop on this repo.
 ## Work queue
 
 - done: 36
-- queued: 6
+- queued: 7
 
 ## Sample-app captures
 
