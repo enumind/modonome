@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://modonome.com/schemas/messages.schema.json",
+  "title": "Modonome message overrides",
+  "description": "Spec of record: prompts/modonome.core.md Configuration. Operator overrides for the built-in message catalog (scripts/lib/messages.mjs). Only entries with an id already present in the built-in catalog are meaningful; unknown ids are a validation error. An entry whose catalog id is non_suppressible may still override its wording, but its severity may never resolve below the catalog floor and suppressed may never be true for it (enforced by scripts/lib/messages.mjs and scripts/check-message-catalog-integrity.mjs, not by this schema alone, since the floor value lives in code).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version"],
+  "properties": {
+    "schema_version": { "type": "integer", "minimum": 1 },
+    "overrides": {
+      "type": "object",
+      "description": "message_id -> operator override. All fields optional; omit a field to keep the catalog default.",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "severity": { "type": "string", "enum": ["ok", "info", "attention", "blocked"] },
+          "text": { "type": "string", "minLength": 1 },
+          "suppressed": { "type": "boolean" }
+        }
+      }
+    }
+  }
+}

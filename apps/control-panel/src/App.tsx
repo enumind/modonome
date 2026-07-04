@@ -13,8 +13,8 @@ import {
 } from "@modonome/design-system";
 import { ConfirmProvider } from "./lib/confirm";
 import { loadPanelState, finalizeState } from "./state/adapter";
-import { saveConfig, releaseLeaseLive, pruneLearningLive } from "./state/liveClient";
-import type { PanelState, ModonomeConfig, WriteActions } from "./state/types";
+import { saveConfig, releaseLeaseLive, pruneLearningLive, saveMessagesLive } from "./state/liveClient";
+import type { PanelState, ModonomeConfig, MessageOverridePatch, WriteActions } from "./state/types";
 import { OverviewScreen } from "./screens/OverviewScreen";
 import { ArmingScreen } from "./screens/ArmingScreen";
 import { WorkQueueScreen } from "./screens/WorkQueueScreen";
@@ -88,6 +88,8 @@ export function App() {
         withWrite(() => saveConfig(mode, patch, hostDir || undefined)),
       onReleaseLease: (itemId: string) => withWrite(() => releaseLeaseLive(mode, itemId, hostDir || undefined)),
       onPruneLearning: (lesson: string) => withWrite(() => pruneLearningLive(mode, lesson, hostDir || undefined)),
+      onSaveMessages: (patch: Record<string, MessageOverridePatch>) =>
+        withWrite(() => saveMessagesLive(mode, patch, hostDir || undefined)),
     }),
     [state, mode, hostDir, withWrite],
   );

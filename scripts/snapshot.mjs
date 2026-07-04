@@ -25,6 +25,7 @@ import { hashFileContent, buildMerkleTree } from "./lib/merkle.mjs";
 import { loadCache, saveCache, changedPaths, gitHead } from "./lib/snapshot-cache.mjs";
 import { registerAdapter } from "./lib/lang-adapters/index.mjs";
 import { registerTreeSitter } from "./lib/lang-adapters/tree-sitter.mjs";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 function flagValue(argv, name) {
   const i = argv.indexOf(name);
@@ -163,6 +164,7 @@ async function maybeRegisterParser(root, argv) {
 
 async function main(argv) {
   const root = positional(argv);
+  const overrides = loadMessageOverrides(join(root, ".modonome"));
   await maybeRegisterParser(root, argv);
 
   // --since: print the file-level delta since a git ref. Writes nothing.

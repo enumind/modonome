@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "id": "WI-043-migrate-advisory-message-long-tail",
+  "state": "queued",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": true,
+  "allowed_edit_set": [
+    "scripts/hygiene.mjs",
+    "scripts/sign-packet.mjs",
+    "scripts/verify-packet.mjs",
+    "scripts/validate-knowledge-packet.mjs",
+    "scripts/sync-site-data.mjs",
+    "scripts/audit-learnings.mjs",
+    "scripts/build-release-evidence.mjs",
+    "scripts/preflight-embedding.mjs",
+    "scripts/lib/message-catalog/advisory/hygiene.mjs"
+  ],
+  "gates": [
+    "node scripts/check-message-catalog-integrity.mjs",
+    "node scripts/check-style.mjs .",
+    "npm run verify"
+  ],
+  "queued_at": "2026-07-04"
+}

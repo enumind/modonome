@@ -1,9 +1,20 @@
 import { useMemo, useState } from "react";
-import { Card, RoleBadge, Select, Table, StatusPill, Toggle, Button, IconButton, Input, Tabs, Toast } from "@modonome/design-system";
-import type { ModonomeConfig, WriteActions } from "../state/types";
+import { Card, RoleBadge, Select, Table, StatusPill, Toggle, Button, IconButton, Input, Tabs, Toast, HelpHint, Icon } from "@modonome/design-system";
+import type { ModonomeConfig, MessageCatalogEntryVM, MessageOverridePatch, MessageSeverity, WriteActions } from "../state/types";
 import type { PanelState } from "../state/types";
 import { useConfirm } from "../lib/confirm";
 import { diffConfig } from "../state/configDiff";
+
+const SEVERITY_OPTIONS: { value: MessageSeverity; label: string }[] = [
+  { value: "ok", label: "OK" },
+  { value: "info", label: "Info" },
+  { value: "attention", label: "Attention" },
+  { value: "blocked", label: "Blocked" },
+];
+
+function previewText(template: string) {
+  return template.replace(/\{(\w+)\}/g, (_, key) => `<${key}>`);
+}
 
 const ROLE_BADGE: Record<string, "maker" | "checker" | "maintainer"> = {
   maker: "maker",
@@ -17,6 +28,7 @@ const TABS = [
   { id: "network", label: "Cross-repo network", icon: "branch" as const },
   { id: "market", label: "Market scan", icon: "activity" as const },
   { id: "remediation", label: "Remediation", icon: "shield" as const },
+  { id: "messages", label: "Messages", icon: "alert" as const },
 ];
 
 interface ModelRow {
@@ -46,6 +58,13 @@ export function SettingsScreen({ state, write }: { state: PanelState; write: Wri
   const [newPath, setNewPath] = useState("");
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState<{ tone: "info" | "blocked"; text: string } | null>(null);
+
+  const [messageDrafts, setMessageDrafts] = useState<Record<string, MessageOverridePatch>>({});
+  const [messageQuery, setMessageQuery] = useState("");
+  const [messageCategory, setMessageCategory] = useState("all");
+  const [previewId, setPreviewId] = useState<string | null>(null);
+  const [savingMessages, setSavingMessages] = useState(false);
+  const [messageNotice, setMessageNotice] = useState<{ tone: "info" | "blocked"; text: string } | null>(null);
 
   function set<K extends keyof ModonomeConfig>(key: K, value: ModonomeConfig[K]) {
     setConfig((c) => ({ ...c, [key]: value }));
@@ -91,6 +110,62 @@ export function SettingsScreen({ state, write }: { state: PanelState; write: Wri
       "protected_paths_extra",
       config.protected_paths_extra.filter((p) => p !== path),
     );
+  }
+
+  function resolvedMessage(entry: MessageCatalogEntryVM): MessageCatalogEntryVM {
+    const draft = messageDrafts[entry.id];
+    if (!draft) return entry;
+    return {
+      ...entry,
+      text: draft.text ?? entry.text,
+      // A locked (non_suppressible) entry's severity/suppression never move in the
+      // draft either: the Select/Toggle for those rows are disabled, but this keeps
+      // the resolved preview correct even if a draft somehow carried a stale value.
+      severity: entry.nonSuppressible ? entry.severity : (draft.severity ?? entry.severity),
+      suppressed: entry.nonSuppressible ? false : (draft.suppressed ?? entry.suppressed),
+    };
+  }
+
+  function setMessageField<K extends keyof MessageOverridePatch>(id: string, field: K, value: MessageOverridePatch[K]) {
+    setMessageDrafts((d) => ({ ...d, [id]: { ...d[id], [field]: value } }));
+  }
+
+  const messageCategories = useMemo(
+    () => ["all", ...Array.from(new Set(state.messages.map((m) => m.category))).sort()],
+    [state.messages],
+  );
+  const messageRows = useMemo(
+    () =>
+      state.messages.map(resolvedMessage).filter((m) => {
+        if (messageCategory !== "all" && m.category !== messageCategory) return false;
+        const q = messageQuery.trim().toLowerCase();
+        if (!q) return true;
+        return m.id.toLowerCase().includes(q) || m.text.toLowerCase().includes(q);
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [state.messages, messageDrafts, messageCategory, messageQuery],
+  );
+  const messagesDirty = Object.keys(messageDrafts).length > 0;
+  const previewMessage = previewId ? state.messages.find((m) => m.id === previewId) : undefined;
+  const resolvedPreview = previewMessage ? resolvedMessage(previewMessage) : undefined;
+
+  async function onSaveMessages() {
+    const ok = await confirm({
+      title: "Save message overrides?",
+      confirmLabel: "Save overrides",
+      body: `Writes ${Object.keys(messageDrafts).length} message override(s) to messages.yaml in ${state.subject.dir ?? "the repo"}.`,
+    });
+    if (!ok) return;
+    setSavingMessages(true);
+    try {
+      await write.onSaveMessages(messageDrafts);
+      setMessageDrafts({});
+      setMessageNotice({ tone: "info", text: "Message overrides saved to messages.yaml." });
+    } catch (err) {
+      setMessageNotice({ tone: "blocked", text: `Save failed: ${err instanceof Error ? err.message : String(err)}` });
+    } finally {
+      setSavingMessages(false);
+    }
   }
 
   const patch = useMemo(() => diffConfig(state.config, config), [state.config, config]);
@@ -437,6 +512,146 @@ export function SettingsScreen({ state, write }: { state: PanelState; write: Wri
                 </div>
               </div>
             )}
+          </Card>
+        </div>
+      ) : null}
+
+      {tab === "messages" ? (
+        <div className="stack-lg">
+          <Card
+            title="Message catalog"
+            help="Every failure/warning/info message modonome can emit, in this repo's own .modonome/messages.yaml. Wording is editable for every message. Severity and suppression are editable too, except for messages a CI gate depends on to block a change &mdash; those show a locked control, so a gate can never be silenced by relabeling it."
+          >
+            <div className="stack-lg">
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "flex-end" }}>
+                <div style={{ flex: "1 1 220px", maxWidth: 320 }}>
+                  <Input
+                    label="Search"
+                    placeholder="id or wording"
+                    value={messageQuery}
+                    onChange={(e) => setMessageQuery(e.target.value)}
+                  />
+                </div>
+                <div style={{ flex: "0 1 200px" }}>
+                  <Select
+                    label="Category"
+                    hint="Filter the message list down to one category."
+                    options={messageCategories.map((c) => ({ value: c, label: c }))}
+                    value={messageCategory}
+                    onValueChange={setMessageCategory}
+                  />
+                </div>
+              </div>
+
+              {messageNotice ? (
+                <Toast
+                  tone={messageNotice.tone === "blocked" ? "blocked" : "info"}
+                  title={messageNotice.tone === "blocked" ? "Save failed" : "Acknowledged"}
+                  message={messageNotice.text}
+                  onDismiss={() => setMessageNotice(null)}
+                />
+              ) : null}
+
+              <Table<MessageCatalogEntryVM>
+                dense
+                columns={[
+                  {
+                    key: "id",
+                    header: "ID",
+                    render: (row) => (
+                      <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <span className="mdn-mono">{row.id}</span>
+                        {row.nonSuppressible ? (
+                          <>
+                            <Icon name="lock" size={13} />
+                            <HelpHint label="This message blocks a CI gate. Wording is editable; severity and suppression are locked to protect that gate." />
+                          </>
+                        ) : null}
+                      </span>
+                    ),
+                  },
+                  { key: "category", header: "Category", render: (row) => <span className="mdn-faint">{row.category}</span> },
+                  {
+                    key: "severity",
+                    header: "Severity",
+                    render: (row) =>
+                      row.nonSuppressible ? (
+                        <StatusPill tone="blocked" size="sm">
+                          Blocked (locked)
+                        </StatusPill>
+                      ) : (
+                        <Select
+                          hint="How urgent this message reads in the panel and in CLI/CI output."
+                          options={SEVERITY_OPTIONS}
+                          value={row.severity}
+                          onValueChange={(v) => setMessageField(row.id, "severity", v as MessageSeverity)}
+                        />
+                      ),
+                  },
+                  {
+                    key: "text",
+                    header: "Wording",
+                    render: (row) => (
+                      <Input
+                        value={row.text}
+                        onChange={(e) => setMessageField(row.id, "text", e.target.value)}
+                        style={{ minWidth: 280 }}
+                      />
+                    ),
+                  },
+                  {
+                    key: "suppressed",
+                    header: "Suppressed",
+                    render: (row) => (
+                      <Toggle
+                        hint="Hide this message from CLI/CI output and the panel entirely."
+                        checked={row.suppressed}
+                        disabled={row.nonSuppressible}
+                        onCheckedChange={(v) => setMessageField(row.id, "suppressed", v)}
+                      />
+                    ),
+                  },
+                  {
+                    key: "preview",
+                    header: "Preview",
+                    render: (row) => (
+                      <Button variant="ghost" size="sm" onClick={() => setPreviewId(row.id)}>
+                        Preview
+                      </Button>
+                    ),
+                  },
+                ]}
+                rows={messageRows}
+                getRowKey={(row) => row.id}
+                empty={<p className="mdn-faint">No messages match this search.</p>}
+              />
+
+              {resolvedPreview ? (
+                <Toast
+                  tone={resolvedPreview.severity}
+                  title={resolvedPreview.id}
+                  message={previewText(resolvedPreview.text)}
+                  onDismiss={() => setPreviewId(null)}
+                />
+              ) : null}
+
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+                {messagesDirty ? (
+                  <Button variant="ghost" onClick={() => setMessageDrafts({})} disabled={savingMessages}>
+                    Discard changes
+                  </Button>
+                ) : null}
+                <Button
+                  variant="primary"
+                  iconLeft="check"
+                  onClick={onSaveMessages}
+                  loading={savingMessages}
+                  disabled={!write.writable || !messagesDirty || savingMessages}
+                >
+                  Save message overrides
+                </Button>
+              </div>
+            </div>
           </Card>
         </div>
       ) : null}

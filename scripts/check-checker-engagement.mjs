@@ -12,9 +12,11 @@
 import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
+const overrides = loadMessageOverrides(join(root, ".modonome"));
 const metricsPath = process.argv[2] || join(root, ".modonome", "metrics.jsonl");
 const THRESHOLD = Number(process.env.MODONOME_GHOST_THRESHOLD || 10);
 
@@ -42,7 +44,13 @@ for (const e of events) {
   const n = (consecutive.get(e.checker_id) || 0) + 1;
   consecutive.set(e.checker_id, n);
   if (n === THRESHOLD) {
-    problems.push(`Checker "${e.checker_id}" approved ${THRESHOLD} consecutive runs with no engagement. Request changes or raise a question on the next run, or escalate to a different checker.`);
+    problems.push(
+      formatMessage(
+        "gate.checker-engagement.ghosting",
+        { checkerId: e.checker_id, threshold: THRESHOLD },
+        overrides
+      ).message
+    );
   }
 }
 
@@ -56,6 +64,6 @@ if (problems.length === 0) {
   console.log(`PASS: ${events.length} event(s) scanned; no checker ghosting detected.`);
   process.exit(0);
 }
-console.error(`FAIL: ${problems.length} ghosting pattern(s):\n`);
+console.error(formatMessage("gate.checker-engagement.fail-summary", { count: problems.length }, overrides).message);
 for (const p of problems) console.error("  - " + p);
 process.exit(1);

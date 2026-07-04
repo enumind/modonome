@@ -1,7 +1,8 @@
 // A minimal reader for "key: value" YAML, enough for .modonome/config.yaml.
 // It supports comments, booleans, integers, floats, quoted strings, empty arrays,
-// and inline string arrays like [a, b]. It also supports indentation-based nested
-// mappings using 2-space-per-level indentation (additive; flat keys still work).
+// empty inline mappings ({}), and inline string arrays like [a, b]. It also supports
+// indentation-based nested mappings using 2-space-per-level indentation (additive;
+// flat keys still work).
 //
 // Nested mapping rules:
 //   - A line whose value is empty (after stripping comments) starts a mapping block.
@@ -20,6 +21,7 @@ function parseScalar(raw) {
   if (/^(true|yes|on)$/i.test(v)) return true;
   if (/^(false|no|off)$/i.test(v)) return false;
   if (v === "[]") return [];
+  if (v === "{}") return {};
   if (v.startsWith("[") && v.endsWith("]")) {
     const inner = v.slice(1, -1).trim();
     if (inner === "") return [];
