@@ -56,3 +56,14 @@ export function pruneLearningLive(mode: PanelMode, lesson: string, dir?: string)
     body: JSON.stringify({ mode, dir, lesson }),
   });
 }
+
+export interface ConnectionTestResult {
+  ok: boolean;
+  models?: string[];
+  error?: string;
+}
+
+/** Read-only reachability probe for an OpenAI-compatible base URL (LM Studio, Ollama, a gateway). */
+export function testConnectionLive(baseUrl: string): Promise<ConnectionTestResult> {
+  return call<ConnectionTestResult>(`/api/modonome/test-connection?baseUrl=${encodeURIComponent(baseUrl)}`);
+}
