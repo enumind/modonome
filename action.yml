@@ -26,6 +26,10 @@ inputs:
     description: 'Emit and keyless-sign an in-toto gate-integrity receipt (needs id-token: write and attestations: write).'
     required: false
     default: 'false'
+  agentproof:
+    description: 'Emit and keyless-sign an in-toto AgentProof conformance attestation (needs id-token: write and attestations: write).'
+    required: false
+    default: 'false'
 
 runs:
   using: 'composite'
@@ -90,3 +94,27 @@ runs:
         subject-name: gate-integrity
         predicate-type: 'https://modonome.com/attestation/gate-integrity/v1'
         predicate-path: modonome-gate-integrity.intoto.json
+
+    # Optional: a standalone in-toto attestation of the AgentProof conformance run,
+    # keyless-signed via Sigstore and logged in Rekor, so a downstream verifier can
+    # confirm the reported score without trusting this repository's README. This is a
+    # separate, first-class claim from the receipt step above: it does not read or
+    # depend on the gate-integrity verdict. Runs on success and failure so a low score
+    # still produces a signed attestation of that score.
+    - name: AgentProof conformance attestation
+      if: ${{ always() && inputs.agentproof == 'true' }}
+      shell: bash
+      env:
+        MODONOME_ACTION_PATH: ${{ github.action_path }}
+      run: |
+        set -uo pipefail
+        node "$MODONOME_ACTION_PATH/scripts/agentproof-attestation.mjs" \
+          --out modonome-agentproof-conformance.intoto.json
+
+    - name: Sign the AgentProof attestation
+      if: ${{ always() && inputs.agentproof == 'true' }}
+      uses: actions/attest@v2
+      with:
+        subject-name: agentproof-conformance
+        predicate-type: 'https://modonome.com/attestation/agentproof-conformance/v1'
+        predicate-path: modonome-agentproof-conformance.intoto.json

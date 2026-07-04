@@ -83,6 +83,7 @@
     ],
     "gates": [
       "agentproof",
+      "check-agentproof-registry",
       "check-architecture-drift",
       "check-attribution-fp-corpus",
       "check-checker-engagement",
@@ -108,5 +109,5 @@
     "autonomy_enabled": false,
     "dry_run": true
   },
-  "content_digest": "sha256:97ac729df01f680f8ac79e69df2eb6467899326e1634e9b479179b522a3588bb"
+  "content_digest": "sha256:5190c7200f9e09e1d3ca45d7c00d4ef7944b08bf3c8bb509f962826cb62262b1"
 }

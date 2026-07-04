@@ -1,0 +1,4 @@
+{
+  "comment": "Hardened Registry (ADR-039). Each entry is one independently-run, publicly-inspectable AgentProof conformance run, added only via reviewed pull request. See CONTRIBUTING.md. This file has no service behind it: schemas/agentproof-registry.schema.json and scripts/check-agentproof-registry.mjs are the only validation.",
+  "entries": []
+}
