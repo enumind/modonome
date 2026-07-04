@@ -57,6 +57,24 @@
       "icon": "attest",
       "title": "Compliance evidence on demand",
       "summary": "An MCP server exposes attestation and evidence tools, so a host repository can produce a signed record of what ran and what held."
+    },
+    {
+      "key": "ci-gate-action",
+      "icon": "ciGate",
+      "title": "A drop-in CI gate check, with a signed receipt",
+      "summary": "A GitHub Action runs the gate check from a pinned, trusted copy, so the pull request under review can never judge itself. It can also produce a signed receipt of the result."
+    },
+    {
+      "key": "policy-pack-sharing",
+      "icon": "sharePack",
+      "title": "Disclose and adopt policy as signed evidence",
+      "summary": "A repository can state the governance policy it enforces in one verifiable file, and another repository can review and adopt it, with integrity and credit checks that refuse anything that fails."
+    },
+    {
+      "key": "ai-attribution-hygiene",
+      "icon": "hygiene",
+      "title": "Scrubs its own AI fingerprints",
+      "summary": "A safe, verified way to clear AI-attribution traces from commit history, proven to leave the underlying code untouched."
     }
   ]
 }
