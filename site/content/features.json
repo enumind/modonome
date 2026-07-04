@@ -69,12 +69,6 @@
       "icon": "sharePack",
       "title": "Disclose and adopt policy as signed evidence",
       "summary": "A repository can state the governance policy it enforces in one verifiable file, and another repository can review and adopt it, with integrity and credit checks that refuse anything that fails."
-    },
-    {
-      "key": "ai-attribution-hygiene",
-      "icon": "hygiene",
-      "title": "Scrubs its own AI fingerprints",
-      "summary": "A safe, verified way to clear AI-attribution traces from commit history, proven to leave the underlying code untouched."
     }
   ]
 }
