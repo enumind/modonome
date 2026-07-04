@@ -48,6 +48,7 @@ import { MESSAGES as M_AGENT_RUN_RUN_CYCLE } from "./agent-run/run-cycle.mjs";
 import { MESSAGES as M_AGENT_RUN_TOOL_LOOP_ADAPTER } from "./agent-run/tool-loop-adapter.mjs";
 import { MESSAGES as M_AGENT_RUN_TRANSITION_WORK_ITEM } from "./agent-run/transition-work-item.mjs";
 import { MESSAGES as M_ADVISORY_DETECT_NEAR_MISS } from "./advisory/detect-near-miss.mjs";
+import { MESSAGES as M_PANEL_CONTROL_PANEL } from "./panel/control-panel.mjs";
 
 export const CATALOG_PARTIALS = [
   M_GATE_ASSERT_GOVERNED_CHANGE,
@@ -94,4 +95,5 @@ export const CATALOG_PARTIALS = [
   M_AGENT_RUN_TOOL_LOOP_ADAPTER,
   M_AGENT_RUN_TRANSITION_WORK_ITEM,
   M_ADVISORY_DETECT_NEAR_MISS,
+  M_PANEL_CONTROL_PANEL,
 ];

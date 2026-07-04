@@ -2,6 +2,7 @@ import { useState } from "react";
 import { GatePanel, ProtectedPathRow, RoleBadge, TierBadge, StatusPill, Card, Toast } from "@modonome/design-system";
 import type { PanelState } from "../state/types";
 import { useConfirm } from "../lib/confirm";
+import { formatMessage } from "../lib/messages";
 
 /**
  * The integrity surface: the deterministic CI gates every change must pass, the
@@ -11,7 +12,7 @@ import { useConfirm } from "../lib/confirm";
  */
 export function GatesScreen({ state }: { state: PanelState }) {
   const confirm = useConfirm();
-  const [notice, setNotice] = useState<string | null>(null);
+  const [notice, setNotice] = useState<ReturnType<typeof formatMessage> | null>(null);
 
   async function onApprove(path: string) {
     const ok = await confirm({
@@ -20,7 +21,7 @@ export function GatesScreen({ state }: { state: PanelState }) {
       confirmLabel: "Approve change",
       body: `Approving ${path} is an owner responsibility, normally recorded as a review on the pull request itself. Modonome does not yet durably record protected-path approvals anywhere the panel can read or write, so this only acknowledges locally.`,
     });
-    if (ok) setNotice(`Acknowledged locally: change to ${path} approved. Approve it on the pull request too.`);
+    if (ok) setNotice(formatMessage(state.messages, "panel.gates.approve-acknowledged", { path }));
   }
 
   return (
@@ -37,7 +38,7 @@ export function GatesScreen({ state }: { state: PanelState }) {
       </div>
 
       {notice ? (
-        <Toast tone="info" title="Acknowledged" message={notice} onDismiss={() => setNotice(null)} />
+        <Toast tone={notice.severity} title="Acknowledged" message={notice.message} onDismiss={() => setNotice(null)} />
       ) : null}
 
       <div className="section">
