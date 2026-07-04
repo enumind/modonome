@@ -15,6 +15,7 @@ const ROLE_BADGE: Record<string, "maker" | "checker" | "maintainer"> = {
 
 const TABS = [
   { id: "roles", label: "Roles & models", icon: "users" as const },
+  { id: "agents", label: "Agents", icon: "spark" as const },
   { id: "providers", label: "Providers & runners", icon: "settings" as const },
   { id: "trust", label: "Trusted authors & paths", icon: "lock" as const },
   { id: "network", label: "Cross-repo network", icon: "branch" as const },
@@ -117,6 +118,12 @@ export function SettingsScreen({ state, write }: { state: PanelState; write: Wri
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState<{ tone: "info" | "blocked"; text: string } | null>(null);
 
+  const firstRole = Object.keys(state.config.roles)[0] ?? "maker";
+  const [agentRole, setAgentRole] = useState(firstRole);
+  const [newSkill, setNewSkill] = useState("");
+  const [newTool, setNewTool] = useState("");
+  const [priorityModelToAdd, setPriorityModelToAdd] = useState("");
+
   const [modelDraft, setModelDraft] = useState<ModelDraft>(EMPTY_MODEL_DRAFT);
   const [editingModelId, setEditingModelId] = useState<string | null>(null);
   const [modelIdError, setModelIdError] = useState<string | null>(null);
@@ -140,6 +147,31 @@ export function SettingsScreen({ state, write }: { state: PanelState; write: Wri
       ...c,
       roles: { ...c.roles, [role]: { ...c.roles[role], model } },
     }));
+  }
+
+  // Capability-profile editing (skills, tools, prioritized model fallback) for a role.
+  function updateRoleList(role: string, field: "skills" | "tools" | "models", next: string[]) {
+    setConfig((c) => ({
+      ...c,
+      roles: { ...c.roles, [role]: { ...c.roles[role], [field]: next } },
+    }));
+  }
+
+  function addToRoleList(role: string, field: "skills" | "tools" | "models", value: string) {
+    const v = value.trim();
+    if (!v) return;
+    const current = config.roles[role]?.[field] ?? [];
+    if (current.includes(v)) return;
+    updateRoleList(role, field, [...current, v]);
+  }
+
+  function removeFromRoleList(role: string, field: "skills" | "tools" | "models", value: string) {
+    const current = config.roles[role]?.[field] ?? [];
+    updateRoleList(
+      role,
+      field,
+      current.filter((x) => x !== value),
+    );
   }
 
   function addAuthor() {
@@ -650,6 +682,118 @@ export function SettingsScreen({ state, write }: { state: PanelState; write: Wri
                   ) : null}
                 </form>
               </div>
+            </div>
+          </Card>
+        </div>
+      ) : null}
+
+      {tab === "agents" ? (
+        <div className="stack-lg">
+          <Card
+            title="Agent capability profiles"
+            help="Each agent (maker, checker, researcher, or any crew role) carries skills, permitted tools, and a prioritized model list that falls back from a paid frontier choice to a free or local one when no budget is set. The maker can come from any channel (the internal loop, a human, or an agent session); the checker and other agents run to keep integrity regardless of who authored a change."
+          >
+            <div className="stack-lg">
+              {roleEntries.length === 0 ? (
+                <p className="mdn-faint">No agents are configured for this repo.</p>
+              ) : (
+                <>
+                  <div style={{ maxWidth: 320 }}>
+                    <Select
+                      label="Agent"
+                      hint="Which agent's capability profile to edit."
+                      options={roleEntries.map(([role]) => ({ value: role, label: role }))}
+                      value={roleEntries.some(([r]) => r === agentRole) ? agentRole : roleEntries[0][0]}
+                      onValueChange={setAgentRole}
+                    />
+                  </div>
+
+                  {(() => {
+                    const role = roleEntries.some(([r]) => r === agentRole) ? agentRole : roleEntries[0][0];
+                    const agent = config.roles[role] ?? { runner: "container", model: "" };
+                    const skills = agent.skills ?? [];
+                    const tools = agent.tools ?? [];
+                    const priority = agent.models ?? (agent.model ? [agent.model] : []);
+                    const chipRow = (
+                      items: string[],
+                      field: "skills" | "tools" | "models",
+                      renderIndex: boolean,
+                    ) =>
+                      items.length === 0 ? (
+                        <p className="mdn-faint" style={{ margin: "4px 0" }}>None yet.</p>
+                      ) : (
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, margin: "4px 0" }}>
+                          {items.map((item, i) => (
+                            <span key={item} style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                              <StatusPill tone="neutral" size="sm">
+                                {renderIndex ? `${i + 1}. ${item}` : item}
+                              </StatusPill>
+                              <IconButton icon="x" label={`Remove ${item}`} size="sm" onClick={() => removeFromRoleList(role, field, item)} />
+                            </span>
+                          ))}
+                        </div>
+                      );
+                    return (
+                      <div className="stack-lg" key={role}>
+                        <div>
+                          <p className="mdn-label">Skills</p>
+                          {chipRow(skills, "skills", false)}
+                          <form
+                            style={{ display: "flex", gap: 8, alignItems: "flex-end" }}
+                            onSubmit={(e) => {
+                              e.preventDefault();
+                              addToRoleList(role, "skills", newSkill);
+                              setNewSkill("");
+                            }}
+                          >
+                            <Input label="Add skill" placeholder="adversarial-review" value={newSkill} onChange={(e) => setNewSkill(e.target.value)} />
+                            <Button type="submit" size="sm">Add</Button>
+                          </form>
+                        </div>
+
+                        <div>
+                          <p className="mdn-label">Tools</p>
+                          {chipRow(tools, "tools", false)}
+                          <form
+                            style={{ display: "flex", gap: 8, alignItems: "flex-end" }}
+                            onSubmit={(e) => {
+                              e.preventDefault();
+                              addToRoleList(role, "tools", newTool);
+                              setNewTool("");
+                            }}
+                          >
+                            <Input label="Add tool" placeholder="web-search" value={newTool} onChange={(e) => setNewTool(e.target.value)} />
+                            <Button type="submit" size="sm">Add</Button>
+                          </form>
+                        </div>
+
+                        <div>
+                          <p className="mdn-label">Model priority (fallback order)</p>
+                          {chipRow(priority, "models", true)}
+                          <form
+                            style={{ display: "flex", gap: 8, alignItems: "flex-end" }}
+                            onSubmit={(e) => {
+                              e.preventDefault();
+                              if (priorityModelToAdd) addToRoleList(role, "models", priorityModelToAdd);
+                            }}
+                          >
+                            <div style={{ minWidth: 220 }}>
+                              <Select
+                                label="Add model"
+                                hint="Appended as the next fallback. The first entry is the primary; later entries run only if an earlier one is unaffordable or unreachable."
+                                options={[{ value: "", label: "Select a model…" }, ...modelOptions]}
+                                value={priorityModelToAdd}
+                                onValueChange={setPriorityModelToAdd}
+                              />
+                            </div>
+                            <Button type="submit" size="sm" disabled={!priorityModelToAdd}>Add</Button>
+                          </form>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </>
+              )}
             </div>
           </Card>
         </div>

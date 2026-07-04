@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:66e8dcd74de6b46c2711b8a7b13b264180f46efbb0dcc80af2016ce0b4132ada
-Files: 846  Bytes: 3089802  Map tokens: 110292/120000
+Merkle root: sha256:404213f66bb9f1197831a63c6ebc1a8da8a7b8fe10b4689733d9eeda04468ab3
+Files: 851  Bytes: 3113523  Map tokens: 110757/120000
 
 ## Modules
 
@@ -190,6 +190,7 @@ Files: 846  Bytes: 3089802  Map tokens: 110292/120000
 - docs/adr/ADR-036-policy-attestation.md [F:750436d8c1]: ADR-036: Policy-Pack Manifest and Disclosure Attestation
 - docs/adr/ADR-037-policy-pack-adoption.md [F:01a7edaeba]: ADR-037: Policy-Pack Adoption Tooling
 - docs/adr/ADR-038-checker-as-review-service.md [F:1a368a7935]: ADR-038: Checker as an Author-Agnostic Review Service
+- docs/adr/ADR-039-agent-capability-profiles.md [F:56a132aaca]: ADR-039: Agent Capability Profiles and the Always-Run Crew
 - docs/audits/claims-audit-2026-06-25.md [F:8a7591db62]: Claims audit, 2026-06-25
 - docs/audits/claims-audit-2026-07-01.md [F:6a3a98df8c]: Claims audit, 2026-07-01
 - docs/autonomy-plan.md [F:3dcdfa18c0]: Autonomy plan: governed autonomy on free models
@@ -255,7 +256,7 @@ Files: 846  Bytes: 3089802  Map tokens: 110292/120000
 - scripts/agent/parse-checker-telemetry.mjs [F:851f776227]: Case-insensitive signal phrases that mean the checker withheld approval or asked for changes. Matching any one sets checker_requested_changes = true.
 - scripts/agent/providers.mjs [F:8b5a1f94c4]: Built-in providers. A config's `providers` map (see resolveProvider) is merged on top, so a host repo can add or override entries without a code change here.
 - scripts/agent/render-prompt.mjs [F:fd660a117b]: Build a compact repository-snapshot context block from the committed Tier 0 signature, so every rendered role prompt starts pre-oriented and an agent can read t
-- scripts/agent/resolve-role.mjs [F:304ce7b89d]: Resolve runner and model settings for a named role. * * @param {object} cfg - Parsed config object (output of parseFlatYaml or loadConfig). * @param {string} ro
+- scripts/agent/resolve-role.mjs [F:304ce7b89d]: The role's primary model: an explicit `model`, else the head of its prioritized `models` fallback list, else the role default. Keeping `model` authoritative whe
 - scripts/agent/review-diff.mjs [F:2d6ef08990]: Build the review prompt. The diff is fenced and explicitly framed as untrusted data, never as instructions, so a change cannot prompt-inject the checker into ap
 - scripts/agent/route-action.mjs [F:37f4a5c04e]: Classify a role's model endpoint into a coarse reachability descriptor: kind: "local" self-hosted / private-host endpoint (Ollama, llama.cpp) kind: "github" the
 - scripts/agent/run-cycle.mjs [F:ddeb486c49]: Derive the ordered list of roles the cycle executes. An explicit cfg.role_sequence (a non-empty array of role names) is honored so a crew role added in config r
@@ -470,29 +471,29 @@ Files: 846  Bytes: 3089802  Map tokens: 110292/120000
 - S:3e9158c80b type RiskTier `export type RiskTier = 1 | 2 | 3 | 4;` L22
 - S:86cb290127 interface Subject `export interface Subject` L25 : The subject a mode points at: which repo the panel is reading.
 - S:a337ae8f0b interface ModonomeConfig `export interface ModonomeConfig` L37 : The engine configuration (schemas/config.schema.json), the levers the panel edits.
-- S:d56c1854d7 interface ArmingCheck `export interface ArmingCheck` L73 : One prerequisite in the armed-mode gate checklist.
-- S:6bc87187a8 interface ArmingStatus `export interface ArmingStatus` L81
-- S:a4a9a79fbe type WorkItemType `export type WorkItemType = "fix-issue" | "develop-feature" | "create-article" | "create-plan" | "update-docs" | "chore";` L88
-- S:3f93aaa307 const IN_FLIGHT_STATES `export const IN_FLIGHT_STATES: WorkState[] = ["claimed", "making", "checking", "rework", "merge_ready", "merging"];` L92 : True for any state where a real actor could be actively working the item: * mutating it destructively (delete) needs the lease released first.
-- S:5a49db2766 interface WorkItemVM `export interface WorkItemVM` L94
-- S:f3e5c99141 interface LeaseVM `export interface LeaseVM` L120
-- S:dddb39652d type GateStatus `export type GateStatus = "pass" | "fail" | "flaky" | "running" | "pending";` L127
-- S:9bc07de53c interface GateVM `export interface GateVM` L129
-- S:126357e421 interface CostByModel `export interface CostByModel` L138
-- S:ebe2964819 interface CostVM `export interface CostVM` L146
-- S:72a5c214ac interface LearningVM `export interface LearningVM` L155
-- S:e03cf612ca interface DecisionVM `export interface DecisionVM` L165
-- S:6ef3b2f2e5 interface RemediationProposalVM `export interface RemediationProposalVM` L175 : One commit the metadata-only remediator would rewrite, and why.
-- S:b41535d6e7 interface RemediationVM `export interface RemediationVM` L186 : The armed metadata-only remediator (ADR-035) as a read-only surface plus one owner * lever. `applyEnabled` mirrors the config flag; `ready` is true only when every arming * condition is met, and `bloc
-- S:3ad2d564a8 type AuditKind `export type AuditKind =` L195
-- S:7c6ba2a644 interface AuditEventVM `export interface AuditEventVM` L210
-- S:19226d4902 interface ProtectedPathVM `export interface ProtectedPathVM` L217
-- S:61e677ae40 interface TrendPoint `export interface TrendPoint` L224
-- S:cefb8c3f64 interface PanelSource `export interface PanelSource` L230 : Where a loaded PanelState actually came from, so the UI never presents demo data as real.
-- S:4a0171ecb5 interface PanelState `export interface PanelState` L243
-- S:6dcad3cdf1 interface NewWorkItemInput `export interface NewWorkItemInput` L271 : Fields a new work item is created with. Always starts in state "queued".
-- S:7934857ce3 interface WorkItemPatch `export interface WorkItemPatch` L283 : Safe-to-edit-anytime fields: never state, owner, or lease, since those change only * through the existing lease/transition machinery, never a generic metadata edit.
-- S:a2d9480f78 interface WriteActions `export interface WriteActions` L292
+- S:d56c1854d7 interface ArmingCheck `export interface ArmingCheck` L86 : One prerequisite in the armed-mode gate checklist.
+- S:6bc87187a8 interface ArmingStatus `export interface ArmingStatus` L94
+- S:a4a9a79fbe type WorkItemType `export type WorkItemType = "fix-issue" | "develop-feature" | "create-article" | "create-plan" | "update-docs" | "chore";` L101
+- S:3f93aaa307 const IN_FLIGHT_STATES `export const IN_FLIGHT_STATES: WorkState[] = ["claimed", "making", "checking", "rework", "merge_ready", "merging"];` L105 : True for any state where a real actor could be actively working the item: * mutating it destructively (delete) needs the lease released first.
+- S:5a49db2766 interface WorkItemVM `export interface WorkItemVM` L107
+- S:f3e5c99141 interface LeaseVM `export interface LeaseVM` L133
+- S:dddb39652d type GateStatus `export type GateStatus = "pass" | "fail" | "flaky" | "running" | "pending";` L140
+- S:9bc07de53c interface GateVM `export interface GateVM` L142
+- S:126357e421 interface CostByModel `export interface CostByModel` L151
+- S:ebe2964819 interface CostVM `export interface CostVM` L159
+- S:72a5c214ac interface LearningVM `export interface LearningVM` L168
+- S:e03cf612ca interface DecisionVM `export interface DecisionVM` L178
+- S:6ef3b2f2e5 interface RemediationProposalVM `export interface RemediationProposalVM` L188 : One commit the metadata-only remediator would rewrite, and why.
+- S:b41535d6e7 interface RemediationVM `export interface RemediationVM` L199 : The armed metadata-only remediator (ADR-035) as a read-only surface plus one owner * lever. `applyEnabled` mirrors the config flag; `ready` is true only when every arming * condition is met, and `bloc
+- S:3ad2d564a8 type AuditKind `export type AuditKind =` L208
+- S:7c6ba2a644 interface AuditEventVM `export interface AuditEventVM` L223
+- S:19226d4902 interface ProtectedPathVM `export interface ProtectedPathVM` L230
+- S:61e677ae40 interface TrendPoint `export interface TrendPoint` L237
+- S:cefb8c3f64 interface PanelSource `export interface PanelSource` L243 : Where a loaded PanelState actually came from, so the UI never presents demo data as real.
+- S:4a0171ecb5 interface PanelState `export interface PanelState` L256
+- S:6dcad3cdf1 interface NewWorkItemInput `export interface NewWorkItemInput` L284 : Fields a new work item is created with. Always starts in state "queued".
+- S:7934857ce3 interface WorkItemPatch `export interface WorkItemPatch` L296 : Safe-to-edit-anytime fields: never state, owner, or lease, since those change only * through the existing lease/transition machinery, never a generic metadata edit.
+- S:a2d9480f78 interface WriteActions `export interface WriteActions` L305
 ### scripts/verify-packet.mjs [F:0c1c5ad5d9]
 - S:6dd199eea1 function resolveActiveKey `export function resolveActiveKey(peerKeys, alias, now = new Date())` L19 : Resolve an alias to an active, in-window key entry in the allowlist.
 - S:f3b8628cdb function verifyPacket `export function verifyPacket(packet, peerKeys, { now = new Date(), skipContentGate = false } = {})` L35 : Full ordered verification. options.skipContentGate runs only the signature checks (steps 3 to 5), used when the caller already ran the schema and redaction gate.
@@ -707,7 +708,10 @@ Files: 846  Bytes: 3089802  Map tokens: 110292/120000
 - S:c850118bb2 interface StatusPillProps `export interface StatusPillProps extends HTMLAttributes<HTMLSpanElement>` L8
 - S:eb647d4678 function StatusPill `export function StatusPill(` L27 : A compact rounded status indicator. Pairs a tinted background and border with the * tone's color, and always renders its label text (plus an optional icon or dot) so * the status reads correctly even 
 ### scripts/agent/resolve-role.mjs [F:304ce7b89d]
-- S:0713a27a1f function resolveRole `export function resolveRole(cfg, role)` L41 : Resolve runner and model settings for a named role. * * @param {object} cfg - Parsed config object (output of parseFlatYaml or loadConfig). * @param {string} role - One of "maker", "checker", "self-go
+- S:35a01a919e function primaryModel `function primaryModel(roleCfg, roleDefaults)` L45 : The role's primary model: an explicit `model`, else the head of its prioritized `models` fallback list, else the role default. Keeping `model` authoritative when present preserves every existing confi
+- S:0713a27a1f function resolveRole `export function resolveRole(cfg, role)` L51
+- S:433f196465 function resolveRoleModelChain `export function resolveRoleModelChain(cfg, role)` L85 : Resolve a role's prioritized model list into an ordered array of fully-resolved model descriptors, highest priority first. Source is roleCfg.models when present, else the single primary model, so a ro
+- S:5aed523637 function selectUsableModel `export function selectUsableModel(chain, { budgetUsdPerDay = 0 } = {})` L108 : Pick the first model in a chain that is affordable under the daily budget, so a prioritized list falls back from a paid frontier choice to a free or local one when no budget is set. A local or free mo
 ### apps/control-panel/src/screens/GatesScreen.tsx [F:304fa8ef33]
 - S:a2d5fcb920 function GatesScreen `export function GatesScreen({ state }: { state: PanelState })` L12 : The integrity surface: the deterministic CI gates every change must pass, the * protected paths that require explicit owner approval, and the separation-of-duties * contract (distinct maker, checker, 
 ### .design-sync/previews/LeaseTable.tsx [F:31658eff0b]
@@ -841,8 +845,8 @@ Files: 846  Bytes: 3089802  Map tokens: 110292/120000
 - S:dab0af7046 function readStagedEntries `export function readStagedEntries(root)` L51 : Return the staged bullet lines (the "- [date] ..." entries) between the "## Staged" and "## Promoted" headings. Lines that do not begin a bullet are ignored, so surrounding prose does not count agains
 - S:30e8b022de function appendStagedEntry `export function appendStagedEntry(root, line)` L63 : Append one staged candidate line to LEARNINGS.md, enforcing the format and the cap. Never evicts: a full section throws so a human promotes or prunes first. Idempotent on an exact-duplicate line. Retu
 ### apps/control-panel/src/screens/SettingsScreen.tsx [F:4ebf08705b]
-- S:d49b633132 function isValidUrl `function isValidUrl(value: string): boolean` L53
-- S:6d2334f815 function SettingsScreen `export function SettingsScreen({ state, write }: { state: PanelState; write: WriteActions })` L111 : The advanced-configuration screen, one conceptual area per tab so nothing forces an * operator to scroll past unrelated subsystems to reach the one they came for. Full * CRUD lives here for the model-
+- S:d49b633132 function isValidUrl `function isValidUrl(value: string): boolean` L54
+- S:6d2334f815 function SettingsScreen `export function SettingsScreen({ state, write }: { state: PanelState; write: WriteActions })` L112 : The advanced-configuration screen, one conceptual area per tab so nothing forces an * operator to scroll past unrelated subsystems to reach the one they came for. Full * CRUD lives here for the model-
 ### examples/demo-app/tests/CheckoutService.test.js [F:52caf3b287]
 - S:ad302fbf54 function makeCartService `function makeCartService(cart)` L5
 - S:8d10c3ed6e function makeOrderService `function makeOrderService()` L13
@@ -1471,8 +1475,9 @@ Files: 846  Bytes: 3089802  Map tokens: 110292/120000
 - S:36acbff697 function Carousel `export function Carousel({ children, label, className }: CarouselProps)` L21 : A horizontally scrolling row with scroll-snap and prev/next nav buttons. Items stay * in normal tab order (each is independently focusable, and the browser scrolls a * focused item into view automatic
 ### scripts/lib/config-validate.mjs [F:d480e40c97]
 - S:ce2faa5c80 function loadConfig `export function loadConfig(path)` L16
-- S:dce77ef3c3 function safetyErrors `export function safetyErrors(cfg)` L30 : Safety rules beyond structural validation. These keep a config from claiming an armed posture without the controls that make arming safe. Note on arming levers: config values such as autonomy_enabled 
-- S:ea1469d710 function validateConfig `export function validateConfig(cfg)` L56
+- S:75c48595da function primaryRoleModel `function primaryRoleModel(roleCfg)` L33 : Safety rules beyond structural validation. These keep a config from claiming an armed posture without the controls that make arming safe. Note on arming levers: config values such as autonomy_enabled 
+- S:dce77ef3c3 function safetyErrors `export function safetyErrors(cfg)` L40
+- S:ea1469d710 function validateConfig `export function validateConfig(cfg)` L68
 ### .design-sync/previews/PermissionDeniedState.tsx [F:d590ca62b9]
 - S:655cf75cf0 function OwnerOnly `export const OwnerOnly = () => (` L3
 ### design-system/src/components/HelpHint/HelpHint.tsx [F:d5b496b125]
@@ -2116,6 +2121,8 @@ Files: 846  Bytes: 3089802  Map tokens: 110292/120000
 - apps/control-panel/src/screens/ArmingScreen.tsx -> apps/control-panel/src/state/types.ts
 - apps/control-panel/src/screens/ArmingScreen.tsx -> apps/control-panel/src/state/configDiff.ts
 - apps/control-panel/src/screens/ArmingScreen.tsx -> apps/control-panel/src/lib/confirm.tsx
+- tests/agent-capability-profile.test.mjs -> scripts/agent/resolve-role.mjs
+- tests/agent-capability-profile.test.mjs -> scripts/lib/config-validate.mjs
 - tests/promote-learning.test.mjs -> scripts/lib/learnings.mjs
 - scripts/check-attribution-fp-corpus.mjs -> scripts/lib/detect-attribution.mjs
 - scripts/check-attribution-fp-corpus.mjs -> scripts/lib/near-miss.mjs
@@ -2146,54 +2153,54 @@ Files: 846  Bytes: 3089802  Map tokens: 110292/120000
 
 ## Attention (centrality + pagerank)
 
-1. design-system/src/lib/cx.ts centrality=32 pagerank=0.033869
-2. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.021956
-3. design-system/src/index.ts centrality=48 pagerank=0.00089
-4. scripts/lib/yaml-lite.mjs centrality=17 pagerank=0.009098
-5. scripts/lib/jsonschema.mjs centrality=10 pagerank=0.012276
-6. scripts/agent/run-cycle.mjs centrality=18 pagerank=0.003502
-7. apps/control-panel/src/state/types.ts centrality=12 pagerank=0.007474
-8. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.007472
-9. scripts/lib/learnings.mjs centrality=10 pagerank=0.00716
-10. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.005326
-11. scripts/validate-config.mjs centrality=12 pagerank=0.004857
-12. scripts/lib/canonical-json.mjs centrality=10 pagerank=0.005086
-13. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.00149
-14. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.004296
-15. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.005658
-16. scripts/lib/config-validate.mjs centrality=5 pagerank=0.005812
-17. scripts/validate-work-item.mjs centrality=8 pagerank=0.003666
-18. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.004984
-19. scripts/agent/resolve-role.mjs centrality=8 pagerank=0.00323
-20. apps/control-panel/src/App.tsx centrality=10 pagerank=0.001269
-21. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002602
-22. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.003215
-23. scripts/lib/branch-name.mjs centrality=4 pagerank=0.004725
-24. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.004635
-25. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.003113
-26. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.00149
-27. scripts/lib/graph.mjs centrality=4 pagerank=0.004291
-28. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.002799
-29. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.004836
-30. scripts/lib/work-item-validate.mjs centrality=3 pagerank=0.004648
-31. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001661
-32. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.00443
-33. scripts/snapshot.mjs centrality=8 pagerank=0.00089
-34. apps/control-panel/server/modonomeWriter.mjs centrality=6 pagerank=0.002266
-35. scripts/agent/providers.mjs centrality=3 pagerank=0.004096
-36. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002602
-37. design-system/src/lib/format.ts centrality=5 pagerank=0.0026
-38. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001661
-39. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.00101
-40. design-system/src/components/Modal/Modal.tsx centrality=4 pagerank=0.002367
-41. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001661
-42. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001661
-43. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.001661
-44. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.001661
-45. design-system/src/components/TierBadge/TierBadge.tsx centrality=4 pagerank=0.002338
-46. examples/demo-app/src/index.js centrality=6 pagerank=0.00089
-47. design-system/src/components/Table/Table.tsx centrality=4 pagerank=0.002296
-48. scripts/lib/remediate.mjs centrality=3 pagerank=0.00297
-49. scripts/dry-run-sweep.mjs centrality=5 pagerank=0.001521
-50. design-system/src/components/IdentityChip/IdentityChip.tsx centrality=4 pagerank=0.002178
+1. design-system/src/lib/cx.ts centrality=32 pagerank=0.033672
+2. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.021829
+3. design-system/src/index.ts centrality=48 pagerank=0.000885
+4. scripts/lib/yaml-lite.mjs centrality=17 pagerank=0.009205
+5. scripts/lib/jsonschema.mjs centrality=10 pagerank=0.012365
+6. scripts/agent/run-cycle.mjs centrality=18 pagerank=0.003481
+7. apps/control-panel/src/state/types.ts centrality=12 pagerank=0.007431
+8. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.007429
+9. scripts/lib/learnings.mjs centrality=10 pagerank=0.007118
+10. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.005295
+11. scripts/validate-config.mjs centrality=12 pagerank=0.004829
+12. scripts/lib/canonical-json.mjs centrality=10 pagerank=0.005057
+13. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001481
+14. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.004271
+15. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.005625
+16. scripts/lib/config-validate.mjs centrality=6 pagerank=0.006155
+17. scripts/agent/resolve-role.mjs centrality=9 pagerank=0.003587
+18. scripts/validate-work-item.mjs centrality=8 pagerank=0.003644
+19. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.004955
+20. apps/control-panel/src/App.tsx centrality=10 pagerank=0.001262
+21. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002587
+22. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.003196
+23. scripts/lib/branch-name.mjs centrality=4 pagerank=0.004698
+24. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.004608
+25. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.003095
+26. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001482
+27. scripts/lib/graph.mjs centrality=4 pagerank=0.004266
+28. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.002783
+29. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.004808
+30. scripts/lib/work-item-validate.mjs centrality=3 pagerank=0.004621
+31. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001651
+32. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.004405
+33. scripts/snapshot.mjs centrality=8 pagerank=0.000885
+34. scripts/agent/providers.mjs centrality=3 pagerank=0.004392
+35. apps/control-panel/server/modonomeWriter.mjs centrality=6 pagerank=0.002252
+36. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002587
+37. design-system/src/lib/format.ts centrality=5 pagerank=0.002585
+38. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001651
+39. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.001004
+40. design-system/src/components/Modal/Modal.tsx centrality=4 pagerank=0.002353
+41. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001651
+42. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001651
+43. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.001651
+44. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.001651
+45. design-system/src/components/TierBadge/TierBadge.tsx centrality=4 pagerank=0.002325
+46. examples/demo-app/src/index.js centrality=6 pagerank=0.000885
+47. design-system/src/components/Table/Table.tsx centrality=4 pagerank=0.002283
+48. scripts/lib/remediate.mjs centrality=3 pagerank=0.002953
+49. scripts/dry-run-sweep.mjs centrality=5 pagerank=0.001512
+50. design-system/src/components/IdentityChip/IdentityChip.tsx centrality=4 pagerank=0.002166
 

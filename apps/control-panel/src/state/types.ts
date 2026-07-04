@@ -62,7 +62,20 @@ export interface ModonomeConfig {
   remediation_apply_enabled: boolean;
   roles: Record<
     string,
-    { runner: string; model: string; provider?: string; transport?: string; trigger?: string; execution_target?: string }
+    {
+      runner: string;
+      model: string;
+      /** Prioritized model fallback list, highest priority first. */
+      models?: string[];
+      /** Declarative capability tags (e.g. adversarial-review, cite-sources). */
+      skills?: string[];
+      /** Declarative tool tags this agent is permitted (e.g. read-only-fs, web-search). */
+      tools?: string[];
+      provider?: string;
+      transport?: string;
+      trigger?: string;
+      execution_target?: string;
+    }
   >;
   models: Record<string, { provider: string; base_url?: string }>;
   runners: Record<string, { labels: string[]; cli_path: string; environment?: string }>;

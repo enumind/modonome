@@ -762,7 +762,7 @@ class Component extends DCLogic {
       netGeo: null, netActive: -1, netPhase: 'idle', netSeq: 0, netShared: 128, activeSection: 'top',
       live: null, syncStatus: 'cached' };
     this.repoBase = { tests: 248, coverage: '81%', deps: 3, debt: 12 };
-    this.engineBase = { lessons: 3, rules: 0, gates: 8, queue: 3, version: 'v0.1.0-alpha', armed: false };
+    this.engineBase = { lessons: 3, rules: 0, gates: 8, queue: 6, version: 'v0.1.0-alpha', armed: false };
     this.STAGES = [
       {title:'Maker', sub:'builds one small change', scope:'AGENT', live:'The maker is writing one small, scoped change and pinning it with a test.'},
       {title:'Checker', sub:'reviews it independently', scope:'AGENT', live:'A separate checker reviews the diff. The maker never approves its own work.'},

@@ -27,6 +27,16 @@ export function loadConfig(path) {
 // variable, enforced at runtime in bin/modonome.mjs (see ADR-004). A config file the
 // agent can write therefore cannot self-arm; these rules only check that a claimed
 // armed posture is internally consistent.
+// A role's primary model: an explicit `model`, else the head of its prioritized
+// `models` fallback list. Mirrors primaryModel in scripts/agent/resolve-role.mjs so
+// the validator and the resolver agree on what "the maker's model" means.
+function primaryRoleModel(roleCfg) {
+  if (!roleCfg) return undefined;
+  if (roleCfg.model) return roleCfg.model;
+  if (Array.isArray(roleCfg.models) && roleCfg.models.length > 0) return roleCfg.models[0];
+  return undefined;
+}
+
 export function safetyErrors(cfg) {
   const errs = [];
   if (cfg.auto_merge === true) {
@@ -40,13 +50,15 @@ export function safetyErrors(cfg) {
   if (cfg.repo_network_enabled === true && cfg.share_raw_code_across_repos === true) {
     errs.push("repo_network_enabled with share_raw_code_across_repos is unsafe by default.");
   }
-  // WS-H: enforce distinct models for maker and checker when the flag is on.
+  // WS-H: enforce distinct models for maker and checker when the flag is on. The
+  // primary model is an explicit `model`, else the head of the prioritized `models`
+  // fallback list, so a role configured only with `models` is still checked.
   if (cfg.require_distinct_maker_checker_model !== false) {
-    const makerModel = cfg.roles?.maker?.model;
-    const checkerModel = cfg.roles?.checker?.model;
+    const makerModel = primaryRoleModel(cfg.roles?.maker);
+    const checkerModel = primaryRoleModel(cfg.roles?.checker);
     if (makerModel && checkerModel && makerModel === checkerModel) {
       errs.push(
-        `require_distinct_maker_checker_model is on but roles.maker.model and roles.checker.model are both "${makerModel}".`
+        `require_distinct_maker_checker_model is on but roles.maker and roles.checker both resolve to primary model "${makerModel}".`
       );
     }
   }

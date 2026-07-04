@@ -46,7 +46,7 @@ const NESTED_CONFIG_KEYS = new Set(["roles", "models", "runners", "providers"]);
 // copied verbatim instead, so this order never has to match what a hand-edited file
 // already has.
 const ENTRY_FIELD_ORDER = {
-  roles: ["runner", "model", "provider", "transport", "trigger", "execution_target"],
+  roles: ["runner", "model", "models", "skills", "tools", "provider", "transport", "trigger", "execution_target"],
   models: ["provider", "base_url", "exec_mode"],
   runners: ["labels", "cli_path", "environment", "reachable_providers", "reachable_endpoints"],
   providers: ["transport", "costClass", "authEnv", "base_url", "defaultBaseUrl"],
