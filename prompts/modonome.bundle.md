@@ -155,8 +155,8 @@ The only path to action is disabled, then dry-run, then shadow, then armed.
 Load these from `prompts/modules/` as needed:
 
 - `adoption.md`: the adoption pass and the scaffold-only rule.
-- `state-machine.md`: the durable work-item state machine, the work packet, and the session
-  loop.
+- `state-machine.md`: the durable work-item state machine, the work item's brief, and the
+  session loop.
 - `roles.md`: the agent roles and the maker-checker-merger contract.
 - `gates.md`: deterministic gates and the anti-gaming ratchet.
 - `control-panel.md`: the operator control panel.
@@ -283,7 +283,7 @@ escalation_reason:
 Transitions:
 
 - `claim`: only from `queued`. Set owner and lease.
-- `start_making`: only under an active lease. The maker receives one bounded work packet.
+- `start_making`: only under an active lease. The maker receives one bounded work item.
 - `pr_opened`: move to `checking`. Spawn a checker that is not the maker and, when models are
   visible, not the maker model.
 - `checks_red` or `critique_failed`: increment attempts and return to `making` until the cap,
@@ -312,9 +312,9 @@ escalation:
 - default if unanswered: hold
 ```
 
-## Work packet
+## Work item brief
 
-Makers receive a tight packet. A thin packet is a decomposition defect, not a reason for the
+Makers receive a tight brief. A thin brief is a decomposition defect, not a reason for the
 maker to improvise.
 
 ```yaml
@@ -338,7 +338,7 @@ gate: exact commands that prove done
 tier_hint: local | frontier | owner
 ```
 
-The maker touches only `allowed_edit_set`, keeps each changed line traceable to the packet,
+The maker touches only `allowed_edit_set`, keeps each changed line traceable to the brief,
 and stops rather than fake a green result.
 
 ## Session loop
@@ -346,7 +346,7 @@ and stops rather than fake a green result.
 Start: read repo instructions and the core, fetch the integration branch if allowed, read
 status and decisions and CI, confirm mode and caps, run the adoption pass if needed.
 
-Work: claim one item, verify the work packet, make the smallest invariant-preserving change,
+Work: claim one item, verify the work item's brief, make the smallest invariant-preserving change,
 run focused gates then broader gates as risk requires, write a maker rationale, send to an
 independent checker, record status and metrics.
 

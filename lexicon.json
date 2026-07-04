@@ -1,0 +1,27 @@
+{
+  "$schema": "vocabulary drift gate: banned -> preferred, enforced by scripts/check-style.mjs",
+  "terms": [
+    {
+      "banned": "anti-gaming ratchet",
+      "preferred": "gate integrity check",
+      "note": "Buyer-facing term names the guarantee. \"ratchet\" stays fine as the internal mechanism name. Grandfathered: the phrase is used in fixtures, tests, and site copy far too widely to migrate as a side effect of shipping this gate; the check name itself (modonome/gate-integrity) already carries the rename.",
+      "grandfathered": true
+    },
+    {
+      "banned": "work packet",
+      "preferred": "work item",
+      "note": "Ends the packet/work-item drift; \"packet\" is reserved for knowledge packets."
+    },
+    {
+      "banned": "Modonome Autonomy",
+      "preferred": "Modonome Loop",
+      "note": "Pairs with Modonome Guard as the two-product brand spine."
+    },
+    {
+      "banned": "levers",
+      "preferred": "controls",
+      "note": "Deferred rollout: grandfathered in scripts/check-style.mjs until the code-level rename lands.",
+      "grandfathered": true
+    }
+  ]
+}
