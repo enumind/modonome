@@ -1,11 +1,12 @@
 {
   "schema_version": 1,
   "id": "WI-043-migrate-advisory-message-long-tail",
-  "state": "queued",
-  "attempts": 0,
+  "state": "done",
+  "attempts": 1,
   "max_attempts": 3,
   "touches_protected_path": true,
   "allowed_edit_set": [
+    "scripts/lib/message-catalog/index.mjs",
     "scripts/hygiene.mjs",
     "scripts/sign-packet.mjs",
     "scripts/verify-packet.mjs",

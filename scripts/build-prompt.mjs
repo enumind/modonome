@@ -5,9 +5,11 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const promptsDir = join(here, "..", "prompts");
+const overrides = loadMessageOverrides(join(here, "..", ".modonome"));
 
 // Module order is fixed and load-bearing. Keep it in sync with the core's module list.
 const MODULE_ORDER = [
@@ -50,10 +52,7 @@ try {
 }
 
 if (current !== built) {
-  console.error(
-    "Bundle drift: prompts/modonome.bundle.md does not equal core plus modules.\n" +
-      "Run: node scripts/build-prompt.mjs --write"
-  );
+  console.error(formatMessage("advisory.build-prompt.bundle-drift", {}, overrides).message);
   process.exit(1);
 }
 console.log("Bundle check: core plus modules match the committed bundle.");
