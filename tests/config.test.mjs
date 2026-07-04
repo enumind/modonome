@@ -80,7 +80,7 @@ test("yaml-lite parser handles edge cases correctly", () => {
   assert.equal(parsed["# this is a comment"], undefined);
 });
 
-test("yaml-lite parser reads block-style sequences, not just inline arrays", () => {
+test("yaml-lite parser reads block-style sequences in addition to inline arrays", () => {
   // The shape examples/demo-app/.modonome/config.yaml actually ships:
   const doc = [
     "trusted_author_allowlist:",
@@ -96,7 +96,7 @@ test("yaml-lite parser reads block-style sequences, not just inline arrays", () 
   assert.deepEqual(parsed.protected_paths_extra, [".modonome/config.yaml", ".github/workflows", "CODEOWNERS"]);
   assert.equal(parsed.state_dir, ".modonome", "a flat key after a sequence must still parse");
 
-  // A key with no children at all still parses to "", not a sequence — must not
+  // A key with no children at all still parses to "", not a sequence: must not
   // regress just because sequence support was added.
   assert.equal(parseFlatYaml("notes:").notes, "");
   // An empty item and a quoted item both parse as their scalars would inline.

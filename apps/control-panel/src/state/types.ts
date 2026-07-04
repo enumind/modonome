@@ -85,6 +85,12 @@ export interface ArmingStatus {
   checklist: ArmingCheck[];
 }
 
+export type WorkItemType = "fix-issue" | "develop-feature" | "create-article" | "create-plan" | "update-docs" | "chore";
+
+/** True for any state where a real actor could be actively working the item:
+ * mutating it destructively (delete) needs the lease released first. */
+export const IN_FLIGHT_STATES: WorkState[] = ["claimed", "making", "checking", "rework", "merge_ready", "merging"];
+
 export interface WorkItemVM {
   id: string;
   title: string;
@@ -105,6 +111,10 @@ export interface WorkItemVM {
   gates: string[];
   escalationReason?: string;
   queuedAt?: string;
+  /** The category of deliverable this item produces (schemas/work-item.schema.json#type). */
+  type?: WorkItemType;
+  /** The config.roles key that executes this item, if assigned. */
+  assignedRole?: string;
 }
 
 export interface LeaseVM {
@@ -253,9 +263,34 @@ export interface PanelState {
  * fixture-only local notices. `writable` is false whenever the panel is showing demo
  * data or the dev server was started without MODONOME_PANEL_WRITE=1.
  */
+/** Fields a new work item is created with. Always starts in state "queued". */
+export interface NewWorkItemInput {
+  id: string;
+  type: WorkItemType;
+  assignedRole?: string;
+  allowedEditSet: string[];
+  gates: string[];
+  maxAttempts?: number;
+  touchesProtectedPath?: boolean;
+}
+
+/** Safe-to-edit-anytime fields: never state, owner, or lease, since those change only
+ * through the existing lease/transition machinery, never a generic metadata edit. */
+export interface WorkItemPatch {
+  type?: WorkItemType;
+  assignedRole?: string;
+  allowedEditSet?: string[];
+  gates?: string[];
+  maxAttempts?: number;
+  touchesProtectedPath?: boolean;
+}
+
 export interface WriteActions {
   writable: boolean;
   onSaveConfig: (patch: Partial<ModonomeConfig>) => Promise<void>;
   onReleaseLease: (itemId: string) => Promise<void>;
+  onCreateWorkItem: (item: NewWorkItemInput) => Promise<void>;
+  onUpdateWorkItem: (itemId: string, patch: WorkItemPatch) => Promise<void>;
+  onDeleteWorkItem: (itemId: string) => Promise<void>;
   onPruneLearning: (lesson: string) => Promise<void>;
 }

@@ -7,7 +7,7 @@ import { existsSync } from "node:fs";
 import { resolve, join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { readModonomeState } from "./modonomeReader.mjs";
-import { patchConfig, releaseLease, pruneLearning } from "./modonomeWriter.mjs";
+import { patchConfig, releaseLease, pruneLearning, createWorkItem, updateWorkItem, deleteWorkItem } from "./modonomeWriter.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, "../../..");
@@ -59,7 +59,7 @@ function stateWithSource(dir, mode, writable) {
 }
 
 // Best-effort reachability probe for an OpenAI-compatible endpoint (LM Studio,
-// Ollama, a gateway). Read-only and network-only — it never touches config.yaml, so
+// Ollama, a gateway). Read-only and network-only: it never touches config.yaml, so
 // it needs no write guard. Always resolves (never throws to the caller) so the panel
 // can show an inline pass/fail pill instead of an unhandled error.
 function buildModelsUrl(baseUrl) {
@@ -135,6 +135,30 @@ export function modonomeApiPlugin() {
         const body = await readBody(req);
         const { dir, mode } = resolveModonomeDir(body.mode, body.dir);
         pruneLearning(dir, body.lesson);
+        return sendJson(res, 200, stateWithSource(dir, mode, writable));
+      }
+
+      if (url.pathname === "/api/modonome/work-item" && req.method === "POST") {
+        if (!writable) return writeGuard(res);
+        const body = await readBody(req);
+        const { dir, mode } = resolveModonomeDir(body.mode, body.dir);
+        createWorkItem(dir, body.item ?? {});
+        return sendJson(res, 200, stateWithSource(dir, mode, writable));
+      }
+
+      if (url.pathname === "/api/modonome/work-item/update" && req.method === "POST") {
+        if (!writable) return writeGuard(res);
+        const body = await readBody(req);
+        const { dir, mode } = resolveModonomeDir(body.mode, body.dir);
+        updateWorkItem(dir, body.itemId, body.patch ?? {});
+        return sendJson(res, 200, stateWithSource(dir, mode, writable));
+      }
+
+      if (url.pathname === "/api/modonome/work-item/delete" && req.method === "POST") {
+        if (!writable) return writeGuard(res);
+        const body = await readBody(req);
+        const { dir, mode } = resolveModonomeDir(body.mode, body.dir);
+        deleteWorkItem(dir, body.itemId);
         return sendJson(res, 200, stateWithSource(dir, mode, writable));
       }
 

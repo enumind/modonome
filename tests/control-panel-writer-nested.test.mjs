@@ -202,7 +202,7 @@ test("host mode: wiring the first-ever roles/models block into a bare scaffold",
   assert.strictEqual(resolveRole(finalConfig, "maker").transport, "openai-http");
 
   // Every pre-existing scalar/array line (the arming levers, caps, trusted authors,
-  // protected paths) is untouched and in the same order — only new content was
+  // protected paths) is untouched and in the same order; only new content was
   // appended. Blank lines are excluded from this comparison: appending two brand-new
   // top-level blocks (models, then roles) each add their own separating blank line by
   // design, so the blank-line *count* legitimately grows; content does not.
@@ -232,8 +232,8 @@ test("a role wired to a local model resolves to openai-http transport, not the A
 
   // planCycle is the actual pre-flight the agent runner executes before invoking
   // anything; it must accept this plan without throwing (distinct models, both
-  // models pinned in the registry, and — since neither runner in this config
-  // declares reachable_providers/reachable_endpoints — the backward-compatible
+  // models pinned in the registry, and, since neither runner in this config
+  // declares reachable_providers/reachable_endpoints, the backward-compatible
   // single-environment fallback in resolveExecutionTarget, not a reachability error).
   const plan = planCycle({ target: "examples/demo-app" }, finalConfig, "test-run");
   assert.strictEqual(plan.maker.transport, "openai-http");
@@ -247,8 +247,8 @@ test("planCycle fails closed when a runner declares reachability but none can re
   const oldConfig = yaml.load(readFileSync(join(dir, "config.yaml"), "utf8"));
 
   // Once any runner in the file opts into declaring what it can reach, an endpoint
-  // no declared runner covers must fail closed rather than silently falling back —
-  // this is the exact gotcha behind the Phase B "ubuntu-latest can't reach a LAN-only
+  // no declared runner covers must fail closed rather than silently falling back.
+  // This is the exact gotcha behind the Phase B "ubuntu-latest can't reach a LAN-only
   // LM Studio box" caveat: it only self-corrects once a runner is honest about its
   // real reach, which is precisely what a self-hosted runner registration should add.
   patchConfig(dir, {

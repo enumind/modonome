@@ -14,6 +14,10 @@
       "enum": ["queued", "claimed", "making", "checking", "rework", "merge_ready", "merging", "done", "escalated"]
     },
     "owner": { "type": "string" },
+    "lease_owner": {
+      "type": "string",
+      "description": "Written by scripts/transition-work-item.mjs's compare-and-swap. Equivalent to owner (commit-identity.mjs's leaseHolder() reads either); kept as a distinct property instead of folded into owner so a CAS transition's writer identity is never confused with the human-facing owner field a work packet was authored with."
+    },
     "lease_expires_at": { "type": "string" },
     "branch": { "type": "string" },
     "pr": { "type": "string" },
@@ -27,6 +31,16 @@
     "allowed_edit_set": { "type": "array", "items": { "type": "string" } },
     "gates": { "type": "array", "items": { "type": "string" } },
     "escalation_reason": { "type": "string" },
-    "queued_at": { "type": "string" }
+    "queued_at": { "type": "string" },
+    "type": {
+      "type": "string",
+      "description": "The category of deliverable this item produces, distinct from state (its lifecycle position). Selects which prompt module/role template frames the work.",
+      "enum": ["fix-issue", "develop-feature", "create-article", "create-plan", "update-docs", "chore"]
+    },
+    "assigned_role": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The config.roles key (maker, checker, self-govern, or a custom crew role) that executes this item. Any role named here must resolve through scripts/agent/resolve-role.mjs like any other; this field only records the assignment, it does not itself grant a role new capability."
+    }
   }
 }

@@ -4,11 +4,12 @@
 // Nothing here authors new governance judgment (a gate description, a decision's
 // answer) on the operator's behalf; those need real human content and stay out of
 // scope for an automated write.
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import yaml from "js-yaml";
 import { parseStagedLine } from "./learningsFormat.mjs";
 import { validateConfig } from "../../../scripts/lib/config-validate.mjs";
+import { validateWorkItem } from "../../../scripts/lib/work-item-validate.mjs";
 
 const SCALAR_CONFIG_KEYS = new Set([
   "autonomy_enabled",
@@ -110,7 +111,7 @@ function findBlock(lines, key) {
 
 // Split a block's interior lines into ordered segments: a real entry (a line at
 // exactly ENTRY_INDENT spaces naming a key, plus every following line indented deeper
-// than that), or "other" (blank lines, and comment lines — including an entirely
+// than that), or "other" (blank lines, and comment lines, including an entirely
 // commented-out example entry, which never matches the entry-key pattern and so is
 // preserved untouched as inert text regardless of what changes around it).
 function captureSegments(lines, start, end) {
@@ -243,8 +244,8 @@ export function patchConfig(modonomeDir, patch) {
   const nextText = lines.join("\n");
 
   // Validate the prospective full config (old config with the patch overlaid) against
-  // the schema and the safety rules — not just a syntax check — so a save that would
-  // leave config.yaml schema-invalid, or would put maker and checker on the same
+  // the schema and the safety rules, a semantic check beyond syntax, so a save that
+  // would leave config.yaml schema-invalid, or would put maker and checker on the same
   // model while require_distinct_maker_checker_model is on, never reaches disk.
   const prospective = { ...oldConfig, ...patch };
   const errors = validateConfig(prospective);
@@ -268,10 +269,112 @@ export function releaseLease(modonomeDir, itemId) {
   const item = JSON.parse(readFileSync(file, "utf8"));
   if (item.state === "done") throw new Error(`"${itemId}" is already done; there is no lease to release.`);
   delete item.owner;
+  delete item.lease_owner;
   delete item.lease_expires_at;
   item.state = "queued";
   writeFileSync(file, JSON.stringify(item, null, 2) + "\n");
   return item;
+}
+
+// A lease is live when it has a holder and an unexpired expiry, mirroring
+// scripts/transition-work-item.mjs's leaseIsLive so the two can never disagree
+// about what "actively claimed" means.
+function hasLiveLease(item, now = new Date()) {
+  const holder = item.lease_owner ?? item.owner ?? null;
+  if (holder == null) return false;
+  if (!item.lease_expires_at) return false;
+  return new Date(item.lease_expires_at).getTime() > now.getTime();
+}
+
+// States where a real actor could plausibly still be working the item, matching
+// scripts/lib/work-item-staleness.mjs's OPEN_STATES plus the states past claiming
+// that staleness detection doesn't cover (merge_ready, merging): everything
+// between "queued" and "done" where a delete would destroy in-progress record.
+const IN_FLIGHT_STATES = new Set(["claimed", "making", "checking", "rework", "merge_ready", "merging"]);
+
+const WORK_ITEM_ID_RE = /^[A-Za-z0-9_.-]+$/;
+
+// Fields a work item's create/update path may touch from the panel. Never state,
+// owner, lease_owner, lease_expires_at, branch, pr, maker/checker identity, attempts,
+// or escalation_reason: those change only through the lease/transition machinery
+// (scripts/transition-work-item.mjs) or the maker/checker loop itself, never a
+// generic metadata edit, the same "safe fields only" boundary patchConfig already
+// draws around scalar config keys, applied here to work-item fields instead.
+const WORK_ITEM_PATCH_KEYS = new Set(["type", "assigned_role", "allowed_edit_set", "gates", "max_attempts", "touches_protected_path"]);
+
+function loadConfigForValidation(modonomeDir) {
+  const file = join(modonomeDir, "config.yaml");
+  return existsSync(file) ? (yaml.load(readFileSync(file, "utf8")) ?? {}) : {};
+}
+
+export function createWorkItem(modonomeDir, input) {
+  const id = String(input.id ?? "").trim();
+  if (!id || !WORK_ITEM_ID_RE.test(id)) {
+    throw new Error("Work item id must be non-empty and use only letters, numbers, dot, dash, or underscore.");
+  }
+  const file = join(modonomeDir, "work-items", `${id}.json`);
+  if (existsSync(file)) throw new Error(`Work item "${id}" already exists.`);
+
+  const item = {
+    schema_version: 1,
+    id,
+    state: "queued",
+    attempts: 0,
+    max_attempts: input.max_attempts ?? 3,
+    touches_protected_path: Boolean(input.touches_protected_path),
+    allowed_edit_set: input.allowed_edit_set ?? [],
+    gates: input.gates ?? [],
+    queued_at: new Date().toISOString().slice(0, 10),
+  };
+  if (input.type) item.type = input.type;
+  if (input.assigned_role) item.assigned_role = input.assigned_role;
+
+  const errors = validateWorkItem(item, loadConfigForValidation(modonomeDir));
+  if (errors.length > 0) throw new Error(`Work item would be invalid: ${errors.join("; ")}`);
+
+  writeFileSync(file, JSON.stringify(item, null, 2) + "\n");
+  return item;
+}
+
+// Metadata-only edit: type, assigned_role, allowed_edit_set, gates, max_attempts, and
+// touches_protected_path are safe to change regardless of the item's current state,
+// including in flight, since none of them is part of the lease/state-machine
+// contract itself. The change only takes effect on the item's *next* attempt,
+// not retroactively on work already in progress, so the caller (the panel's own
+// confirm copy) is responsible for saying that plainly to an operator editing a
+// claimed item.
+export function updateWorkItem(modonomeDir, itemId, patch) {
+  for (const key of Object.keys(patch)) {
+    if (!WORK_ITEM_PATCH_KEYS.has(key)) {
+      throw new Error(`Work item field "${key}" is not editable from the panel; it changes only through the lease/transition machinery.`);
+    }
+  }
+  const file = workItemFile(modonomeDir, itemId);
+  const item = JSON.parse(readFileSync(file, "utf8"));
+  const next = { ...item, ...patch };
+
+  const errors = validateWorkItem(next, loadConfigForValidation(modonomeDir));
+  if (errors.length > 0) throw new Error(`Work item would be invalid after this change: ${errors.join("; ")}`);
+
+  writeFileSync(file, JSON.stringify(next, null, 2) + "\n");
+  return next;
+}
+
+// Refuses outright for any in-flight state, regardless of whether its lease has
+// technically expired: an item past "queued" represents real record of what
+// happened (a branch, a PR, attempts, a maker identity), and this surface has no
+// "force" override. An owner who genuinely needs to remove a stuck in-flight item
+// does so by editing .modonome/work-items directly, the same manual-override
+// pattern the rest of this file uses for anything past routine, reversible edits.
+export function deleteWorkItem(modonomeDir, itemId) {
+  const file = workItemFile(modonomeDir, itemId);
+  const item = JSON.parse(readFileSync(file, "utf8"));
+  if (IN_FLIGHT_STATES.has(item.state)) {
+    throw new Error(
+      `"${itemId}" is in flight (state: ${item.state}). Release its lease and return it to "queued" before deleting it.`,
+    );
+  }
+  rmSync(file);
 }
 
 export function pruneLearning(modonomeDir, lesson) {

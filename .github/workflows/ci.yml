@@ -167,6 +167,9 @@ jobs:
       - name: Run work item validation gate
         run: node scripts/check-work-items.mjs
 
+      - name: Run work item staleness gate
+        run: node scripts/check-work-item-staleness.mjs
+
       - name: Run checker engagement gate
         run: node scripts/check-checker-engagement.mjs
 

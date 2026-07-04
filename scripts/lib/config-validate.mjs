@@ -1,6 +1,6 @@
 // Schema + safety validation for a parsed Modonome config object. Split out of
 // scripts/validate-config.mjs (which stays the CLI entry point and re-exports these)
-// so this logic can be imported from code that must never pull in a shebang line —
+// so this logic can be imported from code that must never pull in a shebang line:
 // esbuild chokes on a shebang when it bundles a dependency that isn't its own entry
 // point, which is exactly what happens when apps/control-panel/vite.config.ts bundles
 // its way down to this file through the panel's config writer.

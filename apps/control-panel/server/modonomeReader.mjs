@@ -119,7 +119,11 @@ function toWorkItemVM(item) {
     id: item.id,
     title: titleFromId(item.id),
     state: item.state,
-    owner: item.owner,
+    // owner and lease_owner are equivalent lease-holder fields (commit-identity.mjs's
+    // leaseHolder() already treats them the same); owner takes precedence since it is
+    // the human-facing name a work packet is authored with, lease_owner is what a
+    // transition-work-item.mjs compare-and-swap writes.
+    owner: item.owner ?? item.lease_owner,
     leaseExpiresAt: item.lease_expires_at,
     branch: item.branch,
     pr: item.pr,
@@ -134,6 +138,8 @@ function toWorkItemVM(item) {
     gates: item.gates ?? [],
     escalationReason: item.escalation_reason,
     queuedAt: item.queued_at,
+    type: item.type,
+    assignedRole: item.assigned_role,
   };
 }
 
