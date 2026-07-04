@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:2e2f8f9e299c56e02ddc4405754799a29cdf28b771d82090a147f96a7677b027
-Files: 839  Bytes: 3049377  Map tokens: 108125/120000
+Merkle root: sha256:942997e1c1741ee54d27d3044f5cea62c85c556b79c2d710448749cfa6ea3cbf
+Files: 842  Bytes: 3067619  Map tokens: 109321/120000
 
 ## Modules
 
@@ -79,10 +79,11 @@ Files: 839  Bytes: 3049377  Map tokens: 108125/120000
 - agentproof/scenarios/ap-33-config-env-override-inert.mjs [F:02a5f8fc55]: !/usr/bin/env node
 - agentproof/scenarios/ap-36-adr-number-uniqueness.mjs [F:a6d2bd3021]: A minimal repo that satisfies every check other than the one under test, so a failure can only come from the ADR-number logic being exercised.
 - apps/control-panel/README.md [F:3211d524ad]: Modonome control panel
-- apps/control-panel/server/api.mjs [F:08b7435c86]: Best-effort reachability probe for an OpenAI-compatible endpoint (LM Studio, Ollama, a gateway). Read-only and network-only: it never touches config.yaml, so it
+- apps/control-panel/server/api.mjs [F:08b7435c86]: The single source of truth for "may a write to this dir proceed", used both to decide a 403 and to set source.writable, so the two can never drift. Returns the 
 - apps/control-panel/server/learningsFormat.mjs [F:54df44aadd]: Shared parsing for the "## Staged" bullet lines in .modonome/LEARNINGS.md, so the
 - apps/control-panel/server/modonomeReader.mjs [F:8a3dd6ccff]: A gate's status is implied by the state of every work item that declares it, never by a fabricated pass. A repo that has only ever run dry-run sweeps shows ever
 - apps/control-panel/server/modonomeWriter.mjs [F:22566cb46e]: A line-level patch, not a full YAML re-serialize, so every hand-written comment in config.yaml survives an edit made from the panel. Only top-level, zero-indent
+- apps/control-panel/server/ownership.mjs [F:fd4b8473fa]: Parse CODEOWNERS "pattern @owner @owner" lines into ordered rules. Comments and blank lines are dropped; each owner handle is lowercased with its leading @ remo
 - apps/control-panel/server/remediationView.mjs [F:5daab9894d]: Builds the read-only remediation view-model for the panel. Pure: it takes already
 - apps/control-panel/src/App.tsx [F:113387361d]: function App
 - apps/control-panel/src/content/concepts.ts [F:f83d1100e9]: interface ConceptEntry
@@ -194,6 +195,7 @@ Files: 839  Bytes: 3049377  Map tokens: 108125/120000
 - docs/compliance/compliance.md [F:95e51a604d]: Compliance
 - docs/compliance/eu-ai-act-classification.md [F:5fa0ad758b]: EU AI Act Classification
 - docs/compliance/openssf-badge-evidence.md [F:7983a5dd39]: OpenSSF Best Practices badge evidence
+- docs/control-panel-modes.md [F:83d4d07afc]: Control panel: modes, and what you can and cannot do
 - docs/enterprise.md [F:191a17b151]: Enterprise estates
 - docs/guidelines/markdown-governance.md [F:b81cf7567f]: Markdown governance policy
 - docs/knowledge-network-architecture.md [F:5e3214eb0f]: Cross-Repo Knowledge Network: v0.2 Architecture
@@ -363,6 +365,7 @@ Files: 839  Bytes: 3049377  Map tokens: 108125/120000
 - tests/compliance-evidence.test.mjs [F:3ea503e7c0]: Helper reused by the mapping test.
 - tests/config-key-parity.test.mjs [F:5eff4122c0]: Extract the string literals inside a named list/set declaration, regardless of whether it is `new Set([...])` or `[...] as const`.
 - tests/connect.test.mjs [F:5956278014]: Tests for `modonome connect`, which registers the read-only MCP server with an agent
+- tests/control-panel-ownership.test.mjs [F:d0da1cab80]: A scratch repo whose git email is faked through the injected `exec`, so the decision is tested without touching this repo's real git config.
 - tests/control-panel-work-item-writer.test.mjs [F:e00aec45ce]: A minimal scratch .modonome dir: a config.yaml (read for governance validation, e.g. require_distinct_maker_checker_model) and an empty work-items/ directory.
 - tests/control-panel-writer-nested.test.mjs [F:8b2f3dbcba]: Every test operates on a scratch copy of a real config.yaml, never the file itself, so a bug here can never corrupt real state.
 - tests/decisions-authority.test.mjs [F:f921eecad7]: A repo with one commit (base: entry "a" only) and a second commit that adds a new Resolved entry "b" on top. Returns { dir, baseSha }.
@@ -442,13 +445,15 @@ Files: 839  Bytes: 3049377  Map tokens: 108125/120000
 ### .design-sync/previews/Select.tsx [F:08577063d4]
 - S:9f9c07db7d function Model `export const Model = () => (` L10
 ### apps/control-panel/server/api.mjs [F:08b7435c86]
-- S:02e2e85572 function resolveModonomeDir `function resolveModonomeDir(rawMode, dirParam)` L19
-- S:8097fe47fc function readBody `function readBody(req)` L29
-- S:a10a756308 function sendJson `function sendJson(res, status, body)` L48
-- S:b06f3444be function stateWithSource `function stateWithSource(dir, mode, writable)` L55
-- S:62210684b4 function buildModelsUrl `function buildModelsUrl(baseUrl)` L65 : Best-effort reachability probe for an OpenAI-compatible endpoint (LM Studio, Ollama, a gateway). Read-only and network-only: it never touches config.yaml, so it needs no write guard. Always resolves (
-- S:3f9e6b3a7b function testConnection `async function testConnection(baseUrl)` L71
-- S:5092562c12 function modonomeApiPlugin `export function modonomeApiPlugin()` L97
+- S:d3f17c584a function isSelfGovernance `function isSelfGovernance(dir)` L26
+- S:02e2e85572 function resolveModonomeDir `function resolveModonomeDir(rawMode, dirParam)` L30
+- S:8097fe47fc function readBody `function readBody(req)` L40
+- S:a10a756308 function sendJson `function sendJson(res, status, body)` L59
+- S:0e6240f5b7 function writeGate `function writeGate(baseWritable, dir)` L70 : The single source of truth for "may a write to this dir proceed", used both to decide a 403 and to set source.writable, so the two can never drift. Returns the base flag first (off => nothing is writa
+- S:b06f3444be function stateWithSource `function stateWithSource(baseWritable, dir, mode)` L86
+- S:62210684b4 function buildModelsUrl `function buildModelsUrl(baseUrl)` L98 : Best-effort reachability probe for an OpenAI-compatible endpoint (LM Studio, Ollama, a gateway). Read-only and network-only: it never touches config.yaml, so it needs no write guard. Always resolves (
+- S:3f9e6b3a7b function testConnection `async function testConnection(baseUrl)` L104
+- S:5092562c12 function modonomeApiPlugin `export function modonomeApiPlugin()` L130
 ### scripts/detect-near-miss.mjs [F:09ba331878]
 - S:7078ce1661 function today `function today()` L38
 - S:735c642c3a function collectNearMisses `export function collectNearMisses({ branch, commits })` L44 : Gather every near-miss across the branch name, commit identities, and commit bodies unique to this branch.
@@ -482,10 +487,10 @@ Files: 839  Bytes: 3049377  Map tokens: 108125/120000
 - S:19226d4902 interface ProtectedPathVM `export interface ProtectedPathVM` L217
 - S:61e677ae40 interface TrendPoint `export interface TrendPoint` L224
 - S:cefb8c3f64 interface PanelSource `export interface PanelSource` L230 : Where a loaded PanelState actually came from, so the UI never presents demo data as real.
-- S:4a0171ecb5 interface PanelState `export interface PanelState` L239
-- S:6dcad3cdf1 interface NewWorkItemInput `export interface NewWorkItemInput` L267 : Fields a new work item is created with. Always starts in state "queued".
-- S:7934857ce3 interface WorkItemPatch `export interface WorkItemPatch` L279 : Safe-to-edit-anytime fields: never state, owner, or lease, since those change only * through the existing lease/transition machinery, never a generic metadata edit.
-- S:a2d9480f78 interface WriteActions `export interface WriteActions` L288
+- S:4a0171ecb5 interface PanelState `export interface PanelState` L243
+- S:6dcad3cdf1 interface NewWorkItemInput `export interface NewWorkItemInput` L271 : Fields a new work item is created with. Always starts in state "queued".
+- S:7934857ce3 interface WorkItemPatch `export interface WorkItemPatch` L283 : Safe-to-edit-anytime fields: never state, owner, or lease, since those change only * through the existing lease/transition machinery, never a generic metadata edit.
+- S:a2d9480f78 interface WriteActions `export interface WriteActions` L292
 ### scripts/verify-packet.mjs [F:0c1c5ad5d9]
 - S:6dd199eea1 function resolveActiveKey `export function resolveActiveKey(peerKeys, alias, now = new Date())` L19 : Resolve an alias to an active, in-window key entry in the allowlist.
 - S:f3b8628cdb function verifyPacket `export function verifyPacket(packet, peerKeys, { now = new Date(), skipContentGate = false } = {})` L35 : Full ordered verification. options.skipContentGate runs only the signature checks (steps 3 to 5), used when the caller already ran the schema and redaction gate.
@@ -1443,6 +1448,9 @@ Files: 839  Bytes: 3049377  Map tokens: 108125/120000
 - S:464c90cba5 function registerTreeSitter `export async function registerTreeSitter(register)` L71 : Attempt to register tree-sitter adapters. `register` is the registry's registerAdapter. Returns true when at least one grammar was registered.
 ### tests/ratchet-format.test.mjs [F:cede5f9fa2]
 - S:7c0d389b98 function runRatchet `function runRatchet(...args)` L17
+### tests/control-panel-ownership.test.mjs [F:d0da1cab80]
+- S:703e56c471 function scratchRepo `function scratchRepo(codeowners)` L45 : A scratch repo whose git email is faked through the injected `exec`, so the decision is tested without touching this repo's real git config.
+- S:fb4a6826d7 function fakeGitEmail `function fakeGitEmail(email)` L54
 ### scripts/transition-work-item.mjs [F:d135cffeaa]
 - S:8d1ca74a54 function leaseHolder `function leaseHolder(item)` L23 : A lease is "live" if it has an owner and an unexpired lease_expires_at. The lease holder is recorded as lease_owner (the field this swap writes) or, for older items, the schema's `owner` field; either
 - S:87ca9c146a function leaseIsLive `function leaseIsLive(item, now)` L27
@@ -1645,6 +1653,14 @@ Files: 839  Bytes: 3049377  Map tokens: 108125/120000
 - S:24c6a3dc6c function parseFrontMatter `function parseFrontMatter(text)` L197 : Front-matter parsing for canonical uniqueness and advisory presence.
 - S:6647a4e550 function extractCitedPaths `function extractCitedPaths(text)` L245
 - S:38b734e681 function commitsSince `function commitsSince(paths, sinceDate)` L270 : Commits touching any of `paths` since `sinceDate` (a YYYY-MM-DD string already validated by the caller). Returns 0 (fail open, warn-free) if this is not a git checkout, e.g. an npm-installed copy of t
+### apps/control-panel/server/ownership.mjs [F:fd4b8473fa]
+- S:9bcfb77bfa function parseCodeowners `export function parseCodeowners(text)` L23 : Parse CODEOWNERS "pattern @owner @owner" lines into ordered rules. Comments and blank lines are dropped; each owner handle is lowercased with its leading @ removed so it compares directly to a handle 
+- S:7a464a2d86 function ownersForPath `export function ownersForPath(rules, path)` L39 : GitHub CODEOWNERS is last-match-wins: the owners of the LAST rule whose pattern matches the path. Supports the common subset modonome's own CODEOWNERS uses (a "*" catchall and rooted dir/file prefixes
+- S:857ab7696f function matchesPattern `function matchesPattern(pattern, path)` L47
+- S:a50812babf function handleFromEmail `export function handleFromEmail(email)` L59 : Extract a GitHub handle from a commit email. Only the two GitHub noreply formats carry a handle deterministically; any other address returns null (fail closed), so an unmapped identity is treated as n
+- S:b29e93fbc3 function localGitEmail `function localGitEmail(repoRoot, exec)` L68
+- S:f99d630708 function pickCodeowners `function pickCodeowners(repoRoot, exists)` L76
+- S:c36223901c function selfGovernanceOwnership `export function selfGovernanceOwnership(` L92 : Decide whether the local git identity is a code owner of the config at * configRelPath within repoRoot. Fail-closed everywhere it cannot prove ownership: * no CODEOWNERS file, no owner declared for th
 ### scripts/agent/render-prompt.mjs [F:fd660a117b]
 - S:22e3bba95f function snapshotContext `export function snapshotContext(root = process.cwd())` L23 : Build a compact repository-snapshot context block from the committed Tier 0 signature, so every rendered role prompt starts pre-oriented and an agent can read the map instead of scanning the whole tre
 - S:2b5847c683 function renderPrompt `export function renderPrompt(role, env = process.env)` L58 : Substitute every ${VAR} from env. Throw if a referenced variable is unset, so a missing identity or branch fails loudly instead of rendering an empty value into a model prompt.
@@ -1681,6 +1697,7 @@ Files: 839  Bytes: 3049377  Map tokens: 108125/120000
 - tests/packet.test.mjs -> scripts/validate-knowledge-packet.mjs
 - apps/control-panel/server/api.mjs -> apps/control-panel/server/modonomeWriter.mjs
 - apps/control-panel/server/api.mjs -> apps/control-panel/server/modonomeReader.mjs
+- apps/control-panel/server/api.mjs -> apps/control-panel/server/ownership.mjs
 - scripts/detect-near-miss.mjs -> scripts/lib/learnings.mjs
 - scripts/detect-near-miss.mjs -> scripts/lib/git-scope.mjs
 - design-system/src/components/DecisionCard/index.ts -> design-system/src/components/DecisionCard/DecisionCard.tsx
@@ -2114,54 +2131,54 @@ Files: 839  Bytes: 3049377  Map tokens: 108125/120000
 
 ## Attention (centrality + pagerank)
 
-1. design-system/src/lib/cx.ts centrality=32 pagerank=0.034169
-2. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.022151
-3. design-system/src/index.ts centrality=48 pagerank=0.000898
-4. scripts/lib/yaml-lite.mjs centrality=17 pagerank=0.009037
-5. scripts/lib/jsonschema.mjs centrality=10 pagerank=0.0123
-6. scripts/agent/run-cycle.mjs centrality=18 pagerank=0.003533
-7. apps/control-panel/src/state/types.ts centrality=12 pagerank=0.007541
-8. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.007538
-9. scripts/lib/learnings.mjs centrality=10 pagerank=0.007223
-10. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.005374
-11. scripts/validate-config.mjs centrality=11 pagerank=0.00443
-12. scripts/lib/canonical-json.mjs centrality=10 pagerank=0.005131
-13. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.00578
-14. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001503
-15. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.004334
-16. scripts/validate-work-item.mjs centrality=8 pagerank=0.003698
-17. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.005028
-18. scripts/lib/config-validate.mjs centrality=5 pagerank=0.00553
-19. apps/control-panel/src/App.tsx centrality=10 pagerank=0.00128
-20. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002625
-21. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.003243
-22. scripts/agent/resolve-role.mjs centrality=7 pagerank=0.002788
-23. scripts/lib/branch-name.mjs centrality=4 pagerank=0.004798
-24. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.004676
-25. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.003141
-26. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001503
-27. scripts/lib/graph.mjs centrality=4 pagerank=0.004329
-28. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.002824
-29. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.004879
-30. scripts/lib/work-item-validate.mjs centrality=3 pagerank=0.004756
-31. apps/control-panel/server/modonomeWriter.mjs centrality=6 pagerank=0.002521
-32. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001676
-33. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.0045
-34. scripts/snapshot.mjs centrality=8 pagerank=0.000898
-35. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002625
-36. design-system/src/lib/format.ts centrality=5 pagerank=0.002623
-37. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001676
-38. scripts/agent/providers.mjs centrality=3 pagerank=0.003732
-39. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.001019
-40. design-system/src/components/Modal/Modal.tsx centrality=4 pagerank=0.002388
-41. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001676
-42. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001676
-43. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.001676
-44. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.001676
-45. scripts/lib/remediate.mjs centrality=3 pagerank=0.003082
-46. design-system/src/components/TierBadge/TierBadge.tsx centrality=4 pagerank=0.002359
-47. examples/demo-app/src/index.js centrality=6 pagerank=0.000898
-48. design-system/src/components/Table/Table.tsx centrality=4 pagerank=0.002316
-49. scripts/dry-run-sweep.mjs centrality=5 pagerank=0.001535
-50. design-system/src/components/IdentityChip/IdentityChip.tsx centrality=4 pagerank=0.002198
+1. design-system/src/lib/cx.ts centrality=32 pagerank=0.034103
+2. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.022108
+3. design-system/src/index.ts centrality=48 pagerank=0.000897
+4. scripts/lib/yaml-lite.mjs centrality=17 pagerank=0.008991
+5. scripts/lib/jsonschema.mjs centrality=10 pagerank=0.012191
+6. scripts/agent/run-cycle.mjs centrality=18 pagerank=0.003526
+7. apps/control-panel/src/state/types.ts centrality=12 pagerank=0.007526
+8. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.007524
+9. scripts/lib/learnings.mjs centrality=10 pagerank=0.007209
+10. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.005363
+11. scripts/validate-config.mjs centrality=11 pagerank=0.004421
+12. scripts/lib/canonical-json.mjs centrality=10 pagerank=0.005121
+13. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.0015
+14. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.004326
+15. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.005697
+16. scripts/validate-work-item.mjs centrality=8 pagerank=0.003691
+17. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.005018
+18. scripts/lib/config-validate.mjs centrality=5 pagerank=0.005453
+19. apps/control-panel/src/App.tsx centrality=10 pagerank=0.001278
+20. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.00262
+21. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.003237
+22. scripts/agent/resolve-role.mjs centrality=7 pagerank=0.002782
+23. scripts/lib/branch-name.mjs centrality=4 pagerank=0.004758
+24. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.004667
+25. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.003135
+26. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.0015
+27. scripts/lib/graph.mjs centrality=4 pagerank=0.00432
+28. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.002819
+29. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.00487
+30. scripts/lib/work-item-validate.mjs centrality=3 pagerank=0.00468
+31. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001672
+32. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.004461
+33. scripts/snapshot.mjs centrality=8 pagerank=0.000897
+34. apps/control-panel/server/modonomeWriter.mjs centrality=6 pagerank=0.002281
+35. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.00262
+36. design-system/src/lib/format.ts centrality=5 pagerank=0.002618
+37. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001672
+38. scripts/agent/providers.mjs centrality=3 pagerank=0.003725
+39. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.001017
+40. design-system/src/components/Modal/Modal.tsx centrality=4 pagerank=0.002383
+41. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001672
+42. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001672
+43. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.001672
+44. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.001672
+45. design-system/src/components/TierBadge/TierBadge.tsx centrality=4 pagerank=0.002355
+46. examples/demo-app/src/index.js centrality=6 pagerank=0.000897
+47. design-system/src/components/Table/Table.tsx centrality=4 pagerank=0.002312
+48. scripts/lib/remediate.mjs centrality=3 pagerank=0.002991
+49. scripts/dry-run-sweep.mjs centrality=5 pagerank=0.001532
+50. design-system/src/components/IdentityChip/IdentityChip.tsx centrality=4 pagerank=0.002193
 

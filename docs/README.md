@@ -32,6 +32,9 @@ governs where docs live.
 
 - [versioning.md](versioning.md): embedding and upgrade contract.
 - [vscode-workflow.md](vscode-workflow.md): VS Code manual trigger workflow.
+- [control-panel-modes.md](control-panel-modes.md): the control panel's modes and permission
+  model. What host and self-governance mode each let you do, and why self-governance writes
+  are reserved to code owners.
 - [ops/runner-model-config.md](ops/runner-model-config.md): runner model configuration.
 - [ops/merge-governance-setup.md](ops/merge-governance-setup.md): merge governance setup.
 

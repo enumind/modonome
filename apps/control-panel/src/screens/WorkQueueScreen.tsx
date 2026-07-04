@@ -421,8 +421,9 @@ export function WorkQueueScreen({ state, write }: { state: PanelState; write: Wr
                 </div>
                 {!write.writable ? (
                   <p className="mdn-faint" style={{ margin: 0 }}>
-                    Read-only: connect live, writable state (start the dev server with{" "}
-                    <code className="mdn-mono">MODONOME_PANEL_WRITE=1</code>) to actually create, edit, or delete a work item.
+                    {state.source.writeLockReason
+                      ? state.source.writeLockReason
+                      : "Read-only: connect live, writable state (start the dev server with MODONOME_PANEL_WRITE=1) to actually create, edit, or delete a work item."}
                   </p>
                 ) : null}
               </form>

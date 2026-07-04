@@ -483,8 +483,9 @@ export function SettingsScreen({ state, write }: { state: PanelState; write: Wri
 
       {!write.writable ? (
         <p className="mdn-faint">
-          Read-only: changes below stay local until the panel is connected to live, writable state
-          (start the dev server with <code className="mdn-mono">MODONOME_PANEL_WRITE=1</code>).
+          {state.source.writeLockReason
+            ? state.source.writeLockReason
+            : "Read-only: changes below stay local until the panel is connected to live, writable state (start the dev server with MODONOME_PANEL_WRITE=1)."}
         </p>
       ) : null}
 

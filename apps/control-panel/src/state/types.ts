@@ -232,6 +232,10 @@ export interface PanelSource {
   kind: "live" | "demo";
   /** True when the server-side dev API accepted write requests for this session. */
   writable: boolean;
+  /** True when the target is this repo's OWN .modonome (self-governance), not a connected host repo. */
+  selfGovernance?: boolean;
+  /** When not writable, the specific reason (write flag off, or self-governance reserved to code owners). */
+  writeLockReason?: string;
   /** Set when a live read was attempted and failed, explaining the fall back to demo data. */
   error?: string;
 }
