@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Articles - Modonome</title>
+<meta name="description" content="Essays on how established engineering practice is evolving for autonomous coding agents: access control, test integrity, and continuous authorization.">
+<link rel="canonical" href="https://modonome.com/articles/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://modonome.com/articles/">
+<meta property="og:title" content="Articles - Modonome">
+<meta property="og:description" content="How established engineering practice is evolving for autonomous coding agents: access control, test integrity, and continuous authorization.">
+<meta property="og:image" content="https://modonome.com/assets/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@ModonomeLab">
+<meta name="twitter:image" content="https://modonome.com/assets/og-card.png">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icon-32.png">
+<link rel="apple-touch-icon" href="/assets/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Modonome Articles",
+  "description": "How established engineering practice is evolving for autonomous coding agents: access control, test integrity, and continuous authorization.",
+  "url": "https://modonome.com/articles/",
+  "isPartOf": {"@type": "WebSite", "name": "Modonome", "url": "https://modonome.com"},
+  "hasPart": [
+    {"@type": "TechArticle", "headline": "Access control is being rewritten for agents that write their own code", "url": "https://modonome.com/articles/give-ai-agents-repo-access/"},
+    {"@type": "TechArticle", "headline": "Goodhart's Law just found your CI pipeline", "url": "https://modonome.com/articles/stop-ai-agents-gaming-tests/"},
+    {"@type": "TechArticle", "headline": "From code review to continuous authorization", "url": "https://modonome.com/articles/autonomy-governance-checklist/"}
+  ]
+}
+</script>
+<style>
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:#0b1220;color:#e8ebf0;font-family:'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.6}
+  a{color:#5dd4ab}
+  .wrap{max-width:900px;margin:0 auto;padding:0 24px}
+  nav{position:sticky;top:0;z-index:5;backdrop-filter:blur(14px);background:rgba(11,18,32,.82);border-bottom:1px solid rgba(159,201,180,.10)}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;padding:13px 24px}
+  nav img{height:30px;display:block;mix-blend-mode:lighten}
+  nav a.home{display:flex;align-items:center;text-decoration:none}
+  .navlinks a{font-size:14px;color:#9fabbc;text-decoration:none;margin-left:22px}
+  .navlinks a:hover{color:#5dd4ab}
+  header.hero{padding:70px 0 24px}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#5dd4ab;margin-bottom:14px}
+  h1{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(30px,5vw,50px);line-height:1.08;letter-spacing:-.02em;margin:0 0 18px;color:#f6f4ee}
+  .lede{font-size:clamp(16px,2vw,19px);color:#aeb9c8;max-width:680px}
+  p{color:#b9c4d2}
+  .cards{display:grid;grid-template-columns:1fr;gap:14px;margin:36px 0 60px}
+  .card{display:block;text-decoration:none;background:rgba(159,201,180,.04);border:1px solid rgba(159,201,180,.12);border-radius:14px;padding:24px 22px;transition:transform .2s,border-color .2s}
+  .card:hover{transform:translateY(-2px);border-color:rgba(93,212,171,.4)}
+  .card h2{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:19px;color:#f6f4ee;margin:0 0 8px}
+  .card p{font-size:14px;line-height:1.58;color:#9fabbc;margin:0}
+  footer{border-top:1px solid rgba(159,201,180,.1);margin-top:20px;padding:30px 0}
+  footer .wrap{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;font-size:13.5px}
+  footer a{color:#9fabbc;text-decoration:none;margin-right:20px}
+  footer a:hover{color:#5dd4ab}
+  @media (min-width:700px){.cards{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<nav><div class="wrap">
+  <a class="home" href="/"><img src="/assets/modonome-logo.webp" alt="Modonome"></a>
+  <div class="navlinks"><a href="/">Home</a><a href="/agentproof/">AgentProof</a><a href="https://github.com/enumind/modonome">GitHub</a></div>
+</div></nav>
+
+<div class="wrap">
+<header class="hero">
+  <div class="kicker">Articles</div>
+  <h1>How established practice is evolving for autonomous agents.</h1>
+  <p class="lede">Access control, test integrity, and code review were all built around a human on the other end of a commit. Once that assumption stops holding, each one has to evolve, and the shape of that evolution is already visible.</p>
+</header>
+
+<div class="cards">
+  <a class="card" href="/articles/give-ai-agents-repo-access/">
+    <h2>Access control is being rewritten for agents that write their own code</h2>
+    <p>Least privilege and peer review both assumed a human on the other end of a commit. How that assumption is breaking down, and what is replacing it.</p>
+  </a>
+  <a class="card" href="/articles/stop-ai-agents-gaming-tests/">
+    <h2>Goodhart's Law just found your CI pipeline</h2>
+    <p>A measure that becomes a target stops being a good measure. A fifty-year-old warning, and the shortcuts an agent judged on "tests pass" eventually finds.</p>
+  </a>
+  <a class="card" href="/articles/autonomy-governance-checklist/">
+    <h2>From code review to continuous authorization</h2>
+    <p>Code review was built as a single gate at merge time. As agents take on more autonomy, oversight is turning into something closer to a security model.</p>
+  </a>
+</div>
+
+<p>Each piece stands on its own, but together they sketch one coherent shift: control that used to live in a person's judgment, moving into structure a system enforces on every change.</p>
+</div>
+
+<footer><div class="wrap">
+  <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#7c8aa0">Modonome &middot; MIT &middot; No telemetry</span>
+  <span><a href="/">Home</a><a href="/agentproof/">AgentProof</a><a href="https://github.com/enumind/modonome">GitHub</a><a href="https://x.com/ModonomeLab">Follow on X</a></span>
+</div></footer>
+</body>
+</html>

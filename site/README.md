@@ -14,6 +14,7 @@ can update the page in the same commit, so the page never drifts from the produc
 | `repo-data.js` | **Single content source of truth.** All copy: features, loop steps, AgentProof proofs, simulator data, roadmap milestones. Also fetches live from GitHub raw on each page load to keep the score and version current. |
 | `assets/modonome-logo.webp` | Logo image referenced from `index.html` and `repo-data.js`. |
 | `content/features.json` | Structured mirror of the features in `repo-data.js`. Updated by hand in sync with `repo-data.js`. |
+| `articles/` | Static, hand-maintained content pages (no build step, no React/DC runtime): a hub page plus one page per article. |
 | `CNAME` | Custom-domain marker for GitHub Pages (`modonome.com`). |
 | `.nojekyll` | Tells GitHub Pages to serve files as-is, no Jekyll processing. |
 
@@ -25,8 +26,11 @@ The page requires:
 
 React is served from the repo, so the page has no third-party script origin. The
 `noscript` block carries a static text fallback for crawlers and no-JS visitors, and the
-`/agentproof/` and `/quickstart/` pages render without any JavaScript. `index.html` also
-carries a `meta` Content-Security-Policy (GitHub Pages does not apply the `_headers` file).
+`/agentproof/`, `/quickstart/`, and `/articles/` pages render without any JavaScript. An
+enforced `meta` Content-Security-Policy was tried and reverted (see the comment at the top
+of `index.html`): it broke the DC runtime in production. The policy actually served to
+visitors comes from a Cloudflare Transform Rule, not from this repo; `site/_headers`
+is the source-of-truth reference those rule values must match (see that file's comment).
 
 ## Deploy
 
@@ -67,6 +71,11 @@ When a feature changes:
 3. Update `site/content/features.json` (the structured mirror).
 
 Do all three in one PR so the history stays readable.
+
+If the change is significant enough to warrant its own article under `site/articles/`,
+add the new page in the same PR, link it from `site/articles/index.html` (the hub), and
+add it to `site/sitemap.xml`. An article that never gets linked from the hub or the
+sitemap is effectively unpublished.
 
 ## House style
 

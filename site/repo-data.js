@@ -55,11 +55,14 @@ window.__MODONOME_REPO = {
     { icon: '▤', title: 'Operator control panel', body: 'In progress: a dashboard for gate status, governance events, and the levers an owner uses to arm, pause, and review autonomy, so control stays in plain sight.' },
     { icon: '◈', title: 'Verifiable repo context', body: 'Each agent works from a current, trustworthy map of the repository instead of rereading the whole tree. It is a compact snapshot, Merkle-verified so tampering cannot slip through unnoticed.' },
     { icon: '❑', title: 'Compliance evidence on demand', body: 'An MCP server exposes attestation and evidence tools, so a host repository can produce a signed record of what ran and what held.' },
+    { icon: '⛨', title: 'A drop-in CI gate check, with a signed receipt', body: 'A GitHub Action runs the gate check from a pinned, trusted copy, so the pull request under review can never judge itself. It can also produce a signed receipt of the result.' },
+    { icon: '⇵', title: 'Disclose and adopt policy as signed evidence', body: 'A repository can state the governance policy it enforces in one verifiable file, and another repository can review and adopt it, with integrity and credit checks that refuse anything that fails.' },
+    { icon: '✦', title: 'Scrubs its own AI fingerprints', body: 'A safe, verified way to clear AI-attribution traces from commit history, proven to leave the underlying code untouched.' },
   ],
 
   // ---- Structural guarantees ----
   guarantees: [
-    { icon: '⚡', title: 'An owner turns on autonomy', body: 'Arming is a deliberate owner step in your CI or environment, and the engine waits for that signal before it acts.' },
+    { icon: '⚡', title: 'An owner turns on autonomy', body: 'Arming is a deliberate, two-key owner step in your CI or environment, checking maker and checker come from separate model families before the engine acts. Once armed, an owner turns scored proposals into real work items with a single command.' },
     { icon: '⎘', title: 'People hold the merge', body: 'The merge authority is always a separate role from the author, so landing a change stays a deliberate decision.' },
     { icon: '⛉', title: 'Protected paths get a human review', body: 'CI config, secrets, schemas, migrations, lockfiles, and auth all route to a human CODEOWNER for review first.' },
     { icon: '◷', title: 'Free tool, local-first cost', body: 'Local or already-paid models run first, and any metered API use is opt-in. Modonome itself is MIT-licensed and free, so on a plan you already pay for it adds no extra cost of its own.' },
@@ -162,7 +165,7 @@ window.__MODONOME_REPO = {
     { phase: 'Milestone 3', status: 'In progress', tone: 'now', title: 'Operator control panel', body: 'A dashboard for governance events, gate status, and the levers an owner uses to arm, pause, and review autonomy across a repository.' },
     { phase: 'v0.2', status: 'Next', tone: 'planned', title: 'Signed work items & debt metrics', body: 'Ed25519-signed work items and before/after tech-debt measurement, the groundwork for sharing patterns as verifiable evidence.' },
     { phase: 'v0.3', status: 'Planned', tone: 'planned', title: 'Telemetry & estate metrics', body: 'OpenTelemetry spans for governance events and multi-team estate aggregation, for audit trails and fleet-wide visibility.' },
-    { phase: 'Direction', status: 'Proposed', tone: 'idea', title: 'Governed knowledge network', body: 'Repositories share proven patterns peer-to-peer, each re-verified locally before adoption. A path we want to build with the community.' },
+    { phase: 'Direction', status: 'Underway', tone: 'planned', title: 'Governed knowledge network', body: 'A repository can already disclose and adopt policy as signed, verifiable evidence today. The fuller peer-to-peer network, where repositories share proven patterns and each re-verifies them locally, is a path we want to build with the community.' },
   ],
 
   // ---- Quickstart ----
@@ -185,5 +188,31 @@ window.__MODONOME_REPO = {
     'OWASP Agentic Working Group, reference suite for the Top 10 for Agentic Applications',
     'OpenSSF Securing Software Repositories WG, anti-gaming ratchet conformance',
     'AAIF, governed-autonomy benchmark',
+  ],
+
+  // ---- Recently shipped: newest-first, kept in sync by hand alongside CHANGELOG.md.
+  // Source PRs (internal reference, not shown on the page): #105, #104, #102, #102,
+  // #102, #101, #93, #99, #99, #95, #96, #97, #98, #94, #94, #89, #85, #69, #70, #75.
+  recentReleases: [
+    { title: 'A guided, two-key start for autonomy', body: 'A guided, two-key process for turning on autonomy, plus a simple way to turn scored proposals into real work items.' },
+    { title: 'Safely adopt another repo\'s policy', body: 'Safely adopt another repository\'s governance policy, with integrity and credit checks that refuse anything that doesn\'t pass.' },
+    { title: 'A GitHub Action with a signed receipt', body: 'A GitHub Action that runs your gate checks from a trusted, pinned source and returns a signed receipt of the result.' },
+    { title: 'Gate results your CI can act on', body: 'Gate results now come in a machine-readable form, so your own tools and CI can act on them directly.' },
+    { title: 'Connect any editor in one command', body: 'Connect any editor\'s AI assistant to Modonome\'s governance tools with a single command.' },
+    { title: 'A repository can disclose its policy', body: 'A repository can now disclose its enforced governance policy as one verifiable file.' },
+    { title: 'The project\'s own rules get reviewed too', body: 'Changes to the project\'s own decision record now go through the same independent review as everything else.' },
+    { title: 'A safe way to clear AI fingerprints', body: 'A safe, verified way to clear AI-attribution traces from commit history without touching the underlying code.' },
+    { title: 'See a cleanup before it runs', body: 'See exactly what a history cleanup would change before anyone approves it.' },
+    { title: 'A plain statement on AI participation', body: 'A clear, public statement of how AI participates in building this project.' },
+    { title: 'AI signatures caught automatically', body: 'AI-attribution signatures are now caught automatically in branch names and commits before they land.' },
+    { title: 'A living list keeps detection current', body: 'A living, human-approved list of AI-attribution patterns keeps detection current.' },
+    { title: 'Detection extends to PR text', body: 'Detection now covers pull request titles, descriptions, and comments, in addition to commits.' },
+    { title: 'Stronger safeguards on decision records', body: 'Stronger safeguards keep the project\'s own decision records free of duplicates.' },
+    { title: 'Compliance docs checked continuously', body: 'Compliance documentation is now checked continuously, so it can\'t quietly go stale.' },
+    { title: 'An operator dashboard is taking shape', body: 'A dedicated operator dashboard for governance is taking shape.' },
+    { title: 'A tamper-evident map of the repo', body: 'A tamper-evident, verifiable map of the repository keeps an agent\'s context accurate and trustworthy.' },
+    { title: 'Every check can produce signed evidence', body: 'Every governance check can now produce a signed evidence packet that any peer can verify independently.' },
+    { title: 'Compliance evidence, on demand', body: 'Compliance evidence can be generated on demand for the standards your organization already tracks.' },
+    { title: 'Clear rules on reusable licenses', body: 'Clear, enforced rules define which open-source licenses can be reused in the project, and which cannot.' },
   ],
 };
