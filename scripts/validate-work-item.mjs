@@ -5,10 +5,12 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { validate } from "./lib/jsonschema.mjs";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const schema = JSON.parse(readFileSync(join(here, "..", "schemas", "work-item.schema.json"), "utf8"));
 const modelFamilies = JSON.parse(readFileSync(join(here, "..", "schemas", "model-families.json"), "utf8")).families;
+const overrides = loadMessageOverrides(join(here, "..", ".modonome"));
 
 // Resolve a model name to its family by longest-matching prefix. Returns null
 // when no prefix matches, so unrecognized models are treated as distinct
@@ -41,15 +43,15 @@ export function governanceErrors(item, config = {}) {
   const makerRequiredStates = ["making", "checking", "rework", "merge_ready"];
   const checkerRequiredStates = ["merge_ready"];
   if (makerRequiredStates.includes(item.state) && !item.maker_id) {
-    errs.push(`maker_id is required when state is ${item.state}. Set maker_id before advancing the item.`);
+    errs.push(formatMessage("gate.work-item.maker-id-required", { state: item.state }, overrides).message);
   }
   if (checkerRequiredStates.includes(item.state) && !item.checker_id) {
-    errs.push(`checker_id is required when state is ${item.state}. Set checker_id before advancing the item.`);
+    errs.push(formatMessage("gate.work-item.checker-id-required", { state: item.state }, overrides).message);
   }
 
   // Separation of duties: maker and checker must be distinct identities.
   if (item.maker_id && item.checker_id && item.maker_id === item.checker_id) {
-    errs.push(`maker_id and checker_id are the same identity (${item.maker_id}). Maker cannot review their own work.`);
+    errs.push(formatMessage("gate.work-item.maker-checker-same-identity", { id: item.maker_id }, overrides).message);
   }
 
   // Separation of duties: maker and checker must use distinct models (default on, disabled by config).
@@ -57,29 +59,38 @@ export function governanceErrors(item, config = {}) {
   // models from the same family (architecture) share failure modes and undermine independent review.
   if (config.require_distinct_maker_checker_model !== false) {
     if (item.maker_model && item.checker_model && item.maker_model === item.checker_model) {
-      errs.push(`maker_model and checker_model are the same model (${item.maker_model}). Distinct models are required.`);
+      errs.push(formatMessage("gate.work-item.maker-checker-same-model", { model: item.maker_model }, overrides).message);
     } else if (item.maker_model && item.checker_model) {
       const makerFamily = modelFamily(item.maker_model);
       const checkerFamily = modelFamily(item.checker_model);
       if (makerFamily !== null && makerFamily === checkerFamily) {
-        errs.push(`maker_model (${item.maker_model}) and checker_model (${item.checker_model}) belong to the same model family/architecture (${makerFamily}). Distinct families are required so maker and checker do not share architecture-level blind spots.`);
+        errs.push(
+          formatMessage(
+            "gate.work-item.maker-checker-same-family",
+            { makerModel: item.maker_model, checkerModel: item.checker_model, family: makerFamily },
+            overrides
+          ).message
+        );
       }
     }
   }
 
   // Protected path items must be escalated before reaching merge_ready.
   if (item.touches_protected_path === true && item.state === "merge_ready" && !item.escalation_reason) {
-    errs.push(`Item touches a protected path but has no escalation_reason and is in state merge_ready. Protected-path items must be escalated for owner review.`);
+    errs.push(formatMessage("gate.work-item.protected-path-not-escalated", {}, overrides).message);
   }
 
   // Escalated items must record why.
   if (item.state === "escalated" && !item.escalation_reason) {
-    errs.push(`Item is in state escalated but has no escalation_reason. Record why the item was escalated.`);
+    errs.push(formatMessage("gate.work-item.escalated-without-reason", {}, overrides).message);
   }
 
   // Attempts must not exceed cap.
   if (item.attempts !== undefined && item.max_attempts !== undefined && item.attempts > item.max_attempts) {
-    errs.push(`attempts (${item.attempts}) exceeds max_attempts (${item.max_attempts}). Item should be escalated.`);
+    errs.push(
+      formatMessage("gate.work-item.attempts-exceed-cap", { attempts: item.attempts, maxAttempts: item.max_attempts }, overrides)
+        .message
+    );
   }
 
   return errs;
@@ -97,7 +108,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   }
   const errors = validateWorkItem(JSON.parse(readFileSync(path, "utf8")));
   if (errors.length > 0) {
-    console.error(`Work item invalid: ${path}`);
+    console.error(formatMessage("gate.work-item.invalid", { path }, overrides).message);
     for (const e of errors) console.error("  - " + e);
     process.exit(1);
   }

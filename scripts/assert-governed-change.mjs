@@ -1,4 +1,10 @@
 import { execFileSync } from 'child_process';
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
+
+const here = dirname(fileURLToPath(import.meta.url));
+const overrides = loadMessageOverrides(join(here, "..", ".modonome"));
 
 const baseBranch = process.argv[2] || 'origin/main';
 
@@ -52,6 +58,6 @@ try {
   console.log("Change is governance-relevant and substantive.");
   process.exit(0);
 } catch (error) {
-  console.error("Governance check script execution failure:", error.message);
+  console.error(formatMessage("gate.assert-governed-change.execution-failure", { error: error.message }, overrides).message);
   process.exit(1);
 }

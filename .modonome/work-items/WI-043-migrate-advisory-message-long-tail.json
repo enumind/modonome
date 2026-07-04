@@ -14,7 +14,22 @@
     "scripts/audit-learnings.mjs",
     "scripts/build-release-evidence.mjs",
     "scripts/preflight-embedding.mjs",
-    "scripts/lib/message-catalog/advisory/hygiene.mjs"
+    "scripts/build-prompt.mjs",
+    "scripts/migrate-config.mjs",
+    "scripts/lib/github-api.mjs",
+    "scripts/lib/learnings.mjs",
+    "scripts/lib/message-catalog/advisory/hygiene.mjs",
+    "scripts/lib/message-catalog/advisory/sign-packet.mjs",
+    "scripts/lib/message-catalog/advisory/verify-packet.mjs",
+    "scripts/lib/message-catalog/advisory/validate-knowledge-packet.mjs",
+    "scripts/lib/message-catalog/advisory/sync-site-data.mjs",
+    "scripts/lib/message-catalog/advisory/audit-learnings.mjs",
+    "scripts/lib/message-catalog/advisory/build-release-evidence.mjs",
+    "scripts/lib/message-catalog/advisory/preflight-embedding.mjs",
+    "scripts/lib/message-catalog/advisory/build-prompt.mjs",
+    "scripts/lib/message-catalog/advisory/migrate-config.mjs",
+    "scripts/lib/message-catalog/advisory/github-api.mjs",
+    "scripts/lib/message-catalog/advisory/learnings.mjs"
   ],
   "gates": [
     "node scripts/check-message-catalog-integrity.mjs",

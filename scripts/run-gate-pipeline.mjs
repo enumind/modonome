@@ -21,9 +21,11 @@ import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 import { topoSort } from "./lib/graph.mjs";
 import { runGateCapped } from "./lib/run-gate-capped.mjs";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const GATE_GRAPH_PATH = resolve(here, "../schemas/gate-graph.json");
+const overrides = loadMessageOverrides(resolve(here, "..", ".modonome"));
 
 // The fixed gate registry. Each gate names the script that runs it and builds
 // its argument vector from the parsed CLI fixtures. Keeping this an explicit map
@@ -57,7 +59,7 @@ function parseArgs(argv) {
 export function gateOrder(graph) {
   const gates = Object.keys(graph);
   const { order, error } = topoSort(graph, gates);
-  if (error) throw new Error(error);
+  if (error) throw new Error(formatMessage("gate.gate-pipeline.cyclic-graph", { error }, overrides).message);
   order.reverse();
   return order;
 }
