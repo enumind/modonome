@@ -20,7 +20,17 @@
     "scripts/lib/message-catalog/agent-run/arm.mjs",
     "scripts/lib/message-catalog/agent-run/disarm.mjs",
     "scripts/lib/message-catalog/agent-run/ratchet-attestation.mjs",
-    "scripts/lib/message-catalog/index.mjs"
+    "scripts/lib/message-catalog/index.mjs",
+    "scripts/check-architecture-drift.mjs",
+    "scripts/assert-governed-change.mjs",
+    "scripts/validate-config.mjs",
+    "scripts/validate-work-item.mjs",
+    "scripts/run-gate-pipeline.mjs",
+    "scripts/lib/message-catalog/gate/check-architecture-drift.mjs",
+    "scripts/lib/message-catalog/gate/assert-governed-change.mjs",
+    "scripts/lib/message-catalog/gate/validate-config.mjs",
+    "scripts/lib/message-catalog/gate/validate-work-item.mjs",
+    "scripts/lib/message-catalog/gate/run-gate-pipeline.mjs"
   ],
   "gates": [
     "node scripts/check-message-catalog-integrity.mjs",

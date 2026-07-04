@@ -4,7 +4,9 @@
 // plain `MESSAGES` object, so a new script's catalog entries can be added as
 // a new file with zero risk of merge conflicts with any other script's
 // entries.
+import { MESSAGES as M_GATE_ASSERT_GOVERNED_CHANGE } from "./gate/assert-governed-change.mjs";
 import { MESSAGES as M_GATE_BUILD_POLICY_ATTESTATION } from "./gate/build-policy-attestation.mjs";
+import { MESSAGES as M_GATE_CHECK_ARCHITECTURE_DRIFT } from "./gate/check-architecture-drift.mjs";
 import { MESSAGES as M_GATE_CHECK_ATTRIBUTION_FP_CORPUS } from "./gate/check-attribution-fp-corpus.mjs";
 import { MESSAGES as M_GATE_CHECK_CHECKER_ENGAGEMENT } from "./gate/check-checker-engagement.mjs";
 import { MESSAGES as M_GATE_CHECK_CONTROL_PANEL_COHERENCE } from "./gate/check-control-panel-coherence.mjs";
@@ -28,7 +30,10 @@ import { MESSAGES as M_GATE_CHECK_STYLE } from "./gate/check-style.mjs";
 import { MESSAGES as M_GATE_CHECK_TRUST_BOUNDARY } from "./gate/check-trust-boundary.mjs";
 import { MESSAGES as M_GATE_CHECK_WORK_ITEMS } from "./gate/check-work-items.mjs";
 import { MESSAGES as M_GATE_GUARD_RATCHET } from "./gate/guard-ratchet.mjs";
+import { MESSAGES as M_GATE_RUN_GATE_PIPELINE } from "./gate/run-gate-pipeline.mjs";
 import { MESSAGES as M_GATE_TEST_PROMPT_BEHAVIOR } from "./gate/test-prompt-behavior.mjs";
+import { MESSAGES as M_GATE_VALIDATE_CONFIG } from "./gate/validate-config.mjs";
+import { MESSAGES as M_GATE_VALIDATE_WORK_ITEM } from "./gate/validate-work-item.mjs";
 import { MESSAGES as M_AGENT_RUN_OPENAI_CLIENT } from "./agent-run/openai-client.mjs";
 import { MESSAGES as M_AGENT_RUN_PROMOTE_LEARNING } from "./agent-run/promote-learning.mjs";
 import { MESSAGES as M_AGENT_RUN_QUEUE } from "./agent-run/queue.mjs";
@@ -39,7 +44,9 @@ import { MESSAGES as M_AGENT_RUN_TRANSITION_WORK_ITEM } from "./agent-run/transi
 import { MESSAGES as M_ADVISORY_DETECT_NEAR_MISS } from "./advisory/detect-near-miss.mjs";
 
 export const CATALOG_PARTIALS = [
+  M_GATE_ASSERT_GOVERNED_CHANGE,
   M_GATE_BUILD_POLICY_ATTESTATION,
+  M_GATE_CHECK_ARCHITECTURE_DRIFT,
   M_GATE_CHECK_ATTRIBUTION_FP_CORPUS,
   M_GATE_CHECK_CHECKER_ENGAGEMENT,
   M_GATE_CHECK_CONTROL_PANEL_COHERENCE,
@@ -63,7 +70,10 @@ export const CATALOG_PARTIALS = [
   M_GATE_CHECK_TRUST_BOUNDARY,
   M_GATE_CHECK_WORK_ITEMS,
   M_GATE_GUARD_RATCHET,
+  M_GATE_RUN_GATE_PIPELINE,
   M_GATE_TEST_PROMPT_BEHAVIOR,
+  M_GATE_VALIDATE_CONFIG,
+  M_GATE_VALIDATE_WORK_ITEM,
   M_AGENT_RUN_OPENAI_CLIENT,
   M_AGENT_RUN_PROMOTE_LEARNING,
   M_AGENT_RUN_QUEUE,
