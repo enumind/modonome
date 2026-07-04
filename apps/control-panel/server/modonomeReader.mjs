@@ -86,6 +86,7 @@ function readConfig(modonomeDir) {
     roles: raw.roles ?? {},
     models: raw.models ?? {},
     runners: raw.runners ?? {},
+    providers: raw.providers ?? {},
   };
 }
 

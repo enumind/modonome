@@ -33,6 +33,19 @@ const SCALAR_KEYS = [
 
 const ARRAY_KEYS = ["trusted_author_allowlist", "protected_paths_extra"] as const satisfies readonly (keyof ModonomeConfig)[];
 
+// The four open/semi-open maps (roles, models, runners, providers). A change to any
+// entry sends the whole new map as the patch value, matching how the nested block
+// writer (server/modonomeWriter.mjs) reconciles it against the file on disk entry by
+// entry rather than expecting a delta.
+const NESTED_KEYS = ["roles", "models", "runners", "providers"] as const satisfies readonly (keyof ModonomeConfig)[];
+
+function nestedMapChanged(a: Record<string, unknown> | undefined, b: Record<string, unknown> | undefined): boolean {
+  const ak = Object.keys(a ?? {});
+  const bk = Object.keys(b ?? {});
+  if (ak.length !== bk.length) return true;
+  return bk.some((k) => JSON.stringify((a ?? {})[k]) !== JSON.stringify((b ?? {})[k]));
+}
+
 export function diffConfig(base: ModonomeConfig, edited: ModonomeConfig): Partial<ModonomeConfig> {
   const patch: Partial<ModonomeConfig> = {};
   for (const key of SCALAR_KEYS) {
@@ -45,6 +58,11 @@ export function diffConfig(base: ModonomeConfig, edited: ModonomeConfig): Partia
     const b = edited[key] ?? [];
     if (a.length !== b.length || a.some((v, i) => v !== b[i])) {
       (patch as Record<string, unknown>)[key] = b;
+    }
+  }
+  for (const key of NESTED_KEYS) {
+    if (nestedMapChanged(base[key], edited[key])) {
+      (patch as Record<string, unknown>)[key] = edited[key];
     }
   }
   return patch;

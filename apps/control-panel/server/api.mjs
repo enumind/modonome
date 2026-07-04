@@ -58,6 +58,42 @@ function stateWithSource(dir, mode, writable) {
   return state;
 }
 
+// Best-effort reachability probe for an OpenAI-compatible endpoint (LM Studio,
+// Ollama, a gateway). Read-only and network-only — it never touches config.yaml, so
+// it needs no write guard. Always resolves (never throws to the caller) so the panel
+// can show an inline pass/fail pill instead of an unhandled error.
+function buildModelsUrl(baseUrl) {
+  const trimmed = baseUrl.replace(/\/+$/, "");
+  if (trimmed.endsWith("/models")) return trimmed;
+  return `${trimmed}/models`;
+}
+
+async function testConnection(baseUrl) {
+  let url;
+  try {
+    url = buildModelsUrl(baseUrl);
+    new URL(url);
+  } catch {
+    return { ok: false, error: "That doesn't look like a valid URL." };
+  }
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 4000);
+  try {
+    const res = await fetch(url, { signal: controller.signal });
+    if (!res.ok) return { ok: false, error: `HTTP ${res.status}` };
+    const data = await res.json().catch(() => null);
+    const models = Array.isArray(data?.data) ? data.data.map((m) => m?.id).filter(Boolean) : [];
+    return { ok: true, models };
+  } catch (err) {
+    if (err && err.name === "AbortError") return { ok: false, error: "Timed out after 4s." };
+    const code = err?.cause?.code;
+    if (code) return { ok: false, error: `${code === "ECONNREFUSED" ? "Connection refused" : code} (${url})` };
+    return { ok: false, error: err instanceof Error ? err.message : String(err) };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 export function modonomeApiPlugin() {
   const writable = process.env.MODONOME_PANEL_WRITE === "1";
   const writeGuard = (res) =>
@@ -70,6 +106,12 @@ export function modonomeApiPlugin() {
       if (url.pathname === "/api/modonome/state" && req.method === "GET") {
         const { dir, mode } = resolveModonomeDir(url.searchParams.get("mode"), url.searchParams.get("dir"));
         return sendJson(res, 200, stateWithSource(dir, mode, writable));
+      }
+
+      if (url.pathname === "/api/modonome/test-connection" && req.method === "GET") {
+        const baseUrl = url.searchParams.get("baseUrl");
+        if (!baseUrl) return sendJson(res, 400, { error: "Missing baseUrl." });
+        return sendJson(res, 200, await testConnection(baseUrl));
       }
 
       if (url.pathname === "/api/modonome/config" && req.method === "POST") {
