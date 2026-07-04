@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { DecisionCard, LearningCard, AuditTimeline, Card, EmptyState, Toast } from "@modonome/design-system";
-import type { PanelState, WriteActions } from "../state/types";
+import type { MessageSeverity, PanelState, WriteActions } from "../state/types";
 import { useConfirm } from "../lib/confirm";
+import { formatMessage } from "../lib/messages";
 
 /**
  * Where the engine's judgment surfaces for a human to check. Open decisions ask an
@@ -17,7 +18,7 @@ import { useConfirm } from "../lib/confirm";
  */
 export function LearningsScreen({ state, write }: { state: PanelState; write: WriteActions }) {
   const confirm = useConfirm();
-  const [notice, setNotice] = useState<{ tone: "info" | "blocked"; text: string } | null>(null);
+  const [notice, setNotice] = useState<{ tone: MessageSeverity; text: string } | null>(null);
 
   const staged = state.learnings.filter((l) => l.status === "staged");
   const promoted = state.learnings.filter((l) => l.status === "promoted");
@@ -28,7 +29,10 @@ export function LearningsScreen({ state, write }: { state: PanelState; write: Wr
       confirmLabel: "Resolve",
       body: `Recording an answer to "${question}" is an authoring step: edit DECISIONS.md and move this entry to Resolved with the real answer. This just acknowledges the question locally.`,
     });
-    if (ok) setNotice({ tone: "info", text: "Acknowledged locally. Record the real answer in DECISIONS.md." });
+    if (ok) {
+      const resolved = formatMessage(state.messages, "panel.learnings.decision-ack-local");
+      setNotice({ tone: resolved.severity, text: resolved.message });
+    }
   }
 
   async function onPromote(lesson: string) {
@@ -37,7 +41,10 @@ export function LearningsScreen({ state, write }: { state: PanelState; write: Wr
       confirmLabel: "Promote",
       body: `Promoting "${lesson}" is an authoring step: it needs a real gate description, not a placeholder. Edit LEARNINGS.md's Promoted block once the gate exists. This just acknowledges locally.`,
     });
-    if (ok) setNotice({ tone: "info", text: "Acknowledged locally. Add the real gate entry to LEARNINGS.md." });
+    if (ok) {
+      const resolved = formatMessage(state.messages, "panel.learnings.gate-entry-ack-local");
+      setNotice({ tone: resolved.severity, text: resolved.message });
+    }
   }
 
   async function onPrune(lesson: string) {
@@ -51,14 +58,19 @@ export function LearningsScreen({ state, write }: { state: PanelState; write: Wr
     });
     if (!ok) return;
     if (!write.writable) {
-      setNotice({ tone: "info", text: "Acknowledged locally. Connect live, writable state to actually prune it." });
+      const resolved = formatMessage(state.messages, "panel.learnings.prune-ack-local");
+      setNotice({ tone: resolved.severity, text: resolved.message });
       return;
     }
     try {
       await write.onPruneLearning(lesson);
-      setNotice({ tone: "info", text: "Learning pruned from LEARNINGS.md." });
+      const resolved = formatMessage(state.messages, "panel.learnings.pruned");
+      setNotice({ tone: resolved.severity, text: resolved.message });
     } catch (err) {
-      setNotice({ tone: "blocked", text: `Prune failed: ${err instanceof Error ? err.message : String(err)}` });
+      const resolved = formatMessage(state.messages, "panel.learnings.prune-failed", {
+        error: err instanceof Error ? err.message : String(err),
+      });
+      setNotice({ tone: resolved.severity, text: resolved.message });
     }
   }
 
@@ -76,7 +88,7 @@ export function LearningsScreen({ state, write }: { state: PanelState; write: Wr
 
       {notice ? (
         <Toast
-          tone={notice.tone === "blocked" ? "blocked" : "info"}
+          tone={notice.tone}
           title={notice.tone === "blocked" ? "Prune failed" : "Acknowledged"}
           message={notice.text}
           onDismiss={() => setNotice(null)}

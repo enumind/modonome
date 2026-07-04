@@ -4,6 +4,7 @@ import type { ModonomeConfig, MessageCatalogEntryVM, MessageOverridePatch, Messa
 import type { PanelState } from "../state/types";
 import { useConfirm } from "../lib/confirm";
 import { diffConfig } from "../state/configDiff";
+import { formatMessage } from "../lib/messages";
 
 const SEVERITY_OPTIONS: { value: MessageSeverity; label: string }[] = [
   { value: "ok", label: "OK" },
@@ -57,14 +58,14 @@ export function SettingsScreen({ state, write }: { state: PanelState; write: Wri
   const [newAuthor, setNewAuthor] = useState("");
   const [newPath, setNewPath] = useState("");
   const [saving, setSaving] = useState(false);
-  const [notice, setNotice] = useState<{ tone: "info" | "blocked"; text: string } | null>(null);
+  const [notice, setNotice] = useState<{ tone: MessageSeverity; text: string } | null>(null);
 
   const [messageDrafts, setMessageDrafts] = useState<Record<string, MessageOverridePatch>>({});
   const [messageQuery, setMessageQuery] = useState("");
   const [messageCategory, setMessageCategory] = useState("all");
   const [previewId, setPreviewId] = useState<string | null>(null);
   const [savingMessages, setSavingMessages] = useState(false);
-  const [messageNotice, setMessageNotice] = useState<{ tone: "info" | "blocked"; text: string } | null>(null);
+  const [messageNotice, setMessageNotice] = useState<{ tone: MessageSeverity; text: string } | null>(null);
 
   function set<K extends keyof ModonomeConfig>(key: K, value: ModonomeConfig[K]) {
     setConfig((c) => ({ ...c, [key]: value }));
@@ -160,9 +161,13 @@ export function SettingsScreen({ state, write }: { state: PanelState; write: Wri
     try {
       await write.onSaveMessages(messageDrafts);
       setMessageDrafts({});
-      setMessageNotice({ tone: "info", text: "Message overrides saved to messages.yaml." });
+      const resolved = formatMessage(state.messages, "panel.settings.messages-saved");
+      setMessageNotice({ tone: resolved.severity, text: resolved.message });
     } catch (err) {
-      setMessageNotice({ tone: "blocked", text: `Save failed: ${err instanceof Error ? err.message : String(err)}` });
+      const resolved = formatMessage(state.messages, "panel.settings.messages-save-failed", {
+        error: err instanceof Error ? err.message : String(err),
+      });
+      setMessageNotice({ tone: resolved.severity, text: resolved.message });
     } finally {
       setSavingMessages(false);
     }
@@ -181,9 +186,13 @@ export function SettingsScreen({ state, write }: { state: PanelState; write: Wri
     setSaving(true);
     try {
       await write.onSaveConfig(patch);
-      setNotice({ tone: "info", text: "Configuration saved to config.yaml." });
+      const resolved = formatMessage(state.messages, "panel.settings.config-saved");
+      setNotice({ tone: resolved.severity, text: resolved.message });
     } catch (err) {
-      setNotice({ tone: "blocked", text: `Save failed: ${err instanceof Error ? err.message : String(err)}` });
+      const resolved = formatMessage(state.messages, "panel.settings.config-save-failed", {
+        error: err instanceof Error ? err.message : String(err),
+      });
+      setNotice({ tone: resolved.severity, text: resolved.message });
     } finally {
       setSaving(false);
     }
@@ -236,7 +245,7 @@ export function SettingsScreen({ state, write }: { state: PanelState; write: Wri
 
       {notice ? (
         <Toast
-          tone={notice.tone === "blocked" ? "blocked" : "info"}
+          tone={notice.tone}
           title={notice.tone === "blocked" ? "Save failed" : "Acknowledged"}
           message={notice.text}
           onDismiss={() => setNotice(null)}
@@ -545,7 +554,7 @@ export function SettingsScreen({ state, write }: { state: PanelState; write: Wri
 
               {messageNotice ? (
                 <Toast
-                  tone={messageNotice.tone === "blocked" ? "blocked" : "info"}
+                  tone={messageNotice.tone}
                   title={messageNotice.tone === "blocked" ? "Save failed" : "Acknowledged"}
                   message={messageNotice.text}
                   onDismiss={() => setMessageNotice(null)}

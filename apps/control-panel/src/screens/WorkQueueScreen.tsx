@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { QueueBoard, LeaseTable, WorkItemDrawer, Card, EmptyState, Toast } from "@modonome/design-system";
-import type { PanelState, WriteActions } from "../state/types";
+import type { MessageSeverity, PanelState, WriteActions } from "../state/types";
 import { useConfirm } from "../lib/confirm";
+import { formatMessage } from "../lib/messages";
 
 /**
  * The durable work-item state machine, laid out as a board: queued, claimed, making,
@@ -15,7 +16,7 @@ import { useConfirm } from "../lib/confirm";
 export function WorkQueueScreen({ state, write }: { state: PanelState; write: WriteActions }) {
   const confirm = useConfirm();
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [notice, setNotice] = useState<{ tone: "info" | "blocked"; text: string } | null>(null);
+  const [notice, setNotice] = useState<{ tone: MessageSeverity; text: string } | null>(null);
 
   const selected = state.queue.find((i) => i.id === selectedId) ?? null;
 
@@ -30,14 +31,19 @@ export function WorkQueueScreen({ state, write }: { state: PanelState; write: Wr
     });
     if (!ok) return;
     if (!write.writable) {
-      setNotice({ tone: "info", text: `Acknowledged locally. Connect live, writable state to actually release ${itemId}.` });
+      const resolved = formatMessage(state.messages, "panel.work-queue.release-ack-local", { itemId });
+      setNotice({ tone: resolved.severity, text: resolved.message });
       return;
     }
     try {
       await write.onReleaseLease(itemId);
-      setNotice({ tone: "info", text: `Lease on ${itemId} released. The item has requeued.` });
+      const resolved = formatMessage(state.messages, "panel.work-queue.release-succeeded", { itemId });
+      setNotice({ tone: resolved.severity, text: resolved.message });
     } catch (err) {
-      setNotice({ tone: "blocked", text: `Release failed: ${err instanceof Error ? err.message : String(err)}` });
+      const resolved = formatMessage(state.messages, "panel.work-queue.release-failed", {
+        error: err instanceof Error ? err.message : String(err),
+      });
+      setNotice({ tone: resolved.severity, text: resolved.message });
     }
   }
 
@@ -56,7 +62,7 @@ export function WorkQueueScreen({ state, write }: { state: PanelState; write: Wr
 
       {notice ? (
         <Toast
-          tone={notice.tone === "blocked" ? "blocked" : "info"}
+          tone={notice.tone}
           title={notice.tone === "blocked" ? "Release failed" : "Acknowledged"}
           message={notice.text}
           onDismiss={() => setNotice(null)}
