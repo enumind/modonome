@@ -55,6 +55,7 @@ repo_network_enabled: false    # env or CI only
 repo_network_dry_run: true
 share_raw_code_across_repos: false
 share_repo_identifiers_by_default: false
+remediation_apply_enabled: false   # armed history remediator; env or CI only
 snapshot:
   ci_mode: warn
   sign: false
@@ -363,8 +364,10 @@ safe automated mechanism exists.
 - Architect: cross-cutting design, public contracts, schemas, dependency strategy, and the
   decomposition of ambiguous work into bounded packets. Produces owner-reviewed notes for
   novel changes.
-- Maker: implements one specified, test-fenced packet and writes a rationale of what changed,
-  why, the risk, and how it was verified.
+- Maker: implements one specified, test-fenced packet and writes a rationale that leads with
+  a one-sentence summary of what changed and why, then the risk and how it was verified,
+  following the AGENTS.md Communication convention (summary first, details next, annexure
+  last).
 - Checker: independent of the maker. Runs deterministic gates first. Reviews the diff and the
   rationale. A persuasive rationale is evidence, not a verdict. A change that is green only
   because its rationale reads well is a fail.

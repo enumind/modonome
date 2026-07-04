@@ -9,6 +9,167 @@ or CVE identifier where one exists.
 
 ## Unreleased
 
+### Governed Remediation Phase 4: policy-pack adoption tooling
+
+- Added a required `generator` credit block (`name`, `homepage`, `repository`, sourced from
+  `package.json`) to the policy-attestation manifest and bumped `manifest_version` to 2.
+  Because the field is both schema-required and inside the hashed body, a vendored pack
+  cannot drop credit to modonome and remain schema-valid, and cannot have its credit altered
+  without either recomputing `content_digest` (a distinguishable case, covered by signing) or
+  being caught immediately by the existing self-consistency check.
+- Added three commands to `scripts/build-policy-attestation.mjs` (`modonome attest`):
+  `--diff <file>` compares a foreign pack's disclosed policy against this repo's live policy
+  and always surfaces its generator credit; `--adopt <file> --alias <name>` schema-validates,
+  digest-checks, and signature-verifies a foreign pack before vendoring it to
+  `.modonome/policy-packs/<alias>.json`, refusing and writing nothing on any failure. `--show`
+  and `--verify` now accept an optional foreign file path (defaulting to today's local-only
+  behavior), and both surface the generator credit.
+- No new capability flag, no CI wiring: `--diff`/`--adopt` are on-demand tooling, not a
+  repo-local invariant, so `check-promotion-readiness.mjs` is not involved and the existing
+  `--check` gate's behavior is unchanged apart from now also covering `generator`. See
+  ADR-037, which also states plainly what this tooling does not guarantee: a plain content
+  digest cannot stop a determined actor from recomputing a new, self-consistent digest over a
+  re-credited body; signing (already optional and reused as-is) is what closes that gap.
+
+### Governed Remediation Phase 3: policy-pack manifest and disclosure attestation
+
+- Added `scripts/lib/policy-manifest.mjs` (pure builder) and
+  `scripts/build-policy-attestation.mjs` (CLI, also `modonome attest`), which generate a
+  content-addressed `.modonome/policy-attestation.json`. The manifest discloses, in one
+  verifiable place, the governance policy this repo enforces (the attribution denylists by
+  content hash, every capability flag and its default, the protected paths, and the gate set
+  derived from the `verify` chain) and the architectural-level AI-participation posture with a
+  section fingerprint of the `README.md` and `AGENTS.md` prose that states it.
+- The manifest is a disclosure generated from the authoritative sources, never a source of
+  truth the detectors read back from: it fingerprints the four detector libraries rather than
+  importing them, so a policy pack can be published and verified without weakening the
+  base-pinned trust boundary. The body is RFC 8785 canonical JSON addressed by a `sha256`
+  digest; signing is optional and off by default, attaching an Ed25519 envelope (ADR-017) over
+  a domain-separated body only when `MODONOME_SIGNING_KEY` is present.
+- Added `check:attestation` (`build-policy-attestation.mjs --check`) to the `verify` chain and
+  to CI in the pre-base-checkout slot, beside the snapshot and promotion-safety gates, so it
+  judges the pull request's own policy files and committed artifact. This gives the attestation
+  the CI freshness gate that `RELEASE-EVIDENCE.md` still lacks. `check-self-application.mjs` now
+  requires the gate to be wired in CI.
+- Extracted the capability-flag list to `scripts/lib/capability-flags.mjs`, shared by
+  `check-promotion-readiness.mjs` and the attestation, so the disclosed capability set and the
+  gated one cannot drift.
+- No config lever and no schema change: generation is read-only and always safe, and signing is
+  gated by an environment secret rather than config. See ADR-036.
+
+### Governed Remediation Phase 2: armed metadata-only commit-history remediator
+
+- Added `scripts/lib/remediate.mjs` (pure planner) and `scripts/remediate.mjs` (CLI,
+  also `modonome remediate plan|apply`). This completes the loop Phase 1 left open:
+  `hygiene` detects attribution signatures and prints the commit-identity and
+  commit-message remedies but defers applying them to "the armed, gated remediator
+  (later phase)". `remediate plan` is a tokenless, read-only proposal (no model, no
+  network) that prints a deterministic fingerprint; `remediate apply` performs the
+  rewrite.
+- The applier is metadata-only and provably so: it replays the branch-unique range
+  with `git commit-tree`, reusing each commit's original tree object, and verifies
+  every rewritten commit's tree SHA is unchanged (and the top tree is unchanged)
+  before moving the branch ref, resetting hard to the saved head on any mismatch. It
+  is deterministic, re-runnable, and idempotent (a second run is a no-op), and it
+  never touches published history: the range is `origin/main..HEAD`, and it refuses on
+  the default branch, on a dirty tracked working tree, on a merge in range, and when
+  `origin/main` is absent.
+- Gated apply behind a new capability flag `remediation_apply_enabled`, default off,
+  added to the config schema, both `config.yaml` files, `migrate-config` safe defaults,
+  and the prompt core. Following ADR-004 and ADR-024, apply requires
+  `autonomy_enabled` and not `dry_run` and the capability flag in config AND the
+  authoritative `MODONOME_ARMED=true` in the environment, so a config the agent can
+  write can never arm it, and even a fully armed engine will not rewrite history until
+  an owner turns this one capability on. `check-promotion-readiness.mjs` now tracks the
+  flag, so it cannot reach default-on in a shipped config without a promotion ADR.
+- Extended the determinism boundary in `check-gate-dag.mjs`: the strict detectors are
+  now proven to reach neither the near-miss widener nor the new applier through their
+  import graph, so the detection kernel stays a pure, side-effect-free, base-pinnable
+  trust root while the applier depends on the detectors and never the reverse.
+- Registered the flag in `apps/control-panel/exposure.json` as a documented exemption:
+  its owner-facing lever family (a proposal queue plus an approve action) is the Phase 2
+  control-panel follow-up, so apply is CLI-only and owner-gated until then.
+- Recorded the trust boundary and the default-off-until-evidence promotion path in
+  `docs/adr/ADR-035-metadata-remediator.md`. The lever is additive and off by default,
+  so it is backward compatible and needs no schema version bump.
+
+### Governed Remediation Phase 2: control-panel remediation lever family
+
+- Surfaced the metadata-only remediator (ADR-035) in the control panel as an owner-gated
+  lever plus a read-only status surface, extending the existing `apps/control-panel/`
+  rather than adding a new app. A new "Remediation" tab on the Settings screen carries the
+  `remediation_apply_enabled` capability toggle (reusing the existing config-save path, so
+  it writes through the same `MODONOME_PANEL_WRITE`-gated, confirm-dialog machinery as every
+  other lever), a read-only apply-readiness panel that names exactly which arming conditions
+  are unmet, and a read-only list of the commits `remediate plan` would rewrite.
+- Added `apps/control-panel/server/remediationView.mjs`, a pure, dependency-free helper that
+  turns config, the environment arming bit, and the branch commits into the panel's
+  remediation view-model by reusing the Phase 2 planner. It runs under plain `node --test`
+  (`tests/remediation-view.test.mjs`), so the readiness and proposal logic is covered without
+  the frontend toolchain. The reader gathers the unpublished commit range
+  (`origin/main..HEAD`) in the loaded repo and feeds it in; a repo without `origin/main`
+  yields no proposals rather than an error.
+- The panel reports arming, it never grants it: the readiness predicate mirrors the CLI
+  (`autonomy_enabled` and not `dry_run` and the capability flag AND `MODONOME_ARMED`), and
+  `MODONOME_ARMED` stays outside the panel's write surface. Moved the flag from an
+  `exposure.json` exemption to a real hinted control, keeping the coverage and coherence
+  gates green.
+
+### Governed Remediation Phase 1: near-miss widener and human-only promotion path
+
+- Added `scripts/lib/near-miss.mjs`, a deterministic near-miss widener that flags
+  attribution tokens the strict detectors miss: separator and spelling variants of a
+  denylisted token (`claude-code`, `claude_code`) and vendors not yet denylisted
+  (`mistral`, `grok`). Two precision tiers keep false positives out. Tier 1
+  distinctive tokens match by separator-normalized substring on branch names and
+  identities; Tier 2 generic words (`assistant`, `grok`, `cohere`) match only as an
+  exact segment or word, never in free text. Free-text scanning needs both a
+  distinctive-vendor token and an attribution cue, so this repo's legitimate
+  `claude`/`gpt` mentions and ordinary `grok`/`cohere` prose never fire. The widener
+  imports the strict predicates only to suppress what strict already catches.
+- Added `scripts/detect-near-miss.mjs`, an advisory scanner wired into CI. It prints
+  a ready-to-paste `LEARNINGS.md` Staged proposal for each near-miss and always exits
+  0, so it never blocks a build; `--write` appends the proposal under the Staged cap.
+  Promotion into the live denylist stays human-only.
+- Gated the promotion path with three deterministic checks that run before the CI
+  base-branch checkout, so they judge a promotion PR's own detector changes rather
+  than the base copy: `check-attribution-fp-corpus.mjs` (a regression corpus of
+  legitimate names, branches, and prose, including the surname "Robin Bott", that
+  must never be flagged), `check-regex-safety.mjs` (a ReDoS lint rejecting
+  nested-quantifier patterns), and an import-graph rule added to `check-gate-dag.mjs`
+  proving the deterministic detectors never import the widener (fuzzy may only
+  tighten, never override). Fixed a latent gap where the base-branch checkout blinded
+  the detector unit tests on any PR that edits those files, by running them early
+  against this branch's own code.
+- Enforced the previously-documented 20-entry `LEARNINGS.md` Staged cap in
+  `scripts/lib/learnings.mjs` (`readStagedEntries`, `appendStagedEntry`); it refuses
+  when full and never auto-evicts.
+- Added a Communication convention to `AGENTS.md` and the maker/checker prompts:
+  PR bodies, comments, and agent-authored documents lead with a Summary, then
+  Details, then an Annexure. Enforced by the checker, not a machine gate.
+
+### Governed Remediation Phase 1: PR body and comment hygiene
+
+- Added `scripts/lib/github-api.mjs`, a minimal read-only GitHub REST client (global
+  fetch, injectable for tests, no network at import time, fixed-backoff retry on
+  429/5xx), and a `--pr <n>` flag on `modonome hygiene check`/`explain`. It fetches
+  the pull request title, body, and conversation comments and scans them with the
+  existing strict `detectText`. This closes the one attribution surface no
+  tracked-file gate can see: the hosted coding-agent web UI appends a session-URL
+  footer to a PR body at creation time, which slipped past every gate on both prior
+  merged PRs and had to be cleaned by hand. `--pr` is rejected for `fix`, since
+  editing a PR body or comment through the API is a mutating, non-local operation.
+- Wired the scan into CI as a `pull_request`-only step using the standard
+  `GITHUB_TOKEN` (no new secret), registered in `check-self-application.mjs`.
+- Accepted residual risk, documented here for honesty: `hygiene.mjs` and
+  `github-api.mjs` are not base-pinned, so a PR could in the same diff neuter the
+  `--pr` handler and CI would run the neutered copy. This matches the trade-off
+  already accepted for `check-drift.mjs` (it runs the PR's own scripts, relying on
+  CODEOWNERS review). Unlike Phase 1's promotion-safety gates, which supplement a
+  review a Tier-2 change gets anyway, this `--pr` check is the primary mechanism for
+  a gap that had none, so its defeasibility is noted for a future hardening pass that
+  base-pins these two files.
+
 ### Documentation coherence, SME accuracy, and diagram consistency
 
 - Corrected `docs/compliance/compliance.md` and `docs/specs/governed-autonomy-spec.md`:

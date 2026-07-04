@@ -13,8 +13,10 @@ safe automated mechanism exists.
 - Architect: cross-cutting design, public contracts, schemas, dependency strategy, and the
   decomposition of ambiguous work into bounded packets. Produces owner-reviewed notes for
   novel changes.
-- Maker: implements one specified, test-fenced packet and writes a rationale of what changed,
-  why, the risk, and how it was verified.
+- Maker: implements one specified, test-fenced packet and writes a rationale that leads with
+  a one-sentence summary of what changed and why, then the risk and how it was verified,
+  following the AGENTS.md Communication convention (summary first, details next, annexure
+  last).
 - Checker: independent of the maker. Runs deterministic gates first. Reviews the diff and the
   rationale. A persuasive rationale is evidence, not a verdict. A change that is green only
   because its rationale reads well is a fail.

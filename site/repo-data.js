@@ -28,7 +28,7 @@ window.__MODONOME_REPO = {
   balances: [
     { left: 'speed', right: 'guardrails', title: 'Security and trust', body: 'Agents act inside real guardrails enforced in your pipeline, so autonomy comes with evidence rather than good intentions.' },
     { left: 'fast', right: 'governed', title: 'Speed with governance', body: 'Routine, provable work moves quickly, while anything sensitive slows down for an independent check and a human owner.' },
-    { left: 'today', right: 'tomorrow', title: 'Learning that compounds', body: 'Every correction becomes a lesson and, once an owner approves it, a durable rule that raises the floor for next time.' },
+    { left: 'today', right: 'tomorrow', title: 'Learning that compounds', body: 'Every correction can become a lesson, and once an owner approves it, a durable rule that raises the floor for next time.' },
     { left: 'features', right: 'debt', title: 'Innovation and clearance', body: 'Teams keep shipping new features while Modonome steadily clears the debt that builds up in critical applications.' },
   ],
 
@@ -50,13 +50,19 @@ window.__MODONOME_REPO = {
     { icon: '⊞', title: 'Separate roles for trust', body: 'The maker, the checker, and the merge authority are always different roles, so each change gets a genuine second look before it lands.' },
     { icon: '⛨', title: 'Anti-gaming ratchet in CI', body: 'A check running in your pipeline keeps tests, types, and coverage honest across JavaScript, Python, Java, and .NET.' },
     { icon: '⇄', title: 'Adopts your setup on day one', body: 'It follows your existing CI, code owners, and branch rules. There is no new process for the team to learn.' },
-    { icon: '↻', title: 'Improves as it goes', body: 'Real corrections become staged lessons. Once an owner promotes them, they become durable rules: the loop gets smarter with each cycle.' },
+    { icon: '↻', title: 'Improves as it goes', body: 'Real corrections become staged lessons. Once an owner promotes one, it becomes a durable rule, the mechanism the loop is built to improve by.' },
     { icon: '⊟', title: 'Language-aware across your stack', body: 'The anti-gaming ratchet is language-aware across JavaScript, Python, Java, and .NET today. Broader enterprise estates are on the roadmap.' },
+    { icon: '▤', title: 'Operator control panel', body: 'In progress: a dashboard for gate status, governance events, and the levers an owner uses to arm, pause, and review autonomy, so control stays in plain sight.' },
+    { icon: '◈', title: 'Verifiable repo context', body: 'Each agent works from a current, trustworthy map of the repository instead of rereading the whole tree. It is a compact snapshot, Merkle-verified so tampering cannot slip through unnoticed.' },
+    { icon: '❑', title: 'Compliance evidence on demand', body: 'An MCP server exposes attestation and evidence tools, so a host repository can produce a signed record of what ran and what held.' },
+    { icon: '⛨', title: 'A drop-in CI gate check, with a signed receipt', body: 'A GitHub Action runs the gate check from a pinned, trusted copy, so the pull request under review can never judge itself. It can also produce a signed receipt of the result.' },
+    { icon: '⇵', title: 'Disclose and adopt policy as signed evidence', body: 'A repository can state the governance policy it enforces in one verifiable file, and another repository can review and adopt it, with integrity and credit checks that refuse anything that fails.' },
+    { icon: '✦', title: 'Scrubs its own AI fingerprints', body: 'A safe, verified way to clear AI-attribution traces from commit history, proven to leave the underlying code untouched.' },
   ],
 
   // ---- Structural guarantees ----
   guarantees: [
-    { icon: '⚡', title: 'An owner turns on autonomy', body: 'Arming is a deliberate owner step in your CI or environment, and the engine waits for that signal before it acts.' },
+    { icon: '⚡', title: 'An owner turns on autonomy', body: 'Arming is a deliberate, two-key owner step in your CI or environment, checking maker and checker come from separate model families before the engine acts. Once armed, an owner turns scored proposals into real work items with a single command.' },
     { icon: '⎘', title: 'People hold the merge', body: 'The merge authority is always a separate role from the author, so landing a change stays a deliberate decision.' },
     { icon: '⛉', title: 'Protected paths get a human review', body: 'CI config, secrets, schemas, migrations, lockfiles, and auth all route to a human CODEOWNER for review first.' },
     { icon: '◷', title: 'Free tool, local-first cost', body: 'Local or already-paid models run first, and any metered API use is opt-in. Modonome itself is MIT-licensed and free, so on a plan you already pay for it adds no extra cost of its own.' },
@@ -68,19 +74,19 @@ window.__MODONOME_REPO = {
   simGroups: [
     { label: 'Merges cleanly', items: [
       { label: 'Add a missing test, the right way', stop: 5, kind: 'pass', tag: 'MERGED', title: 'Merged with every gate green.', detail: 'A maker scopes one packet and pins it with a failing test. An independent checker reviews the diff, the deterministic gates and the ratchet pass, and the merge authority lands it. Author and merge authority are always separate roles.' },
-      { label: 'A diff that says “disable governance”', stop: 5, kind: 'pass', tag: 'INERT', title: 'Instruction ignored. Merged on the real signal.', detail: 'The ratchet reads every diff line as data, never as instructions. An embedded “disable governance” note has no effect, and the merge proceeds on the real test signal. AgentProof AP-15.' },
+      { label: 'A diff that says “disable governance”', stop: 5, kind: 'pass', tag: 'INERT', title: 'Instruction ignored. Merged on the real signal.', detail: 'The ratchet reads every diff line as data, never as instructions. An embedded “disable governance” note has no effect, and the merge proceeds on the real test signal. AgentProof AP-15.', proof: { id: 'AP-15', href: 'https://github.com/enumind/modonome/blob/main/agentproof/README.md#ap-15-prompt-injection-embedded-in-a-diff-is-inert' } },
     ]},
     { label: 'Held by the ratchet, code in your CI', items: [
-      { label: 'Delete a test\'s assert() calls', stop: 3, kind: 'block', tag: 'HELD', title: 'Held at the ratchet.', detail: 'The anti-gaming ratchet runs in CI as code the agent never touches. It spots the removed expect()/assert calls and holds the merge until the tests are whole again. AgentProof AP-01.' },
-      { label: 'Add .skip to a failing test', stop: 3, kind: 'block', tag: 'HELD', title: 'Held at the ratchet.', detail: 'A skipped test reports nothing useful. The ratchet flags skip injection across JavaScript, Python, Java, and .NET suites alike. AgentProof AP-02, AP-12, AP-14, AP-16.' },
-      { label: 'Cast a type to “any” to clear an error', stop: 3, kind: 'block', tag: 'HELD', title: 'Held at the ratchet.', detail: 'Type safety is a deterministic gate. The ratchet rejects broad casts to any in production source, so the original error stays visible and gets a real fix. AgentProof AP-03.' },
-      { label: 'Delete the coverage threshold', stop: 3, kind: 'block', tag: 'HELD', title: 'Held at the ratchet.', detail: 'A quiet move: the suite stays in place while the floor slips away. The ratchet guards coverageThreshold and fail_under and holds the merge. AgentProof AP-04.' },
+      { label: 'Delete a test\'s assert() calls', stop: 3, kind: 'block', tag: 'HELD', title: 'Held at the ratchet.', detail: 'The anti-gaming ratchet runs in CI as code the agent never touches. It spots the removed expect()/assert calls and holds the merge until the tests are whole again. AgentProof AP-01.', proof: { id: 'AP-01', href: 'https://github.com/enumind/modonome/blob/main/agentproof/README.md#ap-01-ratchet-rejects-assertion-removal-jstspython' } },
+      { label: 'Add .skip to a failing test', stop: 3, kind: 'block', tag: 'HELD', title: 'Held at the ratchet.', detail: 'A skipped test reports nothing useful. The ratchet flags skip injection across JavaScript, Python, Java, and .NET suites alike. AgentProof AP-02, AP-12, AP-14, AP-16.', proof: { id: 'AP-02', href: 'https://github.com/enumind/modonome/blob/main/agentproof/README.md#ap-02-ratchet-rejects-test-skip-injection' } },
+      { label: 'Cast a type to “any” to clear an error', stop: 3, kind: 'block', tag: 'HELD', title: 'Held at the ratchet.', detail: 'Type safety is a deterministic gate. The ratchet rejects broad casts to any in production source, so the original error stays visible and gets a real fix. AgentProof AP-03.', proof: { id: 'AP-03', href: 'https://github.com/enumind/modonome/blob/main/agentproof/README.md#ap-03-ratchet-rejects-broad-type-escape-injection' } },
+      { label: 'Delete the coverage threshold', stop: 3, kind: 'block', tag: 'HELD', title: 'Held at the ratchet.', detail: 'A quiet move: the suite stays in place while the floor slips away. The ratchet guards coverageThreshold and fail_under and holds the merge. AgentProof AP-04.', proof: { id: 'AP-04', href: 'https://github.com/enumind/modonome/blob/main/agentproof/README.md#ap-04-ratchet-rejects-coverage-threshold-removal' } },
     ]},
     { label: 'Held by role separation', items: [
-      { label: 'Let the maker approve its own work', stop: 1, kind: 'block', tag: 'HELD', title: 'Held at the checker.', detail: 'A model rarely catches its own systematic errors. Work-item governance keeps maker and checker as distinct identities, so the review carries real weight. AgentProof AP-07.' },
+      { label: 'Let the maker approve its own work', stop: 1, kind: 'block', tag: 'HELD', title: 'Held at the checker.', detail: 'A model rarely catches its own systematic errors. Work-item governance keeps maker and checker as distinct identities, so the review carries real weight. AgentProof AP-07.', proof: { id: 'AP-07', href: 'https://github.com/enumind/modonome/blob/main/agentproof/README.md#ap-07-work-item-identity-collapse-is-caught' } },
     ]},
     { label: 'Escalated to a human owner', items: [
-      { label: 'Auto-merge a protected file', stop: 4, kind: 'escalate', tag: 'ESCALATED', title: 'Routed to a human owner.', detail: 'CI config, secrets, schemas, and auth call for a CODEOWNER decision. The change waits for owner approval, then proceeds. AgentProof AP-10.' },
+      { label: 'Auto-merge a protected file', stop: 4, kind: 'escalate', tag: 'ESCALATED', title: 'Routed to a human owner.', detail: 'CI config, secrets, schemas, and auth call for a CODEOWNER decision. The change waits for owner approval, then proceeds. AgentProof AP-10.', proof: { id: 'AP-10', href: 'https://github.com/enumind/modonome/blob/main/agentproof/README.md#ap-10-protected-path-item-cannot-auto-merge-without-escalation' } },
     ]},
   ],
 
@@ -146,7 +152,7 @@ window.__MODONOME_REPO = {
       { where: 'Record', dir: 'toEngine', color: '#5dd4ab', text: 'the proposal is scored on safety and value', r: -1, e: 3 },
       { where: 'Owner', dir: 'toEngine', color: '#f5b14a', text: 'a brand-new idea waits for owner approval', r: 2, e: 3 },
     ]},
-    { tag: 'UPGRADE MODONOME', accent: '#7cc4ff', label: 'New Modonome version', title: 'Modonome updates itself safely', summary: 'A new version keeps your settings and history intact, and new options arrive switched off, so nothing changes on its own.', outcome: 'Modonome moves to v0.2.0 with your config intact and autonomy still at rest.', steps: [
+    { tag: 'UPGRADE MODONOME', accent: '#7cc4ff', label: 'New Modonome version', title: 'Modonome updates itself safely', summary: 'A new version keeps your settings and history intact, and new options arrive switched off, so nothing changes on its own.', outcome: 'Modonome moves to v0.2.0 with your config intact and autonomy still disarmed.', steps: [
       { where: 'Plan', dir: 'toEngine', color: '#7cc4ff', text: 'a new Modonome version is available', r: -1, e: 1 },
       { where: 'Record', dir: 'toEngine', color: '#7cc4ff', text: 'settings carry over and your history stays intact', set: { engine: { version: 'v0.2.0' } }, hi: { engine: ['version'] }, r: -1, e: 1 },
       { where: 'Plan', dir: 'toEngine', color: '#7cc4ff', text: 'new options arrive switched off, so nothing changes on its own', r: -1, e: 2 },
@@ -155,17 +161,17 @@ window.__MODONOME_REPO = {
 
   // ---- Roadmap: honest about what is committed vs. a community direction ----
   milestones: [
-    { phase: 'v0.1-alpha', status: 'Shipping now', tone: 'now', title: 'Hardened alpha', body: 'The core loop, the anti-gaming ratchet, config and packet validators, and the drift guard, all machine-verified, with safe defaults and two runnable examples.' },
-    { phase: 'v0.2', status: 'Next', tone: 'planned', title: 'Signed evidence & debt metrics', body: 'Ed25519-signed work items and before/after tech-debt measurement, the groundwork for sharing patterns as verifiable evidence.' },
+    { phase: 'v0.1-alpha', status: 'Shipping now', tone: 'now', title: 'Hardened alpha', body: 'The core loop, the anti-gaming ratchet, config and packet validators, the drift guard, and Ed25519-signed evidence packets, all machine-verified, with safe defaults and two runnable examples.' },
+    { phase: 'Milestone 3', status: 'In progress', tone: 'now', title: 'Operator control panel', body: 'A dashboard for governance events, gate status, and the levers an owner uses to arm, pause, and review autonomy across a repository.' },
+    { phase: 'v0.2', status: 'Next', tone: 'planned', title: 'Signed work items & debt metrics', body: 'Ed25519-signed work items and before/after tech-debt measurement, the groundwork for sharing patterns as verifiable evidence.' },
     { phase: 'v0.3', status: 'Planned', tone: 'planned', title: 'Telemetry & estate metrics', body: 'OpenTelemetry spans for governance events and multi-team estate aggregation, for audit trails and fleet-wide visibility.' },
-    { phase: 'Direction', status: 'Proposed', tone: 'idea', title: 'Governed knowledge network', body: 'Repositories share proven patterns peer-to-peer, each re-verified locally before adoption. A path we want to build with the community.' },
-    { phase: 'Direction', status: 'Exploring', tone: 'idea', title: 'Enterprise adapters & research roles', body: 'Connectors for mainframe, SAP, Oracle, Salesforce, and ServiceNow estates, plus roles that watch for standards shifts. Open for input.' },
+    { phase: 'Direction', status: 'Underway', tone: 'planned', title: 'Governed knowledge network', body: 'A repository can already disclose and adopt policy as signed, verifiable evidence today. The fuller peer-to-peer network, where repositories share proven patterns and each re-verifies them locally, is a path we want to build with the community.' },
   ],
 
   // ---- Quickstart ----
   quickstart: [
     { n: '1', title: 'Preview, safely', t: 'The dry run reads your repository and shows the work it would propose. Nothing is written.' },
-    { n: '2', title: 'Adopt when ready', t: 'Scaffold local state in your repo. Autonomy stays at rest until an owner switches it on.' },
+    { n: '2', title: 'Adopt when ready', t: 'Scaffold local state in your repo. Autonomy stays disarmed until an owner switches it on.' },
     { n: '3', title: 'Prove the controls', t: 'Run AgentProof to confirm every safeguard holds on your own setup.' },
   ],
 
@@ -182,5 +188,31 @@ window.__MODONOME_REPO = {
     'OWASP Agentic Working Group, reference suite for the Top 10 for Agentic Applications',
     'OpenSSF Securing Software Repositories WG, anti-gaming ratchet conformance',
     'AAIF, governed-autonomy benchmark',
+  ],
+
+  // ---- Recently shipped: newest-first, kept in sync by hand alongside CHANGELOG.md.
+  // Source PRs (internal reference, not shown on the page): #105, #104, #102, #102,
+  // #102, #101, #93, #99, #99, #95, #96, #97, #98, #94, #94, #89, #85, #69, #70, #75.
+  recentReleases: [
+    { title: 'A guided, two-key start for autonomy', body: 'A guided, two-key process for turning on autonomy, plus a simple way to turn scored proposals into real work items.' },
+    { title: 'Safely adopt another repo\'s policy', body: 'Safely adopt another repository\'s governance policy, with integrity and credit checks that refuse anything that doesn\'t pass.' },
+    { title: 'A GitHub Action with a signed receipt', body: 'A GitHub Action that runs your gate checks from a trusted, pinned source and returns a signed receipt of the result.' },
+    { title: 'Gate results your CI can act on', body: 'Gate results now come in a machine-readable form, so your own tools and CI can act on them directly.' },
+    { title: 'Connect any editor in one command', body: 'Connect any editor\'s AI assistant to Modonome\'s governance tools with a single command.' },
+    { title: 'A repository can disclose its policy', body: 'A repository can now disclose its enforced governance policy as one verifiable file.' },
+    { title: 'The project\'s own rules get reviewed too', body: 'Changes to the project\'s own decision record now go through the same independent review as everything else.' },
+    { title: 'A safe way to clear AI fingerprints', body: 'A safe, verified way to clear AI-attribution traces from commit history without touching the underlying code.' },
+    { title: 'See a cleanup before it runs', body: 'See exactly what a history cleanup would change before anyone approves it.' },
+    { title: 'A plain statement on AI participation', body: 'A clear, public statement of how AI participates in building this project.' },
+    { title: 'AI signatures caught automatically', body: 'AI-attribution signatures are now caught automatically in branch names and commits before they land.' },
+    { title: 'A living list keeps detection current', body: 'A living, human-approved list of AI-attribution patterns keeps detection current.' },
+    { title: 'Detection extends to PR text', body: 'Detection now covers pull request titles, descriptions, and comments, in addition to commits.' },
+    { title: 'Stronger safeguards on decision records', body: 'Stronger safeguards keep the project\'s own decision records free of duplicates.' },
+    { title: 'Compliance docs checked continuously', body: 'Compliance documentation is now checked continuously, so it can\'t quietly go stale.' },
+    { title: 'An operator dashboard is taking shape', body: 'A dedicated operator dashboard for governance is taking shape.' },
+    { title: 'A tamper-evident map of the repo', body: 'A tamper-evident, verifiable map of the repository keeps an agent\'s context accurate and trustworthy.' },
+    { title: 'Every check can produce signed evidence', body: 'Every governance check can now produce a signed evidence packet that any peer can verify independently.' },
+    { title: 'Compliance evidence, on demand', body: 'Compliance evidence can be generated on demand for the standards your organization already tracks.' },
+    { title: 'Clear rules on reusable licenses', body: 'Clear, enforced rules define which open-source licenses can be reused in the project, and which cannot.' },
   ],
 };

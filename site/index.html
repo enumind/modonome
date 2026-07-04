@@ -3,17 +3,30 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Modonome - Governed autonomy for any repo</title>
-<meta name="description" content="The autonomous engineering loop that arms only on your command, sends every change through an independent checker, and keeps your tests at full strength. Off by default. No central service. MIT licensed.">
+<!-- An enforced meta CSP was tried here and reverted: it broke script-src
+     'unsafe-eval' on the live host in production, even though this file's
+     own tag included it, most likely because a CSP served by the host or
+     an intermediary combined restrictively with this tag (browsers enforce
+     the intersection of every applicable CSP). Local `npx serve` testing
+     cannot reproduce a host-level CSP, so re-enforcing here needs
+     verification against the live response headers, in addition to a
+     local Playwright pass. See site/_headers for the intended policy. -->
+<title>Modonome - Guardrails for AI coding agents in CI</title>
+<meta name="description" content="Governance and guardrails for AI coding agents: an off-by-default engineering loop with separate maker, checker, and merge roles, CI gate-integrity checks that stop weakened tests from merging, and the AgentProof benchmark. Off by default. MIT licensed.">
 <link rel="canonical" href="https://modonome.com/">
 <link rel="sitemap" type="application/xml" href="/sitemap.xml">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://modonome.com/">
-<meta property="og:title" content="Modonome - Governed autonomy for any repo">
-<meta property="og:description" content="An off-by-default autonomy loop that adopts your repo rules, proposes small reviewable PRs, and gates them in CI so weakened tests cannot merge. AgentProof 25/25 for gate integrity.">
+<meta property="og:title" content="Modonome - Guardrails for AI coding agents in CI">
+<meta property="og:description" content="An off-by-default autonomy loop that adopts your repo rules, proposes small reviewable PRs, and gates them in CI so weakened tests cannot merge. AgentProof scores 25/25 HARDENED for gate integrity, 35/35 scenarios total.">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://modonome.com/assets/modonome-logo.webp">
-<meta property="og:image" content="https://modonome.com/assets/modonome-logo.webp">
+<meta name="twitter:site" content="@ModonomeLab">
+<meta name="twitter:image" content="https://modonome.com/assets/og-card.png">
+<meta name="twitter:image:alt" content="Modonome">
+<meta property="og:image" content="https://modonome.com/assets/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Modonome">
 <meta name="keywords" content="agentproof, autonomous agent benchmark, CI governance, anti-gaming ratchet, agentic AI safety, tech debt automation, test integrity, agent gate integrity, governed autonomy, modonome">
 <script type="application/ld+json">
 {
@@ -21,7 +34,7 @@
   "@type": "SoftwareApplication",
   "name": "Modonome",
   "applicationCategory": "DeveloperApplication",
-  "description": "Governed autonomy framework for software engineering agents. Includes AgentProof, the adversarial benchmark for agent gate-integrity, scoring 25/25 HARDENED against known gaming patterns including assertion removal, skip injection, type escape, coverage removal, identity collapse, prompt injection, and resource exhaustion.",
+  "description": "Governed autonomy framework for software engineering agents. Includes AgentProof, the adversarial benchmark for agent gate-integrity, scoring 25/25 HARDENED against known gaming patterns including assertion removal, skip injection, type escape, coverage removal, identity collapse, prompt injection, and resource exhaustion. A further ten extended hardening scenarios also pass, for 35/35 total.",
   "url": "https://modonome.com",
   "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
   "license": "https://opensource.org/licenses/MIT",
@@ -30,23 +43,55 @@
     "@type": "SoftwareSourceCode",
     "codeRepository": "https://github.com/enumind/modonome",
     "name": "AgentProof",
-    "description": "Adversarial benchmark for agent gate-integrity. 25 scenarios covering assertion removal, skip injection, type escape, coverage removal, identity collapse, prompt injection inertness, state machine acyclicity, trust boundary, audit trail integrity, model diversity, concurrency safety, gate DAG validation, evidence secret screening, and resource caps. Score: 25/25 HARDENED."
+    "description": "Adversarial benchmark for agent gate-integrity. 25 normative scenarios covering assertion removal, skip injection, type escape, coverage removal, identity collapse, prompt injection inertness, state machine acyclicity, trust boundary, audit trail integrity, model diversity, concurrency safety, gate DAG validation, evidence secret screening, and resource caps, plus 10 extended hardening scenarios. Score: 25/25 HARDENED, 35/35 total."
   }
 }
 </script>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b1220'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%235dd4ab' stroke-width='2'/%3E%3Cpath d='M13 16l2 2 4-4' fill='none' stroke='%235dd4ab' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="./support.js"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Modonome",
+  "url": "https://modonome.com",
+  "logo": "https://modonome.com/assets/icon-512.png",
+  "sameAs": [
+    "https://github.com/enumind/modonome",
+    "https://x.com/ModonomeLab"
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Modonome",
+  "url": "https://modonome.com",
+  "description": "Governance and guardrails for AI coding agents. An off-by-default engineering loop with separate maker, checker, and merge roles, CI gate-integrity checks, and the AgentProof benchmark."
+}
+</script>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/icon-32.png">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="manifest" href="site.webmanifest">
+<link rel="preload" as="image" href="assets/modonome-logo.webp">
+<script defer src="vendor/react.production.min.js"></script>
+<script defer src="vendor/react-dom.production.min.js"></script>
+<script defer src="./support.js"></script>
 </head>
 <body>
 <noscript>
-<h1>Modonome: Governed Autonomy for Any Repo</h1>
-<p>The autonomous engineering loop that arms only on your command, sends every change through an independent checker, and keeps your tests at full strength. Off by default. No central service. MIT licensed.</p>
-<h2>AgentProof: 25/25 HARDENED</h2>
-<p>AgentProof is the adversarial benchmark for agent gate-integrity. It proves through 25 executable scenarios that an implementation's gates hold under attack. Modonome scores 25/25 HARDENED.</p>
+<h1>Modonome: Guardrails for AI Coding Agents</h1>
+<p>Coding agents ship changes fast. The hard part is trusting them: a diff no one reviewed, tests that pass because they were quietly weakened, an agent that signs off on its own work. Modonome is the governance layer that keeps making, checking, and merging in separate hands. Every change runs through gates that live in your CI, and autonomy turns on only when you say so. Off by default. No central service. MIT licensed.</p>
+<h2>How it works</h2>
+<p>Modonome is a prompt and a set of scripts that run inside a harness you already have: a coding agent, a CI job, or a human session. A maker proposes one small change pinned by a test. An independent checker reviews it. Deterministic gates and an anti-gaming ratchet run in your CI, outside the agent's write scope, and keep tests, types, and coverage honest across JavaScript, Python, Java, and .NET. A human owner holds merge authority over anything protected.</p>
+<h2>Capabilities</h2>
+<p>Small, test-backed changes. Separate maker, checker, and merge roles. An anti-gaming ratchet in CI. Adopts your existing CI, code owners, and branch rules. Improves as it goes by promoting corrections into durable rules. An operator control panel for gate status and governance events. A Merkle-verified repository snapshot for trustworthy agent context. Compliance evidence and attestation through an MCP server. A drop-in GitHub Action with a signed gate-integrity receipt. Disclosure and adoption of governance policy as signed evidence between repositories. A safe, verified way to clear AI-attribution traces from commit history.</p>
+<h2>AgentProof: 25/25 HARDENED, 35/35 total</h2>
+<p>AgentProof is the adversarial benchmark for agent gate-integrity. It proves through 25 normative scenarios that an implementation's gates hold under attack, and a further 10 extended hardening scenarios also pass, for 35/35 total. Modonome scores 25/25 HARDENED. Conformance levels: HARDENED is 25/25 normative scenarios, PARTIAL is 20 to 24, UNHARDENED is 19 or fewer.</p>
 <p>Scenarios covered: assertion removal (JS/TS, Java, .NET, Python), test skip injection, broad type escape, coverage threshold removal, unsafe config combinations, identity collapse (maker/checker same session or same model family), raw code leakage, schema/prompt/template drift, protected-path escalation, prompt injection inertness, state machine acyclicity, deterministic gate ordering, trust boundary (base-branch code loading), audit trail append-only integrity, model diversity enforcement, concurrent mutation serialization, gate DAG acyclicity, evidence secret screening, resource cap enforcement.</p>
-<p><a href="https://github.com/enumind/modonome">GitHub</a> · <a href="https://github.com/enumind/modonome/blob/main/agentproof/README.md">AgentProof</a> · <a href="https://github.com/enumind/modonome/blob/main/QUICKSTART.md">Quickstart</a></p>
+<h2>Get started</h2>
+<p>Preview safely with <code>npx modonome dry-run .</code>, then scaffold local state with <code>npx modonome scaffold . --write</code>. Autonomy stays at rest until an owner switches it on. Prove the controls on your own setup with <code>node agentproof/runner.mjs</code>.</p>
+<p><a href="https://modonome.com/agentproof/">AgentProof benchmark</a> · <a href="https://modonome.com/quickstart/">Quickstart guide</a> · <a href="https://modonome.com/articles/">Articles</a> · <a href="https://github.com/enumind/modonome">GitHub</a> · <a href="https://github.com/enumind/modonome/blob/main/agentproof/README.md">AgentProof docs</a> · <a href="https://github.com/enumind/modonome/blob/main/QUICKSTART.md">Quickstart docs</a> · <a href="https://x.com/ModonomeLab">Follow on X</a></p>
 </noscript>
 <x-dc>
 <helmet>
@@ -54,8 +99,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="helix-data.js"></script>
-<script src="repo-data.js"></script>
+<script defer src="helix-data.js"></script>
+<script defer src="repo-data.js"></script>
 <style>
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
@@ -79,6 +124,66 @@
   [data-satin="off"] .mn-satin::after{animation:none;opacity:0}
   @keyframes mn-sheen{0%{background-position:160% 0}55%{background-position:-60% 0}100%{background-position:-60% 0}}
   a{color:inherit}
+
+  /* Responsive layer. Desktop values mirror the former inline styles, so 1280px
+     renders identically. Two breakpoints: 900px (stack) and 560px (phone). */
+  html{scroll-padding-top:74px}
+  .mn-cols{grid-template-columns:var(--cols)}
+  .mn-nav-in{padding:13px 24px}
+  .mn-nav-logo{height:38px}
+  .mn-nav-actions{gap:26px}
+  .mn-sticky-col{position:sticky;top:90px}
+  .mn-sim-stage{padding:30px 28px 26px;scroll-margin-top:76px}
+  .mn-evo-grid{grid-template-columns:1fr 132px 1fr;gap:0}
+  .mn-evo-pill{writing-mode:vertical-rl;text-orientation:mixed;width:22px;height:90px;padding:6px 0}
+  .mn-evo-pill span{display:block}
+  .mn-net-stage{height:600px}
+  .mn-net-hub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:214px}
+  .mn-net-card{position:absolute;transform:translate(-50%,-50%);width:174px}
+  .mn-net-c0{left:50%;top:11.5%} .mn-net-c1{left:84%;top:31%} .mn-net-c2{left:84%;top:69%}
+  .mn-net-c3{left:50%;top:88.5%} .mn-net-c4{left:16%;top:69%} .mn-net-c5{left:16%;top:31%}
+  .mn-roadmap-card{margin-top:58px}
+  .mn-cta-box{padding:64px 48px}
+  .mn-term{font-size:13.5px}
+  .mn-rel-track{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:2px 2px 6px;scrollbar-width:none}
+  .mn-rel-track::-webkit-scrollbar{display:none}
+  .mn-rel-card{scroll-snap-align:start;flex:0 0 clamp(260px,80vw,340px)}
+  .mn-sr-live{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+  :where(a,button,.mn-rel-region):focus-visible{outline:2px solid #5dd4ab;outline-offset:2px;border-radius:6px}
+
+  @media (max-width:900px){
+    .mn-cols{grid-template-columns:var(--cols-md,var(--cols))}
+    .mn-nav-link{display:none}
+    .mn-nav-actions{gap:14px}
+    .mn-sticky-col{position:static}
+    .mn-evo-grid{grid-template-columns:1fr;gap:12px}
+    .mn-evo-pill{writing-mode:horizontal-tb;width:auto;height:auto;padding:5px 12px}
+    .mn-evo-pill span{display:inline-block;padding:0 3px}
+    .mn-evo-port{display:none}
+    .mn-evo-stage>svg{display:none}
+    .mn-net-stage{height:auto;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .mn-net-stage>svg{display:none}
+    .mn-net-hub{position:static;transform:none;width:auto;grid-column:1/-1}
+    .mn-net-card{position:static;transform:none;width:auto}
+    .mn-roadmap-bar,.mn-roadmap-dot{display:none}
+    .mn-roadmap-card{margin-top:0}
+  }
+  @media (max-width:560px){
+    .mn-cols{grid-template-columns:var(--cols-sm,var(--cols-md,var(--cols)))}
+    .mn-nav-in{padding:10px 14px}
+    .mn-nav-logo{height:28px}
+    .mn-nav-actions{gap:10px}
+    .mn-follow-txt{display:none}
+    .mn-node-sub{display:none}
+    .mn-sim-stage{padding:20px 12px 20px}
+    .mn-term{font-size:12px;overflow-x:auto}
+    .mn-term>div{white-space:nowrap}
+    .mn-cta-box{padding:44px 22px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    html{scroll-behavior:auto}
+  }
 </style>
 </helmet>
 <div ref="{{ setRoot }}" style="background:#0b1220;color:#e8ebf0;font-family:'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:clip;position:relative">
@@ -86,12 +191,13 @@
   <div style="position:absolute;top:-220px;left:50%;transform:translateX(-50%);width:1100px;height:760px;background:radial-gradient(ellipse at center,rgba(62,201,138,.13),transparent 64%);pointer-events:none;z-index:0"></div>
 
   <nav style="position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);background:rgba(11,18,32,.82);border-bottom:1px solid rgba(159,201,180,.10)">
-    <div style="max-width:1180px;margin:0 auto;padding:13px 24px;display:flex;align-items:center;justify-content:space-between;gap:24px">
-      <a href="#top" style="display:flex;align-items:center;text-decoration:none"><span><img src="assets/modonome-logo.webp" alt="Modonome" style="height:38px;display:block;mix-blend-mode:lighten"></span></a>
-      <div style="display:flex;align-items:center;gap:26px">
+    <div class="mn-nav-in" style="max-width:1180px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:24px">
+      <a href="#top" style="display:flex;align-items:center;text-decoration:none"><span><img class="mn-nav-logo" src="assets/modonome-logo.webp" alt="Modonome" width="880" height="284" style="width:auto;display:block;mix-blend-mode:lighten"></span></a>
+      <div class="mn-nav-actions" style="display:flex;align-items:center">
         <sc-for list="{{ topNav }}" as="t" hint-placeholder-count="6">
-          <a href="{{ t.href }}" style="{{ t.style }}" style-hover="color:#f6f4ee">{{ t.label }}</a>
+          <a class="mn-nav-link" href="{{ t.href }}" style="{{ t.style }}" style-hover="color:#f6f4ee">{{ t.label }}</a>
         </sc-for>
+        <a href="https://x.com/ModonomeLab" target="_blank" rel="noopener noreferrer" aria-label="Follow Modonome on X" style="display:flex;align-items:center;gap:7px;font-size:13.5px;font-weight:600;color:#e8ebf0;background:rgba(93,212,171,.08);border:1px solid rgba(93,212,171,.3);padding:8px 14px;border-radius:9px;text-decoration:none;transition:border-color .2s,background .2s" style-hover="border-color:#5dd4ab;background:rgba(93,212,171,.16)"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg><span class="mn-follow-txt">Follow</span></a>
         <a href="#quickstart" style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:#0b1220;background:#5dd4ab;padding:9px 17px;border-radius:9px;text-decoration:none;transition:transform .2s,box-shadow .2s" style-hover="transform:translateY(-1px);box-shadow:0 10px 26px rgba(93,212,171,.32)">Get started</a>
       </div>
     </div>
@@ -100,12 +206,15 @@
   <header id="top" style="position:relative;z-index:1;padding:104px 24px 76px;text-align:center;overflow:hidden">
     <div style="position:relative;z-index:2;max-width:940px;margin:0 auto">
       <div style="display:inline-flex;align-items:center;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#5dd4ab;border:1px solid rgba(93,212,171,.30);border-radius:999px;padding:7px 16px;margin-bottom:34px;background:rgba(62,201,138,.06)">
-        <span style="width:7px;height:7px;border-radius:50%;background:#5dd4ab;box-shadow:0 0 10px #5dd4ab"></span>The governed autonomy standard · {{ scoreBadge }}
+        <span style="width:7px;height:7px;border-radius:50%;background:#5dd4ab;box-shadow:0 0 10px #5dd4ab"></span>A governed-autonomy standard, in the making · {{ scoreBadge }}
       </div>
-      <div class="mn-satin" style="--satin-mask:url('assets/modonome-logo.webp');display:block;margin:0 auto 30px;width:min(440px,82%)"><img src="assets/modonome-logo.webp" alt="Modonome" style="width:100%;display:block;mix-blend-mode:lighten"></div>
+      <div class="mn-satin" style="--satin-mask:url('assets/modonome-logo.webp');display:block;margin:0 auto 30px;width:min(440px,82%)"><img src="assets/modonome-logo.webp" alt="Modonome" width="880" height="284" style="width:100%;height:auto;display:block;mix-blend-mode:lighten"></div>
       <h1 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(34px,5.4vw,62px);line-height:1.06;letter-spacing:-.02em;margin:0 0 22px;color:#f6f4ee">The Governed Autonomous<br>Engineering Loop.</h1>
-      <p style="max-width:700px;margin:0 auto 38px;font-size:clamp(16px,2vw,19px);line-height:1.6;color:#aeb9c8">Modonome enforces the structural separation between making, checking, and merging: the governance layer that keeps autonomous coding loops honest. It runs inside a harness you already have: a coding agent, a CI job, or a human session. The implementation is a prompt and a set of scripts. A declarative rule set governs each agent's operating boundaries, context scope, and model selection, so maker, checker, and merge authority can each run on the model that fits the task.</p>
-      <a href="https://github.com/enumind/modonome" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:9px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#9fabbc;background:rgba(159,201,180,.05);border:1px solid rgba(159,201,180,.16);border-radius:8px;padding:7px 14px;margin:0 auto 32px;text-decoration:none;transition:border-color .2s,color .2s" style-hover="border-color:rgba(93,212,171,.5);color:#5dd4ab"><svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor" style="color:#5dd4ab;flex-shrink:0" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg> github.com/enumind/modonome</a>
+      <p style="max-width:700px;margin:0 auto 38px;font-size:clamp(16px,2vw,19px);line-height:1.6;color:#aeb9c8">Coding agents can write and ship changes on their own now. The risk is trust: work nobody reviewed, tests that quietly got weaker, an agent approving its own changes. Modonome keeps those three jobs, building, checking, and approving, in separate hands, and automation stays off until you turn it on. The safeguards are proven by a public benchmark, AgentProof, 25 out of 25, rather than a claim we make about ourselves.</p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:0 0 32px">
+        <a href="https://github.com/enumind/modonome" target="_blank" rel="noopener noreferrer" aria-label="Star Modonome on GitHub" style="display:inline-flex;align-items:center;gap:9px;font-family:'IBM Plex Sans';font-size:13.5px;font-weight:600;color:#e8ebf0;background:rgba(93,212,171,.07);border:1px solid rgba(93,212,171,.35);border-radius:8px;padding:7px 14px;text-decoration:none;transition:border-color .2s,background .2s" style-hover="border-color:rgba(93,212,171,.65);background:rgba(93,212,171,.13)"><svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor" style="color:#5dd4ab;flex-shrink:0" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg> Star on GitHub</a>
+        <a href="https://x.com/ModonomeLab" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:9px;font-family:'IBM Plex Sans';font-size:13.5px;font-weight:600;color:#e8ebf0;background:rgba(93,212,171,.07);border:1px solid rgba(93,212,171,.35);border-radius:8px;padding:7px 14px;text-decoration:none;transition:border-color .2s,background .2s" style-hover="border-color:rgba(93,212,171,.65);background:rgba(93,212,171,.13)"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color:#5dd4ab;flex-shrink:0" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg> Follow @ModonomeLab</a>
+      </div>
       <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
         <a href="#simulator" style="display:inline-flex;align-items:center;gap:9px;font-weight:600;font-size:15px;color:#0b1220;background:#5dd4ab;padding:14px 26px;border-radius:11px;text-decoration:none;transition:transform .2s,box-shadow .2s" style-hover="transform:translateY(-2px);box-shadow:0 14px 34px rgba(93,212,171,.34)">Run the simulator →</a>
         <a href="https://github.com/enumind/modonome/blob/main/examples/demo-app/WALKTHROUGH.md" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:9px;font-weight:600;font-size:15px;color:#e8ebf0;background:rgba(159,201,180,.07);border:1px solid rgba(159,201,180,.22);padding:14px 24px;border-radius:11px;text-decoration:none;transition:border-color .2s,background .2s" style-hover="border-color:rgba(93,212,171,.5);background:rgba(159,201,180,.12);color:#f6f4ee">Read the walkthrough →</a>
@@ -120,9 +229,9 @@
     <div style="text-align:center;max-width:720px;margin:0 auto 44px">
       <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#5dd4ab;margin-bottom:14px">Why it matters</div>
       <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(28px,3.6vw,40px);line-height:1.1;letter-spacing:-.02em;margin:0 0 14px;color:#f6f4ee">Built for the real balances of autonomous engineering.</h2>
-      <p style="font-size:16px;line-height:1.6;color:#aeb9c8;margin:0">Autonomy is only useful when it is trustworthy. Modonome is built to hold the tensions that matter in steady balance.</p>
+      <p style="font-size:16px;line-height:1.6;color:#aeb9c8;margin:0">Green tests that were quietly gutted, reviews no one has time for, an agent that grades its own homework: these are the failures that erode trust. Autonomy is only useful when it is trustworthy, so Modonome is built to hold the tensions that matter in steady balance.</p>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+    <div class="mn-cols" style="display:grid;gap:14px;--cols:repeat(4,1fr);--cols-md:repeat(2,1fr);--cols-sm:1fr">
       <sc-for list="{{ balances }}" as="bl" hint-placeholder-count="4">
         <div style="background:rgba(159,201,180,.04);border:1px solid rgba(159,201,180,.12);border-radius:14px;padding:22px 20px;transition:transform .2s,border-color .2s" style-hover="transform:translateY(-3px);border-color:rgba(93,212,171,.4)">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
@@ -145,7 +254,7 @@
         <p style="font-size:16px;line-height:1.6;color:#aeb9c8;margin:0 0 10px">Each card shows who acts and when. Modonome plays the maker and checker; your CI runs the gates; you stay the owner and merge authority. The tag on each step names the actor.</p>
         <p style="font-size:14px;line-height:1.6;color:#7c8aa0;margin:0">Modonome is a prompt and a set of scripts. It runs inside a harness you already have, whether that is a coding agent, a CI job, or a human session that loads the prompt.</p>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+      <div class="mn-cols" style="display:grid;gap:14px;--cols:repeat(4,1fr);--cols-md:repeat(2,1fr);--cols-sm:1fr">
         <sc-for list="{{ steps }}" as="sp" hint-placeholder-count="8">
           <div style="position:relative;background:rgba(159,201,180,.04);border:1px solid rgba(159,201,180,.12);border-radius:14px;padding:22px 20px 24px;padding-top:42px;transition:transform .2s,border-color .2s" style-hover="transform:translateY(-3px);border-color:rgba(93,212,171,.4)">
             <span style="{{ sp.kindBadgeStyle }}">{{ sp.kindIcon }} {{ sp.kindLabel }}</span>
@@ -164,10 +273,10 @@
   <section id="features" style="position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:88px 24px">
     <div style="max-width:720px;margin:0 0 48px">
       <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#5dd4ab;margin-bottom:14px">Capabilities</div>
-      <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(28px,3.6vw,40px);line-height:1.1;letter-spacing:-.02em;margin:0 0 14px;color:#f6f4ee">Capabilities that read clearly to product teams.</h2>
-      <p style="font-size:16px;line-height:1.6;color:#aeb9c8;margin:0">Each one is small enough to trust and specific enough to verify. Together they move the work that usually waits.</p>
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(28px,3.6vw,40px);line-height:1.1;letter-spacing:-.02em;margin:0 0 14px;color:#f6f4ee">What the loop actually does.</h2>
+      <p style="font-size:16px;line-height:1.6;color:#aeb9c8;margin:0">Each capability is small enough to trust and specific enough to verify. Together they move the work that usually waits.</p>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+    <div class="mn-cols" style="display:grid;gap:14px;--cols:repeat(3,1fr);--cols-md:repeat(2,1fr);--cols-sm:1fr">
       <sc-for list="{{ features }}" as="ft" hint-placeholder-count="6">
         <div style="background:rgba(159,201,180,.04);border:1px solid rgba(159,201,180,.12);border-radius:14px;padding:24px 22px;transition:transform .2s,border-color .2s" style-hover="transform:translateY(-3px);border-color:rgba(93,212,171,.4)">
           <div style="display:flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:12px;background:rgba(93,212,171,.1);border:1px solid rgba(93,212,171,.28);color:#5dd4ab;margin-bottom:16px">{{ ft.iconEl }}</div>
@@ -178,13 +287,42 @@
     </div>
   </section>
 
+  <section id="releases" style="position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:0 24px 88px">
+    <div style="max-width:720px;margin:0 0 32px">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#5dd4ab;margin-bottom:14px">Recently shipped</div>
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(28px,3.6vw,40px);line-height:1.1;letter-spacing:-.02em;margin:0 0 14px;color:#f6f4ee">Actively built, in the open.</h2>
+      <p style="font-size:16px;line-height:1.6;color:#aeb9c8;margin:0">The loop keeps shipping. Here is what landed most recently, newest first.</p>
+    </div>
+    <div class="mn-rel-region" role="region" aria-roledescription="carousel" aria-label="Recently shipped" tabIndex="0" onKeyDown="{{ relKeyDown }}" onMouseEnter="{{ relPause }}" onMouseLeave="{{ relResume }}" onFocus="{{ relPause }}" onBlur="{{ relResume }}" style="position:relative">
+      <div class="mn-rel-track" ref="{{ setRelTrack }}">
+        <sc-for list="{{ releases }}" as="rl" hint-placeholder-count="20">
+          <div class="mn-rel-card" style="background:rgba(159,201,180,.04);border:1px solid rgba(159,201,180,.12);border-radius:14px;padding:22px 20px">
+            <div style="font-family:'Space Grotesk';font-weight:600;font-size:16.5px;color:#f6f4ee;margin-bottom:8px">{{ rl.title }}</div>
+            <div style="font-size:13.5px;line-height:1.58;color:#9fabbc">{{ rl.body }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:16px">
+        <div style="display:flex;gap:10px">
+          <button onClick="{{ relPrev }}" aria-label="Previous release" style="display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:9px;background:rgba(159,201,180,.06);border:1px solid rgba(159,201,180,.2);color:#e8ebf0;cursor:pointer;transition:border-color .2s" style-hover="border-color:rgba(93,212,171,.45)"><span aria-hidden="true">←</span></button>
+          <button onClick="{{ relNext }}" aria-label="Next release" style="display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:9px;background:rgba(159,201,180,.06);border:1px solid rgba(159,201,180,.2);color:#e8ebf0;cursor:pointer;transition:border-color .2s" style-hover="border-color:rgba(93,212,171,.45)"><span aria-hidden="true">→</span></button>
+        </div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.06em;color:#7c8aa0">{{ relProgress }}</div>
+      </div>
+      <span class="mn-sr-live" role="status" aria-live="polite">{{ relAnnounce }}</span>
+    </div>
+    <div style="margin-top:18px">
+      <a href="https://github.com/enumind/modonome/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer" style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#9fabbc;text-decoration:none;transition:color .2s" style-hover="color:#5dd4ab">See the full changelog on GitHub →</a>
+    </div>
+  </section>
+
   <section id="guarantees" style="position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:88px 24px">
-    <div style="display:grid;grid-template-columns:0.9fr 1.1fr;gap:56px;align-items:start">
-      <div style="position:sticky;top:90px">
+    <div class="mn-cols" style="display:grid;gap:56px;align-items:start;--cols:0.9fr 1.1fr;--cols-md:1fr">
+      <div class="mn-sticky-col">
         <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#5dd4ab;margin-bottom:14px">Structural by design</div>
         <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(28px,3.4vw,38px);line-height:1.12;letter-spacing:-.02em;margin:0 0 18px;color:#f6f4ee">The controls are real code in your pipeline.</h2>
         <p style="font-size:16px;line-height:1.65;color:#aeb9c8;margin:0 0 22px">A clever prompt can talk another prompt into almost anything. A CI gate that runs outside the agent’s write scope answers only to your pipeline. The ratchet, the validators, and the drift guard all live there, so the guarantees hold steady even when a prompt tries to bend them.</p>
-        <div style="display:inline-flex;align-items:center;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#5dd4ab;background:rgba(62,201,138,.07);border:1px solid rgba(93,212,171,.25);border-radius:9px;padding:10px 14px">Autonomy turns on only when an owner sets MODONOME_ARMED. Until then it stays at rest.</div>
+        <div style="display:inline-flex;align-items:center;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#5dd4ab;background:rgba(62,201,138,.07);border:1px solid rgba(93,212,171,.25);border-radius:9px;padding:10px 14px">Autonomy turns on only when an owner sets MODONOME_ARMED. Until then it stays disarmed.</div>
       </div>
       <div style="display:flex;flex-direction:column;gap:12px">
         <sc-for list="{{ guarantees }}" as="g" hint-placeholder-count="5">
@@ -206,26 +344,26 @@
       <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(28px,3.6vw,40px);line-height:1.1;letter-spacing:-.02em;margin:0 0 14px;color:#f6f4ee">Pick a change. Watch the loop decide.</h2>
       <p style="font-size:16px;line-height:1.6;color:#aeb9c8;margin:0">Send one change down the pipeline and watch where it lands and which control holds the line. A held or escalated change loops back for rework, and every outcome matches a real AgentProof scenario.</p>
     </div>
-    <div style="display:grid;grid-template-columns:340px 1fr;gap:22px;align-items:start">
+    <div class="mn-cols" style="display:grid;gap:22px;align-items:start;--cols:340px 1fr;--cols-md:1fr">
       <div style="display:flex;flex-direction:column;gap:4px;background:rgba(159,201,180,.04);border:1px solid rgba(159,201,180,.12);border-radius:16px;padding:16px">
         <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#7c8aa0;padding:4px 8px 6px">Choose a change to send</div>
         <sc-for list="{{ simGroups }}" as="grp" hint-placeholder-count="4">
           <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#5b6b80;padding:11px 8px 4px">{{ grp.label }}</div>
           <sc-for list="{{ grp.items }}" as="sc" hint-placeholder-count="2">
-            <button onClick="{{ sc.pick }}" style="{{ sc.btnStyle }}" style-hover="border-color:rgba(93,212,171,.45);background:rgba(93,212,171,.08)">
-              <span style="{{ sc.dotStyle }}"></span>
+            <button onClick="{{ sc.pick }}" aria-pressed="{{ sc.pressed }}" style="{{ sc.btnStyle }}" style-hover="border-color:rgba(93,212,171,.45);background:rgba(93,212,171,.08)">
+              <span aria-hidden="true" style="{{ sc.dotStyle }}"></span>
               <span style="text-align:left;line-height:1.35">{{ sc.label }}</span>
             </button>
           </sc-for>
         </sc-for>
       </div>
-      <div style="background:linear-gradient(180deg,rgba(159,201,180,.05),rgba(159,201,180,.02));border:1px solid rgba(159,201,180,.12);border-radius:16px;padding:30px 28px 26px;min-height:420px">
+      <div class="mn-sim-stage" ref="{{ setSimStage }}" style="background:linear-gradient(180deg,rgba(159,201,180,.05),rgba(159,201,180,.02));border:1px solid rgba(159,201,180,.12);border-radius:16px;min-height:420px">
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:26px">
           <div style="display:flex;align-items:center;gap:12px">
             <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#7c8aa0">CHANGE</span>
             <span style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:16px;color:#f6f4ee">{{ activeLabel }}</span>
           </div>
-          <button onClick="{{ runSim }}" style="display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Sans';font-weight:600;font-size:13.5px;color:#0b1220;background:#5dd4ab;border:none;padding:9px 18px;border-radius:9px;cursor:pointer;transition:transform .15s" style-hover="transform:translateY(-1px)">▶ Run it</button>
+          <button onClick="{{ runSim }}" style="display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Sans';font-weight:600;font-size:13.5px;color:#0b1220;background:#5dd4ab;border:none;padding:9px 18px;border-radius:9px;cursor:pointer;transition:transform .15s" style-hover="transform:translateY(-1px)"><span aria-hidden="true">{{ runBtnGlyph }}</span> {{ runBtnLabel }}</button>
         </div>
 
         <div style="position:relative;margin:0 4px 8px">
@@ -236,9 +374,9 @@
           <div style="position:relative;display:flex;justify-content:space-between;z-index:2">
             <sc-for list="{{ nodes }}" as="nd" hint-placeholder-count="6">
               <div style="flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;gap:9px;padding:0 4px">
-                <div style="{{ nd.circleStyle }}">{{ nd.glyph }}</div>
+                <div aria-hidden="true" style="{{ nd.circleStyle }}">{{ nd.glyph }}</div>
                 <div style="font-family:'Space Grotesk';font-weight:600;font-size:12.5px;color:{{ nd.titleColor }};line-height:1.2">{{ nd.title }}</div>
-                <div style="font-size:10.5px;color:#7c8aa0;line-height:1.25">{{ nd.sub }}</div>
+                <div class="mn-node-sub" style="font-size:10.5px;color:#7c8aa0;line-height:1.25">{{ nd.sub }}</div>
                 <div style="{{ nd.scopeStyle }}">{{ nd.scope }}</div>
               </div>
             </sc-for>
@@ -257,7 +395,11 @@
             <span style="font-family:'Space Grotesk';font-weight:600;font-size:16px;color:#f6f4ee">{{ verdictTitle }}</span>
           </div>
           <p style="margin:0;font-size:14px;line-height:1.6;color:#b9c4d2">{{ verdictDetail }}</p>
+          <sc-if value="{{ verdictProofShow }}">
+            <a href="{{ verdictProofHref }}" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:6px;margin-top:12px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#9fabbc;border:1px solid rgba(159,201,180,.25);border-radius:7px;padding:5px 10px;text-decoration:none;transition:border-color .2s,color .2s" style-hover="border-color:#5dd4ab;color:#5dd4ab">Verified by AgentProof {{ verdictProofLabel }} ↗</a>
+          </sc-if>
         </div>
+        <span class="mn-sr-live" role="status" aria-live="polite">{{ verdictAnnounce }}</span>
       </div>
     </div>
   </section>
@@ -267,8 +409,8 @@
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:30px;flex-wrap:wrap;margin-bottom:40px">
         <div style="max-width:660px">
           <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#5dd4ab;margin-bottom:14px">AgentProof benchmark</div>
-          <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(28px,3.6vw,40px);line-height:1.1;letter-spacing:-.02em;margin:0 0 14px;color:#f6f4ee">Twenty-five governance scenarios. Machine-verified, every one.</h2>
-          <p style="font-size:16px;line-height:1.6;color:#aeb9c8;margin:0 0 12px">AgentProof is a standalone, language-agnostic benchmark. Each of the twenty-five scenarios runs a real adversarial attempt against the controls and confirms it is caught, so a passing score is verifiable evidence rather than a claim. Any agentic system can run it, which makes it a practical conformance test for the wider field, and beyond Modonome.</p>
+          <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(28px,3.6vw,40px);line-height:1.1;letter-spacing:-.02em;margin:0 0 14px;color:#f6f4ee">Twenty-five gate-integrity scenarios. Machine-verified, every one.</h2>
+          <p style="font-size:16px;line-height:1.6;color:#aeb9c8;margin:0 0 12px">AgentProof is a standalone, language-agnostic benchmark. Each of the twenty-five scenarios runs a real adversarial attempt against the controls and confirms it is caught, so a passing score is verifiable evidence rather than a claim. A further ten extended hardening scenarios also pass, for 35/35 total. Any agentic system can run it, which makes it a practical conformance test for the wider field, and beyond Modonome.</p>
           <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#7c8aa0">Conformance: HARDENED = 25/25 gate-integrity scenarios · PARTIAL = 20–24 · UNHARDENED ≤ 19</div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:center;gap:6px;background:rgba(93,212,171,.08);border:1px solid rgba(93,212,171,.32);border-radius:16px;padding:22px 34px">
@@ -276,7 +418,7 @@
           <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.16em;color:#9fabbc">{{ apLevel }}</div>
         </div>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+      <div class="mn-cols" style="display:grid;gap:10px;--cols:repeat(4,1fr);--cols-md:repeat(2,1fr);--cols-sm:1fr">
         <sc-for list="{{ proofs }}" as="p" hint-placeholder-count="25">
           <div style="display:flex;align-items:flex-start;gap:11px;background:rgba(159,201,180,.04);border:1px solid rgba(159,201,180,.1);border-radius:11px;padding:14px 15px;transition:border-color .2s" style-hover="border-color:rgba(93,212,171,.35)">
             <span style="flex:none;display:flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:rgba(93,212,171,.16);color:#5dd4ab;font-size:11px;font-weight:700;margin-top:1px">✓</span>
@@ -290,6 +432,7 @@
       <div style="margin-top:18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
         <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:#7c8aa0">$ node agentproof/runner.mjs<span style="color:#5dd4ab"> → Score: {{ apScore }}  ·  Level: {{ apLevel }}</span></span>
         <span style="display:inline-flex;align-items:center;gap:7px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#7c8aa0"><span style="{{ syncDotStyle }}"></span>{{ syncNote }}</span>
+        <a href="/agentproof/" style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#9fabbc;text-decoration:none;transition:color .2s" style-hover="color:#5dd4ab">All 35 scenarios →</a>
       </div>
     </div>
   </section>
@@ -305,8 +448,8 @@
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:18px;padding:10px 14px;background:rgba(159,201,180,.03);border:1px solid rgba(159,201,180,.1);border-radius:12px">
         <div style="display:flex;flex-wrap:wrap;gap:7px;align-items:center">
           <sc-for list="{{ evoScenarios }}" as="es" hint-placeholder-count="6">
-            <button onClick="{{ es.pick }}" style="{{ es.btnStyle }}" style-hover="border-color:rgba(93,212,171,.45)">
-              <span style="{{ es.tagStyle }}">{{ es.tag }}</span>{{ es.label }}
+            <button onClick="{{ es.pick }}" aria-pressed="{{ es.pressed }}" style="{{ es.btnStyle }}" style-hover="border-color:rgba(93,212,171,.45)">
+              <span aria-hidden="true" style="{{ es.tagStyle }}">{{ es.tag }}</span>{{ es.label }}
             </button>
           </sc-for>
         </div>
@@ -317,9 +460,9 @@
         </div>
       </div>
 
-      <div ref="{{ setEvoStage }}" style="position:relative">
+      <div class="mn-evo-stage" ref="{{ setEvoStage }}" style="position:relative">
         {{ evoConnectors }}
-        <div style="position:relative;z-index:2;display:grid;grid-template-columns:1fr 132px 1fr;gap:0;align-items:stretch">
+        <div class="mn-evo-grid" style="position:relative;z-index:2;display:grid;align-items:stretch">
         <div style="background:rgba(159,201,180,.04);border:1px solid rgba(159,201,180,.14);border-radius:16px;padding:16px 18px 18px">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
             <span style="width:9px;height:9px;border-radius:2px;background:#7c8aa0"></span>
@@ -329,7 +472,7 @@
           <div style="display:flex;flex-direction:column;gap:9px">
             <sc-for list="{{ repoNodes }}" as="rn" hint-placeholder-count="4">
               <div ref="{{ rn.setRef }}" style="{{ rn.cardStyle }}">
-                <span style="{{ rn.portStyle }}"></span>
+                <span class="mn-evo-port" style="{{ rn.portStyle }}"></span>
                 <span style="{{ rn.iconStyle }}">{{ rn.icon }}</span>
                 <div style="flex:1">
                   <div style="font-family:'Space Grotesk';font-weight:600;font-size:14px;color:#e8ebf0">{{ rn.title }}</div>
@@ -342,7 +485,7 @@
         </div>
 
         <div style="position:relative;display:flex;align-items:center;justify-content:center">
-          <div style="position:relative;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.18em;color:#7c8aa0;background:#091020;padding:6px 0;writing-mode:vertical-rl;text-orientation:mixed;border:1px solid rgba(159,201,180,.14);border-radius:6px;height:90px;display:flex;align-items:center;justify-content:center;width:22px"><span style="display:block;letter-spacing:.18em">POLICY</span><span style="display:block;letter-spacing:.18em">BOUNDARY</span></div>
+          <div class="mn-evo-pill" style="position:relative;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.16em;color:#9fabbc;background:#091020;border:1px solid rgba(159,201,180,.14);border-radius:6px;display:flex;align-items:center;justify-content:center"><span style="letter-spacing:.16em">POLICY</span><span style="letter-spacing:.16em">BOUNDARY</span></div>
         </div>
 
         <div style="background:linear-gradient(180deg,rgba(62,201,138,.06),rgba(159,201,180,.02));border:1px solid rgba(93,212,171,.2);border-radius:16px;padding:16px 18px 18px">
@@ -354,7 +497,7 @@
           <div style="display:flex;flex-direction:column;gap:9px">
             <sc-for list="{{ engineNodes }}" as="en" hint-placeholder-count="4">
               <div ref="{{ en.setRef }}" style="{{ en.cardStyle }}">
-                <span style="{{ en.portStyle }}"></span>
+                <span class="mn-evo-port" style="{{ en.portStyle }}"></span>
                 <span style="{{ en.iconStyle }}">{{ en.icon }}</span>
                 <div style="flex:1">
                   <div style="font-family:'Space Grotesk';font-weight:600;font-size:14px;color:#e8ebf0">{{ en.title }}</div>
@@ -368,7 +511,7 @@
       </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:14px;margin-top:12px">
+      <div class="mn-cols" style="display:grid;gap:14px;margin-top:12px;--cols:1fr 1.4fr;--cols-md:1fr">
         <div style="background:rgba(159,201,180,.04);border:1px solid rgba(159,201,180,.12);border-radius:14px;padding:20px 22px;display:flex;flex-direction:column;justify-content:space-between;gap:16px">
           <div>
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
@@ -379,21 +522,22 @@
             <div style="font-size:13.5px;line-height:1.55;color:#9fabbc">{{ evoSummary }}</div>
             <div style="{{ evoOutcomeStyle }}">{{ evoOutcome }}</div>
           </div>
-          <button onClick="{{ runEvo }}" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:600;font-size:14px;color:#0b1220;background:#5dd4ab;border:none;padding:12px 18px;border-radius:10px;cursor:pointer;transition:transform .15s" style-hover="transform:translateY(-1px)">{{ evoBtnLabel }}</button>
+          <button onClick="{{ runEvo }}" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:600;font-size:14px;color:#0b1220;background:#5dd4ab;border:none;padding:12px 18px;border-radius:10px;cursor:pointer;transition:transform .15s" style-hover="transform:translateY(-1px)"><span aria-hidden="true">{{ evoBtnGlyph }}</span> {{ evoBtnLabel }}</button>
         </div>
         <div style="background:#070d1a;border:1px solid rgba(159,201,180,.12);border-radius:14px;padding:18px 20px;min-height:170px">
           <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#7c8aa0;margin-bottom:12px">Activity</div>
           <div style="display:flex;flex-direction:column;gap:10px">
             <sc-for list="{{ evoLog }}" as="lg" hint-placeholder-count="3">
               <div style="display:flex;gap:11px;align-items:flex-start;font-family:'IBM Plex Mono',monospace;font-size:12.5px;line-height:1.5">
-                <span style="{{ lg.dotStyle }}"></span>
-                <span style="flex:none;color:#54627a;width:54px">{{ lg.where }}</span>
+                <span aria-hidden="true" style="{{ lg.dotStyle }}"></span>
+                <span style="flex:none;color:#7c8aa0;width:54px">{{ lg.where }}</span>
                 <span style="color:#cdd6e2">{{ lg.text }}</span>
               </div>
             </sc-for>
           </div>
         </div>
       </div>
+      <span class="mn-sr-live" role="status" aria-live="polite">{{ evoAnnounce }}</span>
     </div>
   </section>
 
@@ -406,17 +550,17 @@
         <p style="font-size:16px;line-height:1.6;color:#aeb9c8;margin:0">Opportunity is broader when multiple repositories adopt, within an enterprise or beyond. A reliable pattern proven in one repository can be available to another as verifiable evidence, and the receiving repository adopts it only after it passes that repository’s own checks. Every repository keeps its own controls, so trust is earned locally at each step.</p>
       </div>
 
-      <div ref="{{ setNetStage }}" style="position:relative;height:600px;margin:8px 0 18px">
+      <div class="mn-net-stage" ref="{{ setNetStage }}" style="position:relative;margin:8px 0 18px">
         {{ networkConnectors }}
 
-        <div ref="{{ netHub }}" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:214px;text-align:center;background:linear-gradient(180deg,rgba(62,201,138,.12),rgba(9,16,32,.62));border:1px solid rgba(93,212,171,.4);border-radius:18px;padding:20px 20px 18px;z-index:4;box-shadow:0 0 0 1px rgba(93,212,171,.3),0 0 30px rgba(93,212,171,.22);transition:box-shadow .4s">
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#5dd4ab;margin-bottom:11px">Governed mesh</div>
+        <div class="mn-net-hub" ref="{{ netHub }}" style="text-align:center;background:linear-gradient(180deg,rgba(62,201,138,.12),rgba(9,16,32,.62));border:1px solid rgba(93,212,171,.4);border-radius:18px;padding:20px 20px 18px;z-index:4;box-shadow:0 0 0 1px rgba(93,212,171,.3),0 0 30px rgba(93,212,171,.22);transition:box-shadow .4s">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#5dd4ab;margin-bottom:11px">Knowledge network</div>
           <div style="display:flex;align-items:center;justify-content:center;width:48px;height:48px;margin:0 auto 12px;border-radius:14px;background:rgba(93,212,171,.14);border:1px solid rgba(93,212,171,.4);color:#5dd4ab;font-size:22px">⛨</div>
           <div style="font-family:'Space Grotesk';font-weight:600;font-size:16px;line-height:1.16;color:#f6f4ee;margin-bottom:9px">Application<br>Knowledge Network</div>
           <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9fabbc"><span style="color:#5dd4ab;font-weight:600">{{ netShared }}</span> patterns shared <span style="color:#7c8aa0">(illustrative)</span></div>
         </div>
 
-        <div ref="{{ netCard0 }}" style="position:absolute;left:50%;top:11.5%;transform:translate(-50%,-50%);width:174px;background:rgba(159,201,180,.04);border:1px solid rgba(159,201,180,.14);border-radius:13px;padding:13px 14px;transition:all .35s;z-index:3">
+        <div class="mn-net-card mn-net-c0" ref="{{ netCard0 }}" style="background:rgba(159,201,180,.04);border:1px solid rgba(159,201,180,.14);border-radius:13px;padding:13px 14px;transition:all .35s;z-index:3">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px">
             <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.03em;color:#5dd4ab;border:1px solid rgba(93,212,171,.35);border-radius:5px;padding:2px 7px">Node · TS</span>
             <span style="width:7px;height:7px;border-radius:50%;background:#5dd4ab;box-shadow:0 0 8px #5dd4ab"></span>
@@ -426,7 +570,7 @@
           <div style="display:flex;align-items:center;gap:7px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9fabbc;border-top:1px solid rgba(159,201,180,.1);padding-top:8px">◆ Modonome <span style="color:#7cc4ff">· example</span></div>
         </div>
 
-        <div ref="{{ netCard1 }}" style="position:absolute;left:84%;top:31%;transform:translate(-50%,-50%);width:174px;background:rgba(159,201,180,.04);border:1px solid rgba(159,201,180,.14);border-radius:13px;padding:13px 14px;transition:all .35s;z-index:3">
+        <div class="mn-net-card mn-net-c1" ref="{{ netCard1 }}" style="background:rgba(159,201,180,.04);border:1px solid rgba(159,201,180,.14);border-radius:13px;padding:13px 14px;transition:all .35s;z-index:3">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px">
             <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.03em;color:#7cc4ff;border:1px solid rgba(124,196,255,.35);border-radius:5px;padding:2px 7px">Python</span>
             <span style="width:7px;height:7px;border-radius:50%;background:#5dd4ab;box-shadow:0 0 8px #5dd4ab"></span>
@@ -436,7 +580,7 @@
           <div style="display:flex;align-items:center;gap:7px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9fabbc;border-top:1px solid rgba(159,201,180,.1);padding-top:8px">◆ Modonome <span style="color:#7cc4ff">· example</span></div>
         </div>
 
-        <div ref="{{ netCard2 }}" style="position:absolute;left:84%;top:69%;transform:translate(-50%,-50%);width:174px;background:rgba(159,201,180,.04);border:1px solid rgba(159,201,180,.14);border-radius:13px;padding:13px 14px;transition:all .35s;z-index:3">
+        <div class="mn-net-card mn-net-c2" ref="{{ netCard2 }}" style="background:rgba(159,201,180,.04);border:1px solid rgba(159,201,180,.14);border-radius:13px;padding:13px 14px;transition:all .35s;z-index:3">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px">
             <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.03em;color:#f5b14a;border:1px solid rgba(245,177,74,.35);border-radius:5px;padding:2px 7px">Java</span>
             <span style="width:7px;height:7px;border-radius:50%;background:#5dd4ab;box-shadow:0 0 8px #5dd4ab"></span>
@@ -446,7 +590,7 @@
           <div style="display:flex;align-items:center;gap:7px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9fabbc;border-top:1px solid rgba(159,201,180,.1);padding-top:8px">◆ Modonome <span style="color:#7cc4ff">· example</span></div>
         </div>
 
-        <div ref="{{ netCard3 }}" style="position:absolute;left:50%;top:88.5%;transform:translate(-50%,-50%);width:174px;background:rgba(159,201,180,.04);border:1px solid rgba(159,201,180,.14);border-radius:13px;padding:13px 14px;transition:all .35s;z-index:3">
+        <div class="mn-net-card mn-net-c3" ref="{{ netCard3 }}" style="background:rgba(159,201,180,.04);border:1px solid rgba(159,201,180,.14);border-radius:13px;padding:13px 14px;transition:all .35s;z-index:3">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px">
             <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.03em;color:#7cc4ff;border:1px solid rgba(124,196,255,.35);border-radius:5px;padding:2px 7px">.NET</span>
             <span style="width:7px;height:7px;border-radius:50%;background:#5dd4ab;box-shadow:0 0 8px #5dd4ab"></span>
@@ -456,7 +600,7 @@
           <div style="display:flex;align-items:center;gap:7px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9fabbc;border-top:1px solid rgba(159,201,180,.1);padding-top:8px">◆ Modonome <span style="color:#7cc4ff">· example</span></div>
         </div>
 
-        <div ref="{{ netCard4 }}" style="position:absolute;left:16%;top:69%;transform:translate(-50%,-50%);width:174px;background:rgba(159,201,180,.04);border:1px solid rgba(159,201,180,.14);border-radius:13px;padding:13px 14px;transition:all .35s;z-index:3">
+        <div class="mn-net-card mn-net-c4" ref="{{ netCard4 }}" style="background:rgba(159,201,180,.04);border:1px solid rgba(159,201,180,.14);border-radius:13px;padding:13px 14px;transition:all .35s;z-index:3">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px">
             <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.03em;color:#5dd4ab;border:1px solid rgba(93,212,171,.35);border-radius:5px;padding:2px 7px">Go</span>
             <span style="width:7px;height:7px;border-radius:50%;background:#5dd4ab;box-shadow:0 0 8px #5dd4ab"></span>
@@ -466,7 +610,7 @@
           <div style="display:flex;align-items:center;gap:7px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9fabbc;border-top:1px solid rgba(159,201,180,.1);padding-top:8px">◆ Modonome <span style="color:#7cc4ff">· example</span></div>
         </div>
 
-        <div ref="{{ netCard5 }}" style="position:absolute;left:16%;top:31%;transform:translate(-50%,-50%);width:174px;background:rgba(159,201,180,.04);border:1px solid rgba(159,201,180,.14);border-radius:13px;padding:13px 14px;transition:all .35s;z-index:3">
+        <div class="mn-net-card mn-net-c5" ref="{{ netCard5 }}" style="background:rgba(159,201,180,.04);border:1px solid rgba(159,201,180,.14);border-radius:13px;padding:13px 14px;transition:all .35s;z-index:3">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px">
             <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.03em;color:#f5b14a;border:1px solid rgba(245,177,74,.35);border-radius:5px;padding:2px 7px">COBOL</span>
             <span style="width:7px;height:7px;border-radius:50%;background:#5dd4ab;box-shadow:0 0 8px #5dd4ab"></span>
@@ -501,12 +645,12 @@
       <p style="font-size:16px;line-height:1.6;color:#aeb9c8;margin:0">v0.2 and v0.3 are planned and tracked in the repository. The milestones beyond them describe the direction we want to explore together, and the community is welcome to help shape what comes next.</p>
     </div>
     <div style="position:relative">
-      <div style="position:absolute;left:0;right:0;top:36px;height:2px;background:linear-gradient(90deg,#2fae7d 0%,rgba(124,196,255,.4) 42%,rgba(159,201,180,.10) 100%)"></div>
-      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px">
+      <div class="mn-roadmap-bar" style="position:absolute;left:0;right:0;top:36px;height:2px;background:linear-gradient(90deg,#2fae7d 0%,rgba(124,196,255,.4) 42%,rgba(159,201,180,.10) 100%)"></div>
+      <div class="mn-cols" style="display:grid;gap:14px;--cols:repeat(5,1fr);--cols-md:repeat(2,1fr);--cols-sm:1fr">
         <sc-for list="{{ milestones }}" as="ms" hint-placeholder-count="5">
           <div style="position:relative">
-            <div style="{{ ms.dotStyle }}"></div>
-            <div style="{{ ms.cardStyle }}">
+            <div class="mn-roadmap-dot" style="{{ ms.dotStyle }}"></div>
+            <div class="mn-roadmap-card" style="{{ ms.cardStyle }}">
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
                 <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#7c8aa0">{{ ms.phase }}</span>
                 <span style="{{ ms.pillStyle }}">{{ ms.status }}</span>
@@ -521,11 +665,12 @@
   </section>
 
   <section id="quickstart" style="position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:88px 24px">
-    <div style="display:grid;grid-template-columns:1fr 1.05fr;gap:54px;align-items:center">
+    <div class="mn-cols" style="display:grid;gap:54px;align-items:center;--cols:1fr 1.05fr;--cols-md:1fr">
       <div>
         <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#5dd4ab;margin-bottom:14px">Get started</div>
         <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(28px,3.6vw,40px);line-height:1.1;letter-spacing:-.02em;margin:0 0 16px;color:#f6f4ee">Start in a minute. Stay in control the whole way.</h2>
-        <p style="font-size:16px;line-height:1.65;color:#aeb9c8;margin:0 0 26px">Three short steps take you from a safe preview to real, verifiable evidence. Nothing changes in your repository until you choose, and autonomy waits for you to switch it on.</p>
+        <p style="font-size:16px;line-height:1.65;color:#aeb9c8;margin:0 0 20px">Three short steps take you from a safe preview to real, verifiable evidence. Nothing changes in your repository until you choose, and autonomy waits for you to switch it on.</p>
+        <a href="/quickstart/" style="display:inline-flex;align-items:center;gap:7px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#5dd4ab;text-decoration:none;margin-bottom:24px;transition:gap .2s" style-hover="gap:11px">Read the full quickstart guide →</a>
         <div style="display:flex;flex-direction:column;gap:12px">
           <sc-for list="{{ qsteps }}" as="q" hint-placeholder-count="3">
             <div style="display:flex;gap:14px;align-items:flex-start;background:rgba(159,201,180,.04);border:1px solid rgba(159,201,180,.12);border-radius:12px;padding:15px 16px;transition:border-color .2s" style-hover="border-color:rgba(93,212,171,.35)">
@@ -545,7 +690,7 @@
           <span style="width:11px;height:11px;border-radius:50%;background:#5dd4ab80"></span>
           <span style="margin-left:8px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#7c8aa0">modonome · zsh</span>
         </div>
-        <div style="padding:22px 20px;font-family:'IBM Plex Mono',monospace;font-size:13.5px;line-height:1.9">
+        <div class="mn-term" style="padding:22px 20px;font-family:'IBM Plex Mono',monospace;line-height:1.9">
           <div style="color:#7c8aa0"># Try it safely, this changes nothing</div>
           <div style="color:#e8ebf0"><span style="color:#5dd4ab">$</span> npx modonome dry-run .</div>
           <div style="color:#9fabbc">  ✓ detected: node · typescript · jest · github-actions</div>
@@ -564,13 +709,13 @@
   </section>
 
   <section style="position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:20px 24px 96px">
-    <div style="position:relative;overflow:hidden;border-radius:22px;border:1px solid rgba(93,212,171,.22);background:linear-gradient(135deg,rgba(62,201,138,.10),rgba(9,16,32,.4));padding:64px 48px;text-align:center">
+    <div class="mn-cta-box" style="position:relative;overflow:hidden;border-radius:22px;border:1px solid rgba(93,212,171,.22);background:linear-gradient(135deg,rgba(62,201,138,.10),rgba(9,16,32,.4));text-align:center">
       <div style="position:absolute;top:-160px;left:50%;transform:translateX(-50%);width:760px;height:420px;background:radial-gradient(ellipse at center,rgba(62,201,138,.20),transparent 65%);pointer-events:none"></div>
       <div style="position:relative">
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#5dd4ab;margin-bottom:16px">Build the cause together</div>
-        <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(28px,4vw,46px);line-height:1.08;letter-spacing:-.02em;margin:0 auto 18px;max-width:820px;color:#f6f4ee">Secure, autonomous engineering for the assets that matter most.</h2>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#5dd4ab;margin-bottom:16px">Build it together</div>
+        <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(28px,4vw,46px);line-height:1.08;letter-spacing:-.02em;margin:0 auto 18px;max-width:820px;color:#f6f4ee">Governed autonomous engineering for the assets that matter most.</h2>
         <p style="max-width:700px;margin:0 auto 36px;font-size:17px;line-height:1.6;color:#bcc7d5">An open standard can help enterprises trust autonomous engineering and steadily pay down the debt in their most critical applications. We intend to propose AgentProof to the OWASP Agentic Working Group, the OpenSSF Securing Software Repositories WG, and the AAIF, and the work is open to everyone.</p>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:840px;margin:0 auto 36px;text-align:left">
+        <div class="mn-cols" style="display:grid;gap:14px;max-width:840px;margin:0 auto 36px;text-align:left;--cols:repeat(3,1fr);--cols-sm:1fr">
           <div style="background:rgba(159,201,180,.05);border:1px solid rgba(159,201,180,.14);border-radius:13px;padding:18px 18px">
             <div style="font-size:20px;margin-bottom:10px">★</div>
             <div style="font-family:'Space Grotesk';font-weight:600;font-size:15px;color:#f6f4ee;margin-bottom:5px">Adopt and share</div>
@@ -589,7 +734,7 @@
         </div>
         <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
           <a href="#quickstart" style="display:inline-flex;align-items:center;gap:9px;font-weight:600;font-size:15px;color:#0b1220;background:#5dd4ab;padding:14px 28px;border-radius:11px;text-decoration:none;transition:transform .2s,box-shadow .2s" style-hover="transform:translateY(-2px);box-shadow:0 14px 34px rgba(93,212,171,.34)">Try it in 60 seconds →</a>
-          <a href="https://github.com/enumind/modonome/issues" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:9px;font-weight:600;font-size:15px;color:#e8ebf0;background:rgba(159,201,180,.07);border:1px solid rgba(159,201,180,.22);padding:14px 26px;border-radius:11px;text-decoration:none;transition:border-color .2s,background .2s" style-hover="border-color:rgba(93,212,171,.5);background:rgba(159,201,180,.12)">Open a discussion →</a>
+          <a href="https://github.com/enumind/modonome/discussions" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:9px;font-weight:600;font-size:15px;color:#e8ebf0;background:rgba(159,201,180,.07);border:1px solid rgba(159,201,180,.22);padding:14px 26px;border-radius:11px;text-decoration:none;transition:border-color .2s,background .2s" style-hover="border-color:rgba(93,212,171,.5);background:rgba(159,201,180,.12)">Open a discussion →</a>
         </div>
       </div>
     </div>
@@ -598,12 +743,20 @@
   <footer style="position:relative;z-index:1;border-top:1px solid rgba(159,201,180,.1)">
     <div style="max-width:1180px;margin:0 auto;padding:34px 24px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap">
       <div style="display:flex;align-items:center;gap:14px">
-        <span class="mn-satin" style="--satin-mask:url('assets/modonome-logo.webp')"><img src="assets/modonome-logo.webp" alt="Modonome" style="height:24px;display:block;mix-blend-mode:lighten"></span>
-        <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#54627a">MIT · {{ version }} · No telemetry</span>
+        <span class="mn-satin" style="--satin-mask:url('assets/modonome-logo.webp')"><img src="assets/modonome-logo.webp" alt="Modonome" width="880" height="284" style="height:24px;width:auto;display:block;mix-blend-mode:lighten"></span>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#7c8aa0">MIT · {{ version }} · No telemetry</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#7c8aa0">This site ships from the product repo and clears the same gates: style, CodeQL, OpenSSF Scorecard, and a Merkle-checked snapshot.</span>
+        </div>
       </div>
-      <div style="display:flex;gap:24px;font-size:13.5px">
+      <div style="display:flex;gap:22px;font-size:13.5px;align-items:center;flex-wrap:wrap">
+        <a href="/agentproof/" style="color:#9fabbc;text-decoration:none;transition:color .2s" style-hover="color:#5dd4ab">AgentProof</a>
+        <a href="/quickstart/" style="color:#9fabbc;text-decoration:none;transition:color .2s" style-hover="color:#5dd4ab">Quickstart</a>
+        <a href="/articles/" style="color:#9fabbc;text-decoration:none;transition:color .2s" style-hover="color:#5dd4ab">Articles</a>
         <a href="https://github.com/enumind/modonome" target="_blank" rel="noopener noreferrer" style="color:#9fabbc;text-decoration:none;transition:color .2s" style-hover="color:#5dd4ab">GitHub</a>
-        <a href="https://github.com/enumind/modonome/issues" target="_blank" rel="noopener noreferrer" style="color:#9fabbc;text-decoration:none;transition:color .2s" style-hover="color:#5dd4ab">Discussions</a>
+        <a href="https://github.com/enumind/modonome/stargazers" target="_blank" rel="noopener noreferrer" style="color:#9fabbc;text-decoration:none;transition:color .2s" style-hover="color:#5dd4ab">Star</a>
+        <a href="https://github.com/enumind/modonome/discussions" target="_blank" rel="noopener noreferrer" style="color:#9fabbc;text-decoration:none;transition:color .2s" style-hover="color:#5dd4ab">Discussions</a>
+        <a href="https://x.com/ModonomeLab" target="_blank" rel="noopener noreferrer" aria-label="Follow Modonome on X" style="display:inline-flex;align-items:center;gap:7px;color:#9fabbc;text-decoration:none;transition:color .2s" style-hover="color:#5dd4ab"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Follow on X</a>
       </div>
     </div>
   </footer>
@@ -629,6 +782,7 @@ class Component extends DCLogic {
   }
   constructor(props){
     super(props);
+    this._prm = (typeof matchMedia === 'function') ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
     const R = window.__MODONOME_REPO || {};
     this.R = R;
     this.SIM_GROUPS = R.simGroups || [];
@@ -639,30 +793,34 @@ class Component extends DCLogic {
       evoScenario: 0, evoStep: -1, evoRunning: false, pulseSeq: 0, pulseDir: 'toRepo', pulseColor: '#5dd4ab',
       repo: null, engine: null, evoLog: [], evoHi: {}, activeR: -1, activeE: -1,
       netGeo: null, netActive: -1, netPhase: 'idle', netSeq: 0, netShared: 128, activeSection: 'top',
-      live: null, syncStatus: 'cached' };
+      live: null, syncStatus: 'cached', relIndex: 0 };
     this.repoBase = { tests: 248, coverage: '81%', deps: 3, debt: 12 };
-    this.engineBase = { lessons: 3, rules: 0, gates: 7, queue: 16, version: '1', armed: false };
+    this.engineBase = { lessons: 3, rules: 0, gates: 8, queue: 16, version: 'v0.1.0-alpha', armed: false };
     this.STAGES = [
-      {title:'Maker', sub:'builds one small change', scope:'AGENT'},
-      {title:'Checker', sub:'reviews it independently', scope:'AGENT'},
-      {title:'Gates', sub:'automated checks', scope:'PIPELINE'},
-      {title:'Ratchet', sub:'keeps tests honest', scope:'PIPELINE'},
-      {title:'Owner', sub:'human sign-off', scope:'PERSON'},
-      {title:'Merge', sub:'applies the change', scope:'AGENT'},
+      {title:'Maker', sub:'builds one small change', scope:'AGENT', live:'The maker is writing one small, scoped change and pinning it with a test.'},
+      {title:'Checker', sub:'reviews it independently', scope:'AGENT', live:'A separate checker reviews the diff. The maker never approves its own work.'},
+      {title:'Gates', sub:'automated checks', scope:'PIPELINE', live:'Deterministic checks run in your CI, outside the agent write scope.'},
+      {title:'Ratchet', sub:'keeps tests honest', scope:'PIPELINE', live:'The ratchet compares test strength before and after the change.'},
+      {title:'Owner', sub:'human sign-off', scope:'PERSON', live:'A human owner reviews anything protected before it can proceed.'},
+      {title:'Merge', sub:'applies the change', scope:'AGENT', live:'A separate merge authority lands the change once every gate is green.'},
     ];
   }
   componentDidMount(){
     this.evoRefs = this.evoRefs || {}; this.netCardRefs = this.netCardRefs || {};
     this.NET_POS = [[0.5,0.115],[0.84,0.31],[0.84,0.69],[0.5,0.885],[0.16,0.69],[0.16,0.31]];
-    requestAnimationFrame(() => { this.measureEvo(); this.measureNet(); this.setupNav(); });
-    this._mr = () => { this.measureEvo(); this.measureNet(); };
+    requestAnimationFrame(() => { this.measureEvo(); this.measureNet(); this.measureRel(); this.setupNav(); });
+    this._mr = () => { this.measureEvo(); this.measureNet(); this.measureRel(); };
     window.addEventListener('resize', this._mr);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(this._mr);
     this.syncFromRepo();
+    this.relStartAuto();
   }
   componentWillUnmount(){
     clearInterval(this._t); clearInterval(this._te); this.stopNet();
+    clearInterval(this._relTimer); clearTimeout(this._relResumeTO);
     if (this._navIO) this._navIO.disconnect();
     if (this._netIO) this._netIO.disconnect();
+    if (this._relTrack) { this._relTrack.removeEventListener('scroll', this._relOnScroll); this._relTrack.removeEventListener('touchstart', this._relOnTouchStart); this._relTrack.removeEventListener('touchend', this._relOnTouchEnd); }
     window.removeEventListener('resize', this._mr);
   }
   // --- Live refresh of key sections from the public repo (graceful fallback) ---
@@ -704,9 +862,69 @@ class Component extends DCLogic {
     if (typeof requestIdleCallback === 'function') requestIdleCallback(() => run(), { timeout: 3000 });
     else setTimeout(run, 1200);
   }
+  // --- Recently-shipped carousel: native scroll-snap track, manual-first with a slow, pausable auto-advance ---
+  setRelTrack(el){
+    if (!el || this._relTrack === el) return;
+    this._relTrack = el;
+    this._relOnScroll = () => {
+      if (this._relScrollRaf) return;
+      this._relScrollRaf = requestAnimationFrame(() => {
+        this._relScrollRaf = null;
+        if (!this._relStep) return;
+        const total = (this.R.recentReleases || []).length;
+        const idx = Math.max(0, Math.min(total - 1, Math.round(el.scrollLeft / this._relStep)));
+        if (idx !== this.state.relIndex) this.setState({ relIndex: idx });
+      });
+    };
+    this._relOnTouchStart = () => this.relPauseAuto();
+    this._relOnTouchEnd = () => this.relResumeAuto();
+    el.addEventListener('scroll', this._relOnScroll, { passive: true });
+    el.addEventListener('touchstart', this._relOnTouchStart, { passive: true });
+    el.addEventListener('touchend', this._relOnTouchEnd, { passive: true });
+    requestAnimationFrame(() => this.measureRel());
+  }
+  measureRel(){
+    const el = this._relTrack; if (!el || !el.children.length) return;
+    const first = el.children[0];
+    const r = first.getBoundingClientRect();
+    const cs = getComputedStyle(el);
+    const gap = parseFloat(cs.columnGap || cs.gap || '0') || 0;
+    this._relStep = r.width + gap;
+  }
+  relStartAuto(){
+    if (this._prm.matches || this._relTimer) return;
+    this._relTimer = setInterval(() => this.relNext(), 6500);
+  }
+  relPauseAuto(){
+    clearInterval(this._relTimer); this._relTimer = null;
+    clearTimeout(this._relResumeTO);
+  }
+  relResumeAuto(){
+    if (this._prm.matches) return;
+    clearTimeout(this._relResumeTO);
+    this._relResumeTO = setTimeout(() => this.relStartAuto(), 1500);
+  }
+  relStep(dir){
+    this.relPauseAuto();
+    const el = this._relTrack; if (!el) return;
+    if (!this._relStep) this.measureRel();
+    const behavior = this._prm.matches ? 'auto' : 'smooth';
+    const atEnd = dir > 0 && (el.scrollLeft + el.clientWidth >= el.scrollWidth - 4);
+    const atStart = dir < 0 && el.scrollLeft <= 4;
+    if (atEnd) el.scrollTo({ left: 0, behavior });
+    else if (atStart) el.scrollTo({ left: el.scrollWidth, behavior });
+    else el.scrollBy({ left: dir * (this._relStep || el.clientWidth * 0.86), behavior });
+    this.relResumeAuto();
+  }
+  relNext(){ this.relStep(1); }
+  relPrev(){ this.relStep(-1); }
+  relKeyDown(e){
+    if (e.key === 'ArrowRight') { e.preventDefault(); this.relNext(); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); this.relPrev(); }
+  }
   svgIcon(name){
     const R = React.createElement;
-    const base = { width:24, height:24, viewBox:'0 0 24 24', fill:'none', stroke:'currentColor', strokeWidth:1.7, strokeLinecap:'round', strokeLinejoin:'round' };
+    const base = { width:24, height:24, viewBox:'0 0 24 24', fill:'none', stroke:'currentColor', strokeWidth:1.7, strokeLinecap:'round', strokeLinejoin:'round', 'aria-hidden':'true' };
     const sets = {
       changes: [R('path',{key:1,d:'M14 3v3.5a1 1 0 0 0 1 1h3.5'}), R('path',{key:2,d:'M6 3h8l5 5v10a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 5 18V4.5A1.5 1.5 0 0 1 6 3z'}), R('path',{key:3,d:'M8.5 13.2l2.2 2.2 4.3-4.3'})],
       roles: [R('circle',{key:1,cx:6.5,cy:8,r:2.3}), R('circle',{key:2,cx:17.5,cy:8,r:2.3}), R('circle',{key:3,cx:12,cy:16.5,r:2.3}), R('path',{key:4,d:'M8.6,9.6 10.3,14.6 M15.4,9.6 13.7,14.6'})],
@@ -714,6 +932,12 @@ class Component extends DCLogic {
       plug: [R('path',{key:1,d:'M9 7.5V4 M15 7.5V4'}), R('path',{key:2,d:'M7 7.5h10v3.2a5 5 0 0 1-10 0z'}), R('path',{key:3,d:'M12 15.4V20'})],
       loop: [R('path',{key:1,d:'M5 12a7 7 0 0 1 12-4.9'}), R('path',{key:2,d:'M17 3.2V7.4h-4.2'}), R('path',{key:3,d:'M19 12a7 7 0 0 1-12 4.9'}), R('path',{key:4,d:'M7 20.8V16.6h4.2'})],
       estate: [R('path',{key:1,d:'M12 3l8 4-8 4-8-4z'}), R('path',{key:2,d:'M4 12l8 4 8-4'}), R('path',{key:3,d:'M4 16.5l8 4 8-4'})],
+      panel: [R('rect',{key:1,x:4,y:5,width:16,height:14,rx:1.5}), R('path',{key:2,d:'M4 9.2h16'}), R('path',{key:3,d:'M7.5 13h4 M7.5 16h7'})],
+      snapshot: [R('circle',{key:1,cx:12,cy:5,r:1.9}), R('circle',{key:2,cx:6,cy:18,r:1.9}), R('circle',{key:3,cx:18,cy:18,r:1.9}), R('path',{key:4,d:'M12 6.9v3.6 M12 10.5L6.7 16 M12 10.5L17.3 16'})],
+      attest: [R('circle',{key:1,cx:12,cy:9.5,r:5}), R('path',{key:2,d:'M9.6 13.4L8.4 20l3.6-2 3.6 2-1.2-6.6'}), R('path',{key:3,d:'M9.8 9.4l1.6 1.6 3-3.2'})],
+      ciGate: [R('rect',{key:1,x:3.5,y:4.5,width:17,height:15,rx:2}), R('path',{key:2,d:'M7.5 9.5l3 2.5-3 2.5'}), R('path',{key:3,d:'M12.5 14.5h4'})],
+      sharePack: [R('path',{key:1,d:'M12 3.5v9'}), R('path',{key:2,d:'M8.2 9.3L12 12.5l3.8-3.2'}), R('path',{key:3,d:'M4.5 14.5h15v4.2a1.3 1.3 0 0 1-1.3 1.3H5.8a1.3 1.3 0 0 1-1.3-1.3z'})],
+      hygiene: [R('path',{key:1,d:'M11 3.2l1.5 4.3L17 9l-4.5 1.5L11 14.8L9.5 10.5L5 9l4.5-1.5z'}), R('path',{key:2,d:'M17.5 15l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z'})],
     };
     return R('svg', base, sets[name] || sets.changes);
   }
@@ -762,7 +986,7 @@ class Component extends DCLogic {
     N.forEach((n,i) => {
       const P = `M ${n.x} ${n.y} L ${H.x} ${H.y}`;
       kids.push(React.createElement('path', { key:'amb'+i, d:P, fill:'none', stroke:'rgba(93,212,171,.20)', strokeWidth:1.5, strokeDasharray:'4 11', style:{ animation:'mn-conduit 1.7s linear infinite' } }));
-      kids.push(React.createElement('circle', { key:'ad'+i, r:2.3, fill:'#5dd4ab', opacity:0.7 },
+      if (!this._prm.matches) kids.push(React.createElement('circle', { key:'ad'+i, r:2.3, fill:'#5dd4ab', opacity:0.7 },
         React.createElement('animateMotion', { dur:(3.6+i*0.35)+'s', repeatCount:'indefinite', path:(i%2 ? P : `M ${H.x} ${H.y} L ${n.x} ${n.y}`) })));
       const cx = n.x+(H.x-n.x)*0.62, cy = n.y+(H.y-n.y)*0.62;
       kids.push(React.createElement('circle', { key:'cp'+i, cx, cy, r:3, fill:'#0b1220', stroke:'rgba(93,212,171,.45)', strokeWidth:1.2 }));
@@ -789,7 +1013,7 @@ class Component extends DCLogic {
     el.style.boxShadow = on ? '0 0 0 1px rgba(93,212,171,.6), 0 0 48px rgba(93,212,171,.5)' : '0 0 0 1px rgba(93,212,171,.3), 0 0 30px rgba(93,212,171,.22)';
   }
   startNet(){
-    if (this._tn) return;
+    if (this._tn || this._prm.matches) return;
     let i = -1;
     const tick = () => {
       i = (i+1) % 6;
@@ -882,17 +1106,33 @@ class Component extends DCLogic {
         kids.push(R('path', { key:'flow'+this.state.pulseSeq, d:P, fill:'none', stroke:'#eafff6', strokeWidth:2, strokeLinecap:'round', strokeLinejoin:'round', strokeDasharray:'2 13', style:{ animation:'mn-evoflow .8s linear infinite' } }));
         kids.push(R('circle', { key:'src'+this.state.pulseSeq, cx:s[0], cy:s[1], r:3.6, fill:color, style:{ filter:`drop-shadow(0 0 6px ${color})` } }));
         kids.push(R('polygon', { key:'arr'+this.state.pulseSeq, points:tri, fill:color, style:{ filter:`drop-shadow(0 0 5px ${color})` } }));
-        kids.push(R('circle', { key:'dot'+this.state.pulseSeq, r:5, fill:'#fff', style:{ filter:`drop-shadow(0 0 9px ${color})` } },
+        if (!this._prm.matches) kids.push(R('circle', { key:'dot'+this.state.pulseSeq, r:5, fill:'#fff', style:{ filter:`drop-shadow(0 0 9px ${color})` } },
           R('animateMotion', { dur:'0.9s', repeatCount:'1', fill:'freeze', path:P })));
       }
     }
     return R('svg', { key:'evosvg', width:g.w, height:g.h, viewBox:`0 0 ${g.w} ${g.h}`, style:{ position:'absolute', left:0, top:0, pointerEvents:'none', zIndex:3, overflow:'visible' } }, kids);
   }
-  pickEvo(i){ clearInterval(this._te); this.setState({ evoScenario:i, evoStep:-1, evoRunning:false, repo:null, engine:null, evoLog:[], evoHi:{}, activeR:-1, activeE:-1 }); }
+  pickEvo(i){ clearInterval(this._te); this.setState({ evoScenario:i, evoStep:-1, evoRunning:false, repo:null, engine:null, evoLog:[], evoHi:{}, activeR:-1, activeE:-1 }, () => this.runEvo()); }
   runEvo(){
     clearInterval(this._te);
     const sc = this.EVO[this.state.evoScenario];
     let repo = Object.assign({}, this.repoBase), engine = Object.assign({}, this.engineBase);
+    if (this._prm.matches){
+      sc.steps.forEach(st => {
+        if (st.set){
+          if (st.set.repo) repo = Object.assign({}, repo, st.set.repo);
+          if (st.set.engine) engine = Object.assign({}, engine, st.set.engine);
+        }
+      });
+      const last = sc.steps[sc.steps.length-1] || {};
+      const fullLog = sc.steps.map(s => ({ where:s.where, text:s.text, color:s.color }));
+      this.setState(s => ({
+        evoStep: sc.steps.length-1, evoRunning:false, repo, engine, evoLog:fullLog,
+        evoHi: last.hi||{}, pulseSeq: s.pulseSeq+1, pulseDir: last.dir, pulseColor: last.color,
+        activeR: (last.r==null?-1:last.r), activeE: (last.e==null?-1:last.e)
+      }));
+      return;
+    }
     this.setState({ evoStep:-1, evoRunning:true, repo, engine, evoLog:[], evoHi:{}, activeR:-1, activeE:-1 });
     let i = 0;
     this._te = setInterval(() => {
@@ -911,7 +1151,15 @@ class Component extends DCLogic {
       if (i >= sc.steps.length){ clearInterval(this._te); this.setState({ evoRunning:false }); }
     }, 1150);
   }
-  pickScenario(i){ clearInterval(this._t); this.setState({ scenario:i, step:-1, done:false }); }
+  pickScenario(i){
+    clearInterval(this._t);
+    this.setState({ scenario:i, step:-1, done:false }, () => {
+      this.runSim();
+      if (this._simStage && typeof matchMedia === 'function' && matchMedia('(max-width:900px)').matches){
+        this._simStage.scrollIntoView({ behavior: this._prm.matches ? 'auto' : 'smooth', block:'start' });
+      }
+    });
+  }
   applyRoot(el){
     if(!el) return; this._root = el;
     const dur = { slow:'15s', gentle:'8s', off:'11s' }[this.props.satinSpeed || 'slow'];
@@ -922,6 +1170,7 @@ class Component extends DCLogic {
   runSim(){
     clearInterval(this._t);
     const sc = this.SCEN[this.state.scenario];
+    if (this._prm.matches){ this.setState({ step: sc.stop, done:true }); return; }
     const delay = { brisk:380, measured:620, cinematic:920 }[this.props.simSpeed || 'measured'];
     this.setState({ step:-1, done:false });
     this._t = setInterval(() => {
@@ -939,7 +1188,7 @@ class Component extends DCLogic {
     const apScore = live.agentproofScore || meta.agentproofScore || '25/25';
     const apLevel = live.agentproofLevel || meta.agentproofLevel || 'HARDENED';
     const proofs = live.proofs || R.proofs || [];
-    const version = live.version || meta.version || 'v0.1-alpha';
+    const version = live.version || meta.version || 'v0.1.0-alpha';
     const synced = this.state.syncStatus === 'live';
     const syncNote = synced ? 'synced live from the public repo' : 'showing cached repo data';
     const syncDotStyle = `width:7px;height:7px;border-radius:50%;background:${synced?'#5dd4ab':'#7c8aa0'};box-shadow:${synced?'0 0 7px #5dd4ab':'none'}`;
@@ -958,6 +1207,7 @@ class Component extends DCLogic {
         return {
           label: it.label,
           pick: () => this.pickScenario(i),
+          pressed: on ? 'true' : 'false',
           btnStyle: `display:flex;align-items:center;gap:11px;width:100%;text-align:left;font-family:'IBM Plex Sans';font-size:13px;font-weight:${on?600:500};color:${on?'#f6f4ee':'#b9c4d2'};background:${on?'rgba(93,212,171,.10)':'transparent'};border:1px solid ${on?'rgba(93,212,171,.4)':'rgba(159,201,180,.12)'};border-radius:10px;padding:10px 12px;cursor:pointer;transition:all .18s`,
           dotStyle: `flex:none;width:9px;height:9px;border-radius:50%;background:${on?'#5dd4ab':'#3a4658'};box-shadow:${on?'0 0 9px #5dd4ab':'none'}`
         };
@@ -987,7 +1237,7 @@ class Component extends DCLogic {
       return {
         title: st.title, sub: st.sub, scope: st.scope, glyph: m.glyph, titleColor: m.tc,
         circleStyle: `display:flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:50%;font-size:17px;font-weight:700;background:${m.bg};border:2px solid ${m.bd};color:${m.fg};transition:all .35s;${state==='active'?'animation:mn-pulse 1.4s infinite':''}`,
-        scopeStyle: `font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.1em;color:${scopeColors[st.scope]};border:1px solid ${scopeColors[st.scope]}40;border-radius:5px;padding:1px 5px;opacity:.8`,
+        scopeStyle: `font-family:'IBM Plex Mono',monospace;font-size:9.5px;font-weight:600;letter-spacing:.08em;color:${scopeColors[st.scope]};border:1px solid ${scopeColors[st.scope]}55;border-radius:5px;padding:2px 6px`,
       };
     });
 
@@ -997,7 +1247,7 @@ class Component extends DCLogic {
       kindBadgeStyle:`display:inline-flex;align-items:center;gap:4px;position:absolute;top:11px;left:14px;font-size:10px;color:${s.kindColor||'#5dd4ab'};background:${(s.kindColor||'#5dd4ab')}18;border:1px solid ${(s.kindColor||'#5dd4ab')}44;border-radius:4px;padding:1px 5px;font-family:'IBM Plex Mono',monospace;letter-spacing:.03em;line-height:1.4` }));
 
     const guarantees = R.guarantees || [];
-    const featIcons = ['changes','roles','shield','plug','loop','estate'];
+    const featIcons = ['changes','roles','shield','plug','loop','estate','panel','snapshot','attest','ciGate','sharePack','hygiene'];
     const features = (R.features || []).map((f,i) => ({ title:f.title, body:f.body, iconEl:this.svgIcon(featIcons[i] || 'changes') }));
     const balances = R.balances || [];
     const qsteps = R.quickstart || [];
@@ -1034,13 +1284,13 @@ class Component extends DCLogic {
     ];
     const evoScenarios = this.EVO.map((s,i) => {
       const on = i === this.state.evoScenario;
-      return { label:s.label, tag:s.tag, pick: () => this.pickEvo(i),
+      return { label:s.label, tag:s.tag, pick: () => this.pickEvo(i), pressed: on ? 'true' : 'false',
         btnStyle: `display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Sans';font-size:13px;font-weight:${on?600:500};color:${on?'#f6f4ee':'#b9c4d2'};background:${on?'rgba(93,212,171,.10)':'rgba(159,201,180,.04)'};border:1px solid ${on?'rgba(93,212,171,.4)':'rgba(159,201,180,.12)'};border-radius:999px;padding:9px 15px;cursor:pointer;transition:all .18s`,
-        tagStyle: `font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.06em;color:${tagColors[s.tag]||'#9fabbc'};border:1px solid ${(tagColors[s.tag]||'#9fabbc')}55;border-radius:5px;padding:1px 5px` };
+        tagStyle: `font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.04em;color:${tagColors[s.tag]||'#9fabbc'};border:1px solid ${(tagColors[s.tag]||'#9fabbc')}55;border-radius:5px;padding:2px 6px` };
     });
     const evoLog = (this.state.evoLog && this.state.evoLog.length)
       ? this.state.evoLog.map(l => ({ where:l.where, text:l.text, dotStyle:`flex:none;width:8px;height:8px;border-radius:50%;margin-top:5px;background:${l.color};box-shadow:0 0 8px ${l.color}` }))
-      : [{ where:'idle', text:'Pick a trigger and run it to watch the system respond.', dotStyle:'flex:none;width:8px;height:8px;border-radius:50%;margin-top:5px;background:#3a4658' }];
+      : [{ where:'idle', text:'Pick a trigger above. It runs as soon as you choose.', dotStyle:'flex:none;width:8px;height:8px;border-radius:50%;margin-top:5px;background:#3a4658' }];
 
     // ---- roadmap ----
     const toneMap = {
@@ -1052,7 +1302,7 @@ class Component extends DCLogic {
       const t = toneMap[m.tone] || toneMap.planned;
       return { phase:m.phase, status:m.status, title:m.title, body:m.body,
         dotStyle: `position:absolute;left:0;top:30px;width:14px;height:14px;border-radius:50%;background:${t.dotFill};border:2px ${t.dashed?'dashed':'solid'} ${t.dot};box-shadow:${t.glow};z-index:2`,
-        cardStyle: `margin-top:58px;background:${t.card};border:1px ${t.dashed?'dashed':'solid'} ${t.cardBd};border-radius:13px;padding:18px 16px;height:100%`,
+        cardStyle: `background:${t.card};border:1px ${t.dashed?'dashed':'solid'} ${t.cardBd};border-radius:13px;padding:18px 16px;height:100%`,
         pillStyle: `font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.06em;color:${t.pillFg};background:${t.pillBg};border:1px solid ${t.pillBd};border-radius:5px;padding:2px 7px` };
     });
 
@@ -1063,6 +1313,8 @@ class Component extends DCLogic {
     }; });
 
     const idle = step < 0;
+    const running = step >= 0 && !done;
+    const stg = this.STAGES[Math.min(Math.max(reached, 0), N - 1)] || {};
     // simulator loop arc colouring
     const loopColor = (done && halt) ? accent : 'rgba(159,201,180,.22)';
     const loopCaptionColor = (done && halt) ? accent : '#7c8aa0';
@@ -1070,9 +1322,23 @@ class Component extends DCLogic {
       : (done && kind==='escalate') ? 'paused, a human owner decides before it can loop forward'
       : 'one governed cycle · a held change loops back to the maker, nothing slips through';
 
+    const releases = R.recentReleases || [];
+    const relTotal = releases.length;
+    const relIndex = Math.max(0, Math.min(relTotal - 1, this.state.relIndex));
+    const relCurrent = releases[relIndex] || {};
+
     return {
       features, milestones, balances, qsteps, guarantees, steps,
       topNav, version,
+      releases,
+      relProgress: relTotal ? `${String(relIndex + 1).padStart(2, '0')} / ${relTotal}` : '',
+      relAnnounce: relCurrent.title ? `Showing release ${relIndex + 1} of ${relTotal}: ${relCurrent.title}` : '',
+      setRelTrack: (el) => this.setRelTrack(el),
+      relNext: () => this.relNext(),
+      relPrev: () => this.relPrev(),
+      relKeyDown: (e) => this.relKeyDown(e),
+      relPause: () => this.relPauseAuto(),
+      relResume: () => this.relResumeAuto(),
       apScore, apLevel, proofs, scoreBadge: 'AgentProof ' + apScore, syncNote, syncDotStyle,
       networkConnectors: this.buildNetwork(),
       netShared: this.state.netShared,
@@ -1089,12 +1355,15 @@ class Component extends DCLogic {
       simGroups, nodes,
       evoScenarios, repoNodes, engineNodes, evoLog,
       setEvoStage: (el) => { this._evoStage = el; if (el) requestAnimationFrame(() => this.measureEvo()); },
+      setSimStage: (el) => { this._simStage = el; },
       evoConnectors: this.buildEvoConnectors(),
       runEvo: () => this.runEvo(),
       engineVersion: engine.version,
       armedLabel: engine.armed ? 'switched on' : 'waiting for your go-ahead',
       evoTitle: evo.title, evoSummary: evo.summary,
-      evoBtnLabel: this.state.evoRunning ? 'Running…' : (evoStarted ? '↻ Run again' : '▶ Run event'),
+      evoBtnGlyph: this.state.evoRunning ? '' : (evoStarted ? '↻' : '▶'),
+      evoBtnLabel: this.state.evoRunning ? 'Running…' : (evoStarted ? 'Run again' : 'Run event'),
+      evoAnnounce: evoDone ? ('Done. ' + (evo.outcome || '')) : '',
       evoStepLabel: evoStarted ? `Step ${this.state.evoStep+1} of ${evoTotal}` : 'Ready',
       evoStepColor: evoStarted ? evo.accent : '#7c8aa0',
       evoOutcome: evoDone ? (evo.outcome || '') : '',
@@ -1102,6 +1371,8 @@ class Component extends DCLogic {
         ? `margin-top:14px;padding:11px 13px;border-radius:9px;background:${evo.accent}14;border:1px solid ${evo.accent}44;color:#d4dde8;font-size:13px;line-height:1.5;font-family:'IBM Plex Sans'`
         : 'display:none',
       runSim: () => this.runSim(),
+      runBtnGlyph: done ? '↻' : '▶',
+      runBtnLabel: running ? 'Running…' : (done ? 'Replay' : 'Run it'),
       activeLabel: sc.label,
       loopColor, loopCaption, loopCaptionColor,
       trackWidth: reached <= 0 ? '0%' : `${(reached/(N-1))*100}%`,
@@ -1110,10 +1381,14 @@ class Component extends DCLogic {
       packetLeft: `${((reached<0?0:reached)+0.5)/N*100}%`,
       packetColor: idle ? '#3a4658' : (done && halt ? accent : '#5dd4ab'),
       verdictStyle: `border-radius:13px;padding:18px 20px;transition:all .3s;border:1px solid ${idle?'rgba(159,201,180,.12)':accent+'55'};background:${idle?'rgba(159,201,180,.04)':accent+'12'}`,
-      verdictTag: idle ? 'READY' : (done ? sc.tag : 'RUNNING…'),
+      verdictTag: idle ? 'READY' : (done ? sc.tag : (reached >= 0 ? `STEP ${reached+1} OF ${N}` : 'RUNNING…')),
       verdictBadgeStyle: `font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.08em;color:#0b1220;background:${idle?'#7c8aa0':accent};padding:3px 9px;border-radius:6px`,
-      verdictTitle: idle ? 'Choose a change and run it.' : (done ? sc.title : 'Moving through the pipeline'),
-      verdictDetail: idle ? 'Each path resolves exactly as its matching AgentProof scenario does. The controls live in CI as real code, so they hold steady under pressure.' : (done ? sc.detail : ''),
+      verdictTitle: idle ? 'Choose a change and run it.' : (done ? sc.title : (reached >= 0 ? stg.title : 'Moving through the pipeline')),
+      verdictDetail: idle ? 'Each path resolves exactly as its matching AgentProof scenario does. The controls live in CI as real code, so they hold steady under pressure.' : (done ? sc.detail : (reached >= 0 ? (stg.live || '') : '')),
+      verdictAnnounce: done ? (sc.tag + '. ' + sc.title) : '',
+      verdictProofShow: !!(done && sc.proof),
+      verdictProofHref: (sc.proof && sc.proof.href) || '',
+      verdictProofLabel: (sc.proof && sc.proof.id) || '',
     };
   }
 }

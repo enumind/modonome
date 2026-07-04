@@ -1,9 +1,26 @@
 /*
+  # GitHub Pages does not apply this file directly; it is honored only on hosts
+  # that read _headers natively (Netlify, Cloudflare Pages). modonome.com is
+  # GitHub Pages fronted by Cloudflare in proxied mode, and the policy actually
+  # served to visitors comes from a Cloudflare Transform Rule (Rules > Transform
+  # Rules > Modify Response Header) configured in the Cloudflare dashboard, not
+  # from anything in this repo. This file is the source-of-truth reference for
+  # what that rule's values must be: if either side drifts from the other, the
+  # live site breaks in ways this repo's tests cannot catch or its CI cannot see.
+  #
+  # This happened once already: a Cloudflare-side CSP was set independently of
+  # this file, missing 'unsafe-eval', the Google Fonts allowances, and the
+  # connect-src allowances below, and broke the site's runtime and its fetches
+  # in production with nothing wrong in the repo itself. When changing the
+  # policy here, update the matching Cloudflare Transform Rule in the same pass.
+  #
   # 'unsafe-eval' is required by the DC (Design Component) runtime in support.js,
   # which uses new Function() to execute user-authored component logic in the
   # browser sandbox. This is intentional and nosemgrep-annotated in the source.
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://unpkg.com 'unsafe-eval'; font-src https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://raw.githubusercontent.com https://api.github.com; img-src 'self' data:; object-src 'none'; base-uri 'self'
+  # React is self-hosted under /vendor, so no external script origin is needed.
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-eval'; font-src https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://raw.githubusercontent.com https://api.github.com; img-src 'self' data:; object-src 'none'; frame-ancestors 'none'; base-uri 'self'
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload

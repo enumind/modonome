@@ -14,6 +14,7 @@
 // the input. The CLI shell below is the only part that does I/O.
 // Usage: node scripts/transition-work-item.mjs <item.json> <fromState> <toState> <writerId>
 import { readFileSync, writeFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 
 // A lease is "live" if it has an owner and an unexpired lease_expires_at.
 // The lease holder is recorded as lease_owner (the field this swap writes) or,
@@ -63,7 +64,7 @@ export function tryTransition(item, fromState, toState, writerId, now = new Date
   };
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const [path, fromState, toState, writerId] = process.argv.slice(2);
   if (!path || !fromState || !toState || !writerId) {
     console.error("Usage: node scripts/transition-work-item.mjs <item.json> <fromState> <toState> <writerId>");

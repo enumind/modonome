@@ -14,7 +14,7 @@ const modelFamilies = JSON.parse(readFileSync(join(here, "..", "schemas", "model
 // when no prefix matches, so unrecognized models are treated as distinct
 // families (they fall through the family check and are caught only if their
 // names are exactly equal).
-function modelFamily(model) {
+export function modelFamily(model) {
   let family = null;
   let longest = -1;
   for (const [prefix, fam] of Object.entries(modelFamilies)) {
@@ -89,7 +89,7 @@ export function validateWorkItem(item, config = {}) {
   return [...validate(schema, item), ...governanceErrors(item, config)];
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const path = process.argv[2];
   if (!path) {
     console.error("Usage: node scripts/validate-work-item.mjs <item.json>");

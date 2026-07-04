@@ -7,6 +7,7 @@
 //
 // Usage: MODONOME_SIGNING_KEY=<b64-pkcs8> node scripts/sign-packet.mjs <packet.json> <key_alias>
 import { readFileSync, writeFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { signedBytes } from './lib/canonical-json.mjs';
 import {
   signMessage,
@@ -29,7 +30,7 @@ export function signPacket(packet, privateKeyObject, { keyAlias, signedAt }) {
   };
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const [path, keyAlias] = process.argv.slice(2);
   if (!path || !keyAlias) {
     console.error('Usage: node scripts/sign-packet.mjs <packet.json> <key_alias>');

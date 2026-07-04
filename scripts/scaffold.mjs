@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 // Drop the .modonome state templates into a target repo. Boots disabled and
 // dry-run. Never overwrites an existing file. Touches nothing else.
-// Usage: node scripts/scaffold.mjs <targetDir> [--write]
+// Usage: node scripts/scaffold.mjs <targetDir> [--write] [--no-snapshot] [--ratchet]
+// --ratchet is for non-agent adoption: installs only the anti-gaming pre-commit
+// hook, skipping the AGENTS.md pointer and repo snapshot that assume agent use.
 import { readdirSync, readFileSync, writeFileSync, existsSync, mkdirSync, statSync, unlinkSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -97,6 +99,30 @@ export function scaffold(target, write) {
     }
   }
 
+  // Copilot code review guidance, so GitHub's own reviewer flags gate-weakening in the
+  // ratchet's vocabulary. Never overwrite an existing instructions file. Written with
+  // O_EXCL ("wx") so the existence check and the write are one syscall, the same
+  // TOCTOU-closing idiom the AGENTS.md pointer above uses, rather than a separate
+  // existsSync + writeFileSync that leaves a race window open.
+  {
+    const src = join(here, "..", "templates", ".github", "copilot-instructions.md");
+    const dest = join(target, ".github", "copilot-instructions.md");
+    const destRel = join(".github", "copilot-instructions.md");
+    if (write) {
+      mkdirSync(dirname(dest), { recursive: true });
+      let created = false;
+      try {
+        writeFileSync(dest, readFileSync(src, "utf8"), { flag: "wx" });
+        created = true;
+      } catch (e) {
+        if (e.code !== "EEXIST") throw e;
+      }
+      planned.push({ rel: destRel, action: created ? "create" : "keep" });
+    } else {
+      planned.push({ rel: destRel, action: existsSync(dest) ? "keep" : "create" });
+    }
+  }
+
   return planned;
 }
 
@@ -113,7 +139,7 @@ function writeRunLog(runsDir, command, payload) {
   } catch { /* log writes must never crash the command */ }
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const startMs = Date.now();
   const target = process.argv[2] || ".";
   const write = process.argv.includes("--write");
@@ -121,7 +147,13 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   console.log(write ? "Scaffold applied." : "Scaffold preview (no files written). Pass --write to apply.");
   for (const p of planned) console.log(`  ${p.action === "create" ? (write ? "created" : "would create") : "kept"}: ${p.rel}`);
   console.log("\nThe engine stays disabled and dry-run until an owner arms it.");
-  if (write && !process.argv.includes("--no-snapshot")) {
+  if (write && process.argv.includes("--ratchet")) {
+    console.log("\nNon-agent adoption: installing the anti-gaming ratchet only.");
+    const hook = installHooks(target, { self: false, mode: "ratchet" });
+    if (hook === "installed") console.log("  installed: pre-commit hook (`npx modonome ratchet --staged`)");
+    else if (hook === "kept") console.log("  note: existing pre-commit hook kept; add `npx modonome ratchet --staged` to it.");
+    else if (hook === "no-git") console.log("  note: no .git directory found; hook not installed.");
+  } else if (write && !process.argv.includes("--no-snapshot")) {
     console.log("\nEnabling repo snapshot for agent context:");
     enableSnapshot(target, here);
   } else {

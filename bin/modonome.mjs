@@ -15,6 +15,7 @@ const HELP = `Modonome, governed autonomy for any repo.
 Usage:
   npx modonome dry-run <dir>              read the repo and print proposed work. Changes nothing.
   npx modonome scaffold <dir>             drop .modonome state files. Disabled and dry-run. Add --write to apply.
+  npx modonome scaffold <dir> --write --ratchet   non-agent adoption: install only the anti-gaming pre-commit hook.
   npx modonome adopt <dir>               alias for dry-run, writes an adoption summary to stdout.
   npx modonome validate <file>           validate a config or knowledge packet (type inferred from filename).
   npx modonome validate <file> --type config   explicitly validate as a config file.
@@ -22,13 +23,32 @@ Usage:
   npx modonome migrate <file>            add new config levers with safe defaults and bump the version.
   npx modonome tick [stateDir]           expire stale in-flight work items whose lease has passed.
   npx modonome status [dir]              print the effective arming posture for the target repo.
+  npx modonome queue [dir]                print scored dry-run proposals as a numbered picker.
+  npx modonome queue [dir] 1,3            queue proposals 1 and 3 as schema-valid work items.
+  npx modonome queue [dir] --all --max N  queue every proposal, or the top N.
+  npx modonome arm [dir]                  verify preconditions locally and set autonomy_enabled: true.
+  npx modonome disarm [dir]               set autonomy_enabled: false. Both print the CI-secret command for the second key.
   npx modonome report [dir]              print governance activity summary and AgentProof score.
   npx modonome compliance <dir>          write a read-only OpenSSF, SLSA, and NIST evidence pack for the repo.
   npx modonome snapshot <dir>            write a tiered, Merkle-verified repo snapshot for LLM context.
   npx modonome snapshot <dir> --check   fail or warn (per config) if the committed snapshot is stale.
   npx modonome snapshot <dir> --pack    write a single portable .msnap bundle for sharing.
   npx modonome snapshot <dir> --since <ref>  print the file-level delta since a git ref.
-  npx modonome agentproof                run the AgentProof adversarial benchmark suite (16 scenarios).
+  npx modonome agentproof                run the AgentProof adversarial benchmark suite (25 scenarios).
+  npx modonome ratchet [baseRef]         anti-gaming gate: reject a diff that weakens tests or gates.
+  npx modonome ratchet --staged          same, but check the index against HEAD (for a pre-commit hook).
+  npx modonome ratchet [baseRef] --sarif machine-readable SARIF 2.1.0 (or --json) with MR### rule codes.
+  npx modonome hygiene check <dir>       find AI-participation signatures in the branch and commits. Exit 1 if any.
+  npx modonome hygiene explain <dir>     same as check, with the reason and pattern for each finding.
+  npx modonome hygiene fix <dir>         apply the safe, local, metadata-only remedy (branch rename).
+  npx modonome remediate plan            preview the metadata-only commit-history rewrite. Read-only, changes nothing.
+  npx modonome remediate apply           rewrite commit metadata to strip attribution. Armed and capability-gated only.
+  npx modonome attest [--check|--show|--verify]   write, check, or verify this repo's policy-pack and disclosure attestation.
+  npx modonome attest --diff <file>      compare a foreign policy pack's disclosed policy against this repo's live policy.
+  npx modonome attest --adopt <file> --alias <name>   validate and vendor a foreign policy pack. Refuses on any integrity or credit failure.
+  npx modonome receipt [baseRef]         emit an in-toto gate-integrity attestation (sign it with actions/attest in CI).
+  npx modonome mcp                       run the read-only governance MCP server (stdio) for any MCP harness.
+  npx modonome connect [dir]             register the MCP server with your agent (.mcp.json). Add --write to apply.
   npx modonome help                      show this message.
 
 Modonome stays off until an owner arms it through the environment or CI.`;
@@ -126,6 +146,15 @@ function main(argv) {
       process.exit(0);
       break;
     }
+    case "queue":
+      run("queue.mjs", rest);
+      break;
+    case "arm":
+      run("arm.mjs", rest);
+      break;
+    case "disarm":
+      run("disarm.mjs", rest);
+      break;
     case "report":
       run("report.mjs", rest);
       break;
@@ -138,11 +167,32 @@ function main(argv) {
     case "agentproof":
       process.exit(spawnSync("node", [join(here, "..", "agentproof", "runner.mjs"), ...rest], { stdio: "inherit" }).status ?? 1);
       break;
+    case "ratchet":
+      run("guard-ratchet.mjs", rest);
+      break;
+    case "receipt":
+      run("ratchet-attestation.mjs", rest);
+      break;
+    case "mcp":
+      run("mcp-server.mjs", rest);
+      break;
+    case "connect":
+      run("connect.mjs", rest);
+      break;
     case "migrate":
       run("migrate-config.mjs", rest);
       break;
     case "tick":
       run("tick.mjs", rest);
+      break;
+    case "hygiene":
+      run("hygiene.mjs", rest);
+      break;
+    case "remediate":
+      run("remediate.mjs", rest);
+      break;
+    case "attest":
+      run("build-policy-attestation.mjs", rest);
       break;
     case "help":
     case "--help":
@@ -157,6 +207,6 @@ function main(argv) {
   }
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   main(process.argv.slice(2));
 }

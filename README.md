@@ -202,11 +202,35 @@ leaves an engine disarmed unless an owner arms it. See [docs/versioning.md](docs
 - Validators: config, work-item, drift, self-application, evidence, learning traceability
 - CLI: `dry-run`, `scaffold`, `validate`, `report`
 
-Add just the ratchet to any CI pipeline in one step:
+Add the gate-integrity check to any GitHub repo as a Marketplace action, then mark
+`Modonome Gate Integrity` a required check via a ruleset. It declares `merge_group`, so it
+also reports in a merge queue, and the gate code runs from the pinned action ref, not from
+the pull request under review:
 
 ```yaml
-- name: Anti-gaming ratchet
-  run: node scripts/guard-ratchet.mjs
+name: gate-integrity
+on:
+  pull_request:
+  merge_group:
+jobs:
+  gate-integrity:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write   # for the SARIF upload to code scanning
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: enumind/modonome@v1
+```
+
+Findings render as SARIF in the Security tab with stable `MR###` rule codes. Prefer a raw
+step instead? The ratchet is one dependency-free script:
+
+```yaml
+- name: Modonome gate integrity
+  run: npx modonome ratchet            # add --sarif or --json for machine-readable output
 ```
 
 **Modonome Autonomy (v0.2, roadmap)** is the governed maker/checker loop. The machinery is fully
@@ -269,6 +293,10 @@ npm run verify   # drift, style, hygiene, self-application, learning, promotion,
 learnings, and a `metrics.example.jsonl` sample (the live `metrics.jsonl` is written by the
 engine at runtime and is not committed). Adopters should run `npx modonome scaffold . --write`
 to start fresh with their own config and empty state.
+
+## Development practice
+
+This project is developed with AI assistance, governed by the same autonomy loop it ships. The governance process (CI gates, independent checker, anti-gaming ratchet) is the trust signal, not the identity of any tool involved.
 
 ## License
 

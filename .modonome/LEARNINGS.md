@@ -18,6 +18,7 @@ Staged format:
 ## Staged
 
 - [2026-06-28] (signal: gate) Generated/vendored browser files with intentional eval-like patterns need both `//! nosemgrep:` and `// lgtm[...]` annotations so CodeQL and semgrep agree on the deliberate exception. The CSP `unsafe-eval` allowance in `site/_headers` is the canonical evidence record. - evidence: CodeQL js/eval-call alert on site/support.js; nosemgrep was present but lgtm was absent.
+- [2026-07-02] (signal: gate) A regex-safety lint's own extraction patterns must use disjoint alternatives (a backslash-escape branch versus a class that excludes the backslash), or they backtrack catastrophically. The nested-quantifier heuristic in `check-regex-safety.mjs` does not detect overlapping-alternation ReDoS, so CodeQL stays the backstop for the tooling itself. - evidence: CodeQL js/redos alerts 95 and 96 on scripts/check-regex-safety.mjs during PR review.
 
 ## Promoted
 

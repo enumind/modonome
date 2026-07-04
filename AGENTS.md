@@ -3,8 +3,10 @@
 ## Commit messages
 
 - Commit messages contain only the change description and, when relevant, a `Fixes #N` reference.
-- Keep attribution trailers, session links, and generated-by notices out of commit messages.
-- Specifically: no git trailers that credit AI tools, no session URLs, no authorship signatures.
+- Keep attribution trailers, session links, and generated-by notices out of commit messages and out of all GitHub-facing text (PR bodies, PR comments, review replies, inline comments).
+- Specifically: no git trailers that credit AI tools, no AI co-author entries, no session URLs, no authorship signatures, no model names in any artifact.
+- Branch names must be descriptive. No model-identifier prefixes (`claude/`, `gpt/`, `ai/`, etc.), enforced by `scripts/lib/branch-name.mjs`.
+- The author graph must reflect human ownership. AI participation is acknowledged at the architectural level (see `README.md`) rather than per-artifact, so that governance process integrity (not tool identity) remains the primary trust signal.
 
 ## Governed autonomy
 
@@ -29,6 +31,21 @@ changing files, run `node scripts/snapshot.mjs .` to refresh the snapshot.
 The project runs `node scripts/check-style.mjs .` on every PR. It rejects em dashes,
 weasel phrases, and AI authorship signatures in any tracked file. Write plainly.
 See `scripts/check-style.mjs` for the exact list of banned patterns.
+
+## Communication
+
+Every pull request body, pull request or review comment, and any document an agent
+produces (a maker rationale, a checker review, a design note, an audit) is organized
+the same way, so a reader gets the point before the detail:
+
+1. Summary: two or three sentences stating what changed and why, up front.
+2. Details: a scannable list of the specific changes, decisions, or findings.
+3. Annexure: the deep technical material (traces, long output, edge cases) at the end,
+   for the reader who needs it.
+
+Lead with the summary. Do not open with a page of technical jargon. Keep the language
+clear and crisp. This is a review convention, not a machine gate: the checker enforces
+it, because prose structure cannot be judged deterministically without false positives.
 
 ## Documentation
 

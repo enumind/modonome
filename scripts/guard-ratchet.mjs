@@ -9,6 +9,9 @@
 // Usage:
 //   node scripts/guard-ratchet.mjs <baseRef>     compare working tree to a git ref
 //   node scripts/guard-ratchet.mjs --diff <file> check a saved unified diff (for fixtures)
+//   node scripts/guard-ratchet.mjs --staged      check the index against HEAD (pre-commit hooks)
+// Add --json or --sarif (SARIF 2.1.0) to any of the above for machine-readable output
+// with stable MR### rule codes, for CI annotations and security dashboards.
 import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 
@@ -17,14 +20,41 @@ import { readFileSync } from "node:fs";
 // `..`/`...` range syntax the ratchet uses.
 const SAFE_REF = /^[A-Za-z0-9._/-]+$/;
 
+// Output format. The default (human) path prints to stderr and stays byte-identical
+// so the AgentProof scenarios that assert on the rejection text keep passing. The
+// --json and --sarif flags add machine-readable output for CI annotations, security
+// tabs (SARIF 2.1.0), and the attestation predicate, without touching the human path.
+// Format flags are stripped from the positional args getDiff reads, so they compose
+// with --diff/--staged/<ref> in any order.
+const RAW_ARGS = process.argv.slice(2);
+const FORMAT = (RAW_ARGS.includes("--sarif") || RAW_ARGS.includes("--format=sarif"))
+  ? "sarif"
+  : (RAW_ARGS.includes("--json") || RAW_ARGS.includes("--format=json"))
+    ? "json"
+    : "human";
+const ARGS = RAW_ARGS.filter((a) => !/^--(json|sarif|format=(json|sarif))$/.test(a));
+
 function normalizeLF(s) {
   return s.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
 }
 
 function getDiff() {
-  const arg = process.argv[2];
+  const arg = ARGS[0];
   if (arg === "--diff") {
-    return normalizeLF(readFileSync(process.argv[3], "utf8"));
+    return normalizeLF(readFileSync(ARGS[1], "utf8"));
+  }
+  if (arg === "--staged") {
+    // A pre-commit hook runs before the commit exists: HEAD is still the parent,
+    // so the change under review is the index against HEAD, not a ref...HEAD range.
+    const result = spawnSync("git", ["diff", "--cached"], {
+      encoding: "utf8",
+      maxBuffer: 64 * 1024 * 1024,
+    });
+    if (result.error) throw result.error;
+    if (result.status !== 0) {
+      throw new Error(result.stderr || "git diff --cached failed");
+    }
+    return normalizeLF(result.stdout);
   }
   const base = arg || "origin/main";
   if (!SAFE_REF.test(base)) {
@@ -344,8 +374,11 @@ for (const [file, { added, removed }] of Object.entries(files)) {
     added.length === 0 &&
     removed.some((l) => /from\s+['"]vitest['"]/.test(l));
   if (isTest && !isOrphanedFramework) {
-    let addedAsserts   = count(added,   ASSERT);
-    let removedAsserts = count(removed, ASSERT);
+    // Strip inline comments before counting: an assertion commented out in place
+    // (removed line: real assertion, added line: `// ` + same call) would otherwise
+    // net to zero delta, since the raw ASSERT regex matches inside comments too.
+    let addedAsserts   = count(added.map(stripInlineComment),   ASSERT);
+    let removedAsserts = count(removed.map(stripInlineComment), ASSERT);
     if (isPyTest) {
       addedAsserts   += countBareAsserts(added);
       removedAsserts += countBareAsserts(removed);
@@ -491,9 +524,13 @@ for (const [file, { added, removed }] of Object.entries(files)) {
   // proves. The count-only check (check 1) cannot see this. Flag a net decrease in
   // strong assertions that coincides with newly added existence-only checks.
   if (isTest) {
-    const strongRemoved = count(removed, STRONG_ASSERT);
-    const strongAdded   = count(added,   STRONG_ASSERT);
-    const weakAdded     = count(added,   WEAK_EXISTENCE);
+    // Same comment-stripping rationale as check 1: a strong assertion commented
+    // out in place must not net to zero against its own commented reappearance.
+    const removedClean  = removed.map(stripInlineComment);
+    const addedClean    = added.map(stripInlineComment);
+    const strongRemoved = count(removedClean, STRONG_ASSERT);
+    const strongAdded   = count(addedClean,   STRONG_ASSERT);
+    const weakAdded     = count(addedClean,   WEAK_EXISTENCE);
     if (strongRemoved > strongAdded && weakAdded > 0) {
       problems.push(
         `${file}: downgrades assertion strength (strong value-checks ${strongAdded} added / ${strongRemoved} removed, replaced by ${weakAdded} existence-only check(s)). Existence checks do not prove the expected value.`
@@ -505,6 +542,103 @@ for (const [file, { added, removed }] of Object.entries(files)) {
 // ---------------------------------------------------------------------------
 // Result
 // ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Machine-readable emitters (MR codes)
+// ---------------------------------------------------------------------------
+
+// Stable rule codes for the gate-weakening categories. These are the public IDs a
+// CI annotation, a security-tab alert, or the attestation predicate refer to, so
+// they must not be renumbered. Each resolves to https://modonome.com/codes/<CODE>.
+const MR_RULES = {
+  MR101: "assertion-removal",
+  MR102: "skip-injection",
+  MR103: "vacuous-assertion",
+  MR104: "coverage-lowering",
+  MR105: "type-escape",
+  MR106: "assertion-strength-downgrade",
+  MR107: "homoglyph-disguise",
+  MR100: "gate-weakening",
+};
+
+function classifyCode(msg) {
+  const m = msg.toLowerCase();
+  if (m.includes("homoglyph")) return "MR107";
+  if (m.includes("skipped or focused")) return "MR102";
+  if (m.includes("vacuous")) return "MR103";
+  if (m.includes("downgrades assertion strength")) return "MR106";
+  if (m.includes("coverage")) return "MR104";
+  if (m.includes("type escape") || m.includes("suppresswarnings")
+    || m.includes("pragma warning") || m.includes("typescript strictness")) return "MR105";
+  if (m.includes("removes more test assertions")) return "MR101";
+  return "MR100";
+}
+
+// Each problem message is "<file>: <detail>". Recover the file path for a location.
+function fileOf(msg) {
+  const i = msg.indexOf(": ");
+  return i > 0 ? msg.slice(0, i) : "";
+}
+
+function helpUri(code) {
+  return `https://modonome.com/codes/${code}`;
+}
+
+function toFindings(list) {
+  return list.map((message) => {
+    const code = classifyCode(message);
+    return { code, rule: MR_RULES[code], file: fileOf(message), message, helpUri: helpUri(code) };
+  });
+}
+
+function emitJson(findings) {
+  return JSON.stringify({
+    tool: "modonome-gate-integrity",
+    version: "1",
+    result: findings.length ? "fail" : "pass",
+    summary: findings.length
+      ? `${findings.length} gate-weakening finding(s)`
+      : "no weakened tests, skips, type escapes, or loosened gates",
+    findings,
+  }, null, 2);
+}
+
+function emitSarif(findings) {
+  const usedCodes = [...new Set(findings.map((f) => f.code))];
+  const rules = usedCodes.map((code) => ({
+    id: code,
+    name: MR_RULES[code],
+    shortDescription: { text: MR_RULES[code] },
+    helpUri: helpUri(code),
+  }));
+  const results = findings.map((f) => ({
+    ruleId: f.code,
+    level: "error",
+    message: { text: f.message },
+    partialFingerprints: { "modonomeGateIntegrity/v1": `${f.code}:${f.file}` },
+    locations: f.file
+      ? [{ physicalLocation: { artifactLocation: { uri: f.file }, region: { startLine: 1 } } }]
+      : [],
+  }));
+  return JSON.stringify({
+    $schema: "https://json.schemastore.org/sarif-2.1.0.json",
+    version: "2.1.0",
+    runs: [{
+      tool: { driver: { name: "Modonome", informationUri: "https://modonome.com", rules } },
+      results,
+    }],
+  }, null, 2);
+}
+
+// ---------------------------------------------------------------------------
+// Result
+// ---------------------------------------------------------------------------
+
+if (FORMAT !== "human") {
+  const findings = toFindings(problems);
+  process.stdout.write((FORMAT === "sarif" ? emitSarif(findings) : emitJson(findings)) + "\n");
+  process.exit(problems.length > 0 ? 1 : 0);
+}
 
 if (problems.length > 0) {
   console.error("Anti-gaming ratchet rejected this change:\n");

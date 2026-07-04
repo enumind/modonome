@@ -1,0 +1,92 @@
+name: 'Modonome Gate Integrity'
+description: 'Block AI coding agents from weakening your tests. Reject diffs that remove assertions, inject skips, escape types, or lower coverage.'
+author: 'Modonome'
+branding:
+  icon: 'shield'
+  color: 'green'
+
+# The gate code runs from THIS action's pinned ref, not from the pull request under
+# review, so a PR cannot weaken the gate that judges it. Pin the action by version
+# (uses: enumind/modonome@v1) and mark the check required via a ruleset. The action is
+# zero-dependency (Node built-ins only), so there is no install step to trust.
+inputs:
+  base-ref:
+    description: 'Git ref to diff against. Defaults to the pull request base branch, or origin/HEAD.'
+    required: false
+    default: ''
+  upload-sarif:
+    description: 'Upload the SARIF report to GitHub code scanning. Needs security-events: write and code scanning enabled.'
+    required: false
+    default: 'true'
+  sarif-file:
+    description: 'Path to write the SARIF 2.1.0 report.'
+    required: false
+    default: 'modonome-gate-integrity.sarif'
+  receipt:
+    description: 'Emit and keyless-sign an in-toto gate-integrity receipt (needs id-token: write and attestations: write).'
+    required: false
+    default: 'false'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Modonome gate integrity
+      id: ratchet
+      shell: bash
+      env:
+        MODONOME_BASE_REF: ${{ inputs.base-ref }}
+        MODONOME_SARIF_FILE: ${{ inputs.sarif-file }}
+        MODONOME_ACTION_PATH: ${{ github.action_path }}
+      run: |
+        set -uo pipefail
+        BASE="$MODONOME_BASE_REF"
+        if [ -z "$BASE" ]; then
+          if [ -n "${GITHUB_BASE_REF:-}" ]; then
+            git fetch --no-tags --depth=1 origin "$GITHUB_BASE_REF" || true
+            BASE="origin/$GITHUB_BASE_REF"
+          else
+            BASE="origin/HEAD"
+          fi
+        fi
+        RATCHET="$MODONOME_ACTION_PATH/scripts/guard-ratchet.mjs"
+        # SARIF for the security tab and the attestation predicate.
+        node "$RATCHET" "$BASE" --sarif > "$MODONOME_SARIF_FILE" || true
+        # Human output for the run log and the job summary. Its exit code is the verdict.
+        node "$RATCHET" "$BASE" | tee -a "$GITHUB_STEP_SUMMARY"
+        VERDICT=${PIPESTATUS[0]}
+        echo "verdict=$VERDICT" >> "$GITHUB_OUTPUT"
+        exit "$VERDICT"
+
+    - name: Upload SARIF to code scanning
+      if: ${{ always() && inputs.upload-sarif == 'true' }}
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: ${{ inputs.sarif-file }}
+        category: modonome-gate-integrity
+
+    # Optional: an in-toto receipt of the verdict, keyless-signed via Sigstore and logged
+    # in Rekor, so a downstream verifier can confirm the tests were not weakened. Runs on
+    # success and failure so the receipt records either outcome.
+    - name: Gate integrity receipt
+      if: ${{ always() && inputs.receipt == 'true' }}
+      shell: bash
+      env:
+        MODONOME_ACTION_PATH: ${{ github.action_path }}
+      run: |
+        set -uo pipefail
+        BASE="${GITHUB_BASE_REF:+origin/$GITHUB_BASE_REF}"
+        node "$MODONOME_ACTION_PATH/scripts/ratchet-attestation.mjs" "${BASE:-origin/HEAD}" \
+          --out modonome-gate-integrity.intoto.json
+
+    - name: Sign the receipt
+      if: ${{ always() && inputs.receipt == 'true' }}
+      uses: actions/attest@v2
+      with:
+        subject-name: gate-integrity
+        predicate-type: 'https://modonome.com/attestation/gate-integrity/v1'
+        predicate-path: modonome-gate-integrity.intoto.json
