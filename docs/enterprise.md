@@ -38,6 +38,31 @@ elsewhere until the local repo validates it through its own gates and owners. Th
 central authority that can merge, arm, or override a repo. See the network module in the
 prompt and `schemas/knowledge-packet.schema.json`.
 
+## Org-level provisioning and multi-repo posture
+
+Two host-only tools help a team adopt Modonome Guard across many repositories.
+Both run against infrastructure you already control. Modonome ships the code, runs
+neither of them, and receives nothing back.
+
+- **Terraform module (`terraform/`, [ADR-040](adr/ADR-040-terraform-module.md)).**
+  Provisions, per repository, a branch ruleset requiring the `gate-integrity`
+  status check and a `.github/CODEOWNERS` file over the governance paths. You apply
+  it against your own organization with your own credentials. It never sets
+  `MODONOME_ARMED`: arming stays an operator's out-of-band act, so the module only
+  surfaces the `gh secret set` command as an output. See
+  [terraform/README.md](../terraform/README.md).
+- **Fleet Ledger (`scripts/fleet-ledger.mjs`).** Renders a static HTML posture
+  table over a directory of already-collected `policy-attestation.json` files
+  (ADR-036): one row per repo with its armed/dry-run/disarmed posture,
+  capabilities, and content digest. It clones nothing and reaches no network;
+  collecting the files is your job. Output is deterministic so two runs over the
+  same input match byte for byte.
+
+Two further connectors are consciously deferred, not dropped: an Azure DevOps
+pipeline task wrapping `scripts/guard-ratchet.mjs` the same zero-dependency way
+`action.yml` wraps it for GitHub Actions, and a Backstage card reading the same
+`policy-attestation.json` Fleet Ledger reads. Neither has code yet.
+
 ## Support
 
 Modonome is MIT-licensed and free to use. For deployment questions, open an issue or start

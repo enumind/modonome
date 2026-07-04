@@ -34,6 +34,8 @@ Usage:
   npx modonome snapshot <dir> --check   fail or warn (per config) if the committed snapshot is stale.
   npx modonome snapshot <dir> --pack    write a single portable .msnap bundle for sharing.
   npx modonome snapshot <dir> --since <ref>  print the file-level delta since a git ref.
+  npx modonome fleet-ledger <dir>        render a static HTML posture table over a directory of collected policy-attestation files.
+  npx modonome fleet-ledger <dir> --out <file.html>   write the ledger to a file instead of stdout.
   npx modonome agentproof                run the AgentProof adversarial benchmark suite (25 scenarios).
   npx modonome ratchet [baseRef]         anti-gaming gate: reject a diff that weakens tests or gates.
   npx modonome ratchet --staged          same, but check the index against HEAD (for a pre-commit hook).
@@ -193,6 +195,9 @@ function main(argv) {
       break;
     case "attest":
       run("build-policy-attestation.mjs", rest);
+      break;
+    case "fleet-ledger":
+      run("fleet-ledger.mjs", rest);
       break;
     case "help":
     case "--help":
