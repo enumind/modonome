@@ -10,10 +10,15 @@ import { existsSync, openSync, closeSync, readFileSync, writeSync, ftruncateSync
 import { join } from "node:path";
 import { parseFlatYaml, patchTopLevelYaml } from "./lib/yaml-lite.mjs";
 import { modelFamily } from "./validate-work-item.mjs";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 const target = process.argv[2] && !process.argv[2].startsWith("-") ? process.argv[2] : ".";
 const configPath = join(target, ".modonome", "config.yaml");
 const codeownersPath = join(target, ".github", "CODEOWNERS");
+const overrides = loadMessageOverrides(join(target, ".modonome"));
+function msg(id, params) {
+  return formatMessage(id, params, overrides).message;
+}
 
 let ok = true;
 function pass(msg) {
@@ -33,7 +38,7 @@ try {
   configFd = openSync(configPath, "r+");
 } catch (e) {
   if (e.code === "ENOENT") {
-    console.error(`No config found at ${configPath}. Run \`npx modonome scaffold ${target} --write\` first.`);
+    console.error(msg("agent-run.arm.no-config", { path: configPath, target }));
     process.exit(1);
   }
   throw e;
@@ -45,7 +50,7 @@ try {
   config = parseFlatYaml(rawText);
 } catch (e) {
   closeSync(configFd);
-  console.error(`Config at ${configPath} does not parse: ${e.message}`);
+  console.error(msg("agent-run.arm.config-parse-error", { path: configPath, error: e.message }));
   process.exit(1);
 }
 
@@ -58,14 +63,14 @@ console.log("=============================");
 const makerModel = config.roles?.maker?.model;
 const checkerModel = config.roles?.checker?.model;
 if (!makerModel || !checkerModel) {
-  fail("roles.maker.model and roles.checker.model must both be set.");
+  fail(msg("agent-run.arm.models-not-set", {}));
 } else if (makerModel === checkerModel) {
-  fail(`maker and checker use the identical model "${makerModel}".`);
+  fail(msg("agent-run.arm.models-identical", { model: makerModel }));
 } else {
   const makerFamily = modelFamily(makerModel);
   const checkerFamily = modelFamily(checkerModel);
   if (makerFamily && makerFamily === checkerFamily) {
-    fail(`maker ("${makerModel}") and checker ("${checkerModel}") are the same model family (${makerFamily}).`);
+    fail(msg("agent-run.arm.models-same-family", { makerModel, checkerModel, family: makerFamily }));
   } else {
     pass(`maker (${makerModel}) and checker (${checkerModel}) are distinct model families.`);
   }
@@ -78,7 +83,7 @@ const ppx = (config.protected_paths_extra || []).map((p) => String(p).replace(/^
 if (ppx.length === 0) {
   console.log("NOTE   protected_paths_extra is empty; nothing to cross-check against CODEOWNERS.");
 } else if (!existsSync(codeownersPath)) {
-  fail(`protected_paths_extra lists ${ppx.length} path(s) but no CODEOWNERS file exists at ${codeownersPath}.`);
+  fail(msg("agent-run.arm.codeowners-missing", { count: ppx.length, path: codeownersPath }));
 } else {
   const owners = new Set();
   for (const line of readFileSync(codeownersPath, "utf8").split("\n")) {
@@ -88,7 +93,7 @@ if (ppx.length === 0) {
   }
   const missing = ppx.filter((p) => !owners.has(p));
   if (missing.length > 0) {
-    fail(`CODEOWNERS does not protect: ${missing.join(", ")} (listed in protected_paths_extra).`);
+    fail(msg("agent-run.arm.codeowners-incomplete", { missing: missing.join(", ") }));
   } else {
     pass(`CODEOWNERS covers all ${ppx.length} protected_paths_extra entr${ppx.length === 1 ? "y" : "ies"}.`);
   }
@@ -102,14 +107,14 @@ for (const key of [
   "require_distinct_maker_checker",
   "require_distinct_maker_checker_model",
 ]) {
-  if (config[key] === false) fail(`${key} is set to false.`);
+  if (config[key] === false) fail(msg("agent-run.arm.safety-flag-disabled", { key }));
   else pass(`${key} is enabled.`);
 }
 
 console.log("");
 if (!ok) {
   closeSync(configFd);
-  console.error("Arming refused: fix the failed check(s) above, then re-run `npx modonome arm`.");
+  console.error(msg("agent-run.arm.refused", {}));
   process.exit(1);
 }
 
