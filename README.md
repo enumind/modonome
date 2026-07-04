@@ -233,7 +233,7 @@ step instead? The ratchet is one dependency-free script:
   run: npx modonome ratchet            # add --sarif or --json for machine-readable output
 ```
 
-**Modonome Autonomy (v0.2, roadmap)** is the governed maker/checker loop. The machinery is fully
+**Modonome Loop (v0.2, roadmap)** is the governed maker/checker loop. The machinery is fully
 wired (`modonome-auto.yml`, `run-cycle.mjs`) and proven end-to-end on the demo app
 ([`examples/demo-app/runs/2026-06-26T11-46-00Z/`](examples/demo-app/runs/2026-06-26T11-46-00Z/)):
 Haiku maker, Sonnet checker, distinct model families, checker approved with one question raised.

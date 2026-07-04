@@ -18,6 +18,7 @@ governs where docs live.
 - [compliance/openssf-badge-evidence.md](compliance/openssf-badge-evidence.md): OpenSSF Best Practices criteria mapped to artifacts, with a gap ledger.
 - [compliance/eu-ai-act-classification.md](compliance/eu-ai-act-classification.md): EU AI Act risk classification.
 - [guidelines/markdown-governance.md](guidelines/markdown-governance.md): documentation structure policy.
+- [LEXICON.md](LEXICON.md): the one preferred term per concept, enforced in CI by `scripts/check-style.mjs`.
 
 ## Enterprise
 

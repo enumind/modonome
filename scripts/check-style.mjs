@@ -2,15 +2,38 @@
 // House-style linter. Keeps shipped text plain and free of machine-prose tells
 // and AI authorship signatures. Runs over Markdown and source text.
 import { readdirSync, readFileSync, statSync } from "node:fs";
-import { join, extname } from "node:path";
+import { join, extname, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 import { AI_SIGNATURE_RE } from "./lib/detect-attribution.mjs";
 
+const here = dirname(fileURLToPath(import.meta.url));
 const ROOT = process.argv[2] || ".";
 const TEXT_EXT = new Set([".md", ".mjs", ".js", ".ts", ".json", ".yaml", ".yml", ".astro", ".css", ".html", ".txt"]);
 const SKIP_DIRS = new Set(["node_modules", ".git", "dist", ".astro", "build"]);
 // The linter and the shared detector define the banned patterns, so neither may
 // scan itself: their source and comments necessarily contain the literals they ban.
-const SKIP_FILES = new Set(["check-style.mjs", "detect-attribution.mjs"]);
+// lexicon.json and LEXICON.md also necessarily contain the banned literals they list.
+const SKIP_FILES = new Set(["check-style.mjs", "detect-attribution.mjs", "lexicon.json", "LEXICON.md"]);
+
+// Escape a literal phrase for use inside a RegExp, then require a word boundary on each
+// side so "workpacket" (no space) can't false-positive on the banned phrase "packet".
+function literalPhraseRe(phrase) {
+  const escaped = phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp(`\\b${escaped}\\b`, "i");
+}
+
+// docs/LEXICON.md explains the rationale; this loads the terms it documents. A
+// grandfathered term (see lexicon.json) warns instead of failing, so an approved
+// rename can ship before every pre-existing file is migrated.
+function loadLexicon() {
+  const raw = JSON.parse(readFileSync(join(here, "..", "lexicon.json"), "utf8"));
+  return raw.terms.map((t) => ({
+    name: `lexicon: ${t.banned}`,
+    re: literalPhraseRe(t.banned),
+    hint: `Use "${t.preferred}" instead. ${t.note}`,
+    warnOnly: Boolean(t.grandfathered),
+  }));
+}
 
 const RULES = [
   { name: "em dash", re: /—/, hint: "Use a period, comma, colon, or parentheses." },
@@ -20,6 +43,7 @@ const RULES = [
   // The AI-signature pattern lives in scripts/lib/detect-attribution.mjs so the
   // linter and the Governed Remediation detector share one source of truth.
   { name: "AI signature", re: AI_SIGNATURE_RE, hint: "Remove AI authorship signatures." },
+  ...loadLexicon(),
 ];
 
 function walk(dir, out = []) {
@@ -38,13 +62,19 @@ function walk(dir, out = []) {
 }
 
 let problems = 0;
+let warnings = 0;
 for (const file of walk(ROOT)) {
   const lines = readFileSync(file, "utf8").split("\n");
   lines.forEach((line, i) => {
     for (const rule of RULES) {
       if (rule.re.test(line)) {
-        problems++;
-        console.error(`${file}:${i + 1}: ${rule.name}. ${rule.hint}`);
+        if (rule.warnOnly) {
+          warnings++;
+          console.warn(`${file}:${i + 1}: warn: ${rule.name}. ${rule.hint}`);
+        } else {
+          problems++;
+          console.error(`${file}:${i + 1}: ${rule.name}. ${rule.hint}`);
+        }
       }
     }
   });
@@ -54,4 +84,8 @@ if (problems > 0) {
   console.error(`\nStyle check failed with ${problems} issue(s).`);
   process.exit(1);
 }
-console.log("Style check passed.");
+if (warnings > 0) {
+  console.log(`Style check passed (${warnings} advisory warning(s), grandfathered term(s) not yet migrated).`);
+} else {
+  console.log("Style check passed.");
+}

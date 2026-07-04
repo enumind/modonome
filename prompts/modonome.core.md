@@ -148,8 +148,8 @@ The only path to action is disabled, then dry-run, then shadow, then armed.
 Load these from `prompts/modules/` as needed:
 
 - `adoption.md`: the adoption pass and the scaffold-only rule.
-- `state-machine.md`: the durable work-item state machine, the work packet, and the session
-  loop.
+- `state-machine.md`: the durable work-item state machine, the work item's brief, and the
+  session loop.
 - `roles.md`: the agent roles and the maker-checker-merger contract.
 - `gates.md`: deterministic gates and the anti-gaming ratchet.
 - `control-panel.md`: the operator control panel.
