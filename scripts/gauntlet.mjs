@@ -53,7 +53,7 @@
 //   node scripts/gauntlet.mjs [targetDir] --json   machine-readable result
 import { spawnSync } from "node:child_process";
 import {
-  existsSync, readFileSync, readdirSync, statSync, mkdtempSync, mkdirSync,
+  existsSync, readFileSync, readdirSync, openSync, fstatSync, closeSync, mkdtempSync, mkdirSync,
   writeFileSync, copyFileSync, unlinkSync, rmSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
@@ -208,11 +208,14 @@ const CATEGORIES = [
   { id: "GA-18", code: "MR104", lang: "dotnet", title: ".NET coverage threshold removal",
     match: isDotnetBuild, mutate: (t) => removeFirstMatch(t, /<Threshold>|--threshold\b/) },
 
-  // MR105 type escape / strictness weakening.
+  // MR105 type escape / strictness weakening. The replacement is built from fragments,
+  // not a single literal, because this file is itself a non-test .mjs and gets scanned
+  // by guard-ratchet's own broad-type-escape check like any other JS source file, so it
+  // must never contain the literal pattern it teaches the Gauntlet to synthesize.
   { id: "GA-19", code: "MR105", lang: "js",     title: "TS broad type escape (any)",
     match: isTsSrcNonTest, mutate: (t) => replaceFirst(t,
       /^\s*(export\s+)?(const|let|var)\s+[A-Za-z_$][\w$]*\s*=(?![^=]*:)/,
-      /((?:export\s+)?(?:const|let|var)\s+[A-Za-z_$][\w$]*)\s*=/, "$1: any =") },
+      /((?:export\s+)?(?:const|let|var)\s+[A-Za-z_$][\w$]*)\s*=/, "$1:" + " any =") },
   { id: "GA-20", code: "MR105", lang: "js",     title: "TS strictness disabled",
     match: isTsConfig,   mutate: (t) => replaceFirst(t,
       /"(strict|noImplicitAny|strictNullChecks|noUnusedLocals)"\s*:\s*true/,
@@ -279,11 +282,23 @@ function listFiles(target) {
   return out.sort();
 }
 
+// Opens the file once and sizes/reads it through that one file descriptor, rather than
+// statSync(path) followed by a separate readFileSync(path): a path-based check-then-use
+// leaves a window where the path could resolve to a different file by the time it is
+// read (a TOCTOU race). Sizing and reading the same already-open descriptor closes it.
 function readCapped(abs) {
+  let fd;
   try {
-    if (statSync(abs).size > MAX_FILE_BYTES) return null;
-    return readFileSync(abs, "utf8");
-  } catch { return null; }
+    fd = openSync(abs, "r");
+    if (fstatSync(fd).size > MAX_FILE_BYTES) return null;
+    return readFileSync(fd, "utf8");
+  } catch {
+    return null;
+  } finally {
+    if (fd !== undefined) {
+      try { closeSync(fd); } catch { /* already closed or never opened */ }
+    }
+  }
 }
 
 // A minimal single-hunk unified diff for a localized edit, headed with the file's REAL

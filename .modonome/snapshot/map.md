@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:e04c1b3013b2f43984407b82c864161bc93f0115baff25200ad6e0dbaee6e33f
-Files: 843  Bytes: 3056630  Map tokens: 107237/120000
+Merkle root: sha256:7a8f7f77c8c515376c0ee52fa09478b0ad8ac8c561bcbac991dbb914379134d4
+Files: 843  Bytes: 3057644  Map tokens: 107289/120000
 
 ## Modules
 
@@ -818,14 +818,14 @@ Files: 843  Bytes: 3056630  Map tokens: 107237/120000
 - S:4316722ab5 function insertBeforeFirst `function insertBeforeFirst(text, re, render)` L124
 - S:0ed808bd36 function insertAfterFirst `function insertAfterFirst(text, re, render)` L132
 - S:49ad410798 function replaceFirst `function replaceFirst(text, findRe, replaceRe, replacement)` L140
-- S:47c5321a5f function listFiles `function listFiles(target)` L261 : --------------------------------------------------------------------------- Target-repo file listing. Prefer git (fast, respects .gitignore, skips node_modules) and fall back to a bounded manual walk 
-- S:474ceb514b function readCapped `function readCapped(abs)` L282
-- S:a8f75707be function makeUnifiedDiff `function makeUnifiedDiff(relPath, before, after)` L291 : A minimal single-hunk unified diff for a localized edit, headed with the file's REAL repo-relative path so guard-ratchet classifies it as the real file, not a temp path.
-- S:33d286d62d function runRatchet `function runRatchet(scriptPath, diffFile, json)` L315 : Run a guard-ratchet at `scriptPath` against a saved diff. `json` asks for the machine format (used for the oracle, to read the MR code); the graded host run only needs the exit code. --diff mode reads
-- S:867db3037b function resolveGate `function resolveGate(target)` L328 : --------------------------------------------------------------------------- Decide what gate the target actually has configured. -----------------------------------------------------------------------
-- S:4e5c54ea09 function runCategory `function runCategory(cat, target, files, gate, scratchRoot)` L354 : --------------------------------------------------------------------------- Run one category: find a real file, synthesize a weakening on a scratch copy, confirm it with the oracle, then grade it agai
-- S:c2e502ad5e function levelFor `function levelFor(pass, applicable, gateConfigured)` L394 : --------------------------------------------------------------------------- Level from the applicable (tested) categories only. N/A categories are excluded from both numerator and denominator so a rep
-- S:086ff230f0 function main `function main(argv)` L402
+- S:47c5321a5f function listFiles `function listFiles(target)` L264 : --------------------------------------------------------------------------- Target-repo file listing. Prefer git (fast, respects .gitignore, skips node_modules) and fall back to a bounded manual walk 
+- S:474ceb514b function readCapped `function readCapped(abs)` L289 : Opens the file once and sizes/reads it through that one file descriptor, rather than statSync(path) followed by a separate readFileSync(path): a path-based check-then-use leaves a window where the pat
+- S:a8f75707be function makeUnifiedDiff `function makeUnifiedDiff(relPath, before, after)` L306 : A minimal single-hunk unified diff for a localized edit, headed with the file's REAL repo-relative path so guard-ratchet classifies it as the real file, not a temp path.
+- S:33d286d62d function runRatchet `function runRatchet(scriptPath, diffFile, json)` L330 : Run a guard-ratchet at `scriptPath` against a saved diff. `json` asks for the machine format (used for the oracle, to read the MR code); the graded host run only needs the exit code. --diff mode reads
+- S:867db3037b function resolveGate `function resolveGate(target)` L343 : --------------------------------------------------------------------------- Decide what gate the target actually has configured. -----------------------------------------------------------------------
+- S:4e5c54ea09 function runCategory `function runCategory(cat, target, files, gate, scratchRoot)` L369 : --------------------------------------------------------------------------- Run one category: find a real file, synthesize a weakening on a scratch copy, confirm it with the oracle, then grade it agai
+- S:c2e502ad5e function levelFor `function levelFor(pass, applicable, gateConfigured)` L409 : --------------------------------------------------------------------------- Level from the applicable (tested) categories only. N/A categories are excluded from both numerator and denominator so a rep
+- S:086ff230f0 function main `function main(argv)` L417
 ### examples/demo-app/tests/CheckoutService.test.js [F:52caf3b287]
 - S:ad302fbf54 function makeCartService `function makeCartService(cart)` L5
 - S:8d10c3ed6e function makeOrderService `function makeOrderService()` L13
@@ -934,7 +934,7 @@ Files: 843  Bytes: 3056630  Map tokens: 107237/120000
 - S:96ffd586d6 function tmp `function tmp()` L19
 - S:0f77533ed4 function run `function run(...args)` L23
 - S:4adffc8b06 function seedJsTest `function seedJsTest(dir)` L27
-- S:354e31ec69 function snapshotFiles `function snapshotFiles(dir)` L35
+- S:354e31ec69 function snapshotFiles `function snapshotFiles(dir)` L37
 ### scripts/lib/branch-name.mjs [F:6e0bd62fa3]
 - S:7698d9efeb function isModelIdentifierBranch `export function isModelIdentifierBranch(name)` L26 : True when the first path segment of a branch name equals a denylisted token. * Matching is case-insensitive. "feature/ai-adapter" is allowed because the * first segment is "feature"; only a leading "a
 - S:99c574f83d function resolveBranchName `export function resolveBranchName(env = process.env)` L37 : Resolve the branch under review from CI environment variables. Prefers the * pull request head ref, then the push ref name. Returns an empty string when * neither is set so callers can fall back to a 

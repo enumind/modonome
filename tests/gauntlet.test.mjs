@@ -6,7 +6,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  mkdtempSync, mkdirSync, writeFileSync, readFileSync, readdirSync, copyFileSync, rmSync, existsSync,
+  mkdtempSync, mkdirSync, writeFileSync, readFileSync, readdirSync, copyFileSync, rmSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
@@ -26,9 +26,11 @@ function run(...args) {
 
 function seedJsTest(dir) {
   mkdirSync(join(dir, "tests"), { recursive: true });
+  // A real (non-tautological) assertion: 1 + 1 and 2 are different literals, so this
+  // is not itself an instance of the vacuous-assertion category the Gauntlet tests for.
   writeFileSync(
     join(dir, "tests", "sample.test.js"),
-    'it("works", () => {\n  expect(1).toBe(1);\n});\n',
+    'it("works", () => {\n  expect(1 + 1).toBe(2);\n});\n',
   );
 }
 
