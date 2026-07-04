@@ -85,13 +85,13 @@
 <h2>How it works</h2>
 <p>Modonome is a prompt and a set of scripts that run inside a harness you already have: a coding agent, a CI job, or a human session. A maker proposes one small change pinned by a test. An independent checker reviews it. Deterministic gates and an anti-gaming ratchet run in your CI, outside the agent's write scope, and keep tests, types, and coverage honest across JavaScript, Python, Java, and .NET. A human owner holds merge authority over anything protected.</p>
 <h2>Capabilities</h2>
-<p>Small, test-backed changes. Separate maker, checker, and merge roles. An anti-gaming ratchet in CI. Adopts your existing CI, code owners, and branch rules. Improves as it goes by promoting corrections into durable rules. An operator control panel for gate status and governance events. A Merkle-verified repository snapshot for trustworthy agent context. Compliance evidence and attestation through an MCP server.</p>
+<p>Small, test-backed changes. Separate maker, checker, and merge roles. An anti-gaming ratchet in CI. Adopts your existing CI, code owners, and branch rules. Improves as it goes by promoting corrections into durable rules. An operator control panel for gate status and governance events. A Merkle-verified repository snapshot for trustworthy agent context. Compliance evidence and attestation through an MCP server. A drop-in GitHub Action with a signed gate-integrity receipt. Disclosure and adoption of governance policy as signed evidence between repositories.</p>
 <h2>AgentProof: 25/25 HARDENED, 35/35 total</h2>
 <p>AgentProof is the adversarial benchmark for agent gate-integrity. It proves through 25 normative scenarios that an implementation's gates hold under attack, and a further 10 extended hardening scenarios also pass, for 35/35 total. Modonome scores 25/25 HARDENED. Conformance levels: HARDENED is 25/25 normative scenarios, PARTIAL is 20 to 24, UNHARDENED is 19 or fewer.</p>
 <p>Scenarios covered: assertion removal (JS/TS, Java, .NET, Python), test skip injection, broad type escape, coverage threshold removal, unsafe config combinations, identity collapse (maker/checker same session or same model family), raw code leakage, schema/prompt/template drift, protected-path escalation, prompt injection inertness, state machine acyclicity, deterministic gate ordering, trust boundary (base-branch code loading), audit trail append-only integrity, model diversity enforcement, concurrent mutation serialization, gate DAG acyclicity, evidence secret screening, resource cap enforcement.</p>
 <h2>Get started</h2>
 <p>Preview safely with <code>npx modonome dry-run .</code>, then scaffold local state with <code>npx modonome scaffold . --write</code>. Autonomy stays at rest until an owner switches it on. Prove the controls on your own setup with <code>node agentproof/runner.mjs</code>.</p>
-<p><a href="https://modonome.com/agentproof/">AgentProof benchmark</a> · <a href="https://modonome.com/quickstart/">Quickstart guide</a> · <a href="https://github.com/enumind/modonome">GitHub</a> · <a href="https://github.com/enumind/modonome/blob/main/agentproof/README.md">AgentProof docs</a> · <a href="https://github.com/enumind/modonome/blob/main/QUICKSTART.md">Quickstart docs</a> · <a href="https://x.com/ModonomeLab">Follow on X</a></p>
+<p><a href="https://modonome.com/agentproof/">AgentProof benchmark</a> · <a href="https://modonome.com/quickstart/">Quickstart guide</a> · <a href="https://modonome.com/articles/">Articles</a> · <a href="https://github.com/enumind/modonome">GitHub</a> · <a href="https://github.com/enumind/modonome/blob/main/agentproof/README.md">AgentProof docs</a> · <a href="https://github.com/enumind/modonome/blob/main/QUICKSTART.md">Quickstart docs</a> · <a href="https://x.com/ModonomeLab">Follow on X</a></p>
 </noscript>
 <x-dc>
 <helmet>
@@ -145,8 +145,11 @@
   .mn-roadmap-card{margin-top:58px}
   .mn-cta-box{padding:64px 48px}
   .mn-term{font-size:13.5px}
+  .mn-rel-track{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:2px 2px 6px;scrollbar-width:none}
+  .mn-rel-track::-webkit-scrollbar{display:none}
+  .mn-rel-card{scroll-snap-align:start;flex:0 0 clamp(260px,80vw,340px)}
   .mn-sr-live{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
-  :where(a,button):focus-visible{outline:2px solid #5dd4ab;outline-offset:2px;border-radius:6px}
+  :where(a,button,.mn-rel-region):focus-visible{outline:2px solid #5dd4ab;outline-offset:2px;border-radius:6px}
 
   @media (max-width:900px){
     .mn-cols{grid-template-columns:var(--cols-md,var(--cols))}
@@ -281,6 +284,35 @@
           <div style="font-size:14px;line-height:1.58;color:#9fabbc">{{ ft.body }}</div>
         </div>
       </sc-for>
+    </div>
+  </section>
+
+  <section id="releases" style="position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:0 24px 88px">
+    <div style="max-width:720px;margin:0 0 32px">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#5dd4ab;margin-bottom:14px">Recently shipped</div>
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(28px,3.6vw,40px);line-height:1.1;letter-spacing:-.02em;margin:0 0 14px;color:#f6f4ee">Actively built, in the open.</h2>
+      <p style="font-size:16px;line-height:1.6;color:#aeb9c8;margin:0">The loop keeps shipping. Here is what landed most recently, newest first.</p>
+    </div>
+    <div class="mn-rel-region" role="region" aria-roledescription="carousel" aria-label="Recently shipped" tabIndex="0" onKeyDown="{{ relKeyDown }}" onMouseEnter="{{ relPause }}" onMouseLeave="{{ relResume }}" onFocus="{{ relPause }}" onBlur="{{ relResume }}" style="position:relative">
+      <div class="mn-rel-track" ref="{{ setRelTrack }}">
+        <sc-for list="{{ releases }}" as="rl" hint-placeholder-count="18">
+          <div class="mn-rel-card" style="background:rgba(159,201,180,.04);border:1px solid rgba(159,201,180,.12);border-radius:14px;padding:22px 20px">
+            <div style="font-family:'Space Grotesk';font-weight:600;font-size:16.5px;color:#f6f4ee;margin-bottom:8px">{{ rl.title }}</div>
+            <div style="font-size:13.5px;line-height:1.58;color:#9fabbc">{{ rl.body }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:16px">
+        <div style="display:flex;gap:10px">
+          <button onClick="{{ relPrev }}" aria-label="Previous release" style="display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:9px;background:rgba(159,201,180,.06);border:1px solid rgba(159,201,180,.2);color:#e8ebf0;cursor:pointer;transition:border-color .2s" style-hover="border-color:rgba(93,212,171,.45)"><span aria-hidden="true">←</span></button>
+          <button onClick="{{ relNext }}" aria-label="Next release" style="display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:9px;background:rgba(159,201,180,.06);border:1px solid rgba(159,201,180,.2);color:#e8ebf0;cursor:pointer;transition:border-color .2s" style-hover="border-color:rgba(93,212,171,.45)"><span aria-hidden="true">→</span></button>
+        </div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.06em;color:#7c8aa0">{{ relProgress }}</div>
+      </div>
+      <span class="mn-sr-live" role="status" aria-live="polite">{{ relAnnounce }}</span>
+    </div>
+    <div style="margin-top:18px">
+      <a href="https://github.com/enumind/modonome/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer" style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#9fabbc;text-decoration:none;transition:color .2s" style-hover="color:#5dd4ab">See the full changelog on GitHub →</a>
     </div>
   </section>
 
@@ -720,6 +752,7 @@
       <div style="display:flex;gap:22px;font-size:13.5px;align-items:center;flex-wrap:wrap">
         <a href="/agentproof/" style="color:#9fabbc;text-decoration:none;transition:color .2s" style-hover="color:#5dd4ab">AgentProof</a>
         <a href="/quickstart/" style="color:#9fabbc;text-decoration:none;transition:color .2s" style-hover="color:#5dd4ab">Quickstart</a>
+        <a href="/articles/" style="color:#9fabbc;text-decoration:none;transition:color .2s" style-hover="color:#5dd4ab">Articles</a>
         <a href="https://github.com/enumind/modonome" target="_blank" rel="noopener noreferrer" style="color:#9fabbc;text-decoration:none;transition:color .2s" style-hover="color:#5dd4ab">GitHub</a>
         <a href="https://github.com/enumind/modonome/stargazers" target="_blank" rel="noopener noreferrer" style="color:#9fabbc;text-decoration:none;transition:color .2s" style-hover="color:#5dd4ab">Star</a>
         <a href="https://github.com/enumind/modonome/discussions" target="_blank" rel="noopener noreferrer" style="color:#9fabbc;text-decoration:none;transition:color .2s" style-hover="color:#5dd4ab">Discussions</a>
@@ -760,7 +793,7 @@ class Component extends DCLogic {
       evoScenario: 0, evoStep: -1, evoRunning: false, pulseSeq: 0, pulseDir: 'toRepo', pulseColor: '#5dd4ab',
       repo: null, engine: null, evoLog: [], evoHi: {}, activeR: -1, activeE: -1,
       netGeo: null, netActive: -1, netPhase: 'idle', netSeq: 0, netShared: 128, activeSection: 'top',
-      live: null, syncStatus: 'cached' };
+      live: null, syncStatus: 'cached', relIndex: 0 };
     this.repoBase = { tests: 248, coverage: '81%', deps: 3, debt: 12 };
     this.engineBase = { lessons: 3, rules: 0, gates: 8, queue: 6, version: 'v0.1.0-alpha', armed: false };
     this.STAGES = [
@@ -775,16 +808,19 @@ class Component extends DCLogic {
   componentDidMount(){
     this.evoRefs = this.evoRefs || {}; this.netCardRefs = this.netCardRefs || {};
     this.NET_POS = [[0.5,0.115],[0.84,0.31],[0.84,0.69],[0.5,0.885],[0.16,0.69],[0.16,0.31]];
-    requestAnimationFrame(() => { this.measureEvo(); this.measureNet(); this.setupNav(); });
-    this._mr = () => { this.measureEvo(); this.measureNet(); };
+    requestAnimationFrame(() => { this.measureEvo(); this.measureNet(); this.measureRel(); this.setupNav(); });
+    this._mr = () => { this.measureEvo(); this.measureNet(); this.measureRel(); };
     window.addEventListener('resize', this._mr);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(this._mr);
     this.syncFromRepo();
+    this.relStartAuto();
   }
   componentWillUnmount(){
     clearInterval(this._t); clearInterval(this._te); this.stopNet();
+    clearInterval(this._relTimer); clearTimeout(this._relResumeTO);
     if (this._navIO) this._navIO.disconnect();
     if (this._netIO) this._netIO.disconnect();
+    if (this._relTrack) { this._relTrack.removeEventListener('scroll', this._relOnScroll); this._relTrack.removeEventListener('touchstart', this._relOnTouchStart); this._relTrack.removeEventListener('touchend', this._relOnTouchEnd); }
     window.removeEventListener('resize', this._mr);
   }
   // --- Live refresh of key sections from the public repo (graceful fallback) ---
@@ -826,6 +862,66 @@ class Component extends DCLogic {
     if (typeof requestIdleCallback === 'function') requestIdleCallback(() => run(), { timeout: 3000 });
     else setTimeout(run, 1200);
   }
+  // --- Recently-shipped carousel: native scroll-snap track, manual-first with a slow, pausable auto-advance ---
+  setRelTrack(el){
+    if (!el || this._relTrack === el) return;
+    this._relTrack = el;
+    this._relOnScroll = () => {
+      if (this._relScrollRaf) return;
+      this._relScrollRaf = requestAnimationFrame(() => {
+        this._relScrollRaf = null;
+        if (!this._relStep) return;
+        const total = (this.R.recentReleases || []).length;
+        const idx = Math.max(0, Math.min(total - 1, Math.round(el.scrollLeft / this._relStep)));
+        if (idx !== this.state.relIndex) this.setState({ relIndex: idx });
+      });
+    };
+    this._relOnTouchStart = () => this.relPauseAuto();
+    this._relOnTouchEnd = () => this.relResumeAuto();
+    el.addEventListener('scroll', this._relOnScroll, { passive: true });
+    el.addEventListener('touchstart', this._relOnTouchStart, { passive: true });
+    el.addEventListener('touchend', this._relOnTouchEnd, { passive: true });
+    requestAnimationFrame(() => this.measureRel());
+  }
+  measureRel(){
+    const el = this._relTrack; if (!el || !el.children.length) return;
+    const first = el.children[0];
+    const r = first.getBoundingClientRect();
+    const cs = getComputedStyle(el);
+    const gap = parseFloat(cs.columnGap || cs.gap || '0') || 0;
+    this._relStep = r.width + gap;
+  }
+  relStartAuto(){
+    if (this._prm.matches || this._relTimer) return;
+    this._relTimer = setInterval(() => this.relNext(), 6500);
+  }
+  relPauseAuto(){
+    clearInterval(this._relTimer); this._relTimer = null;
+    clearTimeout(this._relResumeTO);
+  }
+  relResumeAuto(){
+    if (this._prm.matches) return;
+    clearTimeout(this._relResumeTO);
+    this._relResumeTO = setTimeout(() => this.relStartAuto(), 1500);
+  }
+  relStep(dir){
+    this.relPauseAuto();
+    const el = this._relTrack; if (!el) return;
+    if (!this._relStep) this.measureRel();
+    const behavior = this._prm.matches ? 'auto' : 'smooth';
+    const atEnd = dir > 0 && (el.scrollLeft + el.clientWidth >= el.scrollWidth - 4);
+    const atStart = dir < 0 && el.scrollLeft <= 4;
+    if (atEnd) el.scrollTo({ left: 0, behavior });
+    else if (atStart) el.scrollTo({ left: el.scrollWidth, behavior });
+    else el.scrollBy({ left: dir * (this._relStep || el.clientWidth * 0.86), behavior });
+    this.relResumeAuto();
+  }
+  relNext(){ this.relStep(1); }
+  relPrev(){ this.relStep(-1); }
+  relKeyDown(e){
+    if (e.key === 'ArrowRight') { e.preventDefault(); this.relNext(); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); this.relPrev(); }
+  }
   svgIcon(name){
     const R = React.createElement;
     const base = { width:24, height:24, viewBox:'0 0 24 24', fill:'none', stroke:'currentColor', strokeWidth:1.7, strokeLinecap:'round', strokeLinejoin:'round', 'aria-hidden':'true' };
@@ -839,6 +935,8 @@ class Component extends DCLogic {
       panel: [R('rect',{key:1,x:4,y:5,width:16,height:14,rx:1.5}), R('path',{key:2,d:'M4 9.2h16'}), R('path',{key:3,d:'M7.5 13h4 M7.5 16h7'})],
       snapshot: [R('circle',{key:1,cx:12,cy:5,r:1.9}), R('circle',{key:2,cx:6,cy:18,r:1.9}), R('circle',{key:3,cx:18,cy:18,r:1.9}), R('path',{key:4,d:'M12 6.9v3.6 M12 10.5L6.7 16 M12 10.5L17.3 16'})],
       attest: [R('circle',{key:1,cx:12,cy:9.5,r:5}), R('path',{key:2,d:'M9.6 13.4L8.4 20l3.6-2 3.6 2-1.2-6.6'}), R('path',{key:3,d:'M9.8 9.4l1.6 1.6 3-3.2'})],
+      ciGate: [R('rect',{key:1,x:3.5,y:4.5,width:17,height:15,rx:2}), R('path',{key:2,d:'M7.5 9.5l3 2.5-3 2.5'}), R('path',{key:3,d:'M12.5 14.5h4'})],
+      sharePack: [R('path',{key:1,d:'M12 3.5v9'}), R('path',{key:2,d:'M8.2 9.3L12 12.5l3.8-3.2'}), R('path',{key:3,d:'M4.5 14.5h15v4.2a1.3 1.3 0 0 1-1.3 1.3H5.8a1.3 1.3 0 0 1-1.3-1.3z'})],
     };
     return R('svg', base, sets[name] || sets.changes);
   }
@@ -1148,7 +1246,7 @@ class Component extends DCLogic {
       kindBadgeStyle:`display:inline-flex;align-items:center;gap:4px;position:absolute;top:11px;left:14px;font-size:10px;color:${s.kindColor||'#5dd4ab'};background:${(s.kindColor||'#5dd4ab')}18;border:1px solid ${(s.kindColor||'#5dd4ab')}44;border-radius:4px;padding:1px 5px;font-family:'IBM Plex Mono',monospace;letter-spacing:.03em;line-height:1.4` }));
 
     const guarantees = R.guarantees || [];
-    const featIcons = ['changes','roles','shield','plug','loop','estate','panel','snapshot','attest'];
+    const featIcons = ['changes','roles','shield','plug','loop','estate','panel','snapshot','attest','ciGate','sharePack'];
     const features = (R.features || []).map((f,i) => ({ title:f.title, body:f.body, iconEl:this.svgIcon(featIcons[i] || 'changes') }));
     const balances = R.balances || [];
     const qsteps = R.quickstart || [];
@@ -1223,9 +1321,23 @@ class Component extends DCLogic {
       : (done && kind==='escalate') ? 'paused, a human owner decides before it can loop forward'
       : 'one governed cycle · a held change loops back to the maker, nothing slips through';
 
+    const releases = R.recentReleases || [];
+    const relTotal = releases.length;
+    const relIndex = Math.max(0, Math.min(relTotal - 1, this.state.relIndex));
+    const relCurrent = releases[relIndex] || {};
+
     return {
       features, milestones, balances, qsteps, guarantees, steps,
       topNav, version,
+      releases,
+      relProgress: relTotal ? `${String(relIndex + 1).padStart(2, '0')} / ${relTotal}` : '',
+      relAnnounce: relCurrent.title ? `Showing release ${relIndex + 1} of ${relTotal}: ${relCurrent.title}` : '',
+      setRelTrack: (el) => this.setRelTrack(el),
+      relNext: () => this.relNext(),
+      relPrev: () => this.relPrev(),
+      relKeyDown: (e) => this.relKeyDown(e),
+      relPause: () => this.relPauseAuto(),
+      relResume: () => this.relResumeAuto(),
       apScore, apLevel, proofs, scoreBadge: 'AgentProof ' + apScore, syncNote, syncDotStyle,
       networkConnectors: this.buildNetwork(),
       netShared: this.state.netShared,

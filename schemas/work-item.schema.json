@@ -16,7 +16,7 @@
     "owner": { "type": "string" },
     "lease_owner": {
       "type": "string",
-      "description": "Written by scripts/transition-work-item.mjs's compare-and-swap. Equivalent to owner (commit-identity.mjs's leaseHolder() reads either); kept as a distinct property instead of folded into owner so a CAS transition's writer identity is never confused with the human-facing owner field a work packet was authored with."
+      "description": "Written by scripts/transition-work-item.mjs's compare-and-swap. Equivalent to owner (commit-identity.mjs's leaseHolder() reads either); kept as a distinct property instead of folded into owner so a CAS transition's writer identity is never confused with the human-facing owner field a work item was authored with."
     },
     "lease_expires_at": { "type": "string" },
     "branch": { "type": "string" },
