@@ -47,7 +47,7 @@ Minimum scaffold:
   config.yaml
   STATUS.md
   DECISIONS.md
-  LEARNINGS.md
+  LESSONS.md
   NETWORK.md
   control-panel.md
   version
@@ -74,6 +74,6 @@ Last updated: YYYY-MM-DD
 
 `DECISIONS.md` holds owner-gated questions, each defaulting to hold when unanswered.
 
-`LEARNINGS.md` is the staged, bounded, owner-promoted queue described in `gates.md`.
+`LESSONS.md` is the staged, bounded, owner-promoted queue described in `gates.md`.
 
 `NETWORK.md` is optional and disabled by default. See `network.md`.
