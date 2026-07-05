@@ -46,6 +46,9 @@ const config: ModonomeConfig = {
     local: { labels: ["self-hosted", "mac-mini"], cli_path: "claude" },
     container: { labels: ["ubuntu-latest"], cli_path: "claude" },
   },
+  providers: {
+    "github-models": { costClass: "free" },
+  },
 };
 
 function titleFromId(id: string): string {

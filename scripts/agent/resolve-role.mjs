@@ -38,12 +38,22 @@ const RUNNER_DEFAULTS = {
  *             model: string, modelProvider: string, modelBaseUrl: string|undefined,
  *             transport: string, costClass: string, authEnv: string|null }}
  */
+// The role's primary model: an explicit `model`, else the head of its prioritized
+// `models` fallback list, else the role default. Keeping `model` authoritative when
+// present preserves every existing config; a role that lists only `models` resolves to
+// its first choice as the primary.
+function primaryModel(roleCfg, roleDefaults) {
+  if (roleCfg.model) return roleCfg.model;
+  if (Array.isArray(roleCfg.models) && roleCfg.models.length > 0) return roleCfg.models[0];
+  return roleDefaults.model;
+}
+
 export function resolveRole(cfg, role) {
   const roleDefaults = ROLE_DEFAULTS[role] ?? GENERIC_ROLE_DEFAULT;
   const roleCfg = cfg.roles?.[role] ?? {};
 
   const runner = roleCfg.runner ?? roleDefaults.runner;
-  const model = roleCfg.model ?? roleDefaults.model;
+  const model = primaryModel(roleCfg, roleDefaults);
 
   const runnerDefaults = RUNNER_DEFAULTS[runner] ?? RUNNER_DEFAULTS.container;
   const runnerCfg = cfg.runners?.[runner] ?? {};
@@ -58,7 +68,49 @@ export function resolveRole(cfg, role) {
   // budget gate can be repriced by provider instead of a hard-coded "local" check.
   const { transport, costClass, authEnv } = resolveProvider(modelProvider, cfg.providers);
 
-  return { runner, runnerLabels, cliPath, model, modelProvider, modelBaseUrl, transport, costClass, authEnv };
+  // The agent's declared capability profile. Skills and tools are declarative tags the
+  // loop and prompts can read; they grant no capability by themselves. Empty arrays when
+  // a role declares none, so callers never null-check.
+  const skills = Array.isArray(roleCfg.skills) ? [...roleCfg.skills] : [];
+  const tools = Array.isArray(roleCfg.tools) ? [...roleCfg.tools] : [];
+
+  return { runner, runnerLabels, cliPath, model, modelProvider, modelBaseUrl, transport, costClass, authEnv, skills, tools };
+}
+
+// Resolve a role's prioritized model list into an ordered array of fully-resolved model
+// descriptors, highest priority first. Source is roleCfg.models when present, else the
+// single primary model, so a role with one model still yields a one-entry chain. Each
+// entry carries the same provider/transport/cost fields resolveRole returns, so a caller
+// can walk the chain and fall back from one model to the next.
+export function resolveRoleModelChain(cfg, role) {
+  const roleDefaults = ROLE_DEFAULTS[role] ?? GENERIC_ROLE_DEFAULT;
+  const roleCfg = cfg.roles?.[role] ?? {};
+  const list =
+    Array.isArray(roleCfg.models) && roleCfg.models.length > 0
+      ? roleCfg.models
+      : [primaryModel(roleCfg, roleDefaults)];
+
+  return list.map((model) => {
+    const modelCfg = cfg.models?.[model] ?? {};
+    const modelProvider = modelCfg.provider ?? "anthropic";
+    const { transport, costClass, authEnv } = resolveProvider(modelProvider, cfg.providers);
+    return { model, modelProvider, modelBaseUrl: modelCfg.base_url, transport, costClass, authEnv };
+  });
+}
+
+// Pick the first model in a chain that is affordable under the daily budget, so a
+// prioritized list falls back from a paid frontier choice to a free or local one when
+// no budget is set. A local or free model is always affordable; a paid model needs
+// budget > 0. Returns null when nothing in the chain is affordable, which a caller
+// treats as "this role cannot run under the current budget" rather than a silent
+// downgrade. Pure: it decides on cost class alone, never a clock or a network probe
+// (runtime unreachability fallback is the loop's job, tracked separately).
+export function selectUsableModel(chain, { budgetUsdPerDay = 0 } = {}) {
+  for (const entry of chain) {
+    const affordable = entry.costClass !== "paid" || budgetUsdPerDay > 0;
+    if (affordable) return entry;
+  }
+  return null;
 }
 
 // Self-test: run with --self-test to verify basic behavior without external deps.

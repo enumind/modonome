@@ -49,3 +49,10 @@ test("writer ARRAY_CONFIG_KEYS and configDiff ARRAY_KEYS are identical", () => {
   const d = keysFromDeclaration(diff, "ARRAY_KEYS");
   assertSameSet(w, d, "array keys");
 });
+
+test("writer NESTED_CONFIG_KEYS and configDiff NESTED_KEYS are identical", () => {
+  const w = keysFromDeclaration(writer, "NESTED_CONFIG_KEYS");
+  const d = keysFromDeclaration(diff, "NESTED_KEYS");
+  assert.ok(w.size > 0 && d.size > 0, "both nested key lists must be non-empty");
+  assertSameSet(w, d, "nested keys");
+});

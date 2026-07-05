@@ -62,10 +62,24 @@ export interface ModonomeConfig {
   remediation_apply_enabled: boolean;
   roles: Record<
     string,
-    { runner: string; model: string; provider?: string; transport?: string; trigger?: string; execution_target?: string }
+    {
+      runner: string;
+      model: string;
+      /** Prioritized model fallback list, highest priority first. */
+      models?: string[];
+      /** Declarative capability tags (e.g. adversarial-review, cite-sources). */
+      skills?: string[];
+      /** Declarative tool tags this agent is permitted (e.g. read-only-fs, web-search). */
+      tools?: string[];
+      provider?: string;
+      transport?: string;
+      trigger?: string;
+      execution_target?: string;
+    }
   >;
   models: Record<string, { provider: string; base_url?: string }>;
   runners: Record<string, { labels: string[]; cli_path: string; environment?: string }>;
+  providers: Record<string, { transport?: string; costClass?: "paid" | "free" | "local"; authEnv?: string }>;
 }
 
 /** One prerequisite in the armed-mode gate checklist. */
@@ -83,6 +97,12 @@ export interface ArmingStatus {
   envArmed: boolean;
   checklist: ArmingCheck[];
 }
+
+export type WorkItemType = "fix-issue" | "develop-feature" | "create-article" | "create-plan" | "update-docs" | "chore";
+
+/** True for any state where a real actor could be actively working the item:
+ * mutating it destructively (delete) needs the lease released first. */
+export const IN_FLIGHT_STATES: WorkState[] = ["claimed", "making", "checking", "rework", "merge_ready", "merging"];
 
 export interface WorkItemVM {
   id: string;
@@ -104,6 +124,10 @@ export interface WorkItemVM {
   gates: string[];
   escalationReason?: string;
   queuedAt?: string;
+  /** The category of deliverable this item produces (schemas/work-item.schema.json#type). */
+  type?: WorkItemType;
+  /** The config.roles key that executes this item, if assigned. */
+  assignedRole?: string;
 }
 
 export interface LeaseVM {
@@ -221,6 +245,10 @@ export interface PanelSource {
   kind: "live" | "demo";
   /** True when the server-side dev API accepted write requests for this session. */
   writable: boolean;
+  /** True when the target is this repo's OWN .modonome (self-governance), not a connected host repo. */
+  selfGovernance?: boolean;
+  /** When not writable, the specific reason (write flag off, or self-governance reserved to code owners). */
+  writeLockReason?: string;
   /** Set when a live read was attempted and failed, explaining the fall back to demo data. */
   error?: string;
 }
@@ -252,9 +280,34 @@ export interface PanelState {
  * fixture-only local notices. `writable` is false whenever the panel is showing demo
  * data or the dev server was started without MODONOME_PANEL_WRITE=1.
  */
+/** Fields a new work item is created with. Always starts in state "queued". */
+export interface NewWorkItemInput {
+  id: string;
+  type: WorkItemType;
+  assignedRole?: string;
+  allowedEditSet: string[];
+  gates: string[];
+  maxAttempts?: number;
+  touchesProtectedPath?: boolean;
+}
+
+/** Safe-to-edit-anytime fields: never state, owner, or lease, since those change only
+ * through the existing lease/transition machinery, never a generic metadata edit. */
+export interface WorkItemPatch {
+  type?: WorkItemType;
+  assignedRole?: string;
+  allowedEditSet?: string[];
+  gates?: string[];
+  maxAttempts?: number;
+  touchesProtectedPath?: boolean;
+}
+
 export interface WriteActions {
   writable: boolean;
   onSaveConfig: (patch: Partial<ModonomeConfig>) => Promise<void>;
   onReleaseLease: (itemId: string) => Promise<void>;
+  onCreateWorkItem: (item: NewWorkItemInput) => Promise<void>;
+  onUpdateWorkItem: (itemId: string, patch: WorkItemPatch) => Promise<void>;
+  onDeleteWorkItem: (itemId: string) => Promise<void>;
   onPruneLearning: (lesson: string) => Promise<void>;
 }

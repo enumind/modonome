@@ -29,9 +29,8 @@ be added here once the owner arms the loop on this repo.
 
 ## Work queue
 
-- claimed: 2
-- done: 21
-- queued: 16
+- done: 37
+- queued: 6
 
 ## Sample-app captures
 

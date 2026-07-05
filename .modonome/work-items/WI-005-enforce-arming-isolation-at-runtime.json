@@ -18,5 +18,6 @@
     "node --test tests/*.test.mjs",
     "node scripts/check-drift.mjs",
     "node scripts/check-style.mjs ."
-  ]
+  ],
+  "type": "develop-feature"
 }

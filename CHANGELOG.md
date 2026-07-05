@@ -9,6 +9,46 @@ or CVE identifier where one exists.
 
 ## Unreleased
 
+### Full CRUD for maker/checker wiring, agent capability profiles, and two governed checkpoints
+
+- Added full add/edit/remove UI in the control panel for `roles`, `models`, `providers`, and
+  `runners` (previously read-only), so pointing a role at a local OpenAI-compatible model no
+  longer requires hand-editing `.modonome/config.yaml`.
+- Added `models` (a prioritized fallback list), `skills`, and `tools` to each role in
+  `schemas/config.schema.json`, plus `resolveRoleModelChain`/`selectUsableModel` to resolve a
+  usable model under a daily budget without a silent downgrade. Seeded a `researcher` role.
+  See ADR-039.
+- Added `type`, `assigned_role`, and `lease_owner` to `schemas/work-item.schema.json`: work
+  items now carry a type (fix-issue, develop-feature, create-article, create-plan,
+  update-docs, chore), and `transition-work-item.mjs`'s own compare-and-swap output is
+  schema-valid.
+- Added full work-item CRUD to the control panel, with in-flight states (claimed, making,
+  checking, rework, merge_ready, merging) refusing deletion outright.
+- Added a CODEOWNERS-based ownership gate (`apps/control-panel/server/ownership.mjs`) so the
+  control panel lets a user freely evolve a host repo, but writes to modonome's own
+  `.modonome/config.yaml` are reserved to code owners, keyed on the resolved filesystem path
+  so it cannot be bypassed by relabeling the panel's mode.
+- Decoupled the checker into an author-agnostic review service
+  (`scripts/agent/review-diff.mjs`): any diff, whoever produced it (the internal loop, a
+  human, or a coding-agent session), gets the same independent review before merge. See
+  ADR-038.
+- Closed the matching gap on the backlog side: `scripts/agent/review-proposals.mjs` is an
+  independent check of a researcher's proposal before it becomes a work item, wired into
+  `queue.mjs` via `--review` (advisory) and `--review-execute` (enforcing). See ADR-040,
+  which documents the full operating model: two interchangeable producer channels
+  (interactive, scheduled) converging on common CI through two governed checkpoints
+  (research to backlog, make to merge).
+- Fixed a pre-existing parser bug: `scripts/lib/yaml-lite.mjs` did not parse block-style YAML
+  sequences (only inline `[a, b]` arrays), which silently dropped list values in
+  `examples/demo-app/.modonome/config.yaml`.
+- Added a systemic work-item staleness gate (`scripts/check-work-item-staleness.mjs`): an
+  open item whose own declared test already passes and declared files already exist is
+  flagged, catching merged-but-unmarked items before they drift.
+
+No default config lever changed and `schema_version` stays at 1: the new `roles.*`/work-item
+fields are additive and optional, matching the precedent `lease_owner` already set in this
+branch, so existing configs and work items remain valid unchanged.
+
 ### Governed Remediation Phase 4: policy-pack adoption tooling
 
 - Added a required `generator` credit block (`name`, `homepage`, `repository`, sourced from

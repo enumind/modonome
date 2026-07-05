@@ -47,14 +47,23 @@ By default the panel is read-only, even when live. Start the dev server with
 MODONOME_PANEL_WRITE=1 npm run dev
 ```
 
-With write mode on, three actions edit real files, each behind its existing confirm dialog:
-saving configuration (patches `config.yaml` in place, preserving comments), releasing a
-lease (clears `owner`/`lease_expires_at` on the work-item JSON), and pruning a staged
-learning (removes the line from `LESSONS.md`). Promoting a learning, resolving a decision,
+Writes are tiered by target. A connected **host** repo is writable with the flag alone. A
+write to **this repo's own** `.modonome` (self-governance, above all its autonomy levers) also
+requires your local git identity to be a code owner per `CODEOWNERS`, so evolving a host is
+easy while turning autonomy on modonome itself is reserved to a code owner. The gate is keyed
+on the resolved path, so relabeling a product write as "host" cannot dodge it.
+
+With write mode on, the editable actions each sit behind a confirm dialog: saving
+configuration (patches `config.yaml` in place, preserving comments), full work-item CRUD,
+releasing a lease, and pruning a staged learning (removes the line from `LESSONS.md`).
+Promoting a learning, resolving a decision,
 and approving a protected path stay local acknowledgments on purpose: those need an operator
 to author real content (a gate description, an actual answer), which a one-click button
 should not fabricate. `MODONOME_ARMED`, the CI secret that actually arms the engine, is never
 set from here; the panel can only report on it.
+
+For the full mode and permission model, and exactly what each mode can and cannot do, see
+[`docs/control-panel-modes.md`](../../docs/control-panel-modes.md).
 
 ## Architecture
 

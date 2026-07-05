@@ -15,5 +15,6 @@
   "gates": [
     "node scripts/check-style.mjs .",
     "node --test tests/*.test.mjs"
-  ]
+  ],
+  "type": "chore"
 }
