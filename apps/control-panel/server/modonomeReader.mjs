@@ -244,7 +244,7 @@ function buildCost(config, metrics) {
 }
 
 function readLearnings(modonomeDir) {
-  const file = join(modonomeDir, "LEARNINGS.md");
+  const file = join(modonomeDir, "LESSONS.md");
   if (!existsSync(file)) return [];
   const text = readFileSync(file, "utf8");
   const now = Date.now();
@@ -345,7 +345,7 @@ function readRuns(modonomeDir) {
 }
 
 // Real telemetry only. metrics.example.jsonl documents the schema and must never be
-// read here: the promoted learning L-001 in this repo's own LEARNINGS.md exists
+// read here: the promoted learning L-001 in this repo's own LESSONS.md exists
 // specifically because sample telemetry was once shown as if it were measured.
 function readMetrics(modonomeDir) {
   const file = join(modonomeDir, "metrics.jsonl");

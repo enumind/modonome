@@ -116,7 +116,7 @@ test("empty-promoted-block: readPromotedLearnings returns empty array for blank 
   const tmpRoot = mkdtempSync(join(tmpdir(), "modonome-ws-e-learn-"));
   mkdirSync(join(tmpRoot, ".modonome"), { recursive: true });
   writeFileSync(
-    join(tmpRoot, ".modonome", "LEARNINGS.md"),
+    join(tmpRoot, ".modonome", "LESSONS.md"),
     "# Learnings\n\n## Promoted\n\n```json\n[]\n```\n"
   );
   const learnings = readPromotedLearnings(tmpRoot);
@@ -130,7 +130,7 @@ test("empty-promoted-block: gate rejects empty learnings (traceability has teeth
   const tmpRoot = mkdtempSync(join(tmpdir(), "modonome-ws-e-gate-"));
   mkdirSync(join(tmpRoot, ".modonome"), { recursive: true });
   writeFileSync(
-    join(tmpRoot, ".modonome", "LEARNINGS.md"),
+    join(tmpRoot, ".modonome", "LESSONS.md"),
     "# Learnings\n\n## Promoted\n\n```json\n[]\n```\n"
   );
   const learnings = readPromotedLearnings(tmpRoot);
@@ -144,7 +144,7 @@ test("fieldless-learning: readPromotedLearnings parses record but REQUIRED_FIELD
   const tmpRoot = mkdtempSync(join(tmpdir(), "modonome-ws-e-fields-"));
   mkdirSync(join(tmpRoot, ".modonome"), { recursive: true });
   writeFileSync(
-    join(tmpRoot, ".modonome", "LEARNINGS.md"),
+    join(tmpRoot, ".modonome", "LESSONS.md"),
     '# Learnings\n\n## Promoted\n\n```json\n[{"note":"fieldless"}]\n```\n'
   );
   const learnings = readPromotedLearnings(tmpRoot);

@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:7a8f7f77c8c515376c0ee52fa09478b0ad8ac8c561bcbac991dbb914379134d4
-Files: 843  Bytes: 3057644  Map tokens: 107289/120000
+Merkle root: sha256:33d2c3559d71663b6116f866e9ebd797cc6c7e30f08d26a2c6ae8c0c7f4b3908
+Files: 845  Bytes: 3062648  Map tokens: 107514/120000
 
 ## Modules
 
@@ -55,7 +55,7 @@ Files: 843  Bytes: 3057644  Map tokens: 107289/120000
 - .design-sync/previews/WorkItemDrawer.tsx [F:f0fbd8716f]: function Detail
 - .github/pull_request_template.md [F:b2496e8029]: What this PR does
 - .modonome/DECISIONS.md [F:88c38fbc0f]: Modonome decisions
-- .modonome/LEARNINGS.md [F:9a39dd0e8e]: Learnings, staged candidate conventions
+- .modonome/LESSONS.md [F:0f284c134c]: Learnings, staged candidate conventions
 - .modonome/NETWORK.md [F:8930a72be2]: Cross-repo network
 - .modonome/STATUS.md [F:cac320dd97]: Modonome Status
 - .modonome/control-panel.md [F:76f802c3ce]: Modonome control panel
@@ -80,7 +80,7 @@ Files: 843  Bytes: 3057644  Map tokens: 107289/120000
 - agentproof/scenarios/ap-36-adr-number-uniqueness.mjs [F:a6d2bd3021]: A minimal repo that satisfies every check other than the one under test, so a failure can only come from the ADR-number logic being exercised.
 - apps/control-panel/README.md [F:3211d524ad]: Modonome control panel
 - apps/control-panel/server/api.mjs [F:08b7435c86]: A small Vite dev/preview-server middleware that exposes the real .modonome state
-- apps/control-panel/server/learningsFormat.mjs [F:54df44aadd]: Shared parsing for the "## Staged" bullet lines in .modonome/LEARNINGS.md, so the
+- apps/control-panel/server/learningsFormat.mjs [F:54df44aadd]: Shared parsing for the "## Staged" bullet lines in .modonome/LESSONS.md, so the
 - apps/control-panel/server/modonomeReader.mjs [F:8a3dd6ccff]: A gate's status is implied by the state of every work item that declares it, never by a fabricated pass. A repo that has only ever run dry-run sweeps shows ever
 - apps/control-panel/server/modonomeWriter.mjs [F:22566cb46e]: A line-level patch, not a full YAML re-serialize, so every hand-written comment in config.yaml survives an edit made from the panel. Only top-level, zero-indent
 - apps/control-panel/server/remediationView.mjs [F:5daab9894d]: Builds the read-only remediation view-model for the panel. Pure: it takes already
@@ -310,7 +310,7 @@ Files: 843  Bytes: 3057644  Map tokens: 107289/120000
 - scripts/lib/lang-adapters/js-ts.mjs [F:36419aa427]: Dependency-free signature extractor for JavaScript and TypeScript. It scans top
 - scripts/lib/lang-adapters/python.mjs [F:3213d03b72]: Dependency-free signature extractor for Python. It captures top-level def and class declarations (async included), their leading triple-quoted docstring, and im
 - scripts/lib/lang-adapters/tree-sitter.mjs [F:cecdb96382]: Attempt to register tree-sitter adapters. `register` is the registry's registerAdapter. Returns true when at least one grammar was registered.
-- scripts/lib/learnings.mjs [F:4ebb5aa8a0]: The Staged section is capped so it stays a short review queue, never a dumping ground. LEARNINGS.md documents this as "Cap at 20 staged entries... Never auto-ev
+- scripts/lib/learnings.mjs [F:4ebb5aa8a0]: The Staged section is capped so it stays a short review queue, never a dumping ground. LESSONS.md documents this as "Cap at 20 staged entries... Never auto-evic
 - scripts/lib/merkle.mjs [F:2b9c43b0ca]: Hash raw file bytes (Buffer or string) into a prefixed digest.
 - scripts/lib/near-miss.mjs [F:9a3e8ed7d2]: Tier 1: distinctive vendor/product tokens with no ordinary-English or in-repo collision, so separator-normalized SUBSTRING matching on branch names and identiti
 - scripts/lib/packet-id.mjs [F:12c7a4e461]: Content-addressed packet identity (ADR-016). The id is sha256 over the JCS of the
@@ -351,7 +351,7 @@ Files: 843  Bytes: 3057644  Map tokens: 107289/120000
 - site/index.html [F:aef9cf1e27]: class Component
 - templates/.github/copilot-instructions.md [F:6a5934a79d]: Copilot review guidance: gate integrity
 - templates/.modonome/DECISIONS.md [F:037178c793]: Modonome decisions
-- templates/.modonome/LEARNINGS.md [F:247e1781ab]: Learnings, staged candidate conventions
+- templates/.modonome/LESSONS.md [F:26c8e3a19a]: Learnings, staged candidate conventions
 - templates/.modonome/NETWORK.md [F:515a65a35b]: Cross-repo network
 - templates/.modonome/STATUS.md [F:e27748d089]: Modonome status
 - templates/.modonome/control-panel.md [F:75c1125713]: Modonome control panel
@@ -381,6 +381,7 @@ Files: 843  Bytes: 3057644  Map tokens: 107289/120000
 - tests/maker-checker.test.mjs [F:5994385869]: function run
 - tests/mcp-compliance.test.mjs [F:a167609a41]: Send requests to a fresh server process and resolve once every expected id has replied. The child is killed as soon as the responses arrive, which avoids the st
 - tests/metrics.test.mjs [F:fadcf390da]: Schema-conformant event line using "event" field (not "type").
+- tests/migrate-lessons-rename.test.mjs [F:55b3a4e2c0]: Tests for `modonome migrate --rename-lessons`: the file-rename half of the LEARNINGS ->
 - tests/packet-signing.test.mjs [F:3de9042953]: function setup
 - tests/performance.test.mjs [F:b28f13b600]: Build a synthetic 1000-line diff that is clean (no gaming patterns).
 - tests/policy-attestation.test.mjs [F:137056535b]: Restore the committed (current, unsigned) artifact after any test that writes to it, so the suite leaves no drift behind.
@@ -804,12 +805,12 @@ Files: 843  Bytes: 3057644  Map tokens: 107289/120000
 - S:b29d404deb function buildPolicyManifest `export function buildPolicyManifest({ root, config, pkgJson })` L186 : The full manifest: the body plus its self-describing content_digest.
 ### scripts/lib/learnings.mjs [F:4ebb5aa8a0]
 - S:72cb0b7406 const REQUIRED_FIELDS `export const REQUIRED_FIELDS = [` L9
-- S:005abb5200 const MAX_STAGED_ENTRIES `export const MAX_STAGED_ENTRIES = 20;` L24 : The Staged section is capped so it stays a short review queue, never a dumping ground. LEARNINGS.md documents this as "Cap at 20 staged entries... Never auto-evict." Until now nothing enforced it; app
-- S:2064ebd573 const STAGED_LINE_RE `export const STAGED_LINE_RE =` L28 : A staged line, per LEARNINGS.md's own "Staged format": - [YYYY-MM-DD] (signal: gate|review|incident|rework) lesson - evidence: ref
+- S:005abb5200 const MAX_STAGED_ENTRIES `export const MAX_STAGED_ENTRIES = 20;` L24 : The Staged section is capped so it stays a short review queue, never a dumping ground. LESSONS.md documents this as "Cap at 20 staged entries... Never auto-evict." Until now nothing enforced it; appen
+- S:2064ebd573 const STAGED_LINE_RE `export const STAGED_LINE_RE =` L28 : A staged line, per LESSONS.md's own "Staged format": - [YYYY-MM-DD] (signal: gate|review|incident|rework) lesson - evidence: ref
 - S:391a920cca function learningsPath `function learningsPath(root)` L31
 - S:6831eb78e0 function readPromotedLearnings `export function readPromotedLearnings(root)` L36 : Extract the first fenced json block that appears after the "## Promoted" heading.
 - S:dab0af7046 function readStagedEntries `export function readStagedEntries(root)` L51 : Return the staged bullet lines (the "- [date] ..." entries) between the "## Staged" and "## Promoted" headings. Lines that do not begin a bullet are ignored, so surrounding prose does not count agains
-- S:30e8b022de function appendStagedEntry `export function appendStagedEntry(root, line)` L63 : Append one staged candidate line to LEARNINGS.md, enforcing the format and the cap. Never evicts: a full section throws so a human promotes or prunes first. Idempotent on an exact-duplicate line. Retu
+- S:30e8b022de function appendStagedEntry `export function appendStagedEntry(root, line)` L63 : Append one staged candidate line to LESSONS.md, enforcing the format and the cap. Never evicts: a full section throws so a human promotes or prunes first. Idempotent on an exact-duplicate line. Return
 ### apps/control-panel/src/screens/SettingsScreen.tsx [F:4ebf08705b]
 - S:6d2334f815 function SettingsScreen `export function SettingsScreen({ state, write }: { state: PanelState; write: WriteActions })` L41 : The advanced-configuration screen, one conceptual area per tab so nothing forces an * operator to scroll past three unrelated subsystems to reach the one they came for. * Role and model assignment (ne
 ### scripts/gauntlet.mjs [F:522efae76d]
@@ -839,6 +840,10 @@ Files: 843  Bytes: 3057644  Map tokens: 107289/120000
 - S:5ea90f5e50 class CheckoutService `export class CheckoutService` L3
 ### apps/control-panel/server/learningsFormat.mjs [F:54df44aadd]
 - S:712330cf3e function parseStagedLine `export function parseStagedLine(line)` L6
+### tests/migrate-lessons-rename.test.mjs [F:55b3a4e2c0]
+- S:041a6b87af function tmp `function tmp()` L14
+- S:32c99a4337 function run `function run(...args)` L18
+- S:05af4c96a8 function seedLearnings `function seedLearnings(dir)` L25
 ### tests/check-architecture-drift.test.mjs [F:564b053598]
 - S:d8edda2d76 function makeMinimalRepo `function makeMinimalRepo()` L12
 - S:7cd6925ad6 function runScript `function runScript(tmp)` L19
@@ -1097,7 +1102,7 @@ Files: 843  Bytes: 3057644  Map tokens: 107289/120000
 - S:783d91f2ed function extractSection `function extractSection(text, heading)` L293
 - S:b02fc1cd06 function readDecisions `function readDecisions(modonomeDir)` L298
 - S:4350272f8a function readRuns `function readRuns(modonomeDir)` L331
-- S:d9c2336e09 function readMetrics `function readMetrics(modonomeDir)` L350 : Real telemetry only. metrics.example.jsonl documents the schema and must never be read here: the promoted learning L-001 in this repo's own LEARNINGS.md exists specifically because sample telemetry wa
+- S:d9c2336e09 function readMetrics `function readMetrics(modonomeDir)` L350 : Real telemetry only. metrics.example.jsonl documents the schema and must never be read here: the promoted learning L-001 in this repo's own LESSONS.md exists specifically because sample telemetry was 
 - S:409d8caf58 function describeMetric `function describeMetric(m, kind)` L366
 - S:b8469e1267 function buildAudit `function buildAudit(runs, metrics)` L385
 - S:a8971aba2c function buildTrends `function buildTrends(runs)` L424
@@ -1223,7 +1228,7 @@ Files: 843  Bytes: 3057644  Map tokens: 107289/120000
 - S:a657233cd5 function matchNearMissBranch `export function matchNearMissBranch(name)` L98 : Near-miss on a branch name. Returns a finding, or null when clean or when the * strict segment check already catches it (so the widener never duplicates strict).
 - S:d92119a484 function matchNearMissIdentity `export function matchNearMissIdentity(name, email)` L113 : Near-miss on a commit author/committer identity. Checks the name (Tier 1 substring * and Tier 2 exact word) and the email (Tier 1 substring, catching vendor domains * such as "@mistral.ai"). Returns n
 - S:b121dfe1ec function matchNearMissText `export function matchNearMissText(where, text)` L141 : Near-miss on free text, scanned line by line. A line is a candidate only when it * both names a distinctive new-vendor TEXT_TOKEN (as a whole word) AND carries an * attribution cue, and the strict AI_
-- S:fa71aef711 function formatStagedLine `export function formatStagedLine(finding, { date, evidence })` L169 : Render one LEARNINGS.md Staged line from a finding. The line is a PROPOSED denylist * addition for human review, never an applied change. The (signal: review) tag marks * it as a review-surfaced candi
+- S:fa71aef711 function formatStagedLine `export function formatStagedLine(finding, { date, evidence })` L169 : Render one LESSONS.md Staged line from a finding. The line is a PROPOSED denylist * addition for human review, never an applied change. The (signal: review) tag marks * it as a review-surfaced candida
 ### scripts/lib/file-classifiers.mjs [F:9a72895a04]
 - S:cf3414acc5 const TEST_FILE `export const TEST_FILE = new RegExp([` L10 : Test files: any language.
 - S:1c6f22237b const PYTHON_TEST `export const PYTHON_TEST = /(?:^|\/)(?:test_[^/]*|[^/]*_test)\.py$/;` L26 : Python test files: pytest uses the bare `assert` statement (no call parens), which a call-site-only assertion counter cannot see. These need language-aware handling for the removal check and a vacuous
@@ -1605,10 +1610,10 @@ Files: 843  Bytes: 3057644  Map tokens: 107289/120000
 - S:a3bf9f1833 interface QueueBoardProps `export interface QueueBoardProps` L4
 - S:16975f80af function QueueBoard `export function QueueBoard({ items, onSelect }: QueueBoardProps)` L18 : The work queue as a board. Items are grouped into the columns of the durable state * machine (queued, claimed, making, checking, merge ready, done, escalated), with * rework folded into making and mer
 ### bin/modonome.mjs [F:f90930c3c3]
-- S:5835c8b608 function resolveArming `export function resolveArming(targetDir, env = process.env)` L61 : The authoritative arming gate. A config file the agent can write can never arm the engine on its own: arming requires the MODONOME_ARMED=true environment variable, which lives in CI or operator scope,
-- S:53b9eda0f8 function run `function run(script, args)` L82
-- S:214691c25d function targetDirFrom `function targetDirFrom(rest)` L92
-- S:9249714b12 function main `function main(argv)` L96
+- S:5835c8b608 function resolveArming `export function resolveArming(targetDir, env = process.env)` L62 : The authoritative arming gate. A config file the agent can write can never arm the engine on its own: arming requires the MODONOME_ARMED=true environment variable, which lives in CI or operator scope,
+- S:53b9eda0f8 function run `function run(script, args)` L83
+- S:214691c25d function targetDirFrom `function targetDirFrom(rest)` L93
+- S:9249714b12 function main `function main(argv)` L97
 ### tests/decisions-authority.test.mjs [F:f921eecad7]
 - S:b1b5323930 function runGate `function runGate(dir, args = [])` L77
 - S:0b25fbc8fe function plainDecisionsDir `function plainDecisionsDir(content)` L81
@@ -2103,54 +2108,54 @@ Files: 843  Bytes: 3057644  Map tokens: 107289/120000
 
 ## Attention (centrality + pagerank)
 
-1. design-system/src/lib/cx.ts centrality=32 pagerank=0.034467
-2. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.022344
-3. design-system/src/index.ts centrality=48 pagerank=0.000906
-4. scripts/lib/yaml-lite.mjs centrality=16 pagerank=0.008484
-5. scripts/lib/jsonschema.mjs centrality=10 pagerank=0.011013
-6. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.007604
-7. apps/control-panel/src/state/types.ts centrality=12 pagerank=0.007596
-8. scripts/agent/run-cycle.mjs centrality=17 pagerank=0.00341
-9. scripts/lib/learnings.mjs centrality=10 pagerank=0.007274
-10. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.00542
-11. scripts/validate-config.mjs centrality=12 pagerank=0.004456
-12. scripts/lib/canonical-json.mjs centrality=10 pagerank=0.005176
-13. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.00583
-14. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001516
-15. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.004372
-16. scripts/validate-work-item.mjs centrality=8 pagerank=0.003731
-17. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.005072
-18. apps/control-panel/src/App.tsx centrality=11 pagerank=0.001291
-19. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002648
-20. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.003272
-21. scripts/lib/branch-name.mjs centrality=4 pagerank=0.00484
-22. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.004717
-23. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.003168
-24. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001516
-25. scripts/lib/graph.mjs centrality=4 pagerank=0.004366
-26. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.002887
-27. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.004922
-28. scripts/agent/resolve-role.mjs centrality=6 pagerank=0.002646
-29. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.00169
-30. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.004539
-31. scripts/snapshot.mjs centrality=8 pagerank=0.000906
-32. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002648
-33. design-system/src/lib/format.ts centrality=5 pagerank=0.002646
-34. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.00169
-35. scripts/agent/providers.mjs centrality=3 pagerank=0.003611
-36. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.001016
-37. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.00169
-38. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.00169
-39. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.00169
-40. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.00169
-41. design-system/src/components/Modal/Modal.tsx centrality=4 pagerank=0.002408
-42. scripts/lib/remediate.mjs centrality=3 pagerank=0.003109
-43. design-system/src/components/TierBadge/TierBadge.tsx centrality=4 pagerank=0.00238
-44. examples/demo-app/src/index.js centrality=6 pagerank=0.000906
-45. design-system/src/components/Table/Table.tsx centrality=4 pagerank=0.002337
-46. scripts/dry-run-sweep.mjs centrality=5 pagerank=0.001548
-47. design-system/src/components/IdentityChip/IdentityChip.tsx centrality=4 pagerank=0.002217
-48. scripts/lib/control-panel-audit.mjs centrality=3 pagerank=0.002885
-49. scripts/lib/git-scope.mjs centrality=3 pagerank=0.002524
-50. design-system/src/components/ArmingStateBadge/ArmingStateBadge.tsx centrality=4 pagerank=0.00169
+1. design-system/src/lib/cx.ts centrality=32 pagerank=0.034404
+2. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.022304
+3. design-system/src/index.ts centrality=48 pagerank=0.000905
+4. scripts/lib/yaml-lite.mjs centrality=16 pagerank=0.008469
+5. scripts/lib/jsonschema.mjs centrality=10 pagerank=0.010993
+6. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.00759
+7. apps/control-panel/src/state/types.ts centrality=12 pagerank=0.007582
+8. scripts/agent/run-cycle.mjs centrality=17 pagerank=0.003403
+9. scripts/lib/learnings.mjs centrality=10 pagerank=0.007261
+10. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.005411
+11. scripts/validate-config.mjs centrality=12 pagerank=0.004448
+12. scripts/lib/canonical-json.mjs centrality=10 pagerank=0.005167
+13. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.00582
+14. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001513
+15. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.004364
+16. scripts/validate-work-item.mjs centrality=8 pagerank=0.003724
+17. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.005063
+18. apps/control-panel/src/App.tsx centrality=11 pagerank=0.001289
+19. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002643
+20. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.003266
+21. scripts/lib/branch-name.mjs centrality=4 pagerank=0.004831
+22. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.004708
+23. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.003162
+24. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001514
+25. scripts/lib/graph.mjs centrality=4 pagerank=0.004358
+26. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.002882
+27. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.004913
+28. scripts/agent/resolve-role.mjs centrality=6 pagerank=0.002641
+29. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001687
+30. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.004531
+31. scripts/snapshot.mjs centrality=8 pagerank=0.000905
+32. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002643
+33. design-system/src/lib/format.ts centrality=5 pagerank=0.002641
+34. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001687
+35. scripts/agent/providers.mjs centrality=3 pagerank=0.003605
+36. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.001014
+37. design-system/src/components/Modal/Modal.tsx centrality=4 pagerank=0.002404
+38. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001687
+39. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001687
+40. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.001687
+41. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.001687
+42. scripts/lib/remediate.mjs centrality=3 pagerank=0.003103
+43. design-system/src/components/TierBadge/TierBadge.tsx centrality=4 pagerank=0.002375
+44. examples/demo-app/src/index.js centrality=6 pagerank=0.000905
+45. design-system/src/components/Table/Table.tsx centrality=4 pagerank=0.002332
+46. scripts/dry-run-sweep.mjs centrality=5 pagerank=0.001545
+47. design-system/src/components/IdentityChip/IdentityChip.tsx centrality=4 pagerank=0.002213
+48. scripts/lib/control-panel-audit.mjs centrality=3 pagerank=0.00288
+49. scripts/lib/git-scope.mjs centrality=3 pagerank=0.002519
+50. design-system/src/components/ArmingStateBadge/ArmingStateBadge.tsx centrality=4 pagerank=0.001687
 
