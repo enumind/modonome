@@ -210,6 +210,12 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      # See the matching comment in the ratchet job above: some root tests import
+      # apps/control-panel/server/*.mjs, which needs js-yaml from that workspace's
+      # own node_modules.
+      - name: Install control-panel frontend dependencies
+        run: npm install --prefix design-system && npm install --prefix apps/control-panel
+
       - name: Run drift guard gate
         run: node scripts/check-drift.mjs
 
