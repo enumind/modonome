@@ -5,7 +5,7 @@
  * operator started the server with MODONOME_PANEL_WRITE=1. Callers decide what a
  * failure means (adapter.ts falls back to demo data; write actions surface the error).
  */
-import type { PanelMode, PanelState } from "./types";
+import type { NewWorkItemInput, PanelMode, PanelState, WorkItemPatch } from "./types";
 
 export class LiveApiError extends Error {}
 
@@ -54,5 +54,64 @@ export function pruneLearningLive(mode: PanelMode, lesson: string, dir?: string)
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ mode, dir, lesson }),
+  });
+}
+
+export interface ConnectionTestResult {
+  ok: boolean;
+  models?: string[];
+  error?: string;
+}
+
+/** Read-only reachability probe for an OpenAI-compatible base URL (LM Studio, Ollama, a gateway). */
+export function testConnectionLive(baseUrl: string): Promise<ConnectionTestResult> {
+  return call<ConnectionTestResult>(`/api/modonome/test-connection?baseUrl=${encodeURIComponent(baseUrl)}`);
+}
+
+export function createWorkItemLive(mode: PanelMode, item: NewWorkItemInput, dir?: string): Promise<PanelState> {
+  return call<PanelState>("/api/modonome/work-item", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      mode,
+      dir,
+      item: {
+        id: item.id,
+        type: item.type,
+        assigned_role: item.assignedRole,
+        allowed_edit_set: item.allowedEditSet,
+        gates: item.gates,
+        max_attempts: item.maxAttempts,
+        touches_protected_path: item.touchesProtectedPath,
+      },
+    }),
+  });
+}
+
+export function updateWorkItemLive(mode: PanelMode, itemId: string, patch: WorkItemPatch, dir?: string): Promise<PanelState> {
+  return call<PanelState>("/api/modonome/work-item/update", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      mode,
+      dir,
+      itemId,
+      patch: {
+        ...(patch.type !== undefined ? { type: patch.type } : {}),
+        ...(patch.assignedRole !== undefined ? { assigned_role: patch.assignedRole } : {}),
+        ...(patch.allowedEditSet !== undefined ? { allowed_edit_set: patch.allowedEditSet } : {}),
+        ...(patch.gates !== undefined ? { gates: patch.gates } : {}),
+        ...(patch.maxAttempts !== undefined ? { max_attempts: patch.maxAttempts } : {}),
+        ...(patch.touchesProtectedPath !== undefined ? { touches_protected_path: patch.touchesProtectedPath } : {}),
+      },
+    }),
+  });
+}
+
+export function deleteWorkItemLive(mode: PanelMode, itemId: string, dir?: string): Promise<PanelState> {
+  return call<PanelState>("/api/modonome/work-item/delete", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ mode, dir, itemId }),
   });
 }

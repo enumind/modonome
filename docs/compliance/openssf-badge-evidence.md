@@ -1,7 +1,7 @@
 ---
 status: active
 owner: "@nateshpp"
-last_reviewed: 2026-07-03
+last_reviewed: 2026-07-05
 canonical: [openssf-badge-evidence]
 ---
 
@@ -32,7 +32,7 @@ evidence exists, work remains), **Gap** (not satisfied yet, with the remediation
 | New-functionality testing policy | Met | `CONTRIBUTING.md`, PR template |
 | Warning flags and clean style | Met | `scripts/check-style.mjs`, `scripts/check-drift.mjs` |
 | Secure development knowledge | Met | `SECURITY.md` threat model, ADRs |
-| Use of basic good crypto practices | N/A | no cryptography shipped yet (see follow-up PR on signing) |
+| Use of basic good crypto practices | Partial | `scripts/ratchet-attestation.mjs` (in-toto Statement, keyless-signed via Sigstore/Rekor in CI); scoped to the gate-integrity receipt, not yet release artifacts |
 | Delivered over HTTPS | Met | npm and GitHub over HTTPS |
 | Static analysis | Met | `.github/workflows/codeql.yml` (security-and-quality) |
 | Automated tests run on PRs | Met | `.github/workflows/ci.yml` (ratchet and verify jobs) |
@@ -44,10 +44,10 @@ evidence exists, work remains), **Gap** (not satisfied yet, with the remediation
 | DCO or CLA | Partial | sign-off note in `CONTRIBUTING.md`; enforce in a later PR |
 | Governance and roles documented | Met | `GOVERNANCE.md`, `.github/CODEOWNERS` |
 | Code of conduct | Met | `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1) |
-| Statement coverage 80% or higher | Met | `npm run test:coverage`, CI floor 80% lines (current 80.79%) |
+| Statement coverage 80% or higher | Met | `npm run test:coverage`, CI floor 80% lines (current 84.56%) |
 | Static analysis for common vulnerabilities | Met | CodeQL `security-and-quality` query suite |
 | Dependencies monitored for vulnerabilities | Met | `.github/dependabot.yml` (npm and github-actions) |
-| Signed releases | Partial | npm provenance via `--provenance` in `publish.yml`; key-based release signing tracked in the signing PR |
+| Signed releases | Partial | npm provenance via `--provenance` in `publish.yml`; the gate-integrity receipt is keyless-signed via Sigstore (`actions/attest@v2`); release-artifact signing itself is still tracked in the signing PR |
 | Hardening | Met | off-by-default arming, base-branch ratchet, `agentproof/` 25/25 |
 | Two-person review continuity | Gap | see gap ledger |
 
@@ -55,20 +55,20 @@ evidence exists, work remains), **Gap** (not satisfied yet, with the remediation
 
 | Criterion | Status | Evidence |
 |-----------|--------|----------|
-| Branch coverage 80% or higher | Gap | measured branch coverage 68.4%, CI floor 66%; see gap ledger |
+| Branch coverage 80% or higher | Gap | measured branch coverage 73.27%, CI floor 66%; see gap ledger |
 | Two unassociated significant contributors | Gap | see gap ledger |
 | Bus factor of two or more | Gap | see gap ledger |
 | Code review before merge for most changes | Partial | CODEOWNERS plus required checks; two-person review pending a second maintainer |
 | Reproducible build | Partial | `npm ci` from a committed lockfile; no independent attestation service |
-| Cryptographic signing of releases | Gap | Ed25519 signing designed in ADR-017, implementation tracked in the signing PR |
+| Cryptographic signing of releases | Partial | `scripts/ratchet-attestation.mjs` signs the gate-integrity receipt keylessly via Sigstore/Rekor in CI; release artifacts themselves are still tracked in the signing PR (ADR-017) |
 | Continuous integration | Met | `ci.yml`, `codeql.yml`, `scorecard.yml` |
 
 ## Gap ledger
 
 These criteria are not met today. They are recorded here rather than claimed.
 
-1. **Branch coverage 80% (gold).** Measured branch coverage is 68.4% over library and
-   CLI code (lines 81.5%, functions 85.2%), with the CI branch floor ratcheted to 66%.
+1. **Branch coverage 80% (gold).** Measured branch coverage is 73.27% over library and
+   CLI code (lines 84.56%, functions 86.53%), with the CI branch floor ratcheted to 66%.
    Two factors keep the measured number below 80%: many CLI scripts are
    integration-tested through subprocesses, which in-process coverage does not count, and
    the `agentproof/` scenarios (exercised by the AgentProof gate) are excluded as test
@@ -81,9 +81,11 @@ These criteria are not met today. They are recorded here rather than claimed.
    update `GOVERNANCE.md` and `CODEOWNERS` to require two-person review on protected paths.
 3. **Two-person review of changes (silver and gold).** Depends on item 2. The branch
    protection and CODEOWNERS structure is ready to require it once a second reviewer exists.
-4. **Cryptographic release and artifact signing (gold).** npm provenance is in place.
-   Ed25519 signing of work items, knowledge packets, and release evidence is designed in
-   `docs/adr/ADR-017-knowledge-network-packet-signing.md` and tracked as a dedicated PR.
+4. **Cryptographic release and artifact signing (gold).** npm provenance is in place, and
+   the gate-integrity receipt (`scripts/ratchet-attestation.mjs`) is now keyless-signed via
+   Sigstore/Rekor in CI. Signing of work items, knowledge packets, and release evidence
+   themselves is designed in `docs/adr/ADR-017-knowledge-network-packet-signing.md` and
+   remains tracked as a dedicated PR.
 5. **DCO enforcement (silver).** A sign-off note exists in `CONTRIBUTING.md`. Enforcing it
    in CI is tracked.
 

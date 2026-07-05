@@ -52,6 +52,21 @@
         "properties": {
           "runner": { "type": "string", "enum": ["local", "container"] },
           "model": { "type": "string", "minLength": 1 },
+          "models": {
+            "type": "array",
+            "description": "Prioritized model fallback list, highest priority first. When set, the loop tries these in order; `model` (if also set) is the authoritative primary. A budget-affordable local or free model can be listed as the fallback after a paid frontier choice.",
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "skills": {
+            "type": "array",
+            "description": "Declarative capability tags for this agent (for example adversarial-review, cite-sources). Read by the loop and prompts; grants no capability by itself.",
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "tools": {
+            "type": "array",
+            "description": "Declarative tool tags this agent is permitted (for example read-only-fs, web-search). Read by the loop; actual tool execution is gated separately.",
+            "items": { "type": "string", "minLength": 1 }
+          },
           "provider": { "type": "string", "minLength": 1 },
           "transport": { "type": "string", "minLength": 1 },
           "trigger": { "type": "string", "minLength": 1 },
