@@ -56,7 +56,7 @@ const PROTECTED_FILES = [
   "ROADMAP.md",
   ".modonome/STATUS.md",
   ".modonome/DECISIONS.md",
-  ".modonome/LEARNINGS.md",
+  ".modonome/LESSONS.md",
   ".modonome/NETWORK.md",
   ".modonome/control-panel.md",
   ".modonome/config.yaml",

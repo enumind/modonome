@@ -7,7 +7,7 @@
  * ("claude-code", "claude_code", "claudecode") and vendor/product names not yet in
  * the denylist at all ("mistral", "grok").
  *
- * This module can only ever PROPOSE. It feeds a LEARNINGS.md Staged line for human
+ * This module can only ever PROPOSE. It feeds a LESSONS.md Staged line for human
  * review; it never mutates a denylist and never blocks CI. To make "fuzzy can only
  * tighten, never override" a checked property, the strict detectors
  * (branch-name.mjs, commit-identity.mjs, detect-attribution.mjs) must never import
@@ -160,7 +160,7 @@ export function matchNearMissText(where, text) {
 }
 
 /**
- * Render one LEARNINGS.md Staged line from a finding. The line is a PROPOSED denylist
+ * Render one LESSONS.md Staged line from a finding. The line is a PROPOSED denylist
  * addition for human review, never an applied change. The (signal: review) tag marks
  * it as a review-surfaced candidate; the caller supplies the date and the evidence
  * reference. The lesson deliberately omits the " - evidence: " delimiter so the line

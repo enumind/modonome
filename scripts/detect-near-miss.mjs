@@ -5,20 +5,20 @@
  * Advisory scanner for the near-miss widener (Phase 1). It reads the current branch
  * and the commits unique to this branch, runs the deterministic widener
  * (scripts/lib/near-miss.mjs), and prints any near-miss attribution token together
- * with the exact LEARNINGS.md Staged line a human could paste to propose a denylist
+ * with the exact LESSONS.md Staged line a human could paste to propose a denylist
  * addition.
  *
  * It is advisory by construction:
  *   - Finding a near-miss ALWAYS exits 0. This never blocks CI. It surfaces a
  *     proposal for human review; promotion into the live denylist stays human-only,
  *     gated by check-attribution-fp-corpus.mjs and check-regex-safety.mjs.
- *   - A genuine tool error (a malformed LEARNINGS.md, or a full Staged section on
+ *   - A genuine tool error (a malformed LESSONS.md, or a full Staged section on
  *     --write) exits 1, because that is a real failure the operator must act on.
  *
  * Usage:
  *   node scripts/detect-near-miss.mjs           print near-miss proposals; exit 0
  *   node scripts/detect-near-miss.mjs --write    also append each proposal to the
- *                                                LEARNINGS.md Staged section (capped)
+ *                                                LESSONS.md Staged section (capped)
  */
 
 import { fileURLToPath } from "node:url";
@@ -97,7 +97,7 @@ function main(argv) {
         const res = appendStagedEntry(root, line);
         if (res.added) {
           wrote++;
-          console.log("    written to .modonome/LEARNINGS.md Staged section.");
+          console.log("    written to .modonome/LESSONS.md Staged section.");
         } else {
           console.log(`    already staged (${res.reason}); left unchanged.`);
         }

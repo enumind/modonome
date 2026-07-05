@@ -52,6 +52,6 @@ of hold. Unanswered means no action.
 
 ## Learning
 
-Lessons are captured only on a real correction signal, staged in `.modonome/LEARNINGS.md`,
+Lessons are captured only on a real correction signal, staged in `.modonome/LESSONS.md`,
 bounded and dated and evidence-backed, and promoted into canonical rules only by an owner.
 Promotion deletes the staged entry and, where it fits, adds a deterministic gate.

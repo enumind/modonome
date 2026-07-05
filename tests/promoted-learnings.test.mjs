@@ -8,7 +8,7 @@ import { readPromotedLearnings, REQUIRED_FIELDS } from '../scripts/lib/learnings
 function withRoot(learningsBody) {
   const root = mkdtempSync(join(tmpdir(), 'modonome-learnings-'));
   mkdirSync(join(root, '.modonome'), { recursive: true });
-  writeFileSync(join(root, '.modonome', 'LEARNINGS.md'), learningsBody);
+  writeFileSync(join(root, '.modonome', 'LESSONS.md'), learningsBody);
   return root;
 }
 

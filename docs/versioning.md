@@ -7,7 +7,7 @@ Modonome is built to be vendored into many repos and upgraded safely.
 - Engine-owned, overwritten on upgrade: `prompts/`, `schemas/`, `scripts/`. Treat these like
   vendored artifacts. Do not hand-edit them in a host repo.
 - Host-owned, never touched on upgrade: `.modonome/config.yaml` and the state files
-  (`STATUS.md`, `DECISIONS.md`, `LEARNINGS.md`, `NETWORK.md`, `control-panel.md`).
+  (`STATUS.md`, `DECISIONS.md`, `LESSONS.md`, `NETWORK.md`, `control-panel.md`).
 - Templates under `templates/.modonome/` are seeds. An upgrade updates the seed. A host opts
   in to seed changes through the migration, never by a silent overwrite.
 

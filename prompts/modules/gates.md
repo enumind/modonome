@@ -41,7 +41,7 @@ signal: a gate failure, a review fix, an incident, repeated rework, a reverted m
 positive or negative, a market or standards shift, or a cost anomaly. Capture runs through a
 validating command, not an open-ended summary, so the store stays accurate.
 
-Stage: add one generalized, evidence-backed, dated line to `LEARNINGS.md`. Deduplicate by
+Stage: add one generalized, evidence-backed, dated line to `LESSONS.md`. Deduplicate by
 fingerprint. Cap the queue at twenty entries. When full, promote or prune. Never auto-evict.
 Entries older than thirty days need a promote-or-prune review.
 

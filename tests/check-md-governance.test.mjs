@@ -22,7 +22,7 @@ function makeMinimalRepo() {
   writeFileSync(join(tmp, "ROADMAP.md"), "# Roadmap\n");
   writeFileSync(join(tmp, ".modonome", "STATUS.md"), "# Status\n");
   writeFileSync(join(tmp, ".modonome", "DECISIONS.md"), "# Decisions\n");
-  writeFileSync(join(tmp, ".modonome", "LEARNINGS.md"), "# Learnings\n");
+  writeFileSync(join(tmp, ".modonome", "LESSONS.md"), "# Learnings\n");
   writeFileSync(join(tmp, ".modonome", "NETWORK.md"), "# Network\n");
   writeFileSync(join(tmp, ".modonome", "control-panel.md"), "# Control panel\n");
   writeFileSync(join(tmp, ".modonome", "config.yaml"), "schema_version: 1\n");

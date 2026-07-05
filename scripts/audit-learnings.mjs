@@ -17,7 +17,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
 const query = (process.argv[2] || "").toLowerCase();
 
-// surface a clean error if LEARNINGS.md is missing rather than crashing.
+// surface a clean error if LESSONS.md is missing rather than crashing.
 let learnings;
 try {
   learnings = readPromotedLearnings(root);

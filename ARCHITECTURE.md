@@ -157,7 +157,7 @@ flowchart LR
   owner["Owner review<br/>CODEOWNERS"]
   merge["Merge authority<br/>lands when every gate is green"]
   repo[("Host repo")]
-  learn["Staged learnings<br/>LEARNINGS.md"]
+  learn["Staged learnings<br/>LESSONS.md"]
   escalated[["Escalated<br/>cap exceeded, parked for owner"]]
 
   queue -->|claim and lease| item
@@ -332,7 +332,7 @@ flowchart LR
 
   signal["Correction signal<br/>gate failure, review fix, rework"]
   capture["Follower captures<br/>one generalized, evidence-backed lesson"]
-  stage["Stage in LEARNINGS.md<br/>fingerprinted, dated, capped at 20"]
+  stage["Stage in LESSONS.md<br/>fingerprinted, dated, capped at 20"]
   promote["Owner promotes<br/>into canonical rules, config, or tests"]
   gate["Add a deterministic gate<br/>when one fits"]
 

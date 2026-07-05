@@ -1,4 +1,4 @@
-// Shared parsing for the "## Staged" bullet lines in .modonome/LEARNINGS.md, so the
+// Shared parsing for the "## Staged" bullet lines in .modonome/LESSONS.md, so the
 // reader (list) and the writer (prune) agree on exactly what a line means.
 const STAGED_LINE_RE = /^- \[(\d{4}-\d{2}-\d{2})\]\s*\(signal:\s*([a-z]+)\)\s*(.+)$/;
 const EVIDENCE_SEP = " - evidence: ";

@@ -61,7 +61,7 @@ without evidence that Modonome itself meets them.
 
 4. **Escapes and failures are visible:**
    - If the engine makes a mistake (wrong tier classification, over-confident decision),
-     it is documented in the `LEARNINGS.md` file, reviewed, and a gate is added.
+     it is documented in the `LESSONS.md` file, reviewed, and a gate is added.
    - Mistakes are not hidden; they're evidence that the learning loop is working.
 
 ## Consequences
