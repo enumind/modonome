@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:50e78ed44fe52f74f905c12ab22b78b313ca42acc89fe5038110ecb0266e5122
-Files: 850  Bytes: 3063523  Map tokens: 106582/120000
+Merkle root: sha256:fc99fee691dbb781ec46067ad2076cf3708913a89a17aab62947b8aa084f7043
+Files: 854  Bytes: 3095955  Map tokens: 107978/120000
 
 ## Modules
 
@@ -342,6 +342,7 @@ Files: 850  Bytes: 3063523  Map tokens: 106582/120000
 - scripts/sync-site-data.mjs [F:8abf9e432a]: Read a file, returning null if it does not exist. Reads directly instead of checking existsSync first, so there is no window between the check and the read wher
 - scripts/test-prompt-behavior.mjs [F:23917c6197]: Concatenate the committed prompt source files into one searchable string. * @param {string} root repository root that contains the prompts directory * @returns 
 - scripts/transition-work-item.mjs [F:d135cffeaa]: A lease is "live" if it has an owner and an unexpired lease_expires_at. The lease holder is recorded as lease_owner (the field this swap writes) or, for older i
+- scripts/tripwire-check.mjs [F:3b96b6dfed]: Format-agnostic: driven by which fields the payload actually has, not by --format. A Claude PreToolUse payload always carries tool_name/tool_input; a Cursor bef
 - scripts/validate-config.mjs [F:932d33be00]: Safety rules beyond structural validation. These keep a config from claiming an armed posture without the controls that make arming safe. Note on arming levers:
 - scripts/validate-knowledge-packet.mjs [F:65193a9799]: !/usr/bin/env node
 - scripts/validate-work-item.mjs [F:f07f8ebca9]: Resolve a model name to its family by longest-matching prefix. Returns null when no prefix matches, so unrecognized models are treated as distinct families (the
@@ -409,6 +410,7 @@ Files: 850  Bytes: 3063523  Map tokens: 106582/120000
 - tests/terraform-module-shape.test.mjs [F:ca05b6ba1c]: function tf
 - tests/tick.test.mjs [F:baf7641a01]: function tmp
 - tests/tool-loop-adapter.test.mjs [F:ed9c47feb2]: A scriptable fake child process. Captures the constructor call, emits the configured stdout/stderr, then closes (or hangs, when never told to close).
+- tests/tripwire.test.mjs [F:61c2a29876]: Tripwires: the local, best-effort editor hook kernel (scripts/tripwire-check.mjs).
 - tests/ws-b-harness.test.mjs [F:1bcaaff9eb]: A config fixture with distinct maker/checker models and a models registry.
 - tests/ws-e-negative-controls.test.mjs [F:bbb6476d71]: WS-E: negative-control fixtures that prove governance gates have teeth.
 - tests/ws-e-ratchet-languages.test.mjs [F:2b49c74e74]: function runRatchet
@@ -747,6 +749,22 @@ Files: 850  Bytes: 3063523  Map tokens: 106582/120000
 - S:bafcfbb33c function formatDelta `function formatDelta(n)` L224
 ### .design-sync/previews/Checkbox.tsx [F:3b4065b679]
 - S:b6eeacb415 function Requirement `export const Requirement = () => (` L4
+### scripts/tripwire-check.mjs [F:3b96b6dfed]
+- S:35e362f448 function emit `function emit(format, decision, reason)` L79
+- S:073124e2d8 function extractFromClaudeToolInput `function extractFromClaudeToolInput(toolName, input, cwd)` L106
+- S:40cce153df function extractChange `function extractChange(payload)` L135 : Format-agnostic: driven by which fields the payload actually has, not by --format. A Claude PreToolUse payload always carries tool_name/tool_input; a Cursor beforeShellExecution payload carries `comma
+- S:f2e55d9b4a function guessFileFromCommand `function guessFileFromCommand(cmd)` L158
+- S:209a48ca7f function parseSedReplacement `function parseSedReplacement(cmd)` L181 : Best-effort parse of a `sed 's/PATTERN/REPLACEMENT/'` (or `#`, `|`, `,`, `@` delimited) substitution. This is the one shell idiom common enough, and structured enough, to reliably recover a real befor
+- S:485d7c5e96 function unescapeSed `function unescapeSed(s)` L192
+- S:4214f7fa01 function parseRedirectTarget `function parseRedirectTarget(cmd)` L198 : Best-effort parse of a shell redirect target (`> file`, `>> file`), which names the exact file the command is about to write, stronger than any token guess.
+- S:2305f3725a function diffForCommand `function diffForCommand(cmd)` L206
+- S:d761c7660a function diffForReplace `function diffForReplace(filePath, oldText, newText)` L231
+- S:2df1658785 function diffForMultiEdit `function diffForMultiEdit(filePath, edits)` L239
+- S:ae3c96ae84 function diffForWrite `function diffForWrite(filePath, content, cwd)` L249
+- S:7d253ea6b0 function buildSyntheticDiff `function buildSyntheticDiff(change)` L264
+- S:8761033dfb function runGuardRatchet `function runGuardRatchet(diffText)` L283
+- S:12c1e0f104 function formatDenyReason `function formatDenyReason(findings)` L321
+- S:745c98231d function main `function main()` L338
 ### apps/control-panel/src/lib/confirm.tsx [F:3c479cac6e]
 - S:efea80af4e function ConfirmProvider `export function ConfirmProvider({ children }: { children: ReactNode })` L20 : Provides an imperative confirm() that resolves true when the operator approves. * Every destructive control in the panel awaits this before it fires, satisfying the * control-panel requirement of a co
 - S:7989466d34 function useConfirm `export function useConfirm(): ConfirmFn` L59
@@ -897,10 +915,11 @@ Files: 850  Bytes: 3063523  Map tokens: 106582/120000
 ### .design-sync/previews/Input.tsx [F:5e207f73c7]
 - S:ddfea151e8 function TrustedAuthor `export const TrustedAuthor = () => (` L4
 ### scripts/scaffold.mjs [F:5e450ff82c]
-- S:ea76c925e2 function enableSnapshot `function enableSnapshot(target, here)` L28 : Turn snapshot consumption on during adoption: generate the first snapshot, install a host pre-commit hook, and drop an AGENTS.md pointer when none exists. Skipped with --no-snapshot. Never overwrites 
-- S:8c6ccd3e8b function listTemplate `function listTemplate(dir, base = "")` L60
-- S:6dcbe228c5 function scaffold `export function scaffold(target, write)` L71
-- S:1856df868b function writeRunLog `function writeRunLog(runsDir, command, payload)` L129
+- S:ea76c925e2 function enableSnapshot `function enableSnapshot(target, here)` L32 : Turn snapshot consumption on during adoption: generate the first snapshot, install a host pre-commit hook, and drop an AGENTS.md pointer when none exists. Skipped with --no-snapshot. Never overwrites 
+- S:8c6ccd3e8b function listTemplate `function listTemplate(dir, base = "")` L64
+- S:6dcbe228c5 function scaffold `export function scaffold(target, write)` L75
+- S:950b7153af function scaffoldTripwires `function scaffoldTripwires(target, here)` L141 : Install the Tripwires editor hook packs into a target repo: the two hook config templates (.claude/settings.json, .cursor/hooks.json) plus the shared kernel and the detector it shells out to, so a hos
+- S:1856df868b function writeRunLog `function writeRunLog(runsDir, command, payload)` L163
 ### tests/config-key-parity.test.mjs [F:5eff4122c0]
 - S:d6cf821403 function keysFromDeclaration `function keysFromDeclaration(source, declName)` L23 : Extract the string literals inside a named list/set declaration, regardless of whether it is `new Set([...])` or `[...] as const`.
 - S:da40a0864b function assertSameSet `function assertSameSet(a, b, label)` L33
@@ -913,6 +932,9 @@ Files: 850  Bytes: 3063523  Map tokens: 106582/120000
 ### scripts/check-repo-hygiene.mjs [F:61296e720c]
 - S:0cfad6d2cf function findSafeToDeleteFiles `function findSafeToDeleteFiles(dir)` L28
 - S:17985dad90 function execSync `function execSync(cmd, opts)` L235 : Helper
+### tests/tripwire.test.mjs [F:61c2a29876]
+- S:2441bf3938 function run `function run(format, payload)` L17
+- S:581a43b877 function parseJsonLine `function parseJsonLine(stdout)` L26
 ### design-system/src/components/Modal/Modal.tsx [F:63351e350b]
 - S:5a2d3d98ce type ModalSize `export type ModalSize = "sm" | "md";` L6
 - S:b5d72ba60f interface ModalProps `export interface ModalProps` L8
@@ -1598,10 +1620,10 @@ Files: 850  Bytes: 3063523  Map tokens: 106582/120000
 - S:a3bf9f1833 interface QueueBoardProps `export interface QueueBoardProps` L4
 - S:16975f80af function QueueBoard `export function QueueBoard({ items, onSelect }: QueueBoardProps)` L18 : The work queue as a board. Items are grouped into the columns of the durable state * machine (queued, claimed, making, checking, merge ready, done, escalated), with * rework folded into making and mer
 ### bin/modonome.mjs [F:f90930c3c3]
-- S:5835c8b608 function resolveArming `export function resolveArming(targetDir, env = process.env)` L63 : The authoritative arming gate. A config file the agent can write can never arm the engine on its own: arming requires the MODONOME_ARMED=true environment variable, which lives in CI or operator scope,
-- S:53b9eda0f8 function run `function run(script, args)` L84
-- S:214691c25d function targetDirFrom `function targetDirFrom(rest)` L94
-- S:9249714b12 function main `function main(argv)` L98
+- S:5835c8b608 function resolveArming `export function resolveArming(targetDir, env = process.env)` L64 : The authoritative arming gate. A config file the agent can write can never arm the engine on its own: arming requires the MODONOME_ARMED=true environment variable, which lives in CI or operator scope,
+- S:53b9eda0f8 function run `function run(script, args)` L85
+- S:214691c25d function targetDirFrom `function targetDirFrom(rest)` L95
+- S:9249714b12 function main `function main(argv)` L99
 ### tests/decisions-authority.test.mjs [F:f921eecad7]
 - S:b1b5323930 function runGate `function runGate(dir, args = [])` L77
 - S:0b25fbc8fe function plainDecisionsDir `function plainDecisionsDir(content)` L81
@@ -2096,54 +2118,54 @@ Files: 850  Bytes: 3063523  Map tokens: 106582/120000
 
 ## Attention (centrality + pagerank)
 
-1. design-system/src/lib/cx.ts centrality=32 pagerank=0.034249
-2. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.022203
-3. design-system/src/index.ts centrality=48 pagerank=0.0009
-4. scripts/lib/yaml-lite.mjs centrality=16 pagerank=0.008431
-5. scripts/lib/jsonschema.mjs centrality=10 pagerank=0.010944
-6. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.007556
-7. apps/control-panel/src/state/types.ts centrality=12 pagerank=0.007548
-8. scripts/agent/run-cycle.mjs centrality=17 pagerank=0.003388
-9. scripts/lib/learnings.mjs centrality=10 pagerank=0.007228
-10. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.005386
-11. scripts/validate-config.mjs centrality=12 pagerank=0.004428
-12. scripts/lib/canonical-json.mjs centrality=10 pagerank=0.005143
-13. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.005794
-14. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001506
-15. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.004344
-16. scripts/validate-work-item.mjs centrality=8 pagerank=0.003707
-17. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.00504
-18. apps/control-panel/src/App.tsx centrality=11 pagerank=0.001283
-19. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002631
-20. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.003251
-21. scripts/lib/branch-name.mjs centrality=4 pagerank=0.004809
-22. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.004687
-23. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.003148
-24. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001507
-25. scripts/lib/graph.mjs centrality=4 pagerank=0.004339
-26. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.002869
-27. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.004891
-28. scripts/agent/resolve-role.mjs centrality=6 pagerank=0.002629
-29. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001679
-30. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.004511
-31. scripts/snapshot.mjs centrality=8 pagerank=0.0009
-32. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002631
-33. design-system/src/lib/format.ts centrality=5 pagerank=0.002629
-34. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001679
-35. scripts/agent/providers.mjs centrality=3 pagerank=0.003589
-36. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.00101
-37. design-system/src/components/Modal/Modal.tsx centrality=4 pagerank=0.002393
-38. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001679
-39. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001679
-40. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.001679
-41. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.001679
-42. scripts/lib/remediate.mjs centrality=3 pagerank=0.003089
-43. design-system/src/components/TierBadge/TierBadge.tsx centrality=4 pagerank=0.002365
-44. examples/demo-app/src/index.js centrality=6 pagerank=0.0009
-45. design-system/src/components/Table/Table.tsx centrality=4 pagerank=0.002322
-46. scripts/dry-run-sweep.mjs centrality=5 pagerank=0.001538
-47. design-system/src/components/IdentityChip/IdentityChip.tsx centrality=4 pagerank=0.002203
-48. scripts/lib/control-panel-audit.mjs centrality=3 pagerank=0.002867
-49. scripts/lib/git-scope.mjs centrality=3 pagerank=0.002508
-50. design-system/src/components/ArmingStateBadge/ArmingStateBadge.tsx centrality=4 pagerank=0.001679
+1. design-system/src/lib/cx.ts centrality=32 pagerank=0.034126
+2. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.022123
+3. design-system/src/index.ts centrality=48 pagerank=0.000897
+4. scripts/lib/yaml-lite.mjs centrality=16 pagerank=0.008401
+5. scripts/lib/jsonschema.mjs centrality=10 pagerank=0.010904
+6. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.007529
+7. apps/control-panel/src/state/types.ts centrality=12 pagerank=0.007521
+8. scripts/agent/run-cycle.mjs centrality=17 pagerank=0.003376
+9. scripts/lib/learnings.mjs centrality=10 pagerank=0.007202
+10. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.005367
+11. scripts/validate-config.mjs centrality=12 pagerank=0.004412
+12. scripts/lib/canonical-json.mjs centrality=10 pagerank=0.005125
+13. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.005773
+14. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001501
+15. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.004329
+16. scripts/validate-work-item.mjs centrality=8 pagerank=0.003694
+17. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.005022
+18. apps/control-panel/src/App.tsx centrality=11 pagerank=0.001279
+19. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002622
+20. scripts/validate-knowledge-packet.mjs centrality=7 pagerank=0.003239
+21. scripts/lib/branch-name.mjs centrality=4 pagerank=0.004792
+22. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.00467
+23. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.003137
+24. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001502
+25. scripts/lib/graph.mjs centrality=4 pagerank=0.004323
+26. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.002859
+27. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.004873
+28. scripts/agent/resolve-role.mjs centrality=6 pagerank=0.00262
+29. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001673
+30. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.004495
+31. scripts/snapshot.mjs centrality=8 pagerank=0.000897
+32. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002622
+33. design-system/src/lib/format.ts centrality=5 pagerank=0.00262
+34. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001673
+35. scripts/agent/providers.mjs centrality=3 pagerank=0.003576
+36. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.001006
+37. design-system/src/components/Modal/Modal.tsx centrality=4 pagerank=0.002385
+38. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001673
+39. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001673
+40. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.001673
+41. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.001673
+42. scripts/lib/remediate.mjs centrality=3 pagerank=0.003078
+43. design-system/src/components/TierBadge/TierBadge.tsx centrality=4 pagerank=0.002356
+44. examples/demo-app/src/index.js centrality=6 pagerank=0.000897
+45. design-system/src/components/Table/Table.tsx centrality=4 pagerank=0.002314
+46. scripts/dry-run-sweep.mjs centrality=5 pagerank=0.001533
+47. design-system/src/components/IdentityChip/IdentityChip.tsx centrality=4 pagerank=0.002195
+48. scripts/lib/control-panel-audit.mjs centrality=3 pagerank=0.002857
+49. scripts/lib/git-scope.mjs centrality=3 pagerank=0.002499
+50. design-system/src/components/ArmingStateBadge/ArmingStateBadge.tsx centrality=4 pagerank=0.001673
 
