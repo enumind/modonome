@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:0f9a6b1bc5ad61f2a854de32b01c7ca90bf6ce805cb4b61c05554c223f43acb1
-Files: 862  Bytes: 3200583  Map tokens: 111886/120000
+Merkle root: sha256:b35384002e4f57e7789e74863d8a8fe920178447cc398243b62b321b26f7da6a
+Files: 862  Bytes: 3201045  Map tokens: 111891/120000
 
 ## Modules
 
@@ -627,12 +627,11 @@ Files: 862  Bytes: 3200583  Map tokens: 111886/120000
 - S:b06714d9c5 function patchConfig `export function patchConfig(modonomeDir, patch)` L220
 - S:8b67ef3e8b function workItemFile `function workItemFile(modonomeDir, itemId)` L261
 - S:fd9d32de9a function releaseLease `export function releaseLease(modonomeDir, itemId)` L267
-- S:9ac5bfde3b function hasLiveLease `function hasLiveLease(item, now = new Date())` L282 : A lease is live when it has a holder and an unexpired expiry, mirroring scripts/transition-work-item.mjs's leaseIsLive so the two can never disagree about what "actively claimed" means.
-- S:d7086f2a5b function loadConfigForValidation `function loadConfigForValidation(modonomeDir)` L305
-- S:f22a53ac17 function createWorkItem `export function createWorkItem(modonomeDir, input)` L310
-- S:a4e623c70b function updateWorkItem `export function updateWorkItem(modonomeDir, itemId, patch)` L346 : Metadata-only edit: type, assigned_role, allowed_edit_set, gates, max_attempts, and touches_protected_path are safe to change regardless of the item's current state, including in flight, since none of
-- S:14cb0e8cbb function deleteWorkItem `export function deleteWorkItem(modonomeDir, itemId)` L369 : Refuses outright for any in-flight state, regardless of whether its lease has technically expired: an item past "queued" represents real record of what happened (a branch, a PR, attempts, a maker iden
-- S:5b0e153cfb function pruneLearning `export function pruneLearning(modonomeDir, lesson)` L380
+- S:d7086f2a5b function loadConfigForValidation `function loadConfigForValidation(modonomeDir)` L295
+- S:f22a53ac17 function createWorkItem `export function createWorkItem(modonomeDir, input)` L300
+- S:a4e623c70b function updateWorkItem `export function updateWorkItem(modonomeDir, itemId, patch)` L349 : Metadata-only edit: type, assigned_role, allowed_edit_set, gates, max_attempts, and touches_protected_path are safe to change regardless of the item's current state, including in flight, since none of
+- S:14cb0e8cbb function deleteWorkItem `export function deleteWorkItem(modonomeDir, itemId)` L372 : Refuses outright for any in-flight state, regardless of whether its lease has technically expired: an item past "queued" represents real record of what happened (a branch, a PR, attempts, a maker iden
+- S:5b0e153cfb function pruneLearning `export function pruneLearning(modonomeDir, lesson)` L383
 ### scripts/test-prompt-behavior.mjs [F:23917c6197]
 - S:a931ad2e62 function resolvePromptText `export function resolvePromptText(root)` L44 : Concatenate the committed prompt source files into one searchable string. * @param {string} root repository root that contains the prompts directory * @returns {string} the concatenated committed prom
 - S:0a5fed1978 function loadFixtures `export function loadFixtures(dir)` L57 : Load every fixture JSON file from a directory. * @param {string} dir directory holding fixture *.json files * @returns {Array<object>} parsed fixture objects, sorted by file name for stable output
@@ -920,10 +919,11 @@ Files: 862  Bytes: 3200583  Map tokens: 111886/120000
 ### .design-sync/previews/Input.tsx [F:5e207f73c7]
 - S:ddfea151e8 function TrustedAuthor `export const TrustedAuthor = () => (` L4
 ### scripts/scaffold.mjs [F:5e450ff82c]
-- S:ea76c925e2 function enableSnapshot `function enableSnapshot(target, here)` L28 : Turn snapshot consumption on during adoption: generate the first snapshot, install a host pre-commit hook, and drop an AGENTS.md pointer when none exists. Skipped with --no-snapshot. Never overwrites 
-- S:8c6ccd3e8b function listTemplate `function listTemplate(dir, base = "")` L60
-- S:6dcbe228c5 function scaffold `export function scaffold(target, write)` L71
-- S:1856df868b function writeRunLog `function writeRunLog(runsDir, command, payload)` L129
+- S:ea76c925e2 function enableSnapshot `function enableSnapshot(target, here)` L32 : Turn snapshot consumption on during adoption: generate the first snapshot, install a host pre-commit hook, and drop an AGENTS.md pointer when none exists. Skipped with --no-snapshot. Never overwrites 
+- S:8c6ccd3e8b function listTemplate `function listTemplate(dir, base = "")` L64
+- S:6dcbe228c5 function scaffold `export function scaffold(target, write)` L75
+- S:950b7153af function scaffoldTripwires `function scaffoldTripwires(target, here)` L141 : Install the Tripwires editor hook packs into a target repo: the two hook config templates (.claude/settings.json, .cursor/hooks.json) plus the shared kernel and the detector it shells out to, so a hos
+- S:1856df868b function writeRunLog `function writeRunLog(runsDir, command, payload)` L163
 ### tests/config-key-parity.test.mjs [F:5eff4122c0]
 - S:d6cf821403 function keysFromDeclaration `function keysFromDeclaration(source, declName)` L23 : Extract the string literals inside a named list/set declaration, regardless of whether it is `new Set([...])` or `[...] as const`.
 - S:da40a0864b function assertSameSet `function assertSameSet(a, b, label)` L33

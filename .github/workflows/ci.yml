@@ -28,6 +28,16 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      # Installed before the test suite below because some root tests (for example
+      # tests/control-panel-work-item-writer.test.mjs) import apps/control-panel/
+      # server/*.mjs directly, which needs js-yaml -- a dependency that lives only in
+      # apps/control-panel/node_modules. This only touches design-system/ and
+      # apps/control-panel/, neither of which the base-branch checkouts below ever
+      # overwrite, so it doesn't affect the trust boundary those checkouts establish
+      # for the gate scripts.
+      - name: Install control-panel frontend dependencies
+        run: npm install --prefix design-system && npm install --prefix apps/control-panel
+
       # Snapshot freshness, the test suite, and AgentProof all run BEFORE the
       # base-branch checkouts below, which overwrite the gate scripts and the
       # attribution detector kernel with base versions. All three need to see
@@ -172,9 +182,6 @@ jobs:
 
       - name: Run checker engagement gate
         run: node scripts/check-checker-engagement.mjs
-
-      - name: Install control-panel frontend dependencies
-        run: npm install --prefix design-system && npm install --prefix apps/control-panel
 
       - name: Run design-system build
         run: npm run build --prefix design-system

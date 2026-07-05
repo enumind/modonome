@@ -4,7 +4,7 @@
 // Nothing here authors new governance judgment (a gate description, a decision's
 // answer) on the operator's behalf; those need real human content and stay out of
 // scope for an automated write.
-import { readFileSync, writeFileSync, existsSync, rmSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, rmSync, openSync, closeSync } from "node:fs";
 import { join } from "node:path";
 import yaml from "js-yaml";
 import { parseStagedLine } from "./learningsFormat.mjs";
@@ -276,16 +276,6 @@ export function releaseLease(modonomeDir, itemId) {
   return item;
 }
 
-// A lease is live when it has a holder and an unexpired expiry, mirroring
-// scripts/transition-work-item.mjs's leaseIsLive so the two can never disagree
-// about what "actively claimed" means.
-function hasLiveLease(item, now = new Date()) {
-  const holder = item.lease_owner ?? item.owner ?? null;
-  if (holder == null) return false;
-  if (!item.lease_expires_at) return false;
-  return new Date(item.lease_expires_at).getTime() > now.getTime();
-}
-
 // States where a real actor could plausibly still be working the item, matching
 // scripts/lib/work-item-staleness.mjs's OPEN_STATES plus the states past claiming
 // that staleness detection doesn't cover (merge_ready, merging): everything
@@ -313,7 +303,6 @@ export function createWorkItem(modonomeDir, input) {
     throw new Error("Work item id must be non-empty and use only letters, numbers, dot, dash, or underscore.");
   }
   const file = join(modonomeDir, "work-items", `${id}.json`);
-  if (existsSync(file)) throw new Error(`Work item "${id}" already exists.`);
 
   const item = {
     schema_version: 1,
@@ -332,7 +321,21 @@ export function createWorkItem(modonomeDir, input) {
   const errors = validateWorkItem(item, loadConfigForValidation(modonomeDir));
   if (errors.length > 0) throw new Error(`Work item would be invalid: ${errors.join("; ")}`);
 
-  writeFileSync(file, JSON.stringify(item, null, 2) + "\n");
+  // Exclusive create ("wx") makes the existence check and the write atomic, closing
+  // the TOCTOU window a separate existsSync() + writeFileSync() would leave open
+  // between two concurrent panel requests for the same id.
+  let fd;
+  try {
+    fd = openSync(file, "wx");
+  } catch (err) {
+    if (err.code === "EEXIST") throw new Error(`Work item "${id}" already exists.`);
+    throw err;
+  }
+  try {
+    writeFileSync(fd, JSON.stringify(item, null, 2) + "\n");
+  } finally {
+    closeSync(fd);
+  }
   return item;
 }
 
