@@ -84,7 +84,7 @@ export const CONCEPTS: ConceptEntry[] = [
     tag: "Self-improvement",
     title: "A lesson only binds once it becomes a gate",
     body: "Lessons are captured only from a real correction signal (a gate failure, a review fix, an incident) and staged with dated, evidence-backed entries. A lesson becomes a binding rule only when an owner promotes it into a deterministic gate, recorded with full traceability back to that signal.",
-    source: { label: ".modonome/LEARNINGS.md", href: `${REPO_BLOB}/.modonome/LEARNINGS.md` },
+    source: { label: ".modonome/LESSONS.md", href: `${REPO_BLOB}/.modonome/LESSONS.md` },
   },
   {
     id: "network",

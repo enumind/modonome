@@ -21,6 +21,7 @@ Usage:
   npx modonome validate <file> --type config   explicitly validate as a config file.
   npx modonome validate <file> --type packet   explicitly validate as a knowledge packet.
   npx modonome migrate <file>            add new config levers with safe defaults and bump the version.
+  npx modonome migrate <dir> --rename-lessons --write   rename an already-scaffolded LEARNINGS.md to LESSONS.md.
   npx modonome tick [stateDir]           expire stale in-flight work items whose lease has passed.
   npx modonome status [dir]              print the effective arming posture for the target repo.
   npx modonome queue [dir]                print scored dry-run proposals as a numbered picker.
@@ -179,9 +180,16 @@ function main(argv) {
     case "connect":
       run("connect.mjs", rest);
       break;
-    case "migrate":
-      run("migrate-config.mjs", rest);
+    case "migrate": {
+      const renameLessonsIdx = rest.indexOf("--rename-lessons");
+      if (renameLessonsIdx !== -1) {
+        const passthroughArgs = rest.filter((_, i) => i !== renameLessonsIdx);
+        run("migrate-lessons-rename.mjs", passthroughArgs);
+      } else {
+        run("migrate-config.mjs", rest);
+      }
       break;
+    }
     case "tick":
       run("tick.mjs", rest);
       break;

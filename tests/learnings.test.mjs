@@ -141,7 +141,7 @@ function makeStagedFixture(stagedLines = []) {
     "```",
     "",
   ].join("\n");
-  writeFileSync(join(tmpRoot, ".modonome", "LEARNINGS.md"), body);
+  writeFileSync(join(tmpRoot, ".modonome", "LESSONS.md"), body);
   return tmpRoot;
 }
 
