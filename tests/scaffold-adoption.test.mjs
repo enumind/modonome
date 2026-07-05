@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, writeFileSync, readFileSync, existsSync, rmSync } from "node:fs";
+import { mkdtempSync, writeFileSync, readFileSync, existsSync, rmSync, mkdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -71,5 +71,38 @@ test("--no-snapshot opts out of snapshot generation", () => {
     assert.equal(r.status, 0, r.stderr);
     assert.ok(!existsSync(join(dir, ".modonome", "snapshot")), "no snapshot generated");
     assert.ok(!existsSync(join(dir, "llms.txt")), "no llms.txt");
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("--tripwires installs the Claude Code and Cursor hook packs plus the vendored kernel", () => {
+  const dir = gitRepo();
+  try {
+    const r = scaffold(dir, ["--no-snapshot", "--tripwires"]);
+    assert.equal(r.status, 0, r.stderr);
+    assert.ok(existsSync(join(dir, ".claude", "settings.json")), ".claude/settings.json installed");
+    assert.ok(existsSync(join(dir, ".cursor", "hooks.json")), ".cursor/hooks.json installed");
+    assert.ok(existsSync(join(dir, "scripts", "tripwire-check.mjs")), "kernel vendored");
+    assert.ok(existsSync(join(dir, "scripts", "guard-ratchet.mjs")), "detector vendored");
+    assert.match(readFileSync(join(dir, ".claude", "settings.json"), "utf8"), /tripwire-check\.mjs --format=claude/);
+    assert.match(readFileSync(join(dir, ".cursor", "hooks.json"), "utf8"), /tripwire-check\.mjs --format=cursor/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("--tripwires never overwrites a file the host already has at the destination", () => {
+  const dir = gitRepo();
+  try {
+    mkdirSync(join(dir, ".claude"), { recursive: true });
+    writeFileSync(join(dir, ".claude", "settings.json"), "{\n  \"custom\": true\n}\n");
+    scaffold(dir, ["--no-snapshot", "--tripwires"]);
+    assert.equal(readFileSync(join(dir, ".claude", "settings.json"), "utf8"), "{\n  \"custom\": true\n}\n", "host settings.json preserved");
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("without --tripwires, scaffold does not install the hook packs", () => {
+  const dir = gitRepo();
+  try {
+    scaffold(dir, ["--no-snapshot"]);
+    assert.ok(!existsSync(join(dir, ".claude", "settings.json")), "no .claude/settings.json without the flag");
+    assert.ok(!existsSync(join(dir, ".cursor", "hooks.json")), "no .cursor/hooks.json without the flag");
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
