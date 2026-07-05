@@ -29,6 +29,11 @@ __pycache__/
 CLAUDE.md
 runs/
 
+# Tripwires ships a real .claude/settings.json under templates/: un-ignore that one
+# tracked template (never the root-level, session-local .claude/ above).
+!templates/.claude/
+!templates/.claude/**
+
 # Design-sync converter scratch, staged scripts, and generated upload bundle
 .ds-sync/
 ds-bundle/

@@ -125,6 +125,11 @@ The only path to action is disabled, then dry-run, then shadow, then armed.
   allowlist.
 - Keep secrets out of model-visible logs and prompts. Refuse to read secret files into the
   model context.
+- Never add a trailer crediting a coding model as co-author, a footer claiming a model
+  generated the change, or a link back to the coding session, to a commit message or a pull
+  request title or body. `scripts/lib/detect-attribution.mjs` and
+  `bin/modonome.mjs hygiene check --pr` catch these in CI; write commits and pull requests as
+  the acting identity would, with no participation signature.
 - Never auto-merge changes to auth, secrets, CI, release, dependencies, schemas, migrations,
   the test harness, model routing, or agent instructions.
 - Prefer read-only tokens in dry-run and shadow modes. If a tool needs write authority,

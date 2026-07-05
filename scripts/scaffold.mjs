@@ -1,9 +1,13 @@
 #!/usr/bin/env node
 // Drop the .modonome state templates into a target repo. Boots disabled and
 // dry-run. Never overwrites an existing file. Touches nothing else.
-// Usage: node scripts/scaffold.mjs <targetDir> [--write] [--no-snapshot] [--ratchet]
+// Usage: node scripts/scaffold.mjs <targetDir> [--write] [--no-snapshot] [--ratchet] [--tripwires]
 // --ratchet is for non-agent adoption: installs only the anti-gaming pre-commit
 // hook, skipping the AGENTS.md pointer and repo snapshot that assume agent use.
+// --tripwires installs the Tripwires editor hook packs (Claude Code, Cursor): a
+// local, best-effort nudge that shells out to guard-ratchet.mjs before an agent
+// writes a gate-weakening edit. It is advisory only; the CI ratchet run from the
+// base branch is the real gate. See scripts/tripwire-check.mjs for the kernel.
 import { readdirSync, readFileSync, writeFileSync, existsSync, mkdirSync, statSync, unlinkSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -126,6 +130,36 @@ export function scaffold(target, write) {
   return planned;
 }
 
+// Install the Tripwires editor hook packs into a target repo: the two hook config
+// templates (.claude/settings.json, .cursor/hooks.json) plus the shared kernel and
+// the detector it shells out to, so a host that never installs modonome as a
+// dependency still gets a working, self-contained hook pack. Never overwrites an
+// existing file at any destination, the same rule every other scaffold surface
+// follows. For modonome's own repo, scripts/tripwire-check.mjs and
+// scripts/guard-ratchet.mjs already exist at these exact destinations, so this is a
+// no-op there beyond the two hook config files.
+function scaffoldTripwires(target, here) {
+  const files = [
+    { src: join(here, "..", "templates", ".claude", "settings.json"), dest: join(target, ".claude", "settings.json"), label: join(".claude", "settings.json") },
+    { src: join(here, "..", "templates", ".cursor", "hooks.json"), dest: join(target, ".cursor", "hooks.json"), label: join(".cursor", "hooks.json") },
+    { src: join(here, "tripwire-check.mjs"), dest: join(target, "scripts", "tripwire-check.mjs"), label: join("scripts", "tripwire-check.mjs") },
+    { src: join(here, "guard-ratchet.mjs"), dest: join(target, "scripts", "guard-ratchet.mjs"), label: join("scripts", "guard-ratchet.mjs") },
+  ];
+  const results = [];
+  for (const f of files) {
+    mkdirSync(dirname(f.dest), { recursive: true });
+    let created = false;
+    try {
+      writeFileSync(f.dest, readFileSync(f.src, "utf8"), { flag: "wx" });
+      created = true;
+    } catch (e) {
+      if (e.code !== "EEXIST") throw e;
+    }
+    results.push({ rel: f.label, action: created ? "create" : "keep" });
+  }
+  return results;
+}
+
 function writeRunLog(runsDir, command, payload) {
   try {
     mkdirSync(runsDir, { recursive: true });
@@ -159,6 +193,14 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   } else {
     console.log("Next: run `npx modonome snapshot .` to write .modonome/snapshot/ and llms.txt,");
     console.log("then point your agent instructions (AGENTS.md or CLAUDE.md) at .modonome/snapshot/map.md.");
+  }
+  if (write && process.argv.includes("--tripwires")) {
+    console.log("\nInstalling Tripwires: local, best-effort editor hook packs for Claude Code and Cursor.");
+    for (const r of scaffoldTripwires(target, here)) {
+      console.log(`  ${r.action === "create" ? "created" : "kept"}: ${r.rel}`);
+    }
+    console.log("  note: Tripwires are advisory only. The CI ratchet (guard-ratchet.mjs, run from the base");
+    console.log("  branch) is the real gate; these hooks are a best-effort local nudge, nothing more.");
   }
   writeRunLog(join(target, ".modonome", "runs"), "scaffold", {
     argv: process.argv.slice(2),
