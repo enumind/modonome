@@ -55,7 +55,8 @@ on the resolved path, so relabeling a product write as "host" cannot dodge it.
 
 With write mode on, the editable actions each sit behind a confirm dialog: saving
 configuration (patches `config.yaml` in place, preserving comments), full work-item CRUD,
-releasing a lease, and pruning a staged learning. Promoting a learning, resolving a decision,
+releasing a lease, and pruning a staged learning (removes the line from `LESSONS.md`).
+Promoting a learning, resolving a decision,
 and approving a protected path stay local acknowledgments on purpose: those need an operator
 to author real content (a gate description, an actual answer), which a one-click button
 should not fabricate. `MODONOME_ARMED`, the CI secret that actually arms the engine, is never

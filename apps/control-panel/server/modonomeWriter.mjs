@@ -381,7 +381,7 @@ export function deleteWorkItem(modonomeDir, itemId) {
 }
 
 export function pruneLearning(modonomeDir, lesson) {
-  const file = join(modonomeDir, "LEARNINGS.md");
+  const file = join(modonomeDir, "LESSONS.md");
   const lines = readFileSync(file, "utf8").split("\n");
   let removed = false;
   const next = lines.filter((line) => {

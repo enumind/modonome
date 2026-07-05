@@ -9,12 +9,12 @@
 The learning pipeline (ARCHITECTURE.md) is:
 1. Correction signal (gate failure, review fix, rework)
 2. Follower captures a generalized lesson
-3. Stage in `LEARNINGS.md` (capped at 20, dated, fingerprinted)
+3. Stage in `LESSONS.md` (capped at 20, dated, fingerprinted)
 4. Owner promotes into rules, config, or tests
 5. A deterministic gate is added
 
 This pipeline is good: it bounds learnings, stages them, and requires owner approval.
-But "promotion" today is a human edit to `LEARNINGS.md`, moving an entry from "staged"
+But "promotion" today is a human edit to `LESSONS.md`, moving an entry from "staged"
 to a deterministic gate in code (a test, a schema constraint, etc.).
 
 There is no audit trail connecting the promoted learning back to:
@@ -56,7 +56,7 @@ there, not because anyone remembers why).
    - Can be run locally or in CI to verify all rules are traced.
 
 4. **Learning hygiene CI gate:**
-   - On every `LEARNINGS.md` promotion, `check-learning-traceability.mjs` verifies:
+   - On every `LESSONS.md` promotion, `check-learning-traceability.mjs` verifies:
      - All required fields are present and non-empty.
      - `correction_signal_id` resolves as a repo-relative path when it contains "/".
        Non-path identifiers are rejected; no external network resolution is performed.

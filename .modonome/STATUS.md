@@ -32,7 +32,7 @@ See `DECISIONS.md` for open questions.
 
 ## Learnings
 
-See `LEARNINGS.md` for staged governance improvements.
+See `LESSONS.md` for staged governance improvements.
 
 ## Network
 

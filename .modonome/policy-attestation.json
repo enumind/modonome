@@ -40,7 +40,7 @@
       },
       {
         "file": "scripts/lib/near-miss.mjs",
-        "sha256": "sha256:4307069c0b1e149db9ea4c84cf37f5700e4f52630b42aa154214326b5acc279e"
+        "sha256": "sha256:4f7779cf5392e036bb31212825c280df1825f69daaceeba4812ea39ed04d0882"
       }
     ],
     "branch_denylist": [
@@ -109,5 +109,5 @@
     "autonomy_enabled": false,
     "dry_run": true
   },
-  "content_digest": "sha256:87e9df2cbcd5cee06233e45a82ade7f261268a92c8052616aa711e57ce6ad208"
+  "content_digest": "sha256:e5b6d8ac37e48a32a7e56b6a1fadb785bcfac9d17e6599fae74a660ab33b0a8b"
 }

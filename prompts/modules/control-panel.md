@@ -59,6 +59,6 @@ happens to be open:
 
 When a checker or owner catches an IA problem neither gate catches (the wrong tab, a confusing
 grouping, a control that reads unclearly), that is a normal correction signal: stage it in
-`LEARNINGS.md` like any other gate failure or review fix. A lesson promoted from repeated
+`LESSONS.md` like any other gate failure or review fix. A lesson promoted from repeated
 friction here becomes a new check in `control-panel-audit.mjs`, the same way any other
 promoted learning becomes a new deterministic gate.

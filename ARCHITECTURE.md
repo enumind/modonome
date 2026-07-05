@@ -140,6 +140,15 @@ default until an owner arms it.
   `modonome_compliance`, `modonome_verify_attestation`, and `modonome_snapshot`. For a
   harness that already speaks Model Context Protocol, this is the fourth execution context
   from the questions above. Its trust scope is `docs/adr/ADR-009-mcp-tool-auth-scope.md`.
+- Tripwires (`scripts/tripwire-check.mjs`, `templates/.claude/settings.json`,
+  `templates/.cursor/hooks.json`). A local, best-effort editor hook pack for Claude Code and
+  Cursor. It reads whatever a `PreToolUse` (Claude Code) or `beforeShellExecution` (Cursor)
+  hook payload actually carries, a shell command string or, for Claude Code's Edit, MultiEdit,
+  and Write tools, a real before/after pair, and shells out to the same, unmodified
+  `guard-ratchet.mjs` to check it. A match denies the tool call with the MR-category name and
+  a line stating this is advisory only. It runs inside the agent's own editor process, so it
+  is not part of the trust boundary below; the CI ratchet stays the judge that actually blocks
+  a merge. Installed opt-in via `npx modonome scaffold <dir> --write --tripwires`.
 
 ## The agent loop
 
@@ -163,7 +172,7 @@ flowchart LR
   owner["Owner review<br/>CODEOWNERS"]
   merge["Merge authority<br/>lands when every gate is green"]
   repo[("Host repo")]
-  learn["Staged learnings<br/>LEARNINGS.md"]
+  learn["Staged learnings<br/>LESSONS.md"]
   escalated[["Escalated<br/>cap exceeded, parked for owner"]]
 
   queue -->|claim and lease| item
@@ -338,7 +347,7 @@ flowchart LR
 
   signal["Correction signal<br/>gate failure, review fix, rework"]
   capture["Follower captures<br/>one generalized, evidence-backed lesson"]
-  stage["Stage in LEARNINGS.md<br/>fingerprinted, dated, capped at 20"]
+  stage["Stage in LESSONS.md<br/>fingerprinted, dated, capped at 20"]
   promote["Owner promotes<br/>into canonical rules, config, or tests"]
   gate["Add a deterministic gate<br/>when one fits"]
 
@@ -380,6 +389,11 @@ workflow are not present in this repository yet.
 `prompts/`, or `.github/` requires a human CODEOWNER approval before merge. The
 `touches_protected_path: true` field in a work-item JSON is the signal; the agent reads it
 before claiming the item and escalates to an owner instead of merging on its own.
+
+Tripwires sit outside both boundaries by design. They run as an editor hook, inside the same
+process and write access the agent already has, so an agent could edit or ignore its own hook
+configuration. They exist to shorten the feedback loop before a pull request opens, not to
+extend either boundary above; the CI boundary is unaffected either way.
 
 ## Why this factoring
 

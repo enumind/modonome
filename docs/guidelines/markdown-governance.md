@@ -160,7 +160,7 @@ key.
   and repoint every link.
 - Cross-links use repository-relative paths. Do not hardcode `https://github.com/<repo>/blob`
   links to in-repo files; they break on forks and branches.
-- A `correction_signal_id` in `.modonome/LEARNINGS.md` must be a repo path that exists.
+- A `correction_signal_id` in `.modonome/LESSONS.md` must be a repo path that exists.
   Moving or renaming an audit file requires updating every learning that references it.
 
 ## Deletion is deny-by-default
@@ -198,7 +198,7 @@ When the intended destination is unclear, ask before writing.
 - [ ] New file under `docs/` uses `lowercase-kebab-case` and carries front-matter.
 - [ ] Moved or renamed: every inbound Markdown link is updated.
 - [ ] Moved or renamed: every script that hardcodes the old path is updated.
-- [ ] Moved or renamed: any `correction_signal_id` in `.modonome/LEARNINGS.md` is updated.
+- [ ] Moved or renamed: any `correction_signal_id` in `.modonome/LESSONS.md` is updated.
 - [ ] Audit file moved: `RELEASE-EVIDENCE.md` regenerated with `npm run evidence`.
 - [ ] Deletion: owner-approved work item plus `DECISIONS.md` entry exist.
 - [ ] Root file: it is on the allow-list.

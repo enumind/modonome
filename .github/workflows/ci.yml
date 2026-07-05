@@ -71,7 +71,7 @@ jobs:
         run: node scripts/check-regex-safety.mjs
       - name: Run gate DAG and determinism boundary gate
         run: node scripts/check-gate-dag.mjs
-      # Advisory only: surfaces near-miss attribution tokens as LEARNINGS.md
+      # Advisory only: surfaces near-miss attribution tokens as LESSONS.md
       # proposals for human review. It never blocks CI (always exits 0 on a finding);
       # promotion into the deterministic denylist stays human-only.
       - name: Run near-miss widener (advisory)

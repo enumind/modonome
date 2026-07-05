@@ -125,6 +125,11 @@ The only path to action is disabled, then dry-run, then shadow, then armed.
   allowlist.
 - Keep secrets out of model-visible logs and prompts. Refuse to read secret files into the
   model context.
+- Never add a trailer crediting a coding model as co-author, a footer claiming a model
+  generated the change, or a link back to the coding session, to a commit message or a pull
+  request title or body. `scripts/lib/detect-attribution.mjs` and
+  `bin/modonome.mjs hygiene check --pr` catch these in CI; write commits and pull requests as
+  the acting identity would, with no participation signature.
 - Never auto-merge changes to auth, secrets, CI, release, dependencies, schemas, migrations,
   the test harness, model routing, or agent instructions.
 - Prefer read-only tokens in dry-run and shadow modes. If a tool needs write authority,
@@ -209,7 +214,7 @@ Minimum scaffold:
   config.yaml
   STATUS.md
   DECISIONS.md
-  LEARNINGS.md
+  LESSONS.md
   NETWORK.md
   control-panel.md
   version
@@ -236,7 +241,7 @@ Last updated: YYYY-MM-DD
 
 `DECISIONS.md` holds owner-gated questions, each defaulting to hold when unanswered.
 
-`LEARNINGS.md` is the staged, bounded, owner-promoted queue described in `gates.md`.
+`LESSONS.md` is the staged, bounded, owner-promoted queue described in `gates.md`.
 
 `NETWORK.md` is optional and disabled by default. See `network.md`.
 
@@ -461,7 +466,7 @@ signal: a gate failure, a review fix, an incident, repeated rework, a reverted m
 positive or negative, a market or standards shift, or a cost anomaly. Capture runs through a
 validating command, not an open-ended summary, so the store stays accurate.
 
-Stage: add one generalized, evidence-backed, dated line to `LEARNINGS.md`. Deduplicate by
+Stage: add one generalized, evidence-backed, dated line to `LESSONS.md`. Deduplicate by
 fingerprint. Cap the queue at twenty entries. When full, promote or prune. Never auto-evict.
 Entries older than thirty days need a promote-or-prune review.
 
@@ -543,7 +548,7 @@ happens to be open:
 
 When a checker or owner catches an IA problem neither gate catches (the wrong tab, a confusing
 grouping, a control that reads unclearly), that is a normal correction signal: stage it in
-`LEARNINGS.md` like any other gate failure or review fix. A lesson promoted from repeated
+`LESSONS.md` like any other gate failure or review fix. A lesson promoted from repeated
 friction here becomes a new check in `control-panel-audit.mjs`, the same way any other
 promoted learning becomes a new deterministic gate.
 
