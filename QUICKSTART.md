@@ -52,7 +52,7 @@ here is to keep the change small, fenced, and independently checked.
 ## 5. Stage a lesson
 
 When a review correction or a gate failure teaches something general, add one line to
-`.modonome/LEARNINGS.md`. An owner promotes durable lessons into your canonical docs later.
+`.modonome/LESSONS.md`. An owner promotes durable lessons into your canonical docs later.
 
 ## Add the gate to your CI
 

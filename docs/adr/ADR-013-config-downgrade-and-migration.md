@@ -28,7 +28,7 @@ Config schema changes follow these rules:
    are permanent fields. They may be renamed only with a major version bump and a
    migration script that maps the old name to the new one.
 5. **State files are versioned separately.** `.modonome/STATUS.md`, `DECISIONS.md`, and
-   `LEARNINGS.md` are prose files and are not schema-versioned. Work-item JSON files use
+   `LESSONS.md` are prose files and are not schema-versioned. Work-item JSON files use
    `schema_version: 1` and follow the same additive-only policy as config; breaking
    changes require a migration pass over `.modonome/work-items/`.
 
