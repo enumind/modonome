@@ -16,6 +16,7 @@ Usage:
   npx modonome dry-run <dir>              read the repo and print proposed work. Changes nothing.
   npx modonome scaffold <dir>             drop .modonome state files. Disabled and dry-run. Add --write to apply.
   npx modonome scaffold <dir> --write --ratchet   non-agent adoption: install only the anti-gaming pre-commit hook.
+  npx modonome scaffold <dir> --write --tripwires   install Claude Code and Cursor hook packs (local, best-effort; CI is the real gate).
   npx modonome adopt <dir>               alias for dry-run, writes an adoption summary to stdout.
   npx modonome validate <file>           validate a config or knowledge packet (type inferred from filename).
   npx modonome validate <file> --type config   explicitly validate as a config file.
