@@ -1,5 +1,5 @@
 name: 'Modonome Gate Integrity'
-description: 'Block AI coding agents from weakening your tests. Reject diffs that remove assertions, inject skips, escape types, or lower coverage.'
+description: 'description: Block PRs that weaken tests, assertions, skips, coverage, or type checks'
 author: 'Modonome'
 branding:
   icon: 'shield'
