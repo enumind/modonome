@@ -32,6 +32,13 @@ jobs:
       - name: Install Secure Dependencies
         run: npm ci
 
+      # npm publish's prepublishOnly script runs the full test suite, and some root tests
+      # (for example tests/control-panel-work-item-writer.test.mjs) import
+      # apps/control-panel/server/*.mjs directly, which needs js-yaml -- a dependency that
+      # lives only in apps/control-panel/node_modules.
+      - name: Install control-panel frontend dependencies
+        run: npm install --prefix design-system && npm install --prefix apps/control-panel
+
       # Each push gets a unique prerelease so edge runs never collide on an existing version.
       # The version is set at publish time only and is not committed back to the repo.
       - name: Set unique edge version
