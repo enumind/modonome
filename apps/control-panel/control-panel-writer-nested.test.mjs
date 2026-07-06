@@ -5,11 +5,11 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { dirname } from "node:path";
-import { parseFlatYaml } from "../scripts/lib/yaml-lite.mjs";
-import { patchConfig } from "../apps/control-panel/server/modonomeWriter.mjs";
-import { validateConfig } from "../scripts/lib/config-validate.mjs";
-import { resolveRole } from "../scripts/agent/resolve-role.mjs";
-import { planCycle } from "../scripts/agent/run-cycle.mjs";
+import { parseFlatYaml } from "../../scripts/lib/yaml-lite.mjs";
+import { patchConfig } from "./server/modonomeWriter.mjs";
+import { validateConfig } from "../../scripts/lib/config-validate.mjs";
+import { resolveRole } from "../../scripts/agent/resolve-role.mjs";
+import { planCycle } from "../../scripts/agent/run-cycle.mjs";
 
 // This repo's root package has zero dependencies by design, so tests parse with the
 // same hand-rolled parser scripts/validate-config.mjs itself uses (js-yaml is a
@@ -17,7 +17,7 @@ import { planCycle } from "../scripts/agent/run-cycle.mjs";
 const yaml = { load: parseFlatYaml };
 
 const here = dirname(fileURLToPath(import.meta.url));
-const root = join(here, "..");
+const root = join(here, "..", "..");
 const realConfigPath = join(root, ".modonome", "config.yaml");
 // The host-mode example scaffold: a fresh install with no roles/models/runners/
 // providers block at all. Host mode is a first-class mode, not the demo-only path, so

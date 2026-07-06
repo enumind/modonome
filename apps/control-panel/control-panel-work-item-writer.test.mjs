@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { createWorkItem, updateWorkItem, deleteWorkItem } from "../apps/control-panel/server/modonomeWriter.mjs";
+import { createWorkItem, updateWorkItem, deleteWorkItem } from "./server/modonomeWriter.mjs";
 
 // A minimal scratch .modonome dir: a config.yaml (read for governance validation, e.g.
 // require_distinct_maker_checker_model) and an empty work-items/ directory.

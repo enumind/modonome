@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:754d111a6acdf7a18bab6c1461c75f0ce7678bcf6b8e5e11a10c92fa6144bc57
-Files: 888  Bytes: 3349981  Map tokens: 117853/120000
+Merkle root: sha256:993ac0dbc7acf321a489655d95cdffde36f0291b323231a29a614d701ec56862
+Files: 888  Bytes: 3351005  Map tokens: 117866/120000
 
 ## Modules
 
@@ -79,6 +79,8 @@ Files: 888  Bytes: 3349981  Map tokens: 117853/120000
 - agentproof/scenarios/ap-33-config-env-override-inert.mjs [F:02a5f8fc55]: !/usr/bin/env node
 - agentproof/scenarios/ap-36-adr-number-uniqueness.mjs [F:a6d2bd3021]: A minimal repo that satisfies every check other than the one under test, so a failure can only come from the ADR-number logic being exercised.
 - apps/control-panel/README.md [F:3211d524ad]: Modonome control panel
+- apps/control-panel/control-panel-work-item-writer.test.mjs [F:dc4c481710]: A minimal scratch .modonome dir: a config.yaml (read for governance validation, e.g. require_distinct_maker_checker_model) and an empty work-items/ directory.
+- apps/control-panel/control-panel-writer-nested.test.mjs [F:4e321aefc7]: Every test operates on a scratch copy of a real config.yaml, never the file itself, so a bug here can never corrupt real state.
 - apps/control-panel/server/api.mjs [F:08b7435c86]: The single source of truth for "may a write to this dir proceed", used both to decide a 403 and to set source.writable, so the two can never drift. Returns the 
 - apps/control-panel/server/learningsFormat.mjs [F:54df44aadd]: Shared parsing for the "## Staged" bullet lines in .modonome/LESSONS.md, so the
 - apps/control-panel/server/modonomeReader.mjs [F:8a3dd6ccff]: A gate's status is implied by the state of every work item that declares it, never by a fabricated pass. A repo that has only ever run dry-run sweeps shows ever
@@ -384,8 +386,6 @@ Files: 888  Bytes: 3349981  Map tokens: 117853/120000
 - tests/config-key-parity.test.mjs [F:5eff4122c0]: Extract the string literals inside a named list/set declaration, regardless of whether it is `new Set([...])` or `[...] as const`.
 - tests/connect.test.mjs [F:5956278014]: Tests for `modonome connect`, which registers the read-only MCP server with an agent
 - tests/control-panel-ownership.test.mjs [F:d0da1cab80]: A scratch repo whose git email is faked through the injected `exec`, so the decision is tested without touching this repo's real git config.
-- tests/control-panel-work-item-writer.test.mjs [F:e00aec45ce]: A minimal scratch .modonome dir: a config.yaml (read for governance validation, e.g. require_distinct_maker_checker_model) and an empty work-items/ directory.
-- tests/control-panel-writer-nested.test.mjs [F:8b2f3dbcba]: Every test operates on a scratch copy of a real config.yaml, never the file itself, so a bug here can never corrupt real state.
 - tests/decisions-authority.test.mjs [F:f921eecad7]: A repo with one commit (base: entry "a" only) and a second commit that adds a new Resolved entry "b" on top. Returns { dir, baseSha }.
 - tests/dependency.test.mjs [F:b70824b13e]: Read all .mjs files in a directory (non-recursive by default).
 - tests/dry-run.test.mjs [F:778c33cdc0]: function dryRun
@@ -891,6 +891,9 @@ Files: 888  Bytes: 3349981  Map tokens: 117853/120000
 - S:a92333a9ea function buildPolicyManifestBody `export function buildPolicyManifestBody({ root, config, pkgJson })` L153 : Build the deterministic manifest body (without the content_digest) from repo state.
 - S:c4e4845bcc function manifestDigest `export function manifestDigest(body)` L181 : Content digest over the canonical (RFC 8785 JCS) serialization of the body, so a re-serialized or key-reordered file yields the same digest and only a real policy change moves it.
 - S:b29d404deb function buildPolicyManifest `export function buildPolicyManifest({ root, config, pkgJson })` L186 : The full manifest: the body plus its self-describing content_digest.
+### apps/control-panel/control-panel-writer-nested.test.mjs [F:4e321aefc7]
+- S:55eb864e69 function scratchModonomeDir `function scratchModonomeDir(sourcePath = realConfigPath)` L30 : Every test operates on a scratch copy of a real config.yaml, never the file itself, so a bug here can never corrupt real state.
+- S:030fc79ce1 function otherLines `function otherLines(originalText, touchedTopKeys)` L39 : Lines present in the original file that are untouched by a given patch: every line outside the blocks the patch's keys live in. Used to assert a patch changes only what it says it changes.
 ### scripts/lib/learnings.mjs [F:4ebb5aa8a0]
 - S:72cb0b7406 const REQUIRED_FIELDS `export const REQUIRED_FIELDS = [` L9
 - S:005abb5200 const MAX_STAGED_ENTRIES `export const MAX_STAGED_ENTRIES = 20;` L24 : The Staged section is capped so it stays a short review queue, never a dumping ground. LESSONS.md documents this as "Cap at 20 staged entries... Never auto-evict." Until now nothing enforced it; appen
@@ -1225,9 +1228,6 @@ Files: 888  Bytes: 3349981  Map tokens: 117853/120000
 - S:05e617fb30 type ButtonSize `export type ButtonSize = "sm" | "md" | "lg";` L6
 - S:c928d805b5 interface ButtonProps `export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>` L8
 - S:b1bbb81b82 function Button `export function Button(` L30 : The standard action control. Use `primary` for the main action on a screen, * `secondary` for supporting actions, `ghost` for low-emphasis inline actions, and * `danger` for anything that arms, delete
-### tests/control-panel-writer-nested.test.mjs [F:8b2f3dbcba]
-- S:6c4ca00b53 function scratchModonomeDir `function scratchModonomeDir(sourcePath = realConfigPath)` L30 : Every test operates on a scratch copy of a real config.yaml, never the file itself, so a bug here can never corrupt real state.
-- S:a57f8c1bdc function otherLines `function otherLines(originalText, touchedTopKeys)` L39 : Lines present in the original file that are untouched by a given patch: every line outside the blocks the patch's keys live in. Used to assert a patch changes only what it says it changes.
 ### scripts/agent/providers.mjs [F:8b5a1f94c4]
 - S:542af83b15 const BUILTIN_PROVIDERS `export const BUILTIN_PROVIDERS =` L11 : Built-in providers. A config's `providers` map (see resolveProvider) is merged on top, so a host repo can add or override entries without a code change here.
 - S:6ee308cae0 function resolveProvider `export function resolveProvider(name, providersOverride)` L39 : Resolve a provider descriptor by name. Built-ins are merged with an optional * config-provided override map (cfg.providers), so a host repo can redefine or * add providers without touching this file. 
@@ -1614,6 +1614,9 @@ Files: 888  Bytes: 3349981  Map tokens: 117853/120000
 - S:45b2f146f0 function buildEdgeList `function buildEdgeList(adjacency, pathIdByPath)` L274 : Resolve adjacency into a sorted edge list of dictionary path ids.
 - S:dbf47f93d3 function renderMarkdown `function renderMarkdown({ generatedFor, merkleRoot, files, totalBytes, map })` L288
 - S:890a9e6691 function readGovernance `function readGovernance(root)` L339 : Read a light governance posture from the target config and environment. It never arms anything; it only reports posture so a snapshot can double as a status probe.
+### apps/control-panel/control-panel-work-item-writer.test.mjs [F:dc4c481710]
+- S:72722587af function scratchModonomeDir `function scratchModonomeDir()` L10 : A minimal scratch .modonome dir: a config.yaml (read for governance validation, e.g. require_distinct_maker_checker_model) and an empty work-items/ directory.
+- S:2ae5aafd59 function readItem `function readItem(dir, id)` L17
 ### .design-sync/previews/Tooltip.tsx [F:dca643f34b]
 - S:73feb65706 function OnLabel `export const OnLabel = () => (` L4
 ### .design-sync/previews/QueueBoard.tsx [F:dd1be2cd7b]
@@ -1646,9 +1649,6 @@ Files: 888  Bytes: 3349981  Map tokens: 117853/120000
 - S:abe6a83201 function Icon `export function Icon({ name, size = 16, title, strokeWidth = 1.8, ...rest }: IconProps)` L88
 ### tests/check-gate-dag.test.mjs [F:df4b55ecef]
 - S:f2f7e716af function makeBoundaryFixture `function makeBoundaryFixture(daImports)` L50 : Build a temp repo whose detect-attribution.mjs imports whatever `daImports` says.
-### tests/control-panel-work-item-writer.test.mjs [F:e00aec45ce]
-- S:8a9e6199b3 function scratchModonomeDir `function scratchModonomeDir()` L10 : A minimal scratch .modonome dir: a config.yaml (read for governance validation, e.g. require_distinct_maker_checker_model) and an empty work-items/ directory.
-- S:211cdf5f9d function readItem `function readItem(dir, id)` L17
 ### scripts/score-proposals.mjs [F:e11f907cba]
 - S:73e4b1bbf9 const SIGNAL_MIN `export const SIGNAL_MIN = 0;` L31
 - S:ad1b93bd0c const SIGNAL_MAX `export const SIGNAL_MAX = 5;` L32
@@ -1936,6 +1936,11 @@ Files: 888  Bytes: 3349981  Map tokens: 117853/120000
 - scripts/lib/policy-manifest.mjs -> scripts/lib/canonical-json.mjs
 - scripts/lib/policy-manifest.mjs -> scripts/lib/branch-name.mjs
 - scripts/lib/policy-manifest.mjs -> scripts/lib/capability-flags.mjs
+- apps/control-panel/control-panel-writer-nested.test.mjs -> scripts/lib/yaml-lite.mjs
+- apps/control-panel/control-panel-writer-nested.test.mjs -> apps/control-panel/server/modonomeWriter.mjs
+- apps/control-panel/control-panel-writer-nested.test.mjs -> scripts/agent/resolve-role.mjs
+- apps/control-panel/control-panel-writer-nested.test.mjs -> scripts/lib/config-validate.mjs
+- apps/control-panel/control-panel-writer-nested.test.mjs -> scripts/agent/run-cycle.mjs
 - apps/control-panel/src/screens/SettingsScreen.tsx -> apps/control-panel/src/state/types.ts
 - apps/control-panel/src/screens/SettingsScreen.tsx -> apps/control-panel/src/state/configDiff.ts
 - apps/control-panel/src/screens/SettingsScreen.tsx -> apps/control-panel/src/lib/confirm.tsx
@@ -2027,11 +2032,6 @@ Files: 888  Bytes: 3349981  Map tokens: 117853/120000
 - tests/transition-work-item-unit.test.mjs -> scripts/transition-work-item.mjs
 - design-system/src/components/Button/Button.tsx -> design-system/src/lib/cx.ts
 - design-system/src/components/Button/Button.tsx -> design-system/src/components/Icon/Icon.tsx
-- tests/control-panel-writer-nested.test.mjs -> scripts/lib/yaml-lite.mjs
-- tests/control-panel-writer-nested.test.mjs -> apps/control-panel/server/modonomeWriter.mjs
-- tests/control-panel-writer-nested.test.mjs -> scripts/agent/resolve-role.mjs
-- tests/control-panel-writer-nested.test.mjs -> scripts/lib/config-validate.mjs
-- tests/control-panel-writer-nested.test.mjs -> scripts/agent/run-cycle.mjs
 - scripts/check-state-machine-acyclic.mjs -> scripts/lib/graph.mjs
 - examples/demo-app/src/index.js -> examples/demo-app/src/OrderService.js
 - examples/demo-app/src/index.js -> examples/demo-app/src/CheckoutService.js
@@ -2214,6 +2214,7 @@ Files: 888  Bytes: 3349981  Map tokens: 117853/120000
 - scripts/lib/snapshot-core.mjs -> scripts/lib/token-estimate.mjs
 - scripts/lib/snapshot-core.mjs -> scripts/lib/repo-detect.mjs
 - scripts/lib/snapshot-core.mjs -> scripts/lib/snapshot-walk.mjs
+- apps/control-panel/control-panel-work-item-writer.test.mjs -> apps/control-panel/server/modonomeWriter.mjs
 - tests/promoted-learnings.test.mjs -> scripts/lib/learnings.mjs
 - scripts/agent/run-cycle.mjs -> scripts/agent/resolve-role.mjs
 - scripts/agent/run-cycle.mjs -> scripts/agent/route-action.mjs
@@ -2228,7 +2229,6 @@ Files: 888  Bytes: 3349981  Map tokens: 117853/120000
 - scripts/agent/run-cycle.mjs -> scripts/agent/render-prompt.mjs
 - design-system/src/components/AuditTimeline/index.ts -> design-system/src/components/AuditTimeline/AuditTimeline.tsx
 - tests/check-gate-dag.test.mjs -> scripts/check-gate-dag.mjs
-- tests/control-panel-work-item-writer.test.mjs -> apps/control-panel/server/modonomeWriter.mjs
 - tests/role-registry.test.mjs -> scripts/agent/resolve-role.mjs
 - tests/role-registry.test.mjs -> scripts/validate-config.mjs
 - tests/role-registry.test.mjs -> scripts/agent/run-cycle.mjs
