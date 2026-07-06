@@ -1,4 +1,4 @@
-# ADR-038: The Gauntlet, a Host-Repo Gate-Integrity Replay
+# ADR-041: The Gauntlet, a Host-Repo Gate-Integrity Replay
 
 **Status:** Accepted
 **Date:** 2026-07-04

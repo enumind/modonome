@@ -45,6 +45,7 @@ const config: ModonomeConfig = {
     local: { labels: ["self-hosted", "gpu-01"], cli_path: "claude" },
     container: { labels: ["ubuntu-latest"], cli_path: "claude" },
   },
+  providers: {},
 };
 
 const queue: WorkItemVM[] = [

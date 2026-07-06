@@ -13,5 +13,6 @@
   "gates": [
     "node --test tests/*.test.mjs",
     "node scripts/check-style.mjs ."
-  ]
+  ],
+  "type": "develop-feature"
 }

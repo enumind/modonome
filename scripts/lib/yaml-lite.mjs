@@ -1,16 +1,22 @@
 // A minimal reader for "key: value" YAML, enough for .modonome/config.yaml.
 // It supports comments, booleans, integers, floats, quoted strings, empty arrays,
-// and inline string arrays like [a, b]. It also supports indentation-based nested
-// mappings using 2-space-per-level indentation (additive; flat keys still work).
+// inline string arrays like [a, b], and block-style string sequences ("- item" lines).
+// It also supports indentation-based nested mappings using 2-space-per-level
+// indentation (additive; flat keys still work).
 //
 // Nested mapping rules:
-//   - A line whose value is empty (after stripping comments) starts a mapping block.
+//   - A line whose value is empty (after stripping comments) starts a mapping block,
+//     unless its children are "- item" lines, in which case it starts a sequence.
 //   - Subsequent lines indented deeper than the parent become key: value pairs under
-//     that parent, recursively.
+//     that parent (mapping), or "- item" entries (sequence), recursively.
 //   - Inline arrays like [self-hosted, mac-mini] still work as leaf values.
 //   - Every existing flat top-level key parses to the exact same value as before.
 //
-// Out of scope: multi-document, anchors, aliases, block scalars, sequences.
+// Sequence items are read as scalars only (through the same parseScalar as a mapping
+// value): a sequence of mappings ("- key: value" per item) is out of scope, since
+// every array in schemas/config.schema.json is a plain array of strings.
+//
+// Out of scope: multi-document, anchors, aliases, block scalars, sequences of mappings.
 
 function parseScalar(raw) {
   const v = raw.trim();
@@ -63,7 +69,8 @@ function indentOf(line) {
 }
 
 // Parse an array of non-empty, non-comment lines into a nested object.
-// Each entry is { indent, key, rawValue }.
+// Each entry is { indent, key, rawValue, isItem }, where a sequence-item line
+// ("- value") has isItem: true and key: null.
 function parseEntries(entries, start, minIndent) {
   const out = {};
   let i = start;
@@ -71,15 +78,26 @@ function parseEntries(entries, start, minIndent) {
     const entry = entries[i];
     // Stop if we have stepped back out to a shallower level.
     if (entry.indent < minIndent) break;
-    // Skip entries that belong to a deeper level (already consumed by recursion).
-    if (entry.indent > minIndent) { i++; continue; }
+    // Skip entries that belong to a deeper level (already consumed by recursion), and
+    // skip a stray "- item" with no owning key at this level rather than throw.
+    if (entry.indent > minIndent || entry.isItem) { i++; continue; }
 
     const rawVal = entry.rawValue;
     if (rawVal === "") {
       // No inline value: this key introduces a nested block. Collect children.
-      const childIndent = i + 1 < entries.length ? entries[i + 1].indent : -1;
-      if (childIndent > minIndent) {
-        out[entry.key] = parseEntries(entries, i + 1, childIndent);
+      const child = i + 1 < entries.length ? entries[i + 1] : null;
+      if (child && child.indent > minIndent && child.isItem) {
+        // Block sequence: every contiguous "- item" line at exactly the first
+        // child's indent is one scalar element, read in file order.
+        const items = [];
+        i++;
+        while (i < entries.length && entries[i].indent === child.indent && entries[i].isItem) {
+          items.push(parseScalar(entries[i].rawValue));
+          i++;
+        }
+        out[entry.key] = items;
+      } else if (child && child.indent > minIndent) {
+        out[entry.key] = parseEntries(entries, i + 1, child.indent);
         // Skip all consumed children.
         i++;
         while (i < entries.length && entries[i].indent > minIndent) i++;
@@ -101,15 +119,27 @@ export function parseFlatYaml(text) {
   for (const line of text.split("\n")) {
     const trimmed = line.trim();
     if (trimmed === "" || trimmed.startsWith("#")) continue;
+
+    const indent = indentOf(line);
+    const rest = line.slice(indent);
+
+    // A block-sequence item line: "- value" (a bare "-" is an empty item). Checked
+    // before the colon scan below so a value containing ": " (e.g. a URL) inside an
+    // item, such as "- https://example.com", is never mistaken for a mapping line.
+    if (rest === "-" || rest.startsWith("- ")) {
+      const rawValue = extractRawValue(rest === "-" ? "" : rest.slice(2));
+      entries.push({ indent, key: null, rawValue, isItem: true });
+      continue;
+    }
+
     const colonIdx = line.indexOf(":");
     if (colonIdx === -1) continue;
 
-    const indent = indentOf(line);
     const key = line.slice(indent, colonIdx).trim();
     if (!key) continue;
 
     const rawValue = extractRawValue(line.slice(colonIdx + 1));
-    entries.push({ indent, key, rawValue });
+    entries.push({ indent, key, rawValue, isItem: false });
   }
 
   // Determine the minimum (top-level) indent. Almost always 0.

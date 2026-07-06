@@ -1,4 +1,4 @@
-// Tests for `modonome gauntlet` (see docs/adr/ADR-038-gauntlet-replay.md): a read-only
+// Tests for `modonome gauntlet` (see docs/adr/ADR-041-gauntlet-replay.md): a read-only
 // self-test that replays gate-weakening mutations against a target repo's own real
 // files, then grades them against whatever gate-integrity check that repo actually has
 // configured. The non-negotiable safety invariant is that it never mutates anything
