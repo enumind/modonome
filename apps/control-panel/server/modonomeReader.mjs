@@ -30,6 +30,7 @@ export function readModonomeState(modonomeDir, { mode }) {
       expiresAt: i.leaseExpiresAt,
       stale: new Date(i.leaseExpiresAt).getTime() < Date.now(),
     }));
+  const gauntlet = latestGauntletScore(runs);
 
   return {
     subject: buildSubject({ repoRoot, modonomeDir, mode, config, queue, runs }),
@@ -45,6 +46,7 @@ export function readModonomeState(modonomeDir, { mode }) {
     protectedPaths: buildProtectedPaths(config, items),
     ...buildTrends(runs),
     agentProofScore: latestAgentProofScore(runs),
+    ...(gauntlet ? { gauntletScore: gauntlet.score, gauntletApplicable: gauntlet.applicable } : {}),
     remediation: buildRemediationView({
       config,
       envArmed: process.env.MODONOME_ARMED === "true",
@@ -442,6 +444,16 @@ function latestAgentProofScore(runs) {
   const reportRuns = runs.filter((r) => r.command === "report" && r.agentproof_score);
   if (!reportRuns.length) return 0;
   return Number(String(reportRuns[reportRuns.length - 1].agentproof_score).split("/")[0]) || 0;
+}
+
+// Mirrors latestAgentProofScore, but for `npx modonome gauntlet` runs (a distinct
+// command, never conflated with `report`). Undefined (not 0) when the tool has never
+// been run, since a 0 score and "never run" mean different things here.
+function latestGauntletScore(runs) {
+  const gauntletRuns = runs.filter((r) => r.command === "gauntlet" && r.gauntlet_score);
+  if (!gauntletRuns.length) return undefined;
+  const [score, applicable] = String(gauntletRuns[gauntletRuns.length - 1].gauntlet_score).split("/");
+  return { score: Number(score) || 0, applicable: Number(applicable) || 0 };
 }
 
 function gitInfo(repoRoot) {

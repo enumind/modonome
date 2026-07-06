@@ -269,6 +269,9 @@ export interface PanelState {
   costTrend: TrendPoint[];
   qualityTrend: TrendPoint[];
   agentProofScore: number;
+  /** Undefined when `npx modonome gauntlet` has never been run against this repo. */
+  gauntletScore?: number;
+  gauntletApplicable?: number;
   /** Optional so a state assembled without it (older fixture, partial read) still types. */
   remediation?: RemediationVM;
 }
