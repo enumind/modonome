@@ -44,7 +44,7 @@ Two host-only tools help a team adopt Modonome Guard across many repositories.
 Both run against infrastructure you already control. Modonome ships the code, runs
 neither of them, and receives nothing back.
 
-- **Terraform module (`terraform/`, [ADR-040](adr/ADR-040-terraform-module.md)).**
+- **Terraform module (`terraform/`, [ADR-043](adr/ADR-043-terraform-module.md)).**
   Provisions, per repository, a branch ruleset requiring the `gate-integrity`
   status check and a `.github/CODEOWNERS` file over the governance paths. You apply
   it against your own organization with your own credentials. It never sets

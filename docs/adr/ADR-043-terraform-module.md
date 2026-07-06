@@ -1,4 +1,4 @@
-# ADR-040: Terraform module for org-level provisioning
+# ADR-043: Terraform module for org-level provisioning
 
 **Status:** Accepted  
 **Date:** 2026-07-04  

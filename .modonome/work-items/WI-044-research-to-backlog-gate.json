@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "id": "WI-044-research-to-backlog-gate",
+  "state": "done",
+  "type": "develop-feature",
+  "assigned_role": "checker",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": true,
+  "allowed_edit_set": [
+    "scripts/agent/review-proposals.mjs",
+    "scripts/queue.mjs",
+    "scripts/dry-run-sweep.mjs",
+    "tests/review-proposals.test.mjs"
+  ],
+  "gates": [
+    "node --test tests/review-proposals.test.mjs",
+    "node scripts/check-work-items.mjs",
+    "node scripts/check-style.mjs .",
+    "npm run verify"
+  ],
+  "queued_at": "2026-07-04"
+}

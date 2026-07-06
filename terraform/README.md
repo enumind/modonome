@@ -5,7 +5,7 @@ across the repositories in a GitHub organization you control: a branch ruleset
 that requires the `gate-integrity` status check, and a `.github/CODEOWNERS` file
 over your governance paths.
 
-This module is covered by [ADR-040](../docs/adr/ADR-040-terraform-module.md).
+This module is covered by [ADR-043](../docs/adr/ADR-043-terraform-module.md).
 
 ## Host-only constraint (read this first)
 

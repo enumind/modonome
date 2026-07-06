@@ -17,5 +17,6 @@
     "node scripts/check-style.mjs .",
     "npm run verify"
   ],
-  "queued_at": "2026-07-01"
+  "queued_at": "2026-07-01",
+  "type": "develop-feature"
 }

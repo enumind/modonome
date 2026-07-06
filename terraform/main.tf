@@ -1,4 +1,4 @@
-# Modonome org-provisioning module (ADR-040).
+# Modonome org-provisioning module (ADR-043).
 #
 # Host-only constraint: this module is applied by you, against your own GitHub
 # organization, using your own Terraform credentials. Modonome does not run it,

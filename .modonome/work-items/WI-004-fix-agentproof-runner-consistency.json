@@ -12,5 +12,6 @@
   "gates": [
     "node agentproof/runner.mjs",
     "node --test tests/*.test.mjs"
-  ]
+  ],
+  "type": "fix-issue"
 }

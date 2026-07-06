@@ -15,6 +15,18 @@ const fx = join(root, "fixtures");
 const readJson = (p) => JSON.parse(readFileSync(p, "utf8"));
 const files = (dir) => readdirSync(dir).map((f) => join(dir, f));
 
+test("the shipped host-mode example config validates cleanly through the real CLI loader", () => {
+  // Regression guard: this file uses block-style "- item" sequences for its arrays,
+  // which parseFlatYaml silently misread as empty strings before sequence support was
+  // added, so `npx modonome validate` failed on modonome's own shipped example. Loaded
+  // through loadConfig (the same function the CLI and run-cycle.mjs use), not js-yaml.
+  const hostConfigPath = join(root, "examples", "demo-app", ".modonome", "config.yaml");
+  const cfg = loadConfig(hostConfigPath);
+  assert.deepEqual(validateConfig(cfg), []);
+  assert.deepEqual(cfg.trusted_author_allowlist, ["modonome-maker[bot]"]);
+  assert.ok(cfg.protected_paths_extra.length >= 3, "protected_paths_extra must parse as a real array, not a string");
+});
+
 test("valid configs pass, invalid configs fail", () => {
   for (const f of files(join(fx, "config", "valid"))) {
     assert.deepEqual(validateConfig(readJson(f)), [], `expected valid: ${f}`);
@@ -66,6 +78,32 @@ test("yaml-lite parser handles edge cases correctly", () => {
   const parsed = parseFlatYaml("# this is a comment\nkey: value");
   assert.equal(parsed.key, "value");
   assert.equal(parsed["# this is a comment"], undefined);
+});
+
+test("yaml-lite parser reads block-style sequences in addition to inline arrays", () => {
+  // The shape examples/demo-app/.modonome/config.yaml actually ships:
+  const doc = [
+    "trusted_author_allowlist:",
+    "  - modonome-maker[bot]",
+    "protected_paths_extra:",
+    "  - .modonome/config.yaml",
+    "  - .github/workflows",
+    "  - CODEOWNERS",
+    "state_dir: .modonome",
+  ].join("\n");
+  const parsed = parseFlatYaml(doc);
+  assert.deepEqual(parsed.trusted_author_allowlist, ["modonome-maker[bot]"]);
+  assert.deepEqual(parsed.protected_paths_extra, [".modonome/config.yaml", ".github/workflows", "CODEOWNERS"]);
+  assert.equal(parsed.state_dir, ".modonome", "a flat key after a sequence must still parse");
+
+  // A key with no children at all still parses to "", not a sequence: must not
+  // regress just because sequence support was added.
+  assert.equal(parseFlatYaml("notes:").notes, "");
+  // An empty item and a quoted item both parse as their scalars would inline.
+  assert.deepEqual(parseFlatYaml('items:\n  - "quoted"\n  -').items, ["quoted", ""]);
+  // A sequence nested one level deep under a mapping key still parses.
+  const nested = parseFlatYaml(["runners:", "  local:", "    labels:", "      - self-hosted", "      - mac-mini"].join("\n"));
+  assert.deepEqual(nested.runners.local.labels, ["self-hosted", "mac-mini"]);
 });
 
 test("migration adds missing levers with safe defaults and never arms", () => {
