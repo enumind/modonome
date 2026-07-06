@@ -73,6 +73,13 @@ jobs:
 
       - run: npm ci
 
+      # npm publish's prepublishOnly script runs the full test suite, and some root tests
+      # (for example tests/control-panel-work-item-writer.test.mjs) import
+      # apps/control-panel/server/*.mjs directly, which needs js-yaml -- a dependency that
+      # lives only in apps/control-panel/node_modules.
+      - name: Install control-panel frontend dependencies
+        run: npm install --prefix design-system && npm install --prefix apps/control-panel
+
       - name: Check if already published
         id: check
         run: |
