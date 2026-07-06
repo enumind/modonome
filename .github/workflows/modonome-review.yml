@@ -1,0 +1,42 @@
+# Modonome independent checker on every pull request (ADR-038 spike).
+#
+# The maker/checker loop's checker is not private to the internal loop: it can review
+# any change, whoever produced it (a human, a coding-agent session, or the internal
+# maker). This workflow runs that review-only checker over the PR diff and writes the
+# result to the job summary, so the change gets an independent adversarial review before
+# merge regardless of origin.
+#
+# Deliberately inert for the spike: it runs a DRY-RUN (no model call), needs no secrets,
+# and holds contents:read only. A live review that calls a local or free checker and
+# posts a PR review is the ADR-038 follow-up; it needs a configured checker endpoint and
+# a write-scoped token, so it is not enabled here.
+name: Modonome Review
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the PR head with history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Independent checker review (dry-run)
+        run: |
+          git diff "origin/${{ github.base_ref }}...HEAD" > /tmp/pr.diff
+          node scripts/agent/review-diff.mjs \
+            --diff /tmp/pr.diff \
+            --author "PR #${{ github.event.pull_request.number }} by @${{ github.event.pull_request.user.login }}" \
+            >> "$GITHUB_STEP_SUMMARY"

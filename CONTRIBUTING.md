@@ -133,7 +133,7 @@ See `agentproof/CONTRIBUTING.md` for the full scenario authoring guide.
 ## Contributing to the Hardened Registry
 
 `docs/agentproof-registry.json` lists independently-run, publicly-inspectable AgentProof
-conformance runs (see `docs/adr/ADR-039-agentproof-verified.md`). There is no submission
+conformance runs (see `docs/adr/ADR-042-agentproof-verified.md`). There is no submission
 service or API: new entries are added only through a reviewed pull request.
 
 To submit a run, open a pull request adding one entry to the `entries` array with

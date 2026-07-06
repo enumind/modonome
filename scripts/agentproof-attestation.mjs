@@ -6,7 +6,7 @@
 // not a replacement: that script's existing --agentproof flag embeds an AgentProof
 // score as a sub-field of the gate-integrity predicate (extra context on a diff-based
 // verdict); this script's Statement is the AgentProof run itself as the subject of the
-// claim. See docs/adr/ADR-039-agentproof-verified.md for why the two are separate.
+// claim. See docs/adr/ADR-042-agentproof-verified.md for why the two are separate.
 //
 // In CI, sign the Statement keyless with actions/attest (Sigstore, Rekor), the same
 // pattern scripts/ratchet-attestation.mjs uses for the gate-integrity receipt.

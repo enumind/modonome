@@ -99,6 +99,7 @@
       "check-repo-hygiene",
       "check-self-application",
       "check-style",
+      "check-work-item-staleness",
       "check-work-items",
       "policy-attestation-freshness",
       "snapshot-freshness",
@@ -109,5 +110,5 @@
     "autonomy_enabled": false,
     "dry_run": true
   },
-  "content_digest": "sha256:a5ac26aebc4f144ccad86a9754676ac3f0464cf46cf540468c53082248c0287e"
+  "content_digest": "sha256:7db28023c22f33fd9d466a66731c0790630315e16ad7c260b757e97dfe890bb2"
 }

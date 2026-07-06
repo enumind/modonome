@@ -1,4 +1,4 @@
-# ADR-039: AgentProof Verified and the Hardened Registry
+# ADR-042: AgentProof Verified and the Hardened Registry
 
 **Status:** Accepted
 **Date:** 2026-07-04

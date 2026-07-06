@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Hardened Registry gate (ADR-039). Validates docs/agentproof-registry.json against
+// Hardened Registry gate (ADR-042). Validates docs/agentproof-registry.json against
 // schemas/agentproof-registry.schema.json and does a defensive, offline sanity check on
 // each entry's run_url. No network call: this repository's tests and gates stay
 // offline, so this never fetches run_url to confirm it resolves. It only checks that the
@@ -41,7 +41,7 @@ function runCli() {
   const registryPath = join(root, "docs", "agentproof-registry.json");
   const schemaPath = join(root, "schemas", "agentproof-registry.schema.json");
 
-  console.log("Hardened Registry gate (ADR-039)");
+  console.log("Hardened Registry gate (ADR-042)");
   console.log("=================================");
 
   if (!existsSync(registryPath)) {

@@ -513,7 +513,9 @@ Information architecture:
 Controls: a kill switch, a mode switch with prerequisites shown, a dry-run button, cap
 editors, a trusted-author editor that requires owner approval, a protected-path editor where
 additions are allowed and removals require owner approval, and promote or prune learning
-actions.
+actions. A connected host repo is freely editable with write mode on; editing modonome's own
+governance (self-governance mode) is reserved to a code owner, and arming stays a two-key
+action the panel can never complete on its own.
 
 UX requirements: operational and scannable, host tokens and components, accessibility first
 (keyboard, visible focus, labels on icon buttons, contrast at least 4.5 to 1, color never the

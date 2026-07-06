@@ -1,4 +1,4 @@
-// Tests for the Hardened Registry (ADR-039). Schema validation only: no network call,
+// Tests for the Hardened Registry (ADR-042). Schema validation only: no network call,
 // matching this repository's offline-tests requirement. run_url is checked for a
 // plausible https:// shape, never fetched.
 import { test } from "node:test";

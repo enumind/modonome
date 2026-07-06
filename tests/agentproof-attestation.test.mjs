@@ -1,4 +1,4 @@
-// Tests for the AgentProof conformance attestation (ADR-039). The Statement shape and
+// Tests for the AgentProof conformance attestation (ADR-042). The Statement shape and
 // predicate type are a public contract that CI signing (actions/attest) and downstream
 // verifiers depend on, so they are pinned here. AgentProof's own score depends on the
 // working tree passing its own scenarios, so the test asserts structure and the subject

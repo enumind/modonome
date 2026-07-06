@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://modonome.com/schemas/agentproof-registry.schema.json",
   "title": "Modonome Hardened Registry",
-  "description": "PR-governed registry of independently-verified AgentProof conformance runs (ADR-039). Each entry names one publicly-inspectable, signed conformance run submitted via reviewed pull request. There is no service behind this file: it is a plain committed artifact, validated by scripts/check-agentproof-registry.mjs.",
+  "description": "PR-governed registry of independently-verified AgentProof conformance runs (ADR-042). Each entry names one publicly-inspectable, signed conformance run submitted via reviewed pull request. There is no service behind this file: it is a plain committed artifact, validated by scripts/check-agentproof-registry.mjs.",
   "type": "object",
   "additionalProperties": false,
   "required": ["entries"],
