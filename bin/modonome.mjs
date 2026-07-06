@@ -49,6 +49,7 @@ Usage:
   npx modonome attest --diff <file>      compare a foreign policy pack's disclosed policy against this repo's live policy.
   npx modonome attest --adopt <file> --alias <name>   validate and vendor a foreign policy pack. Refuses on any integrity or credit failure.
   npx modonome receipt [baseRef]         emit an in-toto gate-integrity attestation (sign it with actions/attest in CI).
+  npx modonome gauntlet [dir]             replay gate-weakening attacks against this repo's own files. Read-only.
   npx modonome mcp                       run the read-only governance MCP server (stdio) for any MCP harness.
   npx modonome connect [dir]             register the MCP server with your agent (.mcp.json). Add --write to apply.
   npx modonome help                      show this message.
@@ -174,6 +175,9 @@ function main(argv) {
       break;
     case "receipt":
       run("ratchet-attestation.mjs", rest);
+      break;
+    case "gauntlet":
+      run("gauntlet.mjs", rest);
       break;
     case "mcp":
       run("mcp-server.mjs", rest);
