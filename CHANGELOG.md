@@ -9,6 +9,21 @@ or CVE identifier where one exists.
 
 ## Unreleased
 
+### Wire the researcher role into the agent loop (WI-042)
+
+- Added `prompts/roles/researcher.txt`: reads the repo's own durable state, drafts one
+  proposal, runs it past the independent check at Checkpoint 1
+  (`scripts/agent/review-proposals.mjs`, ADR-040), and, only on approval, authors and
+  self-validates a schema-valid work item. It never claims, makes, or checks the item itself.
+- Added a `--roles a,b,c` CLI override to `scripts/agent/run-cycle.mjs` (`resolveRoleSequence`
+  now takes an `opts` argument), so a single invocation can run just the researcher, or any
+  other subset, on its own schedule, without editing `role_sequence` in config. Absent the
+  override, behavior is unchanged: `cfg.role_sequence`, then the maker/checker default.
+- `planCycle` now fails closed when a role in the executed sequence has no prompt file at
+  `prompts/roles/<role>.txt`, caught during planning and dry-run rather than surfacing only
+  as an `ENOENT` deep inside a real `--execute` run.
+- No schema or config-lever change.
+
 ### Full CRUD for maker/checker wiring, agent capability profiles, and two governed checkpoints
 
 - Added full add/edit/remove UI in the control panel for `roles`, `models`, `providers`, and
