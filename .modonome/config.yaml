@@ -67,11 +67,13 @@ roles:
   self-govern:
     runner: container
     model: claude-haiku-4-5-20251001
-  # Researcher agent: a capability profile example (ADR-039). It is NOT on the active
-  # role_sequence (maker -> checker), so it does not run in the loop yet; it is defined
-  # here so its skills, tools, and prioritized model fallback are configurable ahead of
-  # loop wiring. models is a priority list: the paid frontier choice first, falling back
-  # to the free/local one when no daily budget is set.
+  # Researcher agent (ADR-039, wired into the loop by WI-042). It is NOT on the
+  # active role_sequence (maker -> checker), so a plain run-cycle invocation still
+  # runs just the pair; run it on its own schedule with
+  # `node scripts/agent/run-cycle.mjs --roles researcher --execute`, or add it to
+  # role_sequence to run every cycle alongside maker/checker. models is a priority
+  # list: the paid frontier choice first, falling back to the free/local one when
+  # no daily budget is set.
   researcher:
     runner: container
     models: [claude-opus-4-8, local-default]
