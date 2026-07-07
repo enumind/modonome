@@ -19,7 +19,7 @@ be added here once the owner arms the loop on this repo.
 |---|---|
 | Drift guard | pass |
 | Style check | pass |
-| Repo hygiene | FAIL |
+| Repo hygiene | pass |
 | Self-application conformance | pass |
 | Learning traceability | pass |
 | Capability promotion readiness | pass |
@@ -29,8 +29,8 @@ be added here once the owner arms the loop on this repo.
 
 ## Work queue
 
-- done: 37
-- queued: 6
+- done: 38
+- queued: 5
 
 ## Sample-app captures
 
