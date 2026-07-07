@@ -10,6 +10,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { parseFlatYaml } from "./lib/yaml-lite.mjs";
 import { CAPABILITY_FLAGS } from "./lib/capability-flags.mjs";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 
@@ -21,6 +22,7 @@ let root = join(here, "..");
     root = process.argv[rootIdx + 1];
   }
 }
+const overrides = loadMessageOverrides(join(root, ".modonome"));
 const problems = [];
 
 // Capability flags (CAPABILITY_FLAGS) are shared with the policy attestation
@@ -64,7 +66,7 @@ for (const [name, cfg] of Object.entries(sources)) {
     if (cfg[flag] === true) {
       const adr = findPromotionAdr(flag);
       if (!adr) {
-        problems.push(`${name}: ${flag} is default-on but no promotion ADR (with observation window, evidence, rollback) was found.`);
+        problems.push(formatMessage("gate.promotion-readiness.missing-adr", { name, flag }, overrides).message);
       }
     }
   }
@@ -76,6 +78,6 @@ if (problems.length === 0) {
   console.log("PASS: no capability ships default-on without an evidence-backed promotion ADR.");
   process.exit(0);
 }
-console.error(`FAIL: ${problems.length} promotion problem(s):\n`);
+console.error(formatMessage("gate.promotion-readiness.fail-summary", { count: problems.length }, overrides).message);
 for (const p of problems) console.error("  - " + p);
 process.exit(1);

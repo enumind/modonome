@@ -4,9 +4,10 @@
 // migrates to the disabled, dry-run value, so an upgrade never arms an engine.
 // Usage: node scripts/migrate-config.mjs <config.yaml|.json> [--write]
 import { readFileSync, writeFileSync } from "node:fs";
-import { extname } from "node:path";
+import { extname, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseFlatYaml } from "./lib/yaml-lite.mjs";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 export const CURRENT_SCHEMA_VERSION = 1;
 
@@ -86,7 +87,9 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const path = process.argv[2];
   const write = process.argv.includes("--write");
   if (!path) {
-    console.error("Usage: node scripts/migrate-config.mjs <config path> [--write]");
+    const here = dirname(fileURLToPath(import.meta.url));
+    const overrides = loadMessageOverrides(join(here, "..", ".modonome"));
+    console.error(formatMessage("advisory.migrate-config.usage", {}, overrides).message);
     process.exit(2);
   }
   const text = readFileSync(path, "utf8");

@@ -13,9 +13,11 @@ import { dirname, join } from "node:path";
 import { spawnSync } from "node:child_process";
 import { parseFlatYaml } from "./lib/yaml-lite.mjs";
 import { readPromotedLearnings } from "./lib/learnings.mjs";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
+const overrides = loadMessageOverrides(join(root, ".modonome"));
 const check = process.argv.includes("--check");
 
 function gate(script, args = []) {
@@ -151,7 +153,7 @@ const path = join(root, "RELEASE-EVIDENCE.md");
 if (check) {
   const current = existsSync(path) ? readFileSync(path, "utf8") : "";
   if (current.trim() !== out.trim()) {
-    console.error("RELEASE-EVIDENCE.md is out of date. Run: npm run evidence");
+    console.error(formatMessage("advisory.build-release-evidence.stale", {}, overrides).message);
     process.exit(1);
   }
   console.log("RELEASE-EVIDENCE.md is current.");

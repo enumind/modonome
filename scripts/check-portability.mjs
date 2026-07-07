@@ -14,6 +14,13 @@
  */
 import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { dirname } from "node:path";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
+
+const here = dirname(fileURLToPath(import.meta.url));
+const root = join(here, "..");
+const overrides = loadMessageOverrides(join(root, ".modonome"));
 
 // ---------------------------------------------------------------------------
 // CLI parsing
@@ -22,13 +29,13 @@ import { join, resolve } from "node:path";
 const args = process.argv.slice(2);
 const fixtureIdx = args.indexOf("--fixture");
 if (fixtureIdx === -1 || !args[fixtureIdx + 1]) {
-  console.error("Usage: node scripts/check-portability.mjs --fixture <path>");
+  console.error(formatMessage("gate.portability.usage", {}, overrides).message);
   process.exit(2);
 }
 const fixturePath = resolve(args[fixtureIdx + 1]);
 
 if (!existsSync(fixturePath)) {
-  console.error(`Fixture path does not exist: ${fixturePath}`);
+  console.error(formatMessage("gate.portability.fixture-not-found", { path: fixturePath }, overrides).message);
   process.exit(2);
 }
 
@@ -65,14 +72,14 @@ if (existsSync(modonomeConfigPath)) {
   if (!schemaMatch) {
     fail(
       "SCHEMA_VERSION_MISSING",
-      `.modonome/config.yaml exists but has no schema_version field`
+      formatMessage("gate.portability.schema-version-missing", {}, overrides).message
     );
   } else {
     const version = parseInt(schemaMatch[1], 10);
     if (isNaN(version) || version !== 1) {
       fail(
         "SCHEMA_VERSION_MISMATCH",
-        `.modonome/config.yaml has schema_version: ${schemaMatch[1]}, Modonome requires schema_version: 1`
+        formatMessage("gate.portability.schema-version-mismatch", { version: schemaMatch[1] }, overrides).message
       );
     } else {
       info("SCHEMA_OK", ".modonome/config.yaml has correct schema_version: 1");
@@ -87,7 +94,7 @@ if (existsSync(modonomeConfigPath)) {
       if (val !== "true" && val !== "false") {
         fail(
           "SCHEMA_TYPE_MISMATCH",
-          `.modonome/config.yaml has ${field}: ${fieldMatch[1]} (must be boolean true or false)`
+          formatMessage("gate.portability.schema-type-mismatch", { field, value: fieldMatch[1] }, overrides).message
         );
       }
     }
@@ -109,7 +116,7 @@ if (existsSync(modonomeConfigPath)) {
     if (!KNOWN_KEYS.has(key)) {
       warn(
         "SCHEMA_UNKNOWN_KEY",
-        `.modonome/config.yaml contains unknown key "${key}" (may be a foreign config)`
+        formatMessage("gate.portability.schema-unknown-key", { key }, overrides).message
       );
     }
   }
@@ -132,7 +139,7 @@ if (existsSync(workflowsDir)) {
       if (new RegExp(`^\\s{2}${job}:\\s*$`, "m").test(text)) {
         fail(
           "CI_JOB_CONFLICT",
-          `${file} defines job "${job}" which conflicts with Modonome's CI job of the same name`
+          formatMessage("gate.portability.ci-job-conflict", { file, job }, overrides).message
         );
       }
     }
@@ -187,7 +194,11 @@ for (const dir of SCAN_DIRS) {
       if (pat.test(text)) {
         warn(
           "PROMPT_INJECTION_PATTERN",
-          `${file.replace(fixturePath + "/", "")} contains governance injection pattern: ${pat}`
+          formatMessage(
+            "gate.portability.prompt-injection-pattern",
+            { file: file.replace(fixturePath + "/", ""), pattern: pat },
+            overrides
+          ).message
         );
         break; // one warning per file is enough
       }
@@ -212,12 +223,12 @@ if (existsSync(hostScriptsDir)) {
       if (/process\.exit\s*\(\s*0\s*\)/.test(text) && text.split("\n").length < 20) {
         fail(
           "SCRIPT_SHADOW_ATTACK",
-          `scripts/${script} exists in host repo and appears to be a permissive stub that shadows Modonome's script`
+          formatMessage("gate.portability.script-shadow-attack", { script }, overrides).message
         );
       } else {
         warn(
           "SCRIPT_SHADOW_WARN",
-          `scripts/${script} exists in host repo at the same path as Modonome's script. Verify it is not a shadow.`
+          formatMessage("gate.portability.script-shadow-warn", { script }, overrides).message
         );
       }
     }
@@ -249,17 +260,17 @@ if (existsSync(envFilePath)) {
       if (/^(true|1|yes)$/i.test(val) && varName !== "MODONOME_DRY_RUN") {
         warn(
           "ENV_POLLUTION",
-          `.env sets ${varName}=${val} which could affect Modonome's safety controls`
+          formatMessage("gate.portability.env-pollution-controls", { varName, value: val }, overrides).message
         );
       } else if (varName === "MODONOME_DRY_RUN" && /^(false|0|no)$/i.test(val)) {
         warn(
           "ENV_POLLUTION",
-          `.env sets ${varName}=${val} which could disable dry-run mode`
+          formatMessage("gate.portability.env-pollution-dry-run", { varName, value: val }, overrides).message
         );
       } else if (varName === "GIT_DIR") {
         warn(
           "ENV_POLLUTION",
-          `.env sets ${varName}=${val} which could redirect git operations`
+          formatMessage("gate.portability.env-pollution-git-dir", { varName, value: val }, overrides).message
         );
       }
     }

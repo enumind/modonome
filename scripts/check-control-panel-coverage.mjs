@@ -7,9 +7,11 @@
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { auditCoverage } from "./lib/control-panel-audit.mjs";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
+const overrides = loadMessageOverrides(join(root, ".modonome"));
 
 const result = auditCoverage(root);
 if (result.skipped) {
@@ -19,10 +21,10 @@ if (result.skipped) {
 
 console.log(`Control-panel coverage: ${result.fieldCount} config lever(s), ${result.exposureCount} documented exemption(s).`);
 if (result.missing.length > 0) {
-  console.error("\nThe following config.schema.json field(s) have no reference in any control-panel");
-  console.error("screen and no entry in apps/control-panel/exposure.json explaining why:\n");
-  for (const field of result.missing) console.error(`  - ${field}`);
-  console.error("\nEither wire it into a screen, or add it to exposure.json with a real reason.");
+  console.error(formatMessage("gate.control-panel-coverage.missing-intro-1", {}, overrides).message);
+  console.error(formatMessage("gate.control-panel-coverage.missing-intro-2", {}, overrides).message);
+  for (const field of result.missing) console.error(formatMessage("gate.control-panel-coverage.missing-field", { field }, overrides).message);
+  console.error(formatMessage("gate.control-panel-coverage.missing-footer", {}, overrides).message);
   process.exit(1);
 }
 console.log("PASS: every config lever is either exposed or documented as intentionally not.");

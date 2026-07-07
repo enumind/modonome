@@ -8,9 +8,11 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { validate } from "./lib/jsonschema.mjs";
 import { scanForSecrets } from "./lib/secret-patterns.mjs";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const schema = JSON.parse(readFileSync(join(here, "..", "schemas", "knowledge-packet.schema.json"), "utf8"));
+const overrides = loadMessageOverrides(join(here, "..", ".modonome"));
 
 // Earliest plausible published_at: the v0.1.0-alpha release date.
 // Packets claiming a timestamp before this cannot have been produced by this system.
@@ -20,22 +22,30 @@ export function redactionErrors(packet) {
   const errs = [];
   const text = JSON.stringify(packet);
   for (const { name } of scanForSecrets(text)) {
-    errs.push(`packet may contain ${name}; remove it before publish.`);
+    errs.push(formatMessage("advisory.knowledge-packet.secret-detected", { name }, overrides).message);
   }
   if (packet.classification === "restricted" || packet.classification === "confidential") {
-    errs.push(`packet classification ${packet.classification} is not publishable.`);
+    errs.push(
+      formatMessage("advisory.knowledge-packet.classification-not-publishable", { classification: packet.classification }, overrides)
+        .message
+    );
   }
   if (packet.local_validation_required !== true) {
-    errs.push("local_validation_required must be true.");
+    errs.push(formatMessage("advisory.knowledge-packet.local-validation-required", {}, overrides).message);
   }
   if (packet.published_at !== undefined) {
     const ts = new Date(packet.published_at);
     if (isNaN(ts.getTime())) {
-      errs.push(`published_at is not a valid ISO timestamp: ${packet.published_at}`);
+      errs.push(
+        formatMessage("advisory.knowledge-packet.invalid-timestamp", { publishedAt: packet.published_at }, overrides).message
+      );
     } else if (ts < EARLIEST_VALID_TIMESTAMP) {
       errs.push(
-        `published_at timestamp ${packet.published_at} predates the earliest valid system epoch ` +
-        `(${EARLIEST_VALID_TIMESTAMP.toISOString()}); backdated packets are rejected.`
+        formatMessage(
+          "advisory.knowledge-packet.backdated-timestamp",
+          { publishedAt: packet.published_at, earliest: EARLIEST_VALID_TIMESTAMP.toISOString() },
+          overrides
+        ).message
       );
     }
   }
@@ -49,12 +59,12 @@ export function validatePacket(packet) {
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const path = process.argv[2];
   if (!path) {
-    console.error("Usage: node scripts/validate-knowledge-packet.mjs <packet.json>");
+    console.error(formatMessage("advisory.knowledge-packet.usage", {}, overrides).message);
     process.exit(2);
   }
   const errors = validatePacket(JSON.parse(readFileSync(path, "utf8")));
   if (errors.length > 0) {
-    console.error(`Packet not publishable: ${path}`);
+    console.error(formatMessage("advisory.knowledge-packet.not-publishable", { path }, overrides).message);
     for (const e of errors) console.error("  - " + e);
     process.exit(1);
   }

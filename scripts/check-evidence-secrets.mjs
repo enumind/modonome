@@ -11,9 +11,11 @@ import { readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { scanForSecrets, SECRET_PATTERNS } from "./lib/secret-patterns.mjs";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
+const overrides = loadMessageOverrides(join(root, ".modonome"));
 
 // Resolve the list of files to scan. If a path argument is supplied use it
 // directly; otherwise walk examples/*/runs/*/metrics.jsonl via readdirSync.
@@ -58,14 +60,14 @@ for (const file of files) {
   try {
     content = readFileSync(file, "utf8");
   } catch (e) {
-    console.error(`check-evidence-secrets: cannot read ${file}: ${e.message}`);
+    console.error(formatMessage("gate.evidence-secrets.read-error", { file, reason: e.message }, overrides).message);
     process.exit(1);
   }
 
   const hits = scanForSecrets(content);
   if (hits.length > 0) {
     for (const hit of hits) {
-      console.error(`FAIL: pattern "${hit.name}" matched in ${file}`);
+      console.error(formatMessage("gate.evidence-secrets.pattern-matched", { pattern: hit.name, file }, overrides).message);
     }
     process.exit(1);
   }

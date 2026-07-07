@@ -8,9 +8,11 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { parseFlatYaml } from "./lib/yaml-lite.mjs";
 import { SAFE_DEFAULTS } from "./migrate-config.mjs";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
+const overrides = loadMessageOverrides(join(root, ".modonome"));
 const problems = [];
 
 function coreLevers() {
@@ -44,18 +46,26 @@ for (const [name, set] of Object.entries(sets)) {
   if (name === "config schema") continue;
   const missing = [...reference].filter((k) => !set.has(k));
   const extra = [...set].filter((k) => !reference.has(k));
-  if (missing.length) problems.push(`${name} is missing levers: ${missing.join(", ")}`);
-  if (extra.length) problems.push(`${name} has unexpected levers: ${extra.join(", ")}`);
+  if (missing.length) {
+    problems.push(
+      formatMessage("gate.drift.missing-levers", { name, levers: missing.join(", ") }, overrides).message
+    );
+  }
+  if (extra.length) {
+    problems.push(
+      formatMessage("gate.drift.unexpected-levers", { name, levers: extra.join(", ") }, overrides).message
+    );
+  }
 }
 
 try {
   execSync("node scripts/build-prompt.mjs --check", { cwd: root, stdio: "pipe" });
 } catch (e) {
-  problems.push("prompt bundle is out of date. Run: node scripts/build-prompt.mjs --write");
+  problems.push(formatMessage("gate.drift.prompt-bundle-stale", {}, overrides).message);
 }
 
 if (problems.length > 0) {
-  console.error("Drift guard found problems:\n");
+  console.error(formatMessage("gate.drift.fail-header", {}, overrides).message);
   for (const p of problems) console.error("  - " + p);
   process.exit(1);
 }

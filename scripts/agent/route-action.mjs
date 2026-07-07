@@ -9,7 +9,12 @@
 // already is the target; an unreachable combination fails closed with a clear
 // message naming the role, the endpoint, and that no reachable target exists.
 //
-// Zero dependencies. No network.
+// Zero dependencies. No network. formatMessage/loadMessageOverrides are
+// imported only for the fail-closed error's wording; resolveExecutionTarget
+// still takes overrides as a plain object from its caller rather than
+// reading .modonome itself, so this module makes no filesystem call of its
+// own.
+import { formatMessage } from "../lib/messages.mjs";
 
 // Classify a role's model endpoint into a coarse reachability descriptor:
 //   kind: "local"    self-hosted / private-host endpoint (Ollama, llama.cpp)
@@ -86,9 +91,10 @@ export function canReach(target, roleEndpoint) {
  *
  * @param {object} role - A resolved role descriptor (from resolveRole).
  * @param {object} cfg - The parsed config.
+ * @param {object} [overrides] - Message overrides from loadMessageOverrides(), if any.
  * @returns {{ target: string, environment: string, endpoint: object, runner: string }}
  */
-export function resolveExecutionTarget(role, cfg) {
+export function resolveExecutionTarget(role, cfg, overrides = {}) {
   const endpoint = classifyEndpoint(role);
   const runners = cfg.runners ?? {};
 
@@ -123,8 +129,10 @@ export function resolveExecutionTarget(role, cfg) {
 
   const where = endpoint.baseUrl ? `${endpoint.provider} at ${endpoint.baseUrl}` : endpoint.provider;
   throw new Error(
-    `route-action: role "${role.model ? role.model : "unknown"}" needs endpoint ${where} ` +
-      `(${endpoint.kind}), but no configured runner target declares it can reach it. ` +
-      `Add reachable_providers or reachable_endpoints to a runner in .modonome/config.yaml.`,
+    formatMessage(
+      "agent-run.route-action.no-reachable-target",
+      { model: role.model ? role.model : "unknown", where, kind: endpoint.kind },
+      overrides,
+    ).message,
   );
 }

@@ -1,0 +1,11 @@
+# Modonome message overrides. Safe defaults: empty. Edit with care.
+# Retunes wording, severity, and suppression for entries in the built-in
+# catalog (scripts/lib/messages.mjs and scripts/lib/message-catalog/*.mjs).
+# A message marked non_suppressible in the catalog keeps its severity and
+# suppression locked to the catalog floor no matter what is written here.
+# Only its wording is editable. scripts/check-message-catalog-integrity.mjs
+# enforces this in CI regardless of who edits the file. The repo's CODEOWNERS
+# `*` catchall already routes every change here through maintainer review, so a
+# gate-blocking message can never be silenced by editing this file alone.
+schema_version: 1
+overrides: {}

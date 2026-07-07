@@ -25,9 +25,11 @@ import { readdirSync, readFileSync, existsSync, statSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join, relative, resolve, extname, basename } from "node:path";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = process.env.MODONOME_ROOT ? process.env.MODONOME_ROOT : join(here, "..");
+const overrides = loadMessageOverrides(join(root, ".modonome"));
 
 const violations = [];
 const warnings = [];
@@ -81,20 +83,14 @@ for (const entry of readdirSync(root)) {
   const s = statSync(join(root, entry));
   if (s.isDirectory()) continue;
   if (!ROOT_ALLOW_LIST.has(entry)) {
-    violations.push(
-      `[root-allowlist] ${entry} is not permitted at the repository root. ` +
-        `Move it under docs/ or add it to ROOT_ALLOW_LIST in scripts/check-md-governance.mjs.`
-    );
+    violations.push(formatMessage("gate.md-governance.root-not-allowed", { entry }, overrides).message);
   }
 }
 
 // 2. Protected-file manifest
 for (const p of PROTECTED_FILES) {
   if (!existsSync(join(root, p))) {
-    violations.push(
-      `[protected-file] ${p} is missing. This file is agent-critical and must exist at this path. ` +
-        `If it was moved, update the manifest and every script that reads it.`
-    );
+    violations.push(formatMessage("gate.md-governance.protected-file-missing", { p }, overrides).message);
   }
 }
 
@@ -123,8 +119,11 @@ function checkTarget(fileDir, rawTarget, srcFile) {
   const resolved = resolve(fileDir, target);
   if (!existsSync(resolved)) {
     violations.push(
-      `[link] ${relative(root, srcFile)} links to "${rawTarget}" which does not resolve ` +
-        `(${relative(root, resolved)}).`
+      formatMessage(
+        "gate.md-governance.broken-link",
+        { srcFile: relative(root, srcFile), rawTarget, resolved: relative(root, resolved) },
+        overrides
+      ).message
     );
   }
 }
@@ -139,7 +138,7 @@ for (const file of linkFiles) {
   // Require a delimiter before the URL so the pattern cannot match a URL embedded
   // inside an arbitrary hostname (e.g. evil.com/https://github.com/...).
   if (/(?:^|[\s"'(])https:\/\/github\.com\/[^/]+\/modonome\/blob\//m.test(text)) {
-    warnings.push(`[self-link] ${relative(root, file)} hardcodes a github.com blob URL to an in-repo file.`);
+    warnings.push(formatMessage("gate.md-governance.hardcoded-blob-url", { file: relative(root, file) }, overrides).message);
   }
 }
 
@@ -164,8 +163,11 @@ for (const [num, files] of adrMain) {
   if (files.length > 1) {
     const names = files.map((f) => relative(root, f)).sort();
     violations.push(
-      `[adr-number] ADR-${num} is used by ${files.length} files in docs/adr/: ${names.join(", ")}. ` +
-        `Renumber all but one to the next unused ADR-NNN.`
+      formatMessage(
+        "gate.md-governance.adr-number-duplicate",
+        { num, count: files.length, names: names.join(", ") },
+        overrides
+      ).message
     );
   }
 }
@@ -175,8 +177,11 @@ const adrResearch = adrNumbers(join(root, "docs", "research"));
 for (const [num, files] of adrResearch) {
   if (adrMain.has(num)) {
     violations.push(
-      `[adr-number] ADR-${num} is used in both docs/adr/ (${relative(root, adrMain.get(num)[0])}) and ` +
-        `docs/research/ (${relative(root, files[0])}). Research must use the RD-NNN prefix so numbers are never reused.`
+      formatMessage(
+        "gate.md-governance.adr-number-cross-directory",
+        { num, adrFile: relative(root, adrMain.get(num)[0]), researchFile: relative(root, files[0]) },
+        overrides
+      ).message
     );
   }
 }
@@ -188,7 +193,7 @@ if (existsSync(auditDir)) {
   for (const f of readdirSync(auditDir)) {
     if (extname(f) !== ".md" || f === "README.md") continue;
     if (!auditRe.test(f)) {
-      violations.push(`[audit-naming] docs/audits/${f} must match <type>-YYYY-MM-DD.md.`);
+      violations.push(formatMessage("gate.md-governance.audit-naming-invalid", { f }, overrides).message);
     }
   }
 }
@@ -294,7 +299,7 @@ for (const file of docsFiles) {
   // Advisory: kebab-case naming (allow README, ADR-, RD-).
   if (b !== "README.md" && !/^ADR-\d{3}-[a-z0-9-]+\.md$/.test(b) && !/^RD-\d{3}-[a-z0-9-]+\.md$/.test(b)) {
     if (!/^[a-z0-9][a-z0-9-]*\.md$/.test(b)) {
-      warnings.push(`[naming] ${relative(root, file)} is not lowercase-kebab-case.`);
+      warnings.push(formatMessage("gate.md-governance.not-kebab-case", { file: relative(root, file) }, overrides).message);
     }
   }
 
@@ -303,10 +308,7 @@ for (const file of docsFiles) {
   if (b !== "README.md" && !/^(ADR|RD)-\d{3}/.test(b)) {
     if (!fm) {
       if (STALENESS_DIRS.has(parentDir)) {
-        violations.push(
-          `[staleness] ${relPath} is missing 'last_reviewed' front-matter. ` +
-            `docs/compliance/ and docs/audits/ require it (see docs/guidelines/markdown-governance.md).`
-        );
+        violations.push(formatMessage("gate.md-governance.missing-last-reviewed", { relPath }, overrides).message);
       } else {
         missingFrontMatter++;
       }
@@ -318,7 +320,9 @@ for (const file of docsFiles) {
   // catching everywhere last_reviewed is required.
   if (fm && fm.last_reviewed && STALENESS_DIRS.has(parentDir) && fm.status !== "superseded" && fm.status !== "deprecated") {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(fm.last_reviewed)) {
-      violations.push(`[staleness] ${relPath}: last_reviewed "${fm.last_reviewed}" is not a YYYY-MM-DD date.`);
+      violations.push(
+        formatMessage("gate.md-governance.invalid-last-reviewed-date", { relPath, lastReviewed: fm.last_reviewed }, overrides).message
+      );
     } else if (STALENESS_COMMIT_CHECK_DIRS.has(parentDir)) {
       // Blocking: commit-threshold staleness, for docs/compliance/ only (see the
       // constant's comment above for why docs/audits/ is excluded). A doc whose
@@ -328,9 +332,11 @@ for (const file of docsFiles) {
       const n = commitsSince(cited, fm.last_reviewed);
       if (n > STALENESS_COMMIT_THRESHOLD) {
         violations.push(
-          `[staleness] ${relPath}: last_reviewed is ${fm.last_reviewed}, but ${n} commits have touched ` +
-            `the paths it cites since then (threshold ${STALENESS_COMMIT_THRESHOLD}). Re-verify the claims ` +
-            `and bump last_reviewed, or the doc may describe behavior that has since changed.`
+          formatMessage(
+            "gate.md-governance.stale-doc",
+            { relPath, lastReviewed: fm.last_reviewed, count: n, threshold: STALENESS_COMMIT_THRESHOLD },
+            overrides
+          ).message
         );
       }
     }
@@ -341,8 +347,11 @@ for (const file of docsFiles) {
     for (const key of fm.canonical) {
       if (canonicalOwners.has(key)) {
         violations.push(
-          `[canonical] topic "${key}" is claimed by both ${relative(root, canonicalOwners.get(key))} ` +
-            `and ${relative(root, file)}. A topic has exactly one active source of truth.`
+          formatMessage(
+            "gate.md-governance.canonical-topic-conflict",
+            { key, first: relative(root, canonicalOwners.get(key)), second: relative(root, file) },
+            overrides
+          ).message
         );
       } else {
         canonicalOwners.set(key, file);
@@ -352,21 +361,20 @@ for (const file of docsFiles) {
 }
 if (missingFrontMatter > 0) {
   warnings.push(
-    `[front-matter] ${missingFrontMatter} doc(s) under docs/ have no front-matter. ` +
-      `Add status/owner/last_reviewed per docs/guidelines/markdown-governance.md (advisory during migration).`
+    formatMessage("gate.md-governance.missing-front-matter-count", { count: missingFrontMatter }, overrides).message
   );
 }
 
 // Advisory: docs index coverage for top-level docs files.
 const indexPath = join(root, "docs", "README.md");
 if (!existsSync(indexPath)) {
-  warnings.push("[index] docs/README.md is missing.");
+  warnings.push(formatMessage("gate.md-governance.docs-index-missing", {}, overrides).message);
 } else {
   const indexText = readFileSync(indexPath, "utf8");
   for (const f of readdirSync(join(root, "docs"))) {
     if (extname(f) !== ".md" || f === "README.md") continue;
     if (!indexText.includes(f)) {
-      warnings.push(`[index] docs/${f} is not linked from docs/README.md.`);
+      warnings.push(formatMessage("gate.md-governance.docs-index-uncovered", { f }, overrides).message);
     }
   }
 }
@@ -377,9 +385,10 @@ console.log("=============================");
 for (const w of warnings) console.warn("  warn: " + w);
 if (violations.length === 0) {
   console.log(`PASS: root allow-list, protected files, links, ADR numbers, audits, and canonical keys all clean.`);
-  if (warnings.length > 0) console.log(`(${warnings.length} advisory warning(s); not blocking.)`);
+  if (warnings.length > 0)
+    console.log(formatMessage("gate.md-governance.warning-summary", { count: warnings.length }, overrides).message);
   process.exit(0);
 }
-console.error(`\nFAIL: ${violations.length} governance violation(s):\n`);
+console.error(formatMessage("gate.md-governance.fail-summary", { count: violations.length }, overrides).message);
 for (const v of violations) console.error("  - " + v);
 process.exit(1);

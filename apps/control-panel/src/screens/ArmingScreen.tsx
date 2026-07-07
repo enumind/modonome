@@ -10,9 +10,10 @@ import {
   Slider,
   Toast,
 } from "@modonome/design-system";
-import type { ModonomeConfig, PanelState, WriteActions } from "../state/types";
+import type { MessageSeverity, ModonomeConfig, PanelState, WriteActions } from "../state/types";
 import { useConfirm } from "../lib/confirm";
 import { diffConfig } from "../state/configDiff";
+import { formatMessage } from "../lib/messages";
 
 const TABS = [
   { id: "activation", label: "Activation", icon: "shield" as const },
@@ -36,7 +37,7 @@ export function ArmingScreen({ state, write }: { state: PanelState; write: Write
   const confirm = useConfirm();
   const [tab, setTab] = useState("activation");
   const [config, setConfig] = useState(state.config);
-  const [notice, setNotice] = useState<{ tone: "info" | "blocked"; text: string } | null>(null);
+  const [notice, setNotice] = useState<{ tone: MessageSeverity; text: string } | null>(null);
   const [saving, setSaving] = useState(false);
 
   function set<K extends keyof typeof config>(key: K, value: (typeof config)[K]) {
@@ -56,9 +57,13 @@ export function ArmingScreen({ state, write }: { state: PanelState; write: Write
     setSaving(true);
     try {
       await write.onSaveConfig(patch);
-      setNotice({ tone: "info", text: "Configuration saved to config.yaml." });
+      const resolved = formatMessage(state.messages, "panel.arming.config-saved");
+      setNotice({ tone: resolved.severity, text: resolved.message });
     } catch (err) {
-      setNotice({ tone: "blocked", text: `Save failed: ${err instanceof Error ? err.message : String(err)}` });
+      const resolved = formatMessage(state.messages, "panel.arming.config-save-failed", {
+        error: err instanceof Error ? err.message : String(err),
+      });
+      setNotice({ tone: resolved.severity, text: resolved.message });
     } finally {
       setSaving(false);
     }
@@ -76,14 +81,19 @@ export function ArmingScreen({ state, write }: { state: PanelState; write: Write
     if (!ok) return;
     setConfig((c) => ({ ...c, ...fields }));
     if (!write.writable) {
-      setNotice({ tone: "info", text: "Acknowledged locally. Connect live, writable state to actually change the mode." });
+      const resolved = formatMessage(state.messages, "panel.arming.mode-ack-local");
+      setNotice({ tone: resolved.severity, text: resolved.message });
       return;
     }
     try {
       await write.onSaveConfig(fields);
-      setNotice({ tone: "info", text: "Mode updated and saved to config.yaml." });
+      const resolved = formatMessage(state.messages, "panel.arming.mode-updated");
+      setNotice({ tone: resolved.severity, text: resolved.message });
     } catch (err) {
-      setNotice({ tone: "blocked", text: `Save failed: ${err instanceof Error ? err.message : String(err)}` });
+      const resolved = formatMessage(state.messages, "panel.arming.mode-save-failed", {
+        error: err instanceof Error ? err.message : String(err),
+      });
+      setNotice({ tone: resolved.severity, text: resolved.message });
     }
   }
 
@@ -123,7 +133,10 @@ export function ArmingScreen({ state, write }: { state: PanelState; write: Write
       confirmLabel: "Run sweep",
       body: "A dry-run reads the repo and prints the proposed work. It changes nothing.",
     });
-    if (ok) setNotice({ tone: "info", text: "Dry-run sweep queued." });
+    if (ok) {
+      const resolved = formatMessage(state.messages, "panel.arming.dry-run-queued");
+      setNotice({ tone: resolved.severity, text: resolved.message });
+    }
   }
 
   return (
@@ -164,7 +177,7 @@ export function ArmingScreen({ state, write }: { state: PanelState; write: Write
 
       {notice ? (
         <Toast
-          tone={notice.tone === "blocked" ? "blocked" : "info"}
+          tone={notice.tone}
           title={notice.tone === "blocked" ? "Save failed" : "Acknowledged"}
           message={notice.text}
           onDismiss={() => setNotice(null)}

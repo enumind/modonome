@@ -9,9 +9,11 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { validateWorkItem } from "./validate-work-item.mjs";
 import { parseFlatYaml } from "./lib/yaml-lite.mjs";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
+const overrides = loadMessageOverrides(join(root, ".modonome"));
 
 const configPath = join(root, ".modonome", "config.yaml");
 const config = existsSync(configPath) ? parseFlatYaml(readFileSync(configPath, "utf8")) : {};
@@ -25,7 +27,7 @@ for (const f of files) {
   try {
     item = JSON.parse(readFileSync(join(dir, f), "utf8"));
   } catch (e) {
-    problems.push(`${f}: not valid JSON (${e.message}).`);
+    problems.push(formatMessage("gate.work-items.invalid-json", { file: f, reason: e.message }, overrides).message);
     continue;
   }
   for (const e of validateWorkItem(item, config)) problems.push(`${f}: ${e}`);
@@ -37,6 +39,6 @@ if (problems.length === 0) {
   console.log(`PASS: ${files.length} work item(s) valid; maker and checker stay distinct.`);
   process.exit(0);
 }
-console.error(`FAIL: ${problems.length} work item problem(s):\n`);
+console.error(formatMessage("gate.work-items.fail-summary", { count: problems.length }, overrides).message);
 for (const p of problems) console.error("  - " + p);
 process.exit(1);

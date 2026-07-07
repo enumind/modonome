@@ -94,6 +94,7 @@
       "check-gate-dag",
       "check-learning-traceability",
       "check-md-governance",
+      "check-message-catalog-integrity",
       "check-promotion-readiness",
       "check-regex-safety",
       "check-repo-hygiene",
@@ -110,5 +111,5 @@
     "autonomy_enabled": false,
     "dry_run": true
   },
-  "content_digest": "sha256:7db28023c22f33fd9d466a66731c0790630315e16ad7c260b757e97dfe890bb2"
+  "content_digest": "sha256:c98af1b5aeebb3e187cc2969d43020abca147acd139bbd4e11d8884ef4cbe53b"
 }

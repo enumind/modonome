@@ -27,9 +27,11 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { dirname, resolve } from "node:path";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "..");
+const overrides = loadMessageOverrides(resolve(root, ".modonome"));
 
 const TARGET_FILES = [
   "scripts/lib/branch-name.mjs",
@@ -153,11 +155,11 @@ export async function regexSafetyProblems(rootDir = root) {
     try {
       sources.push(...(await exportedRegexSources(absFile)));
     } catch (e) {
-      problems.push(`${rel}: could not import to inspect exported regexes: ${e.message}`);
+      problems.push(formatMessage("gate.regex-safety.import-failed", { file: rel, reason: e.message }, overrides).message);
     }
     for (const { label, source } of sources) {
       for (const hit of redosFindings(source)) {
-        problems.push(`${rel} (${label}): nested-quantifier ReDoS risk near ${hit}`);
+        problems.push(formatMessage("gate.regex-safety.catastrophic-backtracking", { file: rel, label, hit }, overrides).message);
       }
     }
   }
@@ -172,8 +174,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     console.log(`PASS: no nested-quantifier patterns in ${TARGET_FILES.length} detector module(s).`);
     process.exit(0);
   }
-  console.error(`FAIL: ${problems.length} regex-safety problem(s):\n`);
+  console.error(formatMessage("gate.regex-safety.fail-summary", { count: problems.length }, overrides).message);
   for (const p of problems) console.error("  - " + p);
-  console.error("\nRewrite the pattern without a nested quantifier before promotion.");
+  console.error(formatMessage("gate.regex-safety.fail-footer", {}, overrides).message);
   process.exit(1);
 }

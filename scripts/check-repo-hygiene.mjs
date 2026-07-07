@@ -16,9 +16,11 @@ import { fileURLToPath } from 'url';
 import { execSync as nodeExecSync } from 'node:child_process';
 import { isModelIdentifierBranch, resolveBranchName } from './lib/branch-name.mjs';
 import { findForbiddenCommits } from './lib/commit-identity.mjs';
+import { formatMessage, loadMessageOverrides } from './lib/messages.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.join(__dirname, '..');
+const overrides = loadMessageOverrides(path.join(repoRoot, '.modonome'));
 
 const issues = [];
 
@@ -50,7 +52,7 @@ allFiles.forEach(file => {
   const issue = {
     type: 'LOOSE_END',
     file,
-    message: `File marked for deletion exists: ${file}. Should either be deleted or moved back.`
+    message: formatMessage('gate.repo-hygiene.safe-to-delete-file', { file }, overrides).message
   };
   issues.push(issue);
   console.log(`  ✗ ${file}`);
@@ -68,7 +70,7 @@ adrFiles.forEach(file => {
     issues.push({
       type: 'UNASSIGNED_ADR',
       file,
-      message: `ADR ${file} is "Proposed" but has no Milestone assignment. Either accept+assign to milestone or move to research/.`
+      message: formatMessage('gate.repo-hygiene.unassigned-adr', { file }, overrides).message
     });
     console.log(`  ✗ ${file} (Proposed, no milestone)`);
   }
@@ -89,13 +91,13 @@ workItems.forEach(file => {
     } else {
       const stats = fs.statSync(filePath);
       queuedTime = stats.mtime.getTime();
-      console.warn(`  warn: ${file} has no queued_at field; using mtime (unreliable in CI).`);
+      console.warn(formatMessage('gate.repo-hygiene.missing-queued-at', { file }, overrides).message);
     }
     if (queuedTime < ninetyDaysAgo) {
       issues.push({
         type: 'STALE_WORK_ITEM',
         file,
-        message: `Work item ${item.id} has been queued for >90 days. Archive it or move to active work.`
+        message: formatMessage('gate.repo-hygiene.stale-work-item', { id: item.id }, overrides).message
       });
       console.log(`  ✗ ${item.id} (queued since ${new Date(queuedTime).toISOString()})`);
     }
@@ -114,7 +116,7 @@ uniqueRefs.forEach(num => {
     issues.push({
       type: 'MISSING_MILESTONE',
       file: 'ROADMAP.md',
-      message: `ROADMAP references Milestone ${num} but it's not defined.`
+      message: formatMessage('gate.repo-hygiene.missing-milestone', { num }, overrides).message
     });
     console.log(`  ✗ Milestone ${num} referenced but not defined`);
   }
@@ -140,7 +142,11 @@ try {
         issues.push({
           type: 'VERSION_FIELD_CHANGED',
           file: 'package.json',
-          message: `package.json version changed from ${baseVer} to ${headPkg.version} without a chore(release): commit. Version bumps must go through scripts/release.mjs.`
+          message: formatMessage(
+            'gate.repo-hygiene.version-field-changed',
+            { baseVersion: baseVer, headVersion: headPkg.version },
+            overrides
+          ).message
         });
         console.log(`  ✗ version changed: ${baseVer} → ${headPkg.version}`);
       }
@@ -162,7 +168,7 @@ fs.readdirSync(scriptDir)
       issues.push({
         type: 'INSECURE_RANDOMNESS',
         file: `scripts/${file}`,
-        message: `scripts/${file} uses Math.random(). Use crypto.randomBytes() or crypto.randomUUID() instead (CodeQL js/insecure-randomness).`
+        message: formatMessage('gate.repo-hygiene.insecure-randomness', { file }, overrides).message
       });
       console.log(`  ✗ ${file}`);
     }
@@ -182,7 +188,7 @@ if (branchName && branchName !== 'HEAD' && isModelIdentifierBranch(branchName)) 
   issues.push({
     type: 'MODEL_IDENTIFIER_BRANCH',
     file: branchName,
-    message: `Branch "${branchName}" leads with a model-identifier prefix. Rename it; agent identity must not appear in branch names, history, or pull requests.`
+    message: formatMessage('gate.repo-hygiene.model-identifier-branch', { branch: branchName }, overrides).message
   });
   console.log(`  ✗ ${branchName}`);
 } else {
@@ -205,7 +211,11 @@ try {
       issues.push({
         type: 'AGENT_COMMIT_IDENTITY',
         file: o.sha,
-        message: `Commit ${o.sha} carries an agent identity (author: ${o.author}, committer: ${o.committer}). Re-author with a human or project identity before merge.`
+        message: formatMessage(
+          'gate.repo-hygiene.agent-commit-identity',
+          { sha: o.sha, author: o.author, committer: o.committer },
+          overrides
+        ).message
       });
       console.log(`  ✗ ${o.sha} ${o.author}`);
     });
@@ -222,12 +232,12 @@ if (issues.length === 0) {
   console.log('✓ Repo hygiene check passed. No loose ends detected.');
   process.exit(0);
 } else {
-  console.log(`✗ Repo hygiene check FAILED. ${issues.length} issue(s) found:\n`);
+  console.log(formatMessage('gate.repo-hygiene.fail-summary', { count: issues.length }, overrides).message);
   issues.forEach((issue, i) => {
     console.log(`${i + 1}. [${issue.type}] ${issue.file}`);
     console.log(`   ${issue.message}\n`);
   });
-  console.log('Fix these before shipping. Loose ends kill credibility over time.');
+  console.log(formatMessage('gate.repo-hygiene.fail-footer', {}, overrides).message);
   process.exit(1);
 }
 

@@ -9,7 +9,13 @@
 // Zero runtime dependencies: only node:child_process and node:path. The spawn is
 // injected via deps.spawnImpl so tests never launch a real binary.
 import { spawn } from "node:child_process";
-import { resolve, relative, isAbsolute } from "node:path";
+import { resolve, relative, isAbsolute, dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { formatMessage, loadMessageOverrides } from "../lib/messages.mjs";
+
+const here = dirname(fileURLToPath(import.meta.url));
+const root = join(here, "..", "..");
+const overrides = loadMessageOverrides(join(root, ".modonome"));
 
 const DEFAULT_TIMEOUT_MS = 300000;
 const DEFAULT_MAX_TURNS = 40;
@@ -28,7 +34,7 @@ const HARD_TURN_CAP = 80;
 export function resolveAdapterCommand(adapterEntry) {
   const cmd = adapterEntry?.command ?? adapterEntry?.name;
   if (!cmd || typeof cmd !== "string" || !cmd.trim()) {
-    throw new Error("tool-loop-adapter: adapter entry has no usable command/name.");
+    throw new Error(formatMessage("agent-run.tool-loop-adapter.no-command", {}, overrides).message);
   }
   return cmd.trim();
 }
@@ -48,7 +54,7 @@ export function containedCwd(root, target) {
   const targetAbs = resolve(rootAbs, target ?? ".");
   const rel = relative(rootAbs, targetAbs);
   if (rel !== "" && (rel === ".." || rel.startsWith(`..${sep()}`) || isAbsolute(rel))) {
-    throw new Error(`tool-loop-adapter: target "${target}" escapes the repo root; refused (ADR-009).`);
+    throw new Error(formatMessage("agent-run.tool-loop-adapter.target-escapes-root", { target }, overrides).message);
   }
   return targetAbs;
 }
@@ -116,7 +122,11 @@ export async function runToolLoopAdapter({
     command = resolveAdapterCommand(adapterEntry);
     cwd = containedCwd(root, target);
   } catch (e) {
-    return { status: 1, transcript: `[tool-loop refused] ${e.message}\n`, reason: e.message };
+    return {
+      status: 1,
+      transcript: formatMessage("agent-run.tool-loop-adapter.refused", { reason: e.message }, overrides).message,
+      reason: e.message,
+    };
   }
 
   const cappedTurns = Math.min(Number.isInteger(maxTurns) && maxTurns > 0 ? maxTurns : DEFAULT_MAX_TURNS, HARD_TURN_CAP);
@@ -134,7 +144,11 @@ export async function runToolLoopAdapter({
     try {
       child = spawnImpl(command, args, { cwd, env: childEnv });
     } catch (e) {
-      resolvePromise({ status: 1, transcript: `[tool-loop spawn failed] ${e.message}\n`, reason: `spawn failed: ${e.message}` });
+      resolvePromise({
+        status: 1,
+        transcript: formatMessage("agent-run.tool-loop-adapter.spawn-failed-transcript", { message: e.message }, overrides).message,
+        reason: formatMessage("agent-run.tool-loop-adapter.spawn-failed-reason", { message: e.message }, overrides).message,
+      });
       return;
     }
 
@@ -154,7 +168,7 @@ export async function runToolLoopAdapter({
       } catch {
         // Killing a process that already exited is harmless.
       }
-      finish(124, `adapter timed out after ${timeoutMs}ms and was killed.`);
+      finish(124, formatMessage("agent-run.tool-loop-adapter.timed-out", { timeoutMs }, overrides).message);
     }, timeoutMs);
 
     child.stdout?.on("data", (d) => { stdout += String(d); });
@@ -169,18 +183,19 @@ export async function runToolLoopAdapter({
     };
 
     child.on("error", (e) => {
-      finish(1, `adapter process error: ${e.message}`);
+      finish(1, formatMessage("agent-run.tool-loop-adapter.process-error", { message: e.message }, overrides).message);
     });
 
     child.on("close", (code, signal) => {
       if (timedOut) {
-        finish(124, `adapter timed out after ${timeoutMs}ms and was killed.`);
+        finish(124, formatMessage("agent-run.tool-loop-adapter.timed-out", { timeoutMs }, overrides).message);
         return;
       }
       const status = typeof code === "number" ? code : 1;
+      const signalSuffix = signal ? ` (signal ${signal})` : "";
       const reason = status === 0
         ? "adapter completed."
-        : `adapter exited with status ${status}${signal ? ` (signal ${signal})` : ""}.`;
+        : formatMessage("agent-run.tool-loop-adapter.exited-nonzero", { status, signalSuffix }, overrides).message;
       finish(status, reason);
     });
 

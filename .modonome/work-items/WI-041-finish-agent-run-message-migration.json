@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "id": "WI-041-finish-agent-run-message-migration",
+  "state": "done",
+  "attempts": 1,
+  "max_attempts": 3,
+  "touches_protected_path": true,
+  "allowed_edit_set": [
+    "scripts/agent/run-cycle.mjs",
+    "scripts/agent/action-queue.mjs",
+    "scripts/agent/route-action.mjs",
+    "scripts/remediate.mjs",
+    "scripts/arm.mjs",
+    "scripts/disarm.mjs",
+    "scripts/ratchet-attestation.mjs",
+    "scripts/lib/message-catalog/agent-run/run-cycle.mjs",
+    "scripts/lib/message-catalog/agent-run/action-queue.mjs",
+    "scripts/lib/message-catalog/agent-run/route-action.mjs",
+    "scripts/lib/message-catalog/agent-run/remediate.mjs",
+    "scripts/lib/message-catalog/agent-run/arm.mjs",
+    "scripts/lib/message-catalog/agent-run/disarm.mjs",
+    "scripts/lib/message-catalog/agent-run/ratchet-attestation.mjs",
+    "scripts/lib/message-catalog/index.mjs",
+    "scripts/check-architecture-drift.mjs",
+    "scripts/assert-governed-change.mjs",
+    "scripts/validate-config.mjs",
+    "scripts/validate-work-item.mjs",
+    "scripts/run-gate-pipeline.mjs",
+    "scripts/lib/message-catalog/gate/check-architecture-drift.mjs",
+    "scripts/lib/message-catalog/gate/assert-governed-change.mjs",
+    "scripts/lib/message-catalog/gate/validate-config.mjs",
+    "scripts/lib/message-catalog/gate/validate-work-item.mjs",
+    "scripts/lib/message-catalog/gate/run-gate-pipeline.mjs"
+  ],
+  "gates": [
+    "node scripts/check-message-catalog-integrity.mjs",
+    "node scripts/check-style.mjs .",
+    "npm run verify"
+  ],
+  "queued_at": "2026-07-04"
+}

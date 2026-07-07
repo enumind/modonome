@@ -41,6 +41,7 @@ import { git, currentBranch } from "./lib/git-scope.mjs";
 import { loadConfig } from "./validate-config.mjs";
 import { detectBranch, isForbiddenIdentity } from "./lib/detect-attribution.mjs";
 import { planCommitRewrites, remediationFingerprint } from "./lib/remediate.mjs";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 const CAPABILITY_FLAG = "remediation_apply_enabled";
 const DEFAULT_BRANCHES = new Set(["main", "master"]);
@@ -241,31 +242,33 @@ function cmdPlan(argv) {
 }
 
 function cmdApply(argv, root) {
+  const overrides = loadMessageOverrides(join(root, ".modonome"));
+  const msg = (id, params) => formatMessage(id, params, overrides).message;
   const arm = armState(root);
   if (!arm.armed) {
-    console.error("remediate apply refused: the engine is not armed for this capability.");
+    console.error(msg("agent-run.remediate.not-armed", {}));
     for (const m of armingBlockers(arm)) console.error(`  - ${m}`);
-    console.error("Run `remediate plan` to preview the rewrite without arming.");
+    console.error(msg("agent-run.remediate.plan-hint", {}));
     return 3;
   }
   const branch = currentBranch();
   if (!branch || branch === "HEAD" || DEFAULT_BRANCHES.has(branch)) {
-    console.error(`remediate apply refused: refusing to rewrite history on '${branch || "detached HEAD"}'.`);
+    console.error(msg("agent-run.remediate.refusing-branch", { branch: branch || "detached HEAD" }));
     return 3;
   }
   if (isDirtyTracked()) {
-    console.error("remediate apply refused: the working tree has tracked modifications. Commit or stash first.");
+    console.error(msg("agent-run.remediate.dirty-tree", {}));
     return 3;
   }
   const identity = targetIdentity(argv);
   if (!identityUsable(identity)) {
-    console.error(`remediate apply refused: target identity ${identity.name} <${identity.email}> is empty or forbidden.`);
-    console.error("Set git user.name and user.email, or pass --name and --email.");
+    console.error(msg("agent-run.remediate.identity-invalid", { name: identity.name, email: identity.email }));
+    console.error(msg("agent-run.remediate.identity-invalid-hint", {}));
     return 3;
   }
   const { commits, error } = gatherRange();
   if (error) {
-    console.error(`remediate apply refused: ${error}`);
+    console.error(msg("agent-run.remediate.gather-range-error", { error }));
     return 2;
   }
   const plan = buildPlan(branch, commits, identity);
@@ -279,7 +282,7 @@ function cmdApply(argv, root) {
   console.log(`Plan fingerprint: ${remediationFingerprint(plan)}`);
   const result = applyPlan(commits, plan);
   if (result.error) {
-    console.error(`remediate apply failed: ${result.error}`);
+    console.error(msg("agent-run.remediate.apply-failed", { error: result.error }));
     return 2;
   }
   console.log("");
@@ -298,7 +301,8 @@ function main(argv) {
 
   if (sub === "plan") return cmdPlan(rest);
   if (sub === "apply") return cmdApply(rest, root);
-  console.error(`Unknown remediate subcommand: ${sub}. Use plan | apply.`);
+  const overrides = loadMessageOverrides(join(root, ".modonome"));
+  console.error(formatMessage("agent-run.remediate.unknown-subcommand", { sub }, overrides).message);
   return 2;
 }
 

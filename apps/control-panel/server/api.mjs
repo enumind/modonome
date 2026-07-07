@@ -9,7 +9,7 @@ import { existsSync } from "node:fs";
 import { resolve, join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { readModonomeState } from "./modonomeReader.mjs";
-import { patchConfig, releaseLease, pruneLearning, createWorkItem, updateWorkItem, deleteWorkItem } from "./modonomeWriter.mjs";
+import { patchConfig, releaseLease, pruneLearning, patchMessages, createWorkItem, updateWorkItem, deleteWorkItem } from "./modonomeWriter.mjs";
 import { selfGovernanceOwnership } from "./ownership.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -158,6 +158,9 @@ export function modonomeApiPlugin() {
 
       if (url.pathname === "/api/modonome/config" && req.method === "POST") {
         return runWrite(req, res, (dir, body) => patchConfig(dir, body.patch ?? {}));
+      }
+      if (url.pathname === "/api/modonome/messages" && req.method === "POST") {
+        return runWrite(req, res, (dir, body) => patchMessages(dir, body.patch ?? {}));
       }
       if (url.pathname === "/api/modonome/lease/release" && req.method === "POST") {
         return runWrite(req, res, (dir, body) => releaseLease(dir, body.itemId));

@@ -15,6 +15,7 @@
  */
 
 import { spawnSync } from "node:child_process";
+import { formatMessage } from "./messages.mjs";
 
 const DEFAULT_BASE_URL = "https://api.github.com";
 const DEFAULT_TIMEOUT_MS = 30000;
@@ -22,7 +23,7 @@ const DEFAULT_MAX_RETRIES = 3;
 const DEFAULT_RETRY_BASE_MS = 100;
 
 /** Resolve the owner/repo, preferring the GITHUB_REPOSITORY env, then git origin. */
-export function resolveRepo(env = process.env, originUrl = null) {
+export function resolveRepo(env = process.env, originUrl = null, overrides = {}) {
   const fromEnv = (env.GITHUB_REPOSITORY || "").trim();
   if (fromEnv.includes("/")) {
     const [owner, repo] = fromEnv.split("/");
@@ -31,7 +32,7 @@ export function resolveRepo(env = process.env, originUrl = null) {
   const url = originUrl ?? readOriginUrl();
   const m = url && url.match(/github\.com[:/]([^/]+)\/(.+?)(?:\.git)?\/?$/i);
   if (m) return { owner: m[1], repo: m[2] };
-  throw new Error("github-api: could not resolve owner/repo from GITHUB_REPOSITORY or git remote origin.");
+  throw new Error(formatMessage("advisory.github-api.repo-unresolved", {}, overrides).message);
 }
 
 function readOriginUrl() {
@@ -66,8 +67,9 @@ export function createGitHubClient({
   timeoutMs = DEFAULT_TIMEOUT_MS,
   maxRetries = DEFAULT_MAX_RETRIES,
   retryBaseMs = DEFAULT_RETRY_BASE_MS,
+  overrides = {},
 } = {}) {
-  const { owner, repo: name } = repo || resolveRepo(env, originUrl);
+  const { owner, repo: name } = repo || resolveRepo(env, originUrl, overrides);
 
   async function apiGet(path) {
     const url = `${baseUrl.replace(/\/+$/, "")}${path}`;
@@ -82,7 +84,8 @@ export function createGitHubClient({
       try {
         res = await fetchImpl(url, { method: "GET", headers, signal: controller.signal });
       } catch (e) {
-        if (e && e.name === "AbortError") throw new Error(`github-api: request to ${path} timed out after ${timeoutMs}ms.`);
+        if (e && e.name === "AbortError")
+          throw new Error(formatMessage("advisory.github-api.timeout", { path, timeoutMs }, overrides).message);
         throw e;
       } finally {
         clearTimeout(timer);
@@ -92,12 +95,20 @@ export function createGitHubClient({
 
       if (!isRetryableStatus(res.status) || attempt === maxRetries) {
         const text = await res.text().catch(() => "");
-        throw new Error(`github-api: GET ${path} failed with status ${res.status}${text ? `: ${text}` : ""}.`);
+        throw new Error(
+          formatMessage(
+            "advisory.github-api.request-failed",
+            { path, status: res.status, detail: text ? `: ${text}` : "" },
+            overrides
+          ).message
+        );
       }
-      lastError = new Error(`github-api: retryable status ${res.status} on attempt ${attempt + 1}.`);
+      lastError = new Error(
+        formatMessage("advisory.github-api.retryable-status", { status: res.status, attempt: attempt + 1 }, overrides).message
+      );
       await sleep(retryBaseMs * Math.pow(2, attempt));
     }
-    throw lastError ?? new Error("github-api: exhausted retries.");
+    throw lastError ?? new Error(formatMessage("advisory.github-api.retries-exhausted", {}, overrides).message);
   }
 
   return {

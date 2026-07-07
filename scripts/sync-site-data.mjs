@@ -24,9 +24,11 @@ function readIfExists(path) {
 }
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
+const overrides = loadMessageOverrides(join(root, ".modonome"));
 const verify = process.argv.includes("--verify");
 
 // Parse RELEASE-EVIDENCE.md to extract gate counts and autonomy status
@@ -117,7 +119,7 @@ function updateRepoData(data) {
   const dataPath = join(root, "site", "repo-data.js");
   let js = readIfExists(dataPath);
   if (js == null) {
-    console.warn("site/repo-data.js not found; skipping update.");
+    console.warn(formatMessage("advisory.sync-site-data.repo-data-missing", {}, overrides).message);
     return;
   }
   js = js.replace(/(version:\s*')[^']*(')/, `$1${data.version}$2`);
@@ -132,7 +134,7 @@ function updateSite(data) {
   const sitePath = join(root, "site", "index.html");
   let html = readIfExists(sitePath);
   if (html == null) {
-    console.warn("site/index.html not found; skipping update.");
+    console.warn(formatMessage("advisory.sync-site-data.index-missing", {}, overrides).message);
     return;
   }
 
@@ -152,14 +154,14 @@ function verifySiteData(data) {
   const sitePath = join(root, "site", "index.html");
   const html = readIfExists(sitePath);
   if (html == null) {
-    console.error("site/index.html not found.");
+    console.error(formatMessage("advisory.sync-site-data.verify-index-missing", {}, overrides).message);
     return false;
   }
 
   const match = html.match(/this\.engineBase\s*=\s*\{\s*lessons:\s*(\d+),\s*rules:\s*(\d+),\s*gates:\s*(\d+),\s*queue:\s*(\d+)/);
 
   if (!match) {
-    console.error("Could not parse engineBase in site/index.html.");
+    console.error(formatMessage("advisory.sync-site-data.engine-base-unparseable", {}, overrides).message);
     return false;
   }
 
@@ -171,9 +173,11 @@ function verifySiteData(data) {
 
   if (lessons !== expected.lessons || gates !== expected.gates) {
     console.error(
-      `Site data is stale or incorrect:\n` +
-      `  Lessons: expected ${expected.lessons}, found ${lessons}\n` +
-      `  Gates: expected ${expected.gates}, found ${gates}`
+      formatMessage(
+        "advisory.sync-site-data.stale",
+        { expectedLessons: expected.lessons, foundLessons: lessons, expectedGates: expected.gates, foundGates: gates },
+        overrides
+      ).message
     );
     return false;
   }
@@ -208,7 +212,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
       process.exit(0);
     }
   } catch (e) {
-    console.error(`sync-site-data failed: ${e.message}`);
+    console.error(formatMessage("advisory.sync-site-data.failed", { error: e.message }, overrides).message);
     process.exit(1);
   }
 }

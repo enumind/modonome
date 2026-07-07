@@ -31,6 +31,7 @@ jobs:
       - run: node scripts/check-promotion-readiness.mjs
       - run: node scripts/check-work-items.mjs
       - run: node scripts/check-checker-engagement.mjs
+      - run: node scripts/check-message-catalog-integrity.mjs
       - run: node scripts/check-decisions-authority.mjs
       - run: node scripts/check-licenses.mjs
       - run: node scripts/test-prompt-behavior.mjs

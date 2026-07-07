@@ -1,0 +1,92 @@
+export const MESSAGES = {
+  "gate.policy-attestation.write-schema-invalid": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "build-policy-attestation: generated manifest fails its own schema:",
+  },
+  "gate.policy-attestation.artifact-missing": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "{path} is missing. Run: node scripts/build-policy-attestation.mjs",
+  },
+  "gate.policy-attestation.internally-inconsistent": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "{path} is internally inconsistent: content_digest {digest} does not match its body ({recomputed}). The file was edited by hand.",
+  },
+  "gate.policy-attestation.stale": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "{path} is stale: committed digest {committed} but current policy hashes to {fresh}. Run: node scripts/build-policy-attestation.mjs",
+  },
+  "gate.policy-attestation.read-foreign-pack-failed": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "could not read or parse {path}: {reason}",
+  },
+  "gate.policy-attestation.verify-missing": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "{label} is missing.",
+  },
+  "gate.policy-attestation.verify-digest-mismatch": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "content_digest does not match the body in {label}; the attestation was edited by hand.",
+  },
+  "gate.policy-attestation.verify-signature-invalid": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "signature does not verify against the embedded public key ({label}).",
+  },
+  "gate.policy-attestation.diff-missing-path": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "--diff requires a file path.",
+  },
+  "gate.policy-attestation.adopt-missing-path": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "--adopt requires a file path.",
+  },
+  "gate.policy-attestation.adopt-missing-alias": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "--adopt requires --alias <name>.",
+  },
+  "gate.policy-attestation.adopt-invalid-alias": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: '--alias "{alias}" must be a plain filesystem-safe name (letters, digits, dot, dash, underscore).',
+  },
+  "gate.policy-attestation.adopt-schema-invalid": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "build-policy-attestation: {path} fails the policy-attestation schema; refusing to adopt:",
+  },
+  "gate.policy-attestation.adopt-internally-inconsistent": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "{path} is internally inconsistent: content_digest {digest} does not match its body ({recomputed}). Refusing to adopt a pack that fails its own integrity check.",
+  },
+  "gate.policy-attestation.adopt-signature-invalid": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "{path} carries a signature that does not verify. Refusing to adopt.",
+  },
+};

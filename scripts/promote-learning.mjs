@@ -18,9 +18,11 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { existsSync } from "node:fs";
 import { REQUIRED_FIELDS } from "./lib/learnings.mjs";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
+const overrides = loadMessageOverrides(join(root, ".modonome"));
 
 // Slugify a lesson into a deterministic ID.
 function slugifyId(lesson) {
@@ -36,10 +38,10 @@ function slugifyId(lesson) {
 // Build a learning record from options.
 export function buildLearningRecord(opts = {}) {
   if (!opts.lesson) {
-    throw new Error("buildLearningRecord: missing required option 'lesson'");
+    throw new Error(formatMessage("agent-run.promote-learning.missing-lesson", {}, overrides).message);
   }
   if (!opts.evidenceSummary) {
-    throw new Error("buildLearningRecord: missing required option 'evidenceSummary'");
+    throw new Error(formatMessage("agent-run.promote-learning.missing-evidence-summary", {}, overrides).message);
   }
 
   const today = new Date().toISOString().slice(0, 10);
@@ -68,7 +70,9 @@ export function validateLearningRecord(record) {
       record[field] === null ||
       String(record[field]).trim() === ""
     ) {
-      errors.push(`missing or empty required field: ${field}`);
+      errors.push(
+        formatMessage("agent-run.promote-learning.missing-required-field", { field }, overrides).message
+      );
     }
   }
 
@@ -79,7 +83,7 @@ export function validateLearningRecord(record) {
     const underGateDir = GATE_DIRS.some((dir) => path.startsWith(dir));
     if (!underGateDir) {
       errors.push(
-        `gate_location "${path}" must be under scripts/, tests/, or .github/`,
+        formatMessage("agent-run.promote-learning.invalid-gate-location", { path }, overrides).message,
       );
     }
   }
@@ -103,7 +107,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     else if (key === "--id") opts.id = value;
     else if (key === "--write") {
       // Reserved for future use; not implemented in this PR.
-      console.error("error: --write flag not yet implemented");
+      console.error(formatMessage("agent-run.promote-learning.write-not-implemented", {}, overrides).message);
       process.exit(1);
     }
   }

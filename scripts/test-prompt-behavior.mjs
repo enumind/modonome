@@ -16,9 +16,11 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const defaultRoot = join(here, "..");
+const overrides = loadMessageOverrides(join(defaultRoot, ".modonome"));
 
 // The prompt source files whose concatenation forms the governing text. The engine
 // reads the core plus any loaded module and role, so the behavioral rules can live in
@@ -78,14 +80,18 @@ export function evaluateFixture(fixture, promptText) {
   const id = fixture && fixture.id ? String(fixture.id) : "(unnamed fixture)";
   const anchors = fixture && Array.isArray(fixture.anchors) ? fixture.anchors : null;
   if (!anchors || anchors.length === 0) {
-    return { id, ok: false, reason: "fixture declares no anchors" };
+    return { id, ok: false, reason: formatMessage("gate.prompt-behavior.no-anchors", {}, overrides).message };
   }
   const missing = anchors.filter((a) => !promptText.includes(a));
   if (missing.length > 0) {
     return {
       id,
       ok: false,
-      reason: `governing rule text missing from prompt: ${missing.map((a) => JSON.stringify(a)).join(", ")}`,
+      reason: formatMessage(
+        "gate.prompt-behavior.anchor-missing",
+        { missing: missing.map((a) => JSON.stringify(a)).join(", ") },
+        overrides
+      ).message,
     };
   }
   return { id, ok: true, reason: "all anchors present" };
@@ -119,8 +125,10 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     console.log(`\nPASS: ${results.length} canonical scenario(s) still anchored to their governing rule.`);
     process.exit(0);
   }
-  console.error(`\nFAIL: ${failed} of ${results.length} scenario(s) lost their governing rule text.`);
-  console.error("A prompt edit removed or reshaped a rule that produces a golden decision.");
-  console.error("If the behavioral change is intentional, update the fixture and cite the ADR/PR.");
+  console.error(
+    formatMessage("gate.prompt-behavior.fail-summary", { failed, total: results.length }, overrides).message
+  );
+  console.error(formatMessage("gate.prompt-behavior.fail-hint-drift", {}, overrides).message);
+  console.error(formatMessage("gate.prompt-behavior.fail-hint-intentional", {}, overrides).message);
   process.exit(1);
 }

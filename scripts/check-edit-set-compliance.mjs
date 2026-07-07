@@ -12,9 +12,11 @@ import { spawnSync } from "node:child_process";
 import { readFileSync, existsSync, readdirSync, statSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
+const overrides = loadMessageOverrides(join(root, ".modonome"));
 
 function getDiff(baseRef = "origin/main") {
   const result = spawnSync("git", ["diff", `${baseRef}...HEAD`], {
@@ -117,11 +119,15 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   }
 
   if (violations.length > 0) {
-    console.error(`FAIL: ${violations.length} file(s) modified outside allowed_edit_set:`);
+    console.error(
+      formatMessage("gate.edit-set-compliance.violations-summary", { count: violations.length }, overrides).message
+    );
     for (const f of violations) {
-      console.error(`  - ${f}`);
+      console.error(formatMessage("gate.edit-set-compliance.violation-item", { file: f }, overrides).message);
     }
-    console.error(`Allowed paths: ${allowedSet.join(", ")}`);
+    console.error(
+      formatMessage("gate.edit-set-compliance.allowed-paths", { paths: allowedSet.join(", ") }, overrides).message
+    );
     process.exit(1);
   }
 

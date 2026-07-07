@@ -14,6 +14,9 @@
 // with stable MR### rule codes, for CI annotations and security dashboards.
 import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 import {
   TEST_FILE,
   PYTHON_TEST,
@@ -25,6 +28,10 @@ import {
   TS_CONFIG,
   COVERAGE_CONFIG,
 } from "./lib/file-classifiers.mjs";
+
+const here = dirname(fileURLToPath(import.meta.url));
+const root = join(here, "..");
+const overrides = loadMessageOverrides(join(root, ".modonome"));
 
 // A git ref this tool will diff against. Refname rules already forbid spaces and
 // most shell metacharacters; this keeps the value to the safe subset and to the
@@ -63,13 +70,13 @@ function getDiff() {
     });
     if (result.error) throw result.error;
     if (result.status !== 0) {
-      throw new Error(result.stderr || "git diff --cached failed");
+      throw new Error(result.stderr || formatMessage("gate.ratchet.staged-diff-failed", {}, overrides).message);
     }
     return normalizeLF(result.stdout);
   }
   const base = arg || "origin/main";
   if (!SAFE_REF.test(base)) {
-    throw new Error(`refusing to diff against unsafe ref: ${base}`);
+    throw new Error(formatMessage("gate.ratchet.unsafe-ref", { ref: base }, overrides).message);
   }
   // Pass git its arguments as an array, never a shell string, so the ref can
   // never be interpreted as a command.
@@ -79,7 +86,7 @@ function getDiff() {
   });
   if (result.error) throw result.error;
   if (result.status !== 0) {
-    throw new Error(result.stderr || `git diff ${base}...HEAD failed`);
+    throw new Error(result.stderr || formatMessage("gate.ratchet.diff-failed", { base }, overrides).message);
   }
   return normalizeLF(result.stdout);
 }
@@ -368,7 +375,13 @@ for (const [file, { added, removed }] of Object.entries(files)) {
       removedAsserts += countBareAsserts(removed);
     }
     if (removedAsserts > addedAsserts) {
-      problems.push(`${file}: removes more test assertions than it adds (+${addedAsserts} / -${removedAsserts}).`);
+      problems.push(
+        formatMessage(
+          "gate.ratchet.assertion-removal",
+          { file, added: addedAsserts, removed: removedAsserts },
+          overrides
+        ).message
+      );
     }
   }
 
@@ -376,7 +389,7 @@ for (const [file, { added, removed }] of Object.entries(files)) {
   if (isTest) {
     for (const l of added) {
       if (SKIP.test(l)) {
-        problems.push(`${file}: adds a skipped or focused test: ${l.trim()}`);
+        problems.push(formatMessage("gate.ratchet.skip-injection", { file, line: l.trim() }, overrides).message);
       }
     }
   }
@@ -392,7 +405,9 @@ for (const [file, { added, removed }] of Object.entries(files)) {
       const norm = deconfuse(clean);
       ASSERT.lastIndex = 0; STRONG_ASSERT.lastIndex = 0;
       if (SKIP.test(norm) || ASSERT.test(norm) || STRONG_ASSERT.test(norm)) {
-        problems.push(`${file}: adds a gate construct disguised with Unicode homoglyphs: ${l.trim()}`);
+        problems.push(
+          formatMessage("gate.ratchet.homoglyph-disguise", { file, line: l.trim() }, overrides).message
+        );
       }
     }
   }
@@ -402,7 +417,9 @@ for (const [file, { added, removed }] of Object.entries(files)) {
   if (isTest) {
     for (const l of added) {
       if (isVacuousAssertion(l)) {
-        problems.push(`${file}: adds a vacuous assertion that can never fail: ${l.trim()}`);
+        problems.push(
+          formatMessage("gate.ratchet.vacuous-assertion", { file, line: l.trim() }, overrides).message
+        );
       }
     }
   }
@@ -411,7 +428,9 @@ for (const [file, { added, removed }] of Object.entries(files)) {
   if (isPyTest) {
     for (const l of added) {
       if (isVacuousPyAssert(l)) {
-        problems.push(`${file}: adds a vacuous Python assertion that can never fail: ${l.trim()}`);
+        problems.push(
+          formatMessage("gate.ratchet.vacuous-python-assertion", { file, line: l.trim() }, overrides).message
+        );
       }
     }
   }
@@ -421,7 +440,7 @@ for (const [file, { added, removed }] of Object.entries(files)) {
     for (const l of added) {
       const clean = stripInlineComment(l);
       if (TS_ANY_ESCAPE.test(clean)) {
-        problems.push(`${file}: adds a broad type escape: ${l.trim()}`);
+        problems.push(formatMessage("gate.ratchet.type-escape-ts", { file, line: l.trim() }, overrides).message);
       }
     }
   }
@@ -430,7 +449,9 @@ for (const [file, { added, removed }] of Object.entries(files)) {
   if (isJavaSrc) {
     for (const l of added) {
       if (JAVA_UNCHECKED.test(l)) {
-        problems.push(`${file}: adds @SuppressWarnings("unchecked"): address the type safety issue directly: ${l.trim()}`);
+        problems.push(
+          formatMessage("gate.ratchet.type-escape-java", { file, line: l.trim() }, overrides).message
+        );
       }
     }
   }
@@ -439,7 +460,9 @@ for (const [file, { added, removed }] of Object.entries(files)) {
   if (isDotnetSrc) {
     for (const l of added) {
       if (DOTNET_PRAGMA.test(l)) {
-        problems.push(`${file}: adds #pragma warning disable: fix the warning rather than suppressing it: ${l.trim()}`);
+        problems.push(
+          formatMessage("gate.ratchet.type-escape-dotnet", { file, line: l.trim() }, overrides).message
+        );
       }
     }
   }
@@ -448,7 +471,9 @@ for (const [file, { added, removed }] of Object.entries(files)) {
   if (isTsConfig) {
     for (const l of added) {
       if (TS_STRICT_OFF.test(l)) {
-        problems.push(`${file}: weakens TypeScript strictness: ${l.trim()}`);
+        problems.push(
+          formatMessage("gate.ratchet.ts-strictness-weakened", { file, line: l.trim() }, overrides).message
+        );
       }
     }
   }
@@ -460,7 +485,9 @@ for (const [file, { added, removed }] of Object.entries(files)) {
       if (!COVERAGE_THRESHOLD.test(l)) continue;
       const matchingAdded = added.filter((a) => COVERAGE_THRESHOLD.test(a));
       if (matchingAdded.length === 0) {
-        problems.push(`${file}: removes a coverage threshold: ${l.trim()}`);
+        problems.push(
+          formatMessage("gate.ratchet.coverage-threshold-removed", { file, line: l.trim() }, overrides).message
+        );
       } else {
         // Check whether a matching added line lowers the numeric value.
         const oldM = l.match(COVERAGE_VALUE_RE);
@@ -469,7 +496,13 @@ for (const [file, { added, removed }] of Object.entries(files)) {
           for (const a of matchingAdded) {
             const newM = a.match(COVERAGE_VALUE_RE);
             if (newM && parseFloat(newM[1]) < oldVal) {
-              problems.push(`${file}: lowers a coverage threshold (${oldVal} -> ${parseFloat(newM[1])}): ${l.trim()}`);
+              problems.push(
+                formatMessage(
+                  "gate.ratchet.coverage-threshold-lowered",
+                  { file, oldVal, newVal: parseFloat(newM[1]), line: l.trim() },
+                  overrides
+                ).message
+              );
               break;
             }
           }
@@ -496,7 +529,9 @@ for (const [file, { added, removed }] of Object.entries(files)) {
       if (addedKeys.has(key)) {
         const newVal = addedKeys.get(key);
         if (newVal < oldVal) {
-          problems.push(`${file}: lowers the ${key} coverage floor (${oldVal} -> ${newVal}).`);
+          problems.push(
+            formatMessage("gate.ratchet.coverage-floor-lowered", { file, key, oldVal, newVal }, overrides).message
+          );
         }
       }
     }
@@ -517,7 +552,11 @@ for (const [file, { added, removed }] of Object.entries(files)) {
     const weakAdded     = count(addedClean,   WEAK_EXISTENCE);
     if (strongRemoved > strongAdded && weakAdded > 0) {
       problems.push(
-        `${file}: downgrades assertion strength (strong value-checks ${strongAdded} added / ${strongRemoved} removed, replaced by ${weakAdded} existence-only check(s)). Existence checks do not prove the expected value.`
+        formatMessage(
+          "gate.ratchet.assertion-strength-downgrade",
+          { file, strongAdded, strongRemoved, weakAdded },
+          overrides
+        ).message
       );
     }
   }
@@ -625,9 +664,9 @@ if (FORMAT !== "human") {
 }
 
 if (problems.length > 0) {
-  console.error("Anti-gaming ratchet rejected this change:\n");
+  console.error(formatMessage("gate.ratchet.fail-header", {}, overrides).message);
   for (const p of problems) console.error("  - " + p);
-  console.error("\nDo not weaken gates to go green. Get owner review for an intended exception.");
+  console.error(formatMessage("gate.ratchet.fail-footer", {}, overrides).message);
   process.exit(1);
 }
 console.log("Anti-gaming ratchet: no weakened tests, skips, type escapes, or loosened gates.");

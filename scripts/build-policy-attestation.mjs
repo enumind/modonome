@@ -40,9 +40,11 @@ import {
   publicKeyFromB64,
   privateKeyFromB64Pkcs8,
 } from "./lib/ed25519.mjs";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
+const overrides = loadMessageOverrides(join(root, ".modonome"));
 const ARTIFACT = join(root, ".modonome", "policy-attestation.json");
 const SCHEMA = join(root, "schemas", "policy-attestation.schema.json");
 // Scoped override for --adopt's write destination only (tests redirect vendored packs into
@@ -112,7 +114,7 @@ function write(env) {
   const manifest = maybeSign(buildPolicyManifest(loadInputs()), env);
   const errs = validate(schema(), manifest);
   if (errs.length) {
-    console.error("build-policy-attestation: generated manifest fails its own schema:");
+    console.error(formatMessage("gate.policy-attestation.write-schema-invalid", {}, overrides).message);
     for (const e of errs) console.error("  - " + e);
     process.exit(1);
   }
@@ -132,18 +134,30 @@ function digestMismatch(m) {
 
 function check() {
   if (!existsSync(ARTIFACT)) {
-    fail(`${rel(ARTIFACT)} is missing. Run: node scripts/build-policy-attestation.mjs`);
+    fail(formatMessage("gate.policy-attestation.artifact-missing", { path: rel(ARTIFACT) }, overrides).message);
   }
   const committed = JSON.parse(readFileSync(ARTIFACT, "utf8"));
   // Self-consistency: the committed body must hash to its own recorded digest.
   const mismatch = digestMismatch(committed);
   if (mismatch) {
-    fail(`${rel(ARTIFACT)} is internally inconsistent: content_digest ${mismatch.content_digest} does not match its body (${mismatch.recomputed}). The file was edited by hand.`);
+    fail(
+      formatMessage(
+        "gate.policy-attestation.internally-inconsistent",
+        { path: rel(ARTIFACT), digest: mismatch.content_digest, recomputed: mismatch.recomputed },
+        overrides,
+      ).message,
+    );
   }
   // Freshness: the committed digest must match a manifest rebuilt from live policy.
   const fresh = buildPolicyManifest(loadInputs());
   if (committed.content_digest !== fresh.content_digest) {
-    fail(`${rel(ARTIFACT)} is stale: committed digest ${committed.content_digest} but current policy hashes to ${fresh.content_digest}. Run: node scripts/build-policy-attestation.mjs`);
+    fail(
+      formatMessage(
+        "gate.policy-attestation.stale",
+        { path: rel(ARTIFACT), committed: committed.content_digest, fresh: fresh.content_digest },
+        overrides,
+      ).message,
+    );
   }
   console.log(`PASS: ${rel(ARTIFACT)} is current (digest ${committed.content_digest}).`);
 }
@@ -169,7 +183,7 @@ function readForeignPack(path) {
   try {
     return readPack(path);
   } catch (e) {
-    fail(`could not read or parse ${path}: ${e.message}`);
+    fail(formatMessage("gate.policy-attestation.read-foreign-pack-failed", { path, reason: e.message }, overrides).message);
   }
 }
 
@@ -196,18 +210,18 @@ function show(path) {
 function verifyCmd(path) {
   const target = path || ARTIFACT;
   const label = path || rel(ARTIFACT);
-  if (!existsSync(target)) fail(`${label} is missing.`);
+  if (!existsSync(target)) fail(formatMessage("gate.policy-attestation.verify-missing", { label }, overrides).message);
   const m = readForeignPack(target);
   const mismatch = digestMismatch(m);
   if (mismatch) {
-    fail(`content_digest does not match the body in ${label}; the attestation was edited by hand.`);
+    fail(formatMessage("gate.policy-attestation.verify-digest-mismatch", { label }, overrides).message);
   }
   if (!m.signature) {
     console.log(`${label} is content-addressed (digest ${m.content_digest}) and carries no signature. This is the default posture.`);
     return;
   }
   const ok = verifyMessage(attestationBytes(m), m.signature.sig_b64, publicKeyFromB64(m.signature.pubkey_b64));
-  if (!ok) fail(`signature does not verify against the embedded public key (${label}).`);
+  if (!ok) fail(formatMessage("gate.policy-attestation.verify-signature-invalid", { label }, overrides).message);
   console.log(`PASS: signature verifies (alg ${m.signature.alg}, key ${m.signature.key_alias}, digest ${m.content_digest}).`);
 }
 
@@ -250,7 +264,7 @@ function diffPosture(local, foreign) {
 // policy. Always succeeds (never a pass/fail gate); a human uses this to decide whether to
 // adopt. The foreign pack's generator credit is always surfaced, never only its content.
 function diffCmd(path) {
-  if (!path) fail("--diff requires a file path.");
+  if (!path) fail(formatMessage("gate.policy-attestation.diff-missing-path", {}, overrides).message);
   const foreign = readForeignPack(path);
   const local = buildPolicyManifest(loadInputs());
   console.log(`Comparing this repo's live policy to ${path}`);
@@ -272,23 +286,29 @@ const ALIAS_RE = /^[a-zA-Z0-9][a-zA-Z0-9._-]*$/;
 // body was edited without recomputing content_digest; signature verification catches a
 // tampered signed pack. Only on all three passing does anything get written.
 function adoptCmd(path, alias) {
-  if (!path) fail("--adopt requires a file path.");
-  if (!alias) fail("--adopt requires --alias <name>.");
-  if (!ALIAS_RE.test(alias)) fail(`--alias "${alias}" must be a plain filesystem-safe name (letters, digits, dot, dash, underscore).`);
+  if (!path) fail(formatMessage("gate.policy-attestation.adopt-missing-path", {}, overrides).message);
+  if (!alias) fail(formatMessage("gate.policy-attestation.adopt-missing-alias", {}, overrides).message);
+  if (!ALIAS_RE.test(alias)) fail(formatMessage("gate.policy-attestation.adopt-invalid-alias", { alias }, overrides).message);
   const pack = readForeignPack(path);
   const schemaErrs = validate(schema(), pack);
   if (schemaErrs.length) {
-    console.error(`build-policy-attestation: ${path} fails the policy-attestation schema; refusing to adopt:`);
+    console.error(formatMessage("gate.policy-attestation.adopt-schema-invalid", { path }, overrides).message);
     for (const e of schemaErrs) console.error("  - " + e);
     process.exit(1);
   }
   const mismatch = digestMismatch(pack);
   if (mismatch) {
-    fail(`${path} is internally inconsistent: content_digest ${mismatch.content_digest} does not match its body (${mismatch.recomputed}). Refusing to adopt a pack that fails its own integrity check.`);
+    fail(
+      formatMessage(
+        "gate.policy-attestation.adopt-internally-inconsistent",
+        { path, digest: mismatch.content_digest, recomputed: mismatch.recomputed },
+        overrides,
+      ).message,
+    );
   }
   if (pack.signature) {
     const ok = verifyMessage(attestationBytes(pack), pack.signature.sig_b64, publicKeyFromB64(pack.signature.pubkey_b64));
-    if (!ok) fail(`${path} carries a signature that does not verify. Refusing to adopt.`);
+    if (!ok) fail(formatMessage("gate.policy-attestation.adopt-signature-invalid", { path }, overrides).message);
   }
   const destDir = join(ADOPT_ROOT, ".modonome", "policy-packs");
   mkdirSync(destDir, { recursive: true });

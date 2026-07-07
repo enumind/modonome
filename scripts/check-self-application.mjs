@@ -12,9 +12,11 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { validate } from "./lib/jsonschema.mjs";
 import { parseFlatYaml } from "./lib/yaml-lite.mjs";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = process.env.MODONOME_ROOT ? process.env.MODONOME_ROOT : join(here, "..");
+const overrides = loadMessageOverrides(join(root, ".modonome"));
 const problems = [];
 const notes = [];
 
@@ -64,9 +66,13 @@ const REQUIRED_GATES = [
   // Governed Remediation Phase 3: freshness gate for the content-addressed policy and
   // disclosure attestation. Runs pre-base-checkout so it judges the PR's own policy files.
   { name: "policy attestation freshness", needle: "build-policy-attestation.mjs --check" },
+  // Message catalog severity-floor gate: a gate-blocking message's severity must not
+  // be silenceable via .modonome/messages.yaml overrides.
+  { name: "message catalog integrity", needle: "check-message-catalog-integrity.mjs" },
 ];
 for (const g of REQUIRED_GATES) {
-  if (!activeCI.includes(g.needle)) problems.push(`ci.yml does not run the ${g.name} gate (${g.needle}).`);
+  if (!activeCI.includes(g.needle))
+    problems.push(formatMessage("gate.self-application.gate-not-wired", { name: g.name, needle: g.needle }, overrides).message);
 }
 
 // 2. The ratchet, style linter, and the attribution detector kernel must be loaded
@@ -89,7 +95,7 @@ for (const rel of BASE_PINNED) {
   const escaped = rel.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const re = new RegExp(`git checkout "origin/\\$\\{\\{ github\\.base_ref \\}\\}" -- ${escaped}`);
   if (!re.test(activeCI)) {
-    problems.push(`ci.yml does not load ${rel} from the base branch before running the gates (trust-isolation kernel).`);
+    problems.push(formatMessage("gate.self-application.not-base-pinned", { rel }, overrides).message);
   }
 }
 
@@ -101,7 +107,10 @@ const SAFE = {
   repo_network_enabled: false, share_raw_code_across_repos: false,
 };
 for (const [lever, want] of Object.entries(SAFE)) {
-  if (tmpl[lever] !== want) problems.push(`templates/.modonome/config.yaml: ${lever} should default to ${want}, got ${JSON.stringify(tmpl[lever])}.`);
+  if (tmpl[lever] !== want)
+    problems.push(
+      formatMessage("gate.self-application.unsafe-default", { lever, want, got: JSON.stringify(tmpl[lever]) }, overrides).message
+    );
 }
 
 // 4. The two protected-path surfaces must agree. CODEOWNERS is what GitHub
@@ -123,10 +132,12 @@ const ppx = (cfg.protected_paths_extra || []).map((p) => String(p).replace(/^\//
 const owners = dirsFromCodeowners();
 const ppxSet = new Set(ppx);
 for (const d of owners) {
-  if (!ppxSet.has(d)) problems.push(`CODEOWNERS protects "${d}/" but protected_paths_extra does not list it.`);
+  if (!ppxSet.has(d))
+    problems.push(formatMessage("gate.self-application.codeowners-not-in-protected-paths", { d }, overrides).message);
 }
 for (const d of ppx) {
-  if (!owners.has(d)) problems.push(`protected_paths_extra lists "${d}/" but CODEOWNERS does not protect it.`);
+  if (!owners.has(d))
+    problems.push(formatMessage("gate.self-application.protected-path-not-in-codeowners", { d }, overrides).message);
 }
 
 // 5. No shipped telemetry may violate its own schema, and the live readout path
@@ -137,12 +148,12 @@ const stateDir = join(root, ".modonome");
 if (existsSync(stateDir)) {
   for (const f of readdirSync(stateDir).filter((f) => f.endsWith(".jsonl"))) {
     if (f === "metrics.jsonl") {
-      problems.push("A committed .modonome/metrics.jsonl ships activity as if it were real. Use metrics.example.jsonl for samples; let the engine write the live file at runtime.");
+      problems.push(formatMessage("gate.self-application.committed-metrics-jsonl", {}, overrides).message);
     }
     const text = readFileSync(join(stateDir, f), "utf8");
     text.split("\n").filter((l) => l.trim()).forEach((line, i) => {
       let obj;
-      try { obj = JSON.parse(line); } catch { problems.push(`.modonome/${f}:${i + 1}: not valid JSON.`); return; }
+      try { obj = JSON.parse(line); } catch { problems.push(formatMessage("gate.self-application.invalid-json-metrics", { f, line: i + 1 }, overrides).message); return; }
       const errs = validate(metricsSchema, obj);
       if (errs.length) problems.push(`.modonome/${f}:${i + 1}: ${errs[0]}`);
     });
@@ -167,7 +178,7 @@ if (existsSync(join(root, "agentproof/runner.mjs"))) {
   try {
     runnerJson = JSON.parse(runnerResult.stdout);
   } catch {
-    problems.push("agentproof/runner.mjs --json did not print parseable JSON.");
+    problems.push(formatMessage("gate.self-application.runner-json-unparseable", {}, overrides).message);
   }
   if (runnerJson && runnerJson.score) {
     const BADGE_FILES = [
@@ -180,10 +191,7 @@ if (existsSync(join(root, "agentproof/runner.mjs"))) {
       const text = read(rel);
       for (const score of scores.filter(Boolean)) {
         if (!text.includes(score)) {
-          problems.push(
-            `${rel} does not contain the current AgentProof score "${score}" ` +
-              `(agentproof/runner.mjs --json is the source of truth).`
-          );
+          problems.push(formatMessage("gate.self-application.badge-score-mismatch", { rel, score }, overrides).message);
         }
       }
     }
@@ -200,24 +208,23 @@ notes.push("Required status checks to enable on the default branch: \"verify\" a
 //    committed signature must exist, agent instructions must point at the map, and
 //    the hook plus CI gate must keep it fresh. This makes the "we use our own
 //    feature" claim machine-checked rather than aspirational.
-const snapSig = "snapshot/signature.json";
 if (!existsSync(join(root, ".modonome", "snapshot", "signature.json"))) {
-  problems.push(`.modonome/${snapSig} is missing. Run: node scripts/snapshot.mjs . (modonome must ship its own snapshot).`);
+  problems.push(formatMessage("gate.self-application.missing-snapshot-signature", {}, overrides).message);
 }
 const agents = existsSync(join(root, "AGENTS.md")) ? read("AGENTS.md") : "";
 if (!agents.includes(".modonome/snapshot/map.md")) {
-  problems.push("AGENTS.md does not point agents at .modonome/snapshot/map.md.");
+  problems.push(formatMessage("gate.self-application.agents-md-missing-snapshot-link", {}, overrides).message);
 }
 const hook = existsSync(join(root, "scripts/install-hooks.mjs")) ? read("scripts/install-hooks.mjs") : "";
 if (!hook.includes("snapshot.mjs")) {
-  problems.push("scripts/install-hooks.mjs does not regenerate the snapshot in the pre-commit hook.");
+  problems.push(formatMessage("gate.self-application.hook-missing-snapshot-regen", {}, overrides).message);
 }
 if (!activeCI.includes("snapshot.mjs . --check")) {
-  problems.push("ci.yml does not run the snapshot freshness gate (snapshot.mjs . --check).");
+  problems.push(formatMessage("gate.self-application.ci-missing-snapshot-freshness", {}, overrides).message);
 }
 const selfCfg = parseFlatYaml(read(".modonome/config.yaml"));
 if (!selfCfg.snapshot || selfCfg.snapshot.ci_mode !== "fail") {
-  problems.push('.modonome/config.yaml: snapshot.ci_mode should be "fail" so modonome\'s own snapshot cannot go stale.');
+  problems.push(formatMessage("gate.self-application.snapshot-ci-mode-not-fail", {}, overrides).message);
 }
 
 // Report
@@ -226,7 +233,7 @@ console.log("=====================================");
 if (problems.length === 0) {
   console.log("PASS: every repo-local self-governance invariant holds.");
 } else {
-  console.error(`FAIL: ${problems.length} self-application problem(s):\n`);
+  console.error(formatMessage("gate.self-application.fail-summary", { count: problems.length }, overrides).message);
   for (const p of problems) console.error("  - " + p);
 }
 console.log("\nManual action items (not machine-verifiable here):");

@@ -10,9 +10,12 @@
 import { readFileSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { formatMessage, loadMessageOverrides } from "../lib/messages.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
-const promptsDir = join(here, "..", "..", "prompts", "roles");
+const root = join(here, "..", "..");
+const promptsDir = join(root, "prompts", "roles");
+const overrides = loadMessageOverrides(join(root, ".modonome"));
 
 const PLACEHOLDER = /\$\{(\w+)\}/g;
 
@@ -56,12 +59,14 @@ export function snapshotContext(root = process.cwd()) {
 // missing identity or branch fails loudly instead of rendering an empty value into
 // a model prompt.
 export function renderPrompt(role, env = process.env) {
-  if (!/^[a-z]+$/.test(role)) throw new Error(`render-prompt: invalid role "${role}".`);
+  if (!/^[a-z]+$/.test(role)) {
+    throw new Error(formatMessage("agent-run.render-prompt.invalid-role", { role }, overrides).message);
+  }
   const text = readFileSync(join(promptsDir, `${role}.txt`), "utf8");
   return text.replace(PLACEHOLDER, (_m, name) => {
     const value = env[name];
     if (value === undefined || value === "") {
-      throw new Error(`render-prompt: ${role}.txt references \${${name}} but it is not set.`);
+      throw new Error(formatMessage("agent-run.render-prompt.missing-var", { role, name }, overrides).message);
     }
     return value;
   });
@@ -70,7 +75,7 @@ export function renderPrompt(role, env = process.env) {
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const role = process.argv[2];
   if (!role) {
-    console.error("Usage: node scripts/agent/render-prompt.mjs <maker|checker>");
+    console.error(formatMessage("agent-run.render-prompt.usage", {}, overrides).message);
     process.exit(2);
   }
   try {

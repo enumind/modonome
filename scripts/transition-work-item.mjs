@@ -15,6 +15,12 @@
 // Usage: node scripts/transition-work-item.mjs <item.json> <fromState> <toState> <writerId>
 import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
+
+const here = dirname(fileURLToPath(import.meta.url));
+const root = join(here, "..");
+const overrides = loadMessageOverrides(join(root, ".modonome"));
 
 // A lease is "live" if it has an owner and an unexpired lease_expires_at.
 // The lease holder is recorded as lease_owner (the field this swap writes) or,
@@ -42,7 +48,11 @@ export function tryTransition(item, fromState, toState, writerId, now = new Date
   if (item.state !== fromState) {
     return {
       ok: false,
-      conflict: `state mismatch: expected ${fromState}, found ${item.state}`,
+      conflict: formatMessage(
+        "agent-run.transition-work-item.state-mismatch",
+        { fromState, state: item.state },
+        overrides
+      ).message,
     };
   }
 
@@ -53,7 +63,11 @@ export function tryTransition(item, fromState, toState, writerId, now = new Date
   if (leaseIsLive(item, now) && holder !== writerId) {
     return {
       ok: false,
-      conflict: `lease held by ${holder} until ${item.lease_expires_at}`,
+      conflict: formatMessage(
+        "agent-run.transition-work-item.lease-held",
+        { holder, leaseExpiresAt: item.lease_expires_at },
+        overrides
+      ).message,
     };
   }
 
@@ -67,7 +81,7 @@ export function tryTransition(item, fromState, toState, writerId, now = new Date
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const [path, fromState, toState, writerId] = process.argv.slice(2);
   if (!path || !fromState || !toState || !writerId) {
-    console.error("Usage: node scripts/transition-work-item.mjs <item.json> <fromState> <toState> <writerId>");
+    console.error(formatMessage("agent-run.transition-work-item.usage", {}, overrides).message);
     process.exit(2);
   }
   const item = JSON.parse(readFileSync(path, "utf8"));

@@ -20,9 +20,11 @@
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join, extname } from "node:path";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = process.env.MODONOME_ROOT ? process.env.MODONOME_ROOT : join(here, "..");
+const overrides = loadMessageOverrides(join(root, ".modonome"));
 const problems = [];
 
 const archPath = join(root, "ARCHITECTURE.md");
@@ -43,10 +45,7 @@ if (existsSync(agentDir)) {
 if (existsSync(join(root, "scripts", "mcp-server.mjs"))) mustBeNamed.push("mcp-server.mjs");
 for (const name of mustBeNamed) {
   if (!arch.includes(name)) {
-    problems.push(
-      `[unmentioned-script] ${name} exists but is not mentioned anywhere in ARCHITECTURE.md. ` +
-        `A new file here is a new execution surface or a new agent-loop component; document it.`
-    );
+    problems.push(formatMessage("gate.architecture-drift.unmentioned-script", { name }, overrides).message);
   }
 }
 
@@ -56,7 +55,7 @@ let m;
 while ((m = citedScriptRe.exec(arch)) !== null) {
   const rel = m[1];
   if (!existsSync(join(root, rel))) {
-    problems.push(`[stale-reference] ARCHITECTURE.md cites \`${rel}\`, which does not exist. Update or remove the reference.`);
+    problems.push(formatMessage("gate.architecture-drift.stale-reference", { path: rel }, overrides).message);
   }
 }
 
@@ -75,17 +74,14 @@ if (existsSync(schemaPath)) {
   const states = (schema.properties && schema.properties.state && schema.properties.state.enum) || [];
   const sectionStart = arch.indexOf("## The agent loop");
   if (sectionStart === -1) {
-    if (states.length > 0) problems.push(`[agent-loop-section] ARCHITECTURE.md has no "## The agent loop" section to check states against.`);
+    if (states.length > 0) problems.push(formatMessage("gate.architecture-drift.no-agent-loop-section", {}, overrides).message);
   } else {
     const nextHeading = arch.indexOf("\n## ", sectionStart + 1);
     const section = nextHeading === -1 ? arch.slice(sectionStart) : arch.slice(sectionStart, nextHeading);
     for (const state of states) {
       const wordBoundary = new RegExp(`\\b${escapeRegExp(String(state))}\\b`);
       if (!wordBoundary.test(section)) {
-        problems.push(
-          `[unmentioned-state] work-item state "${state}" (schemas/work-item.schema.json) is not named ` +
-            `in ARCHITECTURE.md's "## The agent loop" section.`
-        );
+        problems.push(formatMessage("gate.architecture-drift.unmentioned-state", { state }, overrides).message);
       }
     }
   }
@@ -94,7 +90,7 @@ if (existsSync(schemaPath)) {
 if (problems.length > 0) {
   console.error("Architecture drift found:\n");
   for (const p of problems) console.error("  - " + p);
-  console.error(`\n${problems.length} problem(s). ARCHITECTURE.md is the highest-traffic explanation of the system; keep it current.`);
+  console.error("\n" + formatMessage("gate.architecture-drift.fail-summary", { count: problems.length }, overrides).message);
   process.exit(1);
 }
 console.log("Architecture drift guard: every execution surface, script reference, and work-item state is accounted for in ARCHITECTURE.md.");

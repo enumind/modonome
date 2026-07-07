@@ -1,0 +1,80 @@
+export const MESSAGES = {
+  "gate.learning-traceability.read-error": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "Learning traceability: {reason}",
+  },
+  "gate.learning-traceability.no-learnings": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "FAIL: no promoted learnings found; Promoted block is absent or empty. Gate cannot certify an empty record.",
+  },
+  "gate.learning-traceability.missing-field": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: '{tag}: missing or empty required field "{field}".',
+  },
+  "gate.learning-traceability.duplicate-id": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "{tag}: duplicate learning id.",
+  },
+  "gate.learning-traceability.bad-date-format": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: '{tag}: {field} "{value}" is not YYYY-MM-DD.',
+  },
+  "gate.learning-traceability.invalid-calendar-date": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: '{tag}: {field} "{value}" is not a valid calendar date.',
+  },
+  "gate.learning-traceability.promotion-precedes-observation": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "{tag}: promotion_date precedes observation_date.",
+  },
+  "gate.learning-traceability.understaged": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "{tag}: staged {stagedDays} day(s), below MODONOME_MIN_STAGE_DAYS={minStageDays}.",
+  },
+  "gate.learning-traceability.gate-location-wrong-dir": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: '{tag}: gate_location "{path}" must be under scripts/, tests/, or .github/ (got: "{path}").',
+  },
+  "gate.learning-traceability.gate-location-missing": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: '{tag}: gate_location "{path}" does not exist.',
+  },
+  "gate.learning-traceability.signal-not-path": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: '{tag}: correction_signal_id "{sigId}" is not a repo-relative path. All references must be committed documents so the audit trail is self-contained (e.g. docs/audits/claims-audit-2026-06-25.md).',
+  },
+  "gate.learning-traceability.signal-missing": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: '{tag}: correction_signal_id "{sigId}" looks like a path but does not exist.',
+  },
+  "gate.learning-traceability.fail-summary": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "FAIL: {count} traceability problem(s):\n",
+  },
+};

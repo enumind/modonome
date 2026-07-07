@@ -82,6 +82,35 @@ export interface ModonomeConfig {
   providers: Record<string, { transport?: string; costClass?: "paid" | "free" | "local"; authEnv?: string }>;
 }
 
+export type MessageSeverity = "ok" | "info" | "attention" | "blocked";
+
+/**
+ * One entry of the built-in message catalog (scripts/lib/messages.mjs), with
+ * this subject's .modonome/messages.yaml overrides already resolved. A
+ * non_suppressible entry's severity/suppressed always equal its catalog
+ * default here (the reader clamps them the same way formatMessage() does),
+ * so the panel never needs to re-derive the floor client-side.
+ */
+export interface MessageCatalogEntryVM {
+  id: string;
+  category: string;
+  defaultSeverity: MessageSeverity;
+  defaultTemplate: string;
+  nonSuppressible: boolean;
+  severity: MessageSeverity;
+  text: string;
+  suppressed: boolean;
+}
+
+/** A patch to one message's override, as sent to onSaveMessages. Omitted
+ * fields reset to the catalog default; severity/suppressed are rejected
+ * server-side for a non_suppressible id. */
+export interface MessageOverridePatch {
+  severity?: MessageSeverity;
+  text?: string;
+  suppressed?: boolean;
+}
+
 /** One prerequisite in the armed-mode gate checklist. */
 export interface ArmingCheck {
   label: string;
@@ -274,6 +303,11 @@ export interface PanelState {
   gauntletApplicable?: number;
   /** Optional so a state assembled without it (older fixture, partial read) still types. */
   remediation?: RemediationVM;
+  /** The built-in message catalog with this subject's own messages.yaml overrides
+   * resolved. Independent per mode: host mode's entries come from the connected
+   * repo's own .modonome/messages.yaml, product mode's from modonome's own, never
+   * shared, since the two can be different trust domains. */
+  messages: MessageCatalogEntryVM[];
 }
 
 /**
@@ -313,4 +347,5 @@ export interface WriteActions {
   onUpdateWorkItem: (itemId: string, patch: WorkItemPatch) => Promise<void>;
   onDeleteWorkItem: (itemId: string) => Promise<void>;
   onPruneLearning: (lesson: string) => Promise<void>;
+  onSaveMessages: (patch: Record<string, MessageOverridePatch>) => Promise<void>;
 }
