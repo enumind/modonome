@@ -19,8 +19,8 @@
       {
         "file": "AGENTS.md",
         "section": "Commit messages",
-        "found": true,
-        "sha256": "sha256:346bb69145712f5ebfa059754bb64b6c15716c632bcaa45100a3a726cd7c4f5a"
+        "found": false,
+        "sha256": null
       }
     ]
   },
@@ -111,5 +111,5 @@
     "autonomy_enabled": false,
     "dry_run": true
   },
-  "content_digest": "sha256:c98af1b5aeebb3e187cc2969d43020abca147acd139bbd4e11d8884ef4cbe53b"
+  "content_digest": "sha256:43c1db902ff659c8d33865a9ff2b32607f25848f1626b223e2772824210ef8bd"
 }
