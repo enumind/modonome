@@ -28,6 +28,16 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      # Installed before the test suite below because some root tests (for example
+      # tests/control-panel-work-item-writer.test.mjs) import apps/control-panel/
+      # server/*.mjs directly, which needs js-yaml -- a dependency that lives only in
+      # apps/control-panel/node_modules. This only touches design-system/ and
+      # apps/control-panel/, neither of which the base-branch checkouts below ever
+      # overwrite, so it doesn't affect the trust boundary those checkouts establish
+      # for the gate scripts.
+      - name: Install control-panel frontend dependencies
+        run: npm install --prefix design-system && npm install --prefix apps/control-panel
+
       # Snapshot freshness, the test suite, and AgentProof all run BEFORE the
       # base-branch checkouts below, which overwrite the gate scripts and the
       # attribution detector kernel with base versions. All three need to see
@@ -61,7 +71,7 @@ jobs:
         run: node scripts/check-regex-safety.mjs
       - name: Run gate DAG and determinism boundary gate
         run: node scripts/check-gate-dag.mjs
-      # Advisory only: surfaces near-miss attribution tokens as LEARNINGS.md
+      # Advisory only: surfaces near-miss attribution tokens as LESSONS.md
       # proposals for human review. It never blocks CI (always exits 0 on a finding);
       # promotion into the deterministic denylist stays human-only.
       - name: Run near-miss widener (advisory)
@@ -185,14 +195,14 @@ jobs:
       - name: Run work item validation gate
         run: node scripts/check-work-items.mjs
 
+      - name: Run work item staleness gate
+        run: node scripts/check-work-item-staleness.mjs
+
       - name: Run checker engagement gate
         run: node scripts/check-checker-engagement.mjs
 
       - name: Run message catalog integrity gate
         run: node scripts/check-message-catalog-integrity.mjs
-
-      - name: Install control-panel frontend dependencies
-        run: npm install --prefix design-system && npm install --prefix apps/control-panel
 
       - name: Run design-system build
         run: npm run build --prefix design-system
@@ -220,6 +230,12 @@ jobs:
 
       - name: Install Dependencies
         run: npm install
+
+      # See the matching comment in the ratchet job above: some root tests import
+      # apps/control-panel/server/*.mjs, which needs js-yaml from that workspace's
+      # own node_modules.
+      - name: Install control-panel frontend dependencies
+        run: npm install --prefix design-system && npm install --prefix apps/control-panel
 
       - name: Run drift guard gate
         run: node scripts/check-drift.mjs

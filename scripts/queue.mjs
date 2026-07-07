@@ -11,9 +11,16 @@ import { sweepTarget, proposalToWorkItem } from "./dry-run-sweep.mjs";
 import { validateWorkItem } from "./validate-work-item.mjs";
 import { parseFlatYaml } from "./lib/yaml-lite.mjs";
 import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
+import { reviewProposal } from "./agent/review-proposals.mjs";
 
 const args = process.argv.slice(2);
 const all = args.includes("--all");
+// Checkpoint 1 (ADR-040): an independent checker vets a proposal before it enters the
+// backlog, the agentic half of the gate above the deterministic validateWorkItem below.
+// Off by default so existing behavior is unchanged. --review reports the checker's
+// verdict but still queues (advisory); --review-execute skips a proposal the checker
+// rejects (enforcing), and needs a configured local or gateway checker.
+const reviewMode = args.includes("--review-execute") ? "execute" : args.includes("--review") ? "advisory" : "off";
 const maxIdx = args.indexOf("--max");
 const max = maxIdx !== -1 ? parseInt(args[maxIdx + 1], 10) : undefined;
 
@@ -85,7 +92,30 @@ const existingIds = new Set(readdirSync(itemsDir).filter((f) => f.endsWith(".jso
 
 let written = 0;
 for (const i of selectedIndices) {
-  const item = proposalToWorkItem(scored[i].proposal);
+  const proposal = scored[i].proposal;
+
+  // Checkpoint 1: independent check before the backlog.
+  if (reviewMode !== "off") {
+    let verdictLine = "";
+    try {
+      const { executed, verdict } = await reviewProposal(config, { proposal, execute: reviewMode === "execute" });
+      if (executed && verdict) {
+        verdictLine = `Checkpoint 1 (${verdict.approved ? "APPROVE" : "REJECT"}): ${verdict.rationale}`;
+        if (reviewMode === "execute" && !verdict.approved) {
+          console.error(`reject ${proposalToWorkItem(proposal).id}: ${verdict.rationale}`);
+          continue;
+        }
+      } else {
+        verdictLine = "Checkpoint 1: advisory dry-run (no checker endpoint configured; run --review-execute with a local checker to enforce).";
+      }
+    } catch (err) {
+      console.error(`Checkpoint 1 could not run: ${err instanceof Error ? err.message : String(err)}`);
+      if (reviewMode === "execute") process.exit(1);
+    }
+    if (verdictLine) console.log(verdictLine);
+  }
+
+  const item = proposalToWorkItem(proposal);
   let id = item.id;
   let n = 2;
   while (existingIds.has(id)) id = `${item.id}-${n++}`;
@@ -101,7 +131,7 @@ for (const i of selectedIndices) {
   }
 
   writeFileSync(join(itemsDir, `${id}.json`), JSON.stringify(item, null, 2) + "\n");
-  console.log(`queued ${id}: ${scored[i].proposal}`);
+  console.log(`queued ${id}: ${proposal}`);
   written++;
 }
 

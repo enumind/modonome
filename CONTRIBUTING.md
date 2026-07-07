@@ -129,3 +129,16 @@ Adding a new scenario means:
 4. Document the attack and the control that defeats it in `agentproof/README.md`.
 
 See `agentproof/CONTRIBUTING.md` for the full scenario authoring guide.
+
+## Contributing to the Hardened Registry
+
+`docs/agentproof-registry.json` lists independently-run, publicly-inspectable AgentProof
+conformance runs (see `docs/adr/ADR-042-agentproof-verified.md`). There is no submission
+service or API: new entries are added only through a reviewed pull request.
+
+To submit a run, open a pull request adding one entry to the `entries` array with
+`repo`, `run_url`, `digest`, and `verified_at`. `run_url` must point at a public,
+independently-verifiable signed run (for example, a CI run page or a Sigstore/Rekor
+entry a reviewer can open and check without trusting your word for it). A maintainer
+follows the link and inspects the signature before merging; `scripts/check-agentproof-registry.mjs`
+only validates the entry's shape, it does not verify signatures or fetch `run_url`.

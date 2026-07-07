@@ -1,7 +1,7 @@
 ---
 status: active
 owner: "@nateshpp"
-last_reviewed: 2026-07-02
+last_reviewed: 2026-07-06
 canonical: [compliance-control-mapping]
 ---
 

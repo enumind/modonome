@@ -10,5 +10,6 @@
   ],
   "gates": [
     "node scripts/check-style.mjs ."
-  ]
+  ],
+  "type": "fix-issue"
 }

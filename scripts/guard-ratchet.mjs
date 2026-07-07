@@ -17,6 +17,17 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
+import {
+  TEST_FILE,
+  PYTHON_TEST,
+  JAVA_SRC,
+  DOTNET_SRC,
+  TS_SRC,
+  JAVA_BUILD,
+  DOTNET_BUILD,
+  TS_CONFIG,
+  COVERAGE_CONFIG,
+} from "./lib/file-classifiers.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
@@ -83,36 +94,9 @@ function getDiff() {
 // ---------------------------------------------------------------------------
 // Language-aware file classification
 // ---------------------------------------------------------------------------
-
-// Test files: any language.
-const TEST_FILE = new RegExp([
-  // JS / TS, including ESM (.mjs/.mts) and CommonJS (.cjs/.cts) extensions
-  String.raw`\.(test|spec)\.(c|m)?[jt]sx?$`,
-  // Python
-  String.raw`_test\.py$`, String.raw`test_.*\.py$`,
-  // Java (JUnit 4, JUnit 5, integration tests, Spock)
-  String.raw`Test\.java$`, String.raw`Tests\.java$`, String.raw`IT\.java$`, String.raw`Spec\.java$`,
-  // Java prefix-style test classes (TestFoo.java). [A-Z] guard excludes Testable.java; [^/]* prevents path leakage.
-  String.raw`Test[A-Z][^/]*\.java$`,
-  // C# (MSTest, NUnit, xUnit, SpecFlow)
-  String.raw`Tests?\.cs$`, String.raw`Spec\.cs$`, String.raw`Should\.cs$`, String.raw`Fixture\.cs$`,
-].join("|"));
-
-// Python test files: pytest uses the bare `assert` statement (no call parens),
-// which a call-site-only assertion counter cannot see. These need language-aware
-// handling for the removal check and a vacuous-assertion check of their own.
-const PYTHON_TEST = /(?:^|\/)(?:test_[^/]*|[^/]*_test)\.py$/;
-
-// Source files by language (for non-test type-escape checks).
-const JAVA_SRC  = /\.java$/;
-const DOTNET_SRC = /\.cs$/;
-const TS_SRC    = /\.(c|m)?[jt]sx?$/;
-
-// JaCoCo / Gradle / Coverlet config files.
-const JAVA_BUILD   = /^(pom\.xml|build\.gradle(\.kts)?)$/;
-const DOTNET_BUILD = /\.(runsettings|csproj|props)$/;
-const TS_CONFIG    = /tsconfig.*\.json$/;
-const COVERAGE_CONFIG = /(?:jest|vitest)\.config\.(js|ts|mjs|cjs)$|pyproject\.toml$/;
+// TEST_FILE, PYTHON_TEST, JAVA_SRC, DOTNET_SRC, TS_SRC, JAVA_BUILD, DOTNET_BUILD,
+// TS_CONFIG, and COVERAGE_CONFIG are imported from ./lib/file-classifiers.mjs so the
+// ratchet and other gate-integrity tools classify paths from one source of truth.
 
 // ---------------------------------------------------------------------------
 // Pattern definitions

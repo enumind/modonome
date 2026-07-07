@@ -85,7 +85,7 @@
 <h2>How it works</h2>
 <p>Modonome is a prompt and a set of scripts that run inside a harness you already have: a coding agent, a CI job, or a human session. A maker proposes one small change pinned by a test. An independent checker reviews it. Deterministic gates and an anti-gaming ratchet run in your CI, outside the agent's write scope, and keep tests, types, and coverage honest across JavaScript, Python, Java, and .NET. A human owner holds merge authority over anything protected.</p>
 <h2>Capabilities</h2>
-<p>Small, test-backed changes. Separate maker, checker, and merge roles. An anti-gaming ratchet in CI. Adopts your existing CI, code owners, and branch rules. Improves as it goes by promoting corrections into durable rules. An operator control panel for gate status and governance events. A Merkle-verified repository snapshot for trustworthy agent context. Compliance evidence and attestation through an MCP server. A drop-in GitHub Action with a signed gate-integrity receipt. Disclosure and adoption of governance policy as signed evidence between repositories. A safe, verified way to clear AI-attribution traces from commit history.</p>
+<p>Small, test-backed changes. Separate maker, checker, and merge roles. An anti-gaming ratchet in CI. Adopts your existing CI, code owners, and branch rules. Improves as it goes by promoting corrections into durable rules. An operator control panel for gate status and governance events. A Merkle-verified repository snapshot for trustworthy agent context. Compliance evidence and attestation through an MCP server. A drop-in GitHub Action with a signed gate-integrity receipt. Disclosure and adoption of governance policy as signed evidence between repositories.</p>
 <h2>AgentProof: 25/25 HARDENED, 35/35 total</h2>
 <p>AgentProof is the adversarial benchmark for agent gate-integrity. It proves through 25 normative scenarios that an implementation's gates hold under attack, and a further 10 extended hardening scenarios also pass, for 35/35 total. Modonome scores 25/25 HARDENED. Conformance levels: HARDENED is 25/25 normative scenarios, PARTIAL is 20 to 24, UNHARDENED is 19 or fewer.</p>
 <p>Scenarios covered: assertion removal (JS/TS, Java, .NET, Python), test skip injection, broad type escape, coverage threshold removal, unsafe config combinations, identity collapse (maker/checker same session or same model family), raw code leakage, schema/prompt/template drift, protected-path escalation, prompt injection inertness, state machine acyclicity, deterministic gate ordering, trust boundary (base-branch code loading), audit trail append-only integrity, model diversity enforcement, concurrent mutation serialization, gate DAG acyclicity, evidence secret screening, resource cap enforcement.</p>
@@ -295,7 +295,7 @@
     </div>
     <div class="mn-rel-region" role="region" aria-roledescription="carousel" aria-label="Recently shipped" tabIndex="0" onKeyDown="{{ relKeyDown }}" onMouseEnter="{{ relPause }}" onMouseLeave="{{ relResume }}" onFocus="{{ relPause }}" onBlur="{{ relResume }}" style="position:relative">
       <div class="mn-rel-track" ref="{{ setRelTrack }}">
-        <sc-for list="{{ releases }}" as="rl" hint-placeholder-count="20">
+        <sc-for list="{{ releases }}" as="rl" hint-placeholder-count="18">
           <div class="mn-rel-card" style="background:rgba(159,201,180,.04);border:1px solid rgba(159,201,180,.12);border-radius:14px;padding:22px 20px">
             <div style="font-family:'Space Grotesk';font-weight:600;font-size:16.5px;color:#f6f4ee;margin-bottom:8px">{{ rl.title }}</div>
             <div style="font-size:13.5px;line-height:1.58;color:#9fabbc">{{ rl.body }}</div>
@@ -795,7 +795,7 @@ class Component extends DCLogic {
       netGeo: null, netActive: -1, netPhase: 'idle', netSeq: 0, netShared: 128, activeSection: 'top',
       live: null, syncStatus: 'cached', relIndex: 0 };
     this.repoBase = { tests: 248, coverage: '81%', deps: 3, debt: 12 };
-    this.engineBase = { lessons: 3, rules: 0, gates: 8, queue: 16, version: 'v0.1.0-alpha', armed: false };
+    this.engineBase = { lessons: 3, rules: 0, gates: 8, queue: 5, version: 'v0.1.0-alpha', armed: false };
     this.STAGES = [
       {title:'Maker', sub:'builds one small change', scope:'AGENT', live:'The maker is writing one small, scoped change and pinning it with a test.'},
       {title:'Checker', sub:'reviews it independently', scope:'AGENT', live:'A separate checker reviews the diff. The maker never approves its own work.'},
@@ -937,7 +937,6 @@ class Component extends DCLogic {
       attest: [R('circle',{key:1,cx:12,cy:9.5,r:5}), R('path',{key:2,d:'M9.6 13.4L8.4 20l3.6-2 3.6 2-1.2-6.6'}), R('path',{key:3,d:'M9.8 9.4l1.6 1.6 3-3.2'})],
       ciGate: [R('rect',{key:1,x:3.5,y:4.5,width:17,height:15,rx:2}), R('path',{key:2,d:'M7.5 9.5l3 2.5-3 2.5'}), R('path',{key:3,d:'M12.5 14.5h4'})],
       sharePack: [R('path',{key:1,d:'M12 3.5v9'}), R('path',{key:2,d:'M8.2 9.3L12 12.5l3.8-3.2'}), R('path',{key:3,d:'M4.5 14.5h15v4.2a1.3 1.3 0 0 1-1.3 1.3H5.8a1.3 1.3 0 0 1-1.3-1.3z'})],
-      hygiene: [R('path',{key:1,d:'M11 3.2l1.5 4.3L17 9l-4.5 1.5L11 14.8L9.5 10.5L5 9l4.5-1.5z'}), R('path',{key:2,d:'M17.5 15l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z'})],
     };
     return R('svg', base, sets[name] || sets.changes);
   }
@@ -1247,7 +1246,7 @@ class Component extends DCLogic {
       kindBadgeStyle:`display:inline-flex;align-items:center;gap:4px;position:absolute;top:11px;left:14px;font-size:10px;color:${s.kindColor||'#5dd4ab'};background:${(s.kindColor||'#5dd4ab')}18;border:1px solid ${(s.kindColor||'#5dd4ab')}44;border-radius:4px;padding:1px 5px;font-family:'IBM Plex Mono',monospace;letter-spacing:.03em;line-height:1.4` }));
 
     const guarantees = R.guarantees || [];
-    const featIcons = ['changes','roles','shield','plug','loop','estate','panel','snapshot','attest','ciGate','sharePack','hygiene'];
+    const featIcons = ['changes','roles','shield','plug','loop','estate','panel','snapshot','attest','ciGate','sharePack'];
     const features = (R.features || []).map((f,i) => ({ title:f.title, body:f.body, iconEl:this.svgIcon(featIcons[i] || 'changes') }));
     const balances = R.balances || [];
     const qsteps = R.quickstart || [];

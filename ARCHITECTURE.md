@@ -122,7 +122,20 @@ default until an owner arms it.
   `apply-patch.mjs` (diff application), `parse-checker-telemetry.mjs` (checker feedback
   parsing), and `tool-loop-adapter.mjs` (spawns an external agentic CLI for the tool-loop
   execution mode, ADR-032). This is what `npm run demo:agent` and the maker/checker jobs in
-  `.github/workflows/modonome-auto.yml` actually run.
+  `.github/workflows/modonome-auto.yml` actually run. A role with a prioritized `models` list
+  (ADR-039) also gets a runtime fallback chain (`buildFallbackChain` in `run-cycle.mjs`,
+  WI-041): if the resolved primary model turns out unreachable at invocation time (a
+  network-layer failure or a timeout), the openai-http transport retries the next model in
+  the role's chain rather than failing the whole cycle, skipping any candidate the current
+  budget cannot afford. A real answer from a reachable endpoint, an auth failure, a bad
+  status, a malformed response, is never retried; only unreachability is. `review-diff.mjs`
+  (ADR-038 spike) is
+  the same checker decoupled from the maker: an author-agnostic, review-only pass over any
+  diff (a human's, an agent session's, or the internal maker's), run on every pull request by
+  `.github/workflows/modonome-review.yml` so a change gets an independent review before merge
+  regardless of who produced it. `review-proposals.mjs` (ADR-040, WI-044) is the same checker
+  at Checkpoint 1: it vets a proposal before it becomes a work item, so `queue.mjs` can gate
+  the backlog the way the pull request gates `main`.
 - The snapshot utility (`scripts/snapshot.mjs` plus `scripts/lib/snapshot-*.mjs` and
   `scripts/lib/lang-adapters/`). A dependency-free pipeline (walk, Merkle hash, per-file
   signature extraction, redaction, import graph with PageRank, tier assembly, deterministic
@@ -134,6 +147,15 @@ default until an owner arms it.
   `modonome_compliance`, `modonome_verify_attestation`, and `modonome_snapshot`. For a
   harness that already speaks Model Context Protocol, this is the fourth execution context
   from the questions above. Its trust scope is `docs/adr/ADR-009-mcp-tool-auth-scope.md`.
+- Tripwires (`scripts/tripwire-check.mjs`, `templates/.claude/settings.json`,
+  `templates/.cursor/hooks.json`). A local, best-effort editor hook pack for Claude Code and
+  Cursor. It reads whatever a `PreToolUse` (Claude Code) or `beforeShellExecution` (Cursor)
+  hook payload actually carries, a shell command string or, for Claude Code's Edit, MultiEdit,
+  and Write tools, a real before/after pair, and shells out to the same, unmodified
+  `guard-ratchet.mjs` to check it. A match denies the tool call with the MR-category name and
+  a line stating this is advisory only. It runs inside the agent's own editor process, so it
+  is not part of the trust boundary below; the CI ratchet stays the judge that actually blocks
+  a merge. Installed opt-in via `npx modonome scaffold <dir> --write --tripwires`.
 
 ## The agent loop
 
@@ -150,19 +172,19 @@ flowchart LR
   classDef stop fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
 
   queue[["Durable work queue<br/>.modonome/work-items/"]]
-  packet["Work packet<br/>claimed and leased"]
-  maker["Maker<br/>one packet, test-fenced"]
+  item["Work item<br/>claimed and leased"]
+  maker["Maker<br/>one item, test-fenced"]
   checker["Checker<br/>independent pass"]
   gates["Gates<br/>all pass before merge"]
   owner["Owner review<br/>CODEOWNERS"]
   merge["Merge authority<br/>lands when every gate is green"]
   repo[("Host repo")]
-  learn["Staged learnings<br/>LEARNINGS.md"]
+  learn["Staged learnings<br/>LESSONS.md"]
   escalated[["Escalated<br/>cap exceeded, parked for owner"]]
 
-  queue -->|claim and lease| packet
-  packet --> maker
-  packet -.->|lease expires: crash recovery| queue
+  queue -->|claim and lease| item
+  item --> maker
+  item -.->|lease expires: crash recovery| queue
   maker -->|diff and rationale| checker
   checker -->|rework below cap| maker
   checker -->|attempts exceeded| escalated
@@ -175,7 +197,7 @@ flowchart LR
   gates -->|evidence| learn
   learn -->|owner promotes| repo
 
-  class queue,packet queue
+  class queue,item queue
   class maker,checker,owner role
   class gates gate
   class repo,learn sink
@@ -183,7 +205,7 @@ flowchart LR
 ```
 
 The diagram's roles and stages map onto the literal `state` field in
-`schemas/work-item.schema.json`: queue is `queued`, packet is `claimed`, the maker's turn
+`schemas/work-item.schema.json`: queue is `queued`, item is `claimed`, the maker's turn
 is `making`, the checker's turn is `checking`, gates and merge cover `merge_ready` and
 `merging`, and a landed item is `done`. `rework` and `escalated` are named directly on the
 diagram. `prompts/modules/state-machine.md` is the normative source for the full transition
@@ -222,7 +244,7 @@ flowchart TB
   subgraph engine ["Modonome engine (agent scope)"]
     adopt["Adopt<br/>read instructions, CI, CODEOWNERS"]
     sweep["Dry-run sweep<br/>propose bounded work"]
-    maker["Maker<br/>one packet, test-fenced"]
+    maker["Maker<br/>one item, test-fenced"]
     checker["Checker<br/>independent pass"]
     gates["Gates<br/>all pass before a pull request"]
     merge["Merge authority"]
@@ -332,7 +354,7 @@ flowchart LR
 
   signal["Correction signal<br/>gate failure, review fix, rework"]
   capture["Follower captures<br/>one generalized, evidence-backed lesson"]
-  stage["Stage in LEARNINGS.md<br/>fingerprinted, dated, capped at 20"]
+  stage["Stage in LESSONS.md<br/>fingerprinted, dated, capped at 20"]
   promote["Owner promotes<br/>into canonical rules, config, or tests"]
   gate["Add a deterministic gate<br/>when one fits"]
 
@@ -374,6 +396,11 @@ workflow are not present in this repository yet.
 `prompts/`, or `.github/` requires a human CODEOWNER approval before merge. The
 `touches_protected_path: true` field in a work-item JSON is the signal; the agent reads it
 before claiming the item and escalates to an owner instead of merging on its own.
+
+Tripwires sit outside both boundaries by design. They run as an editor hook, inside the same
+process and write access the agent already has, so an agent could edit or ignore its own hook
+configuration. They exist to shorten the feedback loop before a pull request opens, not to
+extend either boundary above; the CI boundary is unaffected either way.
 
 ## Why this factoring
 

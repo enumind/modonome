@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "id": "WI-021-root-cleanup",
-  "state": "claimed",
+  "state": "done",
   "attempts": 1,
   "max_attempts": 3,
   "touches_protected_path": true,
@@ -26,5 +26,6 @@
     "node scripts/check-self-application.mjs",
     "node scripts/check-repo-hygiene.mjs",
     "node --test tests/*.test.mjs"
-  ]
+  ],
+  "type": "chore"
 }

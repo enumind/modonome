@@ -33,7 +33,7 @@ export const MESSAGES = {
     category: "gate",
     severity: "blocked",
     non_suppressible: true,
-    template: 'require_distinct_maker_checker_model is on but roles.maker.model and roles.checker.model are both "{model}".',
+    template: 'require_distinct_maker_checker_model is on but roles.maker and roles.checker both resolve to primary model "{model}".',
   },
   "gate.config.invalid": {
     category: "gate",

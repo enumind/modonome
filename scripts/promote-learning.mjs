@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Learning promotion scaffolder (ADR-026). Builds a schema-complete, traceable
 // staged learning record from an accepted correction, carrying every required field.
-// Does not write to .modonome/LEARNINGS.md; prints the record to stdout for review.
+// Does not write to .modonome/LESSONS.md; prints the record to stdout for review.
 //
 // Usage:
 //   node scripts/promote-learning.mjs \

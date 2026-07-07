@@ -125,6 +125,11 @@ The only path to action is disabled, then dry-run, then shadow, then armed.
   allowlist.
 - Keep secrets out of model-visible logs and prompts. Refuse to read secret files into the
   model context.
+- Never add a trailer crediting a coding model as co-author, a footer claiming a model
+  generated the change, or a link back to the coding session, to a commit message or a pull
+  request title or body. `scripts/lib/detect-attribution.mjs` and
+  `bin/modonome.mjs hygiene check --pr` catch these in CI; write commits and pull requests as
+  the acting identity would, with no participation signature.
 - Never auto-merge changes to auth, secrets, CI, release, dependencies, schemas, migrations,
   the test harness, model routing, or agent instructions.
 - Prefer read-only tokens in dry-run and shadow modes. If a tool needs write authority,
@@ -150,8 +155,8 @@ The only path to action is disabled, then dry-run, then shadow, then armed.
 Load these from `prompts/modules/` as needed:
 
 - `adoption.md`: the adoption pass and the scaffold-only rule.
-- `state-machine.md`: the durable work-item state machine, the work packet, and the session
-  loop.
+- `state-machine.md`: the durable work-item state machine, the work item's brief, and the
+  session loop.
 - `roles.md`: the agent roles and the maker-checker-merger contract.
 - `gates.md`: deterministic gates and the anti-gaming ratchet.
 - `control-panel.md`: the operator control panel.
@@ -209,7 +214,7 @@ Minimum scaffold:
   config.yaml
   STATUS.md
   DECISIONS.md
-  LEARNINGS.md
+  LESSONS.md
   NETWORK.md
   control-panel.md
   version
@@ -236,7 +241,7 @@ Last updated: YYYY-MM-DD
 
 `DECISIONS.md` holds owner-gated questions, each defaulting to hold when unanswered.
 
-`LEARNINGS.md` is the staged, bounded, owner-promoted queue described in `gates.md`.
+`LESSONS.md` is the staged, bounded, owner-promoted queue described in `gates.md`.
 
 `NETWORK.md` is optional and disabled by default. See `network.md`.
 
@@ -278,7 +283,7 @@ escalation_reason:
 Transitions:
 
 - `claim`: only from `queued`. Set owner and lease.
-- `start_making`: only under an active lease. The maker receives one bounded work packet.
+- `start_making`: only under an active lease. The maker receives one bounded work item.
 - `pr_opened`: move to `checking`. Spawn a checker that is not the maker and, when models are
   visible, not the maker model.
 - `checks_red` or `critique_failed`: increment attempts and return to `making` until the cap,
@@ -307,9 +312,9 @@ escalation:
 - default if unanswered: hold
 ```
 
-## Work packet
+## Work item brief
 
-Makers receive a tight packet. A thin packet is a decomposition defect, not a reason for the
+Makers receive a tight brief. A thin brief is a decomposition defect, not a reason for the
 maker to improvise.
 
 ```yaml
@@ -333,7 +338,7 @@ gate: exact commands that prove done
 tier_hint: local | frontier | owner
 ```
 
-The maker touches only `allowed_edit_set`, keeps each changed line traceable to the packet,
+The maker touches only `allowed_edit_set`, keeps each changed line traceable to the brief,
 and stops rather than fake a green result.
 
 ## Session loop
@@ -341,7 +346,7 @@ and stops rather than fake a green result.
 Start: read repo instructions and the core, fetch the integration branch if allowed, read
 status and decisions and CI, confirm mode and caps, run the adoption pass if needed.
 
-Work: claim one item, verify the work packet, make the smallest invariant-preserving change,
+Work: claim one item, verify the work item's brief, make the smallest invariant-preserving change,
 run focused gates then broader gates as risk requires, write a maker rationale, send to an
 independent checker, record status and metrics.
 
@@ -461,7 +466,7 @@ signal: a gate failure, a review fix, an incident, repeated rework, a reverted m
 positive or negative, a market or standards shift, or a cost anomaly. Capture runs through a
 validating command, not an open-ended summary, so the store stays accurate.
 
-Stage: add one generalized, evidence-backed, dated line to `LEARNINGS.md`. Deduplicate by
+Stage: add one generalized, evidence-backed, dated line to `LESSONS.md`. Deduplicate by
 fingerprint. Cap the queue at twenty entries. When full, promote or prune. Never auto-evict.
 Entries older than thirty days need a promote-or-prune review.
 
@@ -508,7 +513,9 @@ Information architecture:
 Controls: a kill switch, a mode switch with prerequisites shown, a dry-run button, cap
 editors, a trusted-author editor that requires owner approval, a protected-path editor where
 additions are allowed and removals require owner approval, and promote or prune learning
-actions.
+actions. A connected host repo is freely editable with write mode on; editing modonome's own
+governance (self-governance mode) is reserved to a code owner, and arming stays a two-key
+action the panel can never complete on its own.
 
 UX requirements: operational and scannable, host tokens and components, accessibility first
 (keyboard, visible focus, labels on icon buttons, contrast at least 4.5 to 1, color never the
@@ -541,7 +548,7 @@ happens to be open:
 
 When a checker or owner catches an IA problem neither gate catches (the wrong tab, a confusing
 grouping, a control that reads unclearly), that is a normal correction signal: stage it in
-`LEARNINGS.md` like any other gate failure or review fix. A lesson promoted from repeated
+`LESSONS.md` like any other gate failure or review fix. A lesson promoted from repeated
 friction here becomes a new check in `control-panel-audit.mjs`, the same way any other
 promoted learning becomes a new deterministic gate.
 

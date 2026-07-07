@@ -16,11 +16,13 @@ Usage:
   npx modonome dry-run <dir>              read the repo and print proposed work. Changes nothing.
   npx modonome scaffold <dir>             drop .modonome state files. Disabled and dry-run. Add --write to apply.
   npx modonome scaffold <dir> --write --ratchet   non-agent adoption: install only the anti-gaming pre-commit hook.
+  npx modonome scaffold <dir> --write --tripwires   install Claude Code and Cursor hook packs (local, best-effort; CI is the real gate).
   npx modonome adopt <dir>               alias for dry-run, writes an adoption summary to stdout.
   npx modonome validate <file>           validate a config or knowledge packet (type inferred from filename).
   npx modonome validate <file> --type config   explicitly validate as a config file.
   npx modonome validate <file> --type packet   explicitly validate as a knowledge packet.
   npx modonome migrate <file>            add new config levers with safe defaults and bump the version.
+  npx modonome migrate <dir> --rename-lessons --write   rename an already-scaffolded LEARNINGS.md to LESSONS.md.
   npx modonome tick [stateDir]           expire stale in-flight work items whose lease has passed.
   npx modonome status [dir]              print the effective arming posture for the target repo.
   npx modonome queue [dir]                print scored dry-run proposals as a numbered picker.
@@ -34,6 +36,8 @@ Usage:
   npx modonome snapshot <dir> --check   fail or warn (per config) if the committed snapshot is stale.
   npx modonome snapshot <dir> --pack    write a single portable .msnap bundle for sharing.
   npx modonome snapshot <dir> --since <ref>  print the file-level delta since a git ref.
+  npx modonome fleet-ledger <dir>        render a static HTML posture table over a directory of collected policy-attestation files.
+  npx modonome fleet-ledger <dir> --out <file.html>   write the ledger to a file instead of stdout.
   npx modonome agentproof                run the AgentProof adversarial benchmark suite (25 scenarios).
   npx modonome ratchet [baseRef]         anti-gaming gate: reject a diff that weakens tests or gates.
   npx modonome ratchet --staged          same, but check the index against HEAD (for a pre-commit hook).
@@ -47,6 +51,7 @@ Usage:
   npx modonome attest --diff <file>      compare a foreign policy pack's disclosed policy against this repo's live policy.
   npx modonome attest --adopt <file> --alias <name>   validate and vendor a foreign policy pack. Refuses on any integrity or credit failure.
   npx modonome receipt [baseRef]         emit an in-toto gate-integrity attestation (sign it with actions/attest in CI).
+  npx modonome gauntlet [dir]             replay gate-weakening attacks against this repo's own files. Read-only.
   npx modonome mcp                       run the read-only governance MCP server (stdio) for any MCP harness.
   npx modonome connect [dir]             register the MCP server with your agent (.mcp.json). Add --write to apply.
   npx modonome help                      show this message.
@@ -173,15 +178,25 @@ function main(argv) {
     case "receipt":
       run("ratchet-attestation.mjs", rest);
       break;
+    case "gauntlet":
+      run("gauntlet.mjs", rest);
+      break;
     case "mcp":
       run("mcp-server.mjs", rest);
       break;
     case "connect":
       run("connect.mjs", rest);
       break;
-    case "migrate":
-      run("migrate-config.mjs", rest);
+    case "migrate": {
+      const renameLessonsIdx = rest.indexOf("--rename-lessons");
+      if (renameLessonsIdx !== -1) {
+        const passthroughArgs = rest.filter((_, i) => i !== renameLessonsIdx);
+        run("migrate-lessons-rename.mjs", passthroughArgs);
+      } else {
+        run("migrate-config.mjs", rest);
+      }
       break;
+    }
     case "tick":
       run("tick.mjs", rest);
       break;
@@ -193,6 +208,9 @@ function main(argv) {
       break;
     case "attest":
       run("build-policy-attestation.mjs", rest);
+      break;
+    case "fleet-ledger":
+      run("fleet-ledger.mjs", rest);
       break;
     case "help":
     case "--help":

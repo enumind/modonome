@@ -31,6 +31,7 @@ export function readModonomeState(modonomeDir, { mode }) {
       expiresAt: i.leaseExpiresAt,
       stale: new Date(i.leaseExpiresAt).getTime() < Date.now(),
     }));
+  const gauntlet = latestGauntletScore(runs);
 
   return {
     subject: buildSubject({ repoRoot, modonomeDir, mode, config, queue, runs }),
@@ -47,6 +48,7 @@ export function readModonomeState(modonomeDir, { mode }) {
     ...buildTrends(runs),
     agentProofScore: latestAgentProofScore(runs),
     messages: readMessages(modonomeDir),
+    ...(gauntlet ? { gauntletScore: gauntlet.score, gauntletApplicable: gauntlet.applicable } : {}),
     remediation: buildRemediationView({
       config,
       envArmed: process.env.MODONOME_ARMED === "true",
@@ -88,6 +90,7 @@ function readConfig(modonomeDir) {
     roles: raw.roles ?? {},
     models: raw.models ?? {},
     runners: raw.runners ?? {},
+    providers: raw.providers ?? {},
   };
 }
 
@@ -137,7 +140,11 @@ function toWorkItemVM(item) {
     id: item.id,
     title: titleFromId(item.id),
     state: item.state,
-    owner: item.owner,
+    // owner and lease_owner are equivalent lease-holder fields (commit-identity.mjs's
+    // leaseHolder() already treats them the same); owner takes precedence since it is
+    // the human-facing name a work item is authored with, lease_owner is what a
+    // transition-work-item.mjs compare-and-swap writes.
+    owner: item.owner ?? item.lease_owner,
     leaseExpiresAt: item.lease_expires_at,
     branch: item.branch,
     pr: item.pr,
@@ -152,6 +159,8 @@ function toWorkItemVM(item) {
     gates: item.gates ?? [],
     escalationReason: item.escalation_reason,
     queuedAt: item.queued_at,
+    type: item.type,
+    assignedRole: item.assigned_role,
   };
 }
 
@@ -261,7 +270,7 @@ function buildCost(config, metrics) {
 }
 
 function readLearnings(modonomeDir) {
-  const file = join(modonomeDir, "LEARNINGS.md");
+  const file = join(modonomeDir, "LESSONS.md");
   if (!existsSync(file)) return [];
   const text = readFileSync(file, "utf8");
   const now = Date.now();
@@ -362,7 +371,7 @@ function readRuns(modonomeDir) {
 }
 
 // Real telemetry only. metrics.example.jsonl documents the schema and must never be
-// read here: the promoted learning L-001 in this repo's own LEARNINGS.md exists
+// read here: the promoted learning L-001 in this repo's own LESSONS.md exists
 // specifically because sample telemetry was once shown as if it were measured.
 function readMetrics(modonomeDir) {
   const file = join(modonomeDir, "metrics.jsonl");
@@ -454,6 +463,16 @@ function latestAgentProofScore(runs) {
   const reportRuns = runs.filter((r) => r.command === "report" && r.agentproof_score);
   if (!reportRuns.length) return 0;
   return Number(String(reportRuns[reportRuns.length - 1].agentproof_score).split("/")[0]) || 0;
+}
+
+// Mirrors latestAgentProofScore, but for `npx modonome gauntlet` runs (a distinct
+// command, never conflated with `report`). Undefined (not 0) when the tool has never
+// been run, since a 0 score and "never run" mean different things here.
+function latestGauntletScore(runs) {
+  const gauntletRuns = runs.filter((r) => r.command === "gauntlet" && r.gauntlet_score);
+  if (!gauntletRuns.length) return undefined;
+  const [score, applicable] = String(gauntletRuns[gauntletRuns.length - 1].gauntlet_score).split("/");
+  return { score: Number(score) || 0, applicable: Number(applicable) || 0 };
 }
 
 function gitInfo(repoRoot) {

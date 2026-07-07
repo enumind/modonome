@@ -1,4 +1,4 @@
-// Shared reader for the promoted-learnings block in .modonome/LEARNINGS.md.
+// Shared reader for the promoted-learnings block in .modonome/LESSONS.md.
 // Promoted learnings live in a single fenced ```json array so they stay both
 // human-readable and machine-auditable (ADR-026). This module also owns the
 // Staged section: reading its entries, enforcing its documented cap, and
@@ -19,18 +19,18 @@ export const REQUIRED_FIELDS = [
 ];
 
 // The Staged section is capped so it stays a short review queue, never a dumping
-// ground. LEARNINGS.md documents this as "Cap at 20 staged entries... Never
+// ground. LESSONS.md documents this as "Cap at 20 staged entries... Never
 // auto-evict." Until now nothing enforced it; appendStagedEntry is the first
 // enforcement point.
 export const MAX_STAGED_ENTRIES = 20;
 
-// A staged line, per LEARNINGS.md's own "Staged format":
+// A staged line, per LESSONS.md's own "Staged format":
 //   - [YYYY-MM-DD] (signal: gate|review|incident|rework) lesson - evidence: ref
 export const STAGED_LINE_RE =
   /^- \[\d{4}-\d{2}-\d{2}\] \(signal: (?:gate|review|incident|rework)\) .+ - evidence: .+$/;
 
 function learningsPath(root) {
-  return join(root, ".modonome", "LEARNINGS.md");
+  return join(root, ".modonome", "LESSONS.md");
 }
 
 // Extract the first fenced json block that appears after the "## Promoted" heading.
@@ -59,7 +59,7 @@ export function readStagedEntries(root) {
   return section.split("\n").filter((l) => l.startsWith("- ["));
 }
 
-// Append one staged candidate line to LEARNINGS.md, enforcing the format and the
+// Append one staged candidate line to LESSONS.md, enforcing the format and the
 // cap. Never evicts: a full section throws so a human promotes or prunes first.
 // Idempotent on an exact-duplicate line. Returns { added, reason }.
 export function appendStagedEntry(root, line) {
@@ -71,7 +71,7 @@ export function appendStagedEntry(root, line) {
   if (existing.includes(line)) return { added: false, reason: "duplicate" };
   if (existing.length >= MAX_STAGED_ENTRIES) {
     throw new Error(
-      formatMessage("advisory.learnings.staged-section-full", { count: existing.length, max: MAX_STAGED_ENTRIES }, overrides).message
+      formatMessage("advisory.learnings.staged-section-full", { count: existing.length, max: MAX_STAGED_ENTRIES }, overrides).message,
     );
   }
   const path = learningsPath(root);

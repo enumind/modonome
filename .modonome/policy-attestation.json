@@ -40,7 +40,7 @@
       },
       {
         "file": "scripts/lib/near-miss.mjs",
-        "sha256": "sha256:4307069c0b1e149db9ea4c84cf37f5700e4f52630b42aa154214326b5acc279e"
+        "sha256": "sha256:4f7779cf5392e036bb31212825c280df1825f69daaceeba4812ea39ed04d0882"
       }
     ],
     "branch_denylist": [
@@ -83,6 +83,7 @@
     ],
     "gates": [
       "agentproof",
+      "check-agentproof-registry",
       "check-architecture-drift",
       "check-attribution-fp-corpus",
       "check-checker-engagement",
@@ -99,6 +100,7 @@
       "check-repo-hygiene",
       "check-self-application",
       "check-style",
+      "check-work-item-staleness",
       "check-work-items",
       "policy-attestation-freshness",
       "snapshot-freshness",
@@ -109,5 +111,5 @@
     "autonomy_enabled": false,
     "dry_run": true
   },
-  "content_digest": "sha256:f78cb22b6eec9d4fb8dc158944f2567fba461aceac0a0e9a574b66781fd914c3"
+  "content_digest": "sha256:c98af1b5aeebb3e187cc2969d43020abca147acd139bbd4e11d8884ef4cbe53b"
 }

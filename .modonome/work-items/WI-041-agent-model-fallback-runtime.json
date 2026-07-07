@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "id": "WI-041-agent-model-fallback-runtime",
+  "state": "done",
+  "type": "develop-feature",
+  "assigned_role": "maker",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": true,
+  "allowed_edit_set": [
+    "scripts/agent/run-cycle.mjs",
+    "scripts/agent/resolve-role.mjs",
+    "tests/agent-model-fallback.test.mjs"
+  ],
+  "gates": [
+    "node --test tests/agent-model-fallback.test.mjs",
+    "node scripts/check-style.mjs .",
+    "npm run verify"
+  ],
+  "queued_at": "2026-07-04"
+}

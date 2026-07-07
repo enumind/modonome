@@ -112,7 +112,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for the full picture and
 ## How it learns and keeps up
 
 When a gate fails, a reviewer corrects the engine, or a change gets reverted, a follower role
-captures one generalized, evidence-backed lesson and stages it in `.modonome/LEARNINGS.md`.
+captures one generalized, evidence-backed lesson and stages it in `.modonome/LESSONS.md`.
 An owner promotes durable lessons into canonical rules, config, or tests, then adds a
 deterministic gate when one fits. The queue stays capped, dated, and owner-controlled. The
 engine rewrites its own rules only with a human in the loop. Promoted lessons are validated in
@@ -233,7 +233,7 @@ step instead? The ratchet is one dependency-free script:
   run: npx modonome ratchet            # add --sarif or --json for machine-readable output
 ```
 
-**Modonome Autonomy (v0.2, roadmap)** is the governed maker/checker loop. The machinery is fully
+**Modonome Loop (v0.2, roadmap)** is the governed maker/checker loop. The machinery is fully
 wired (`modonome-auto.yml`, `run-cycle.mjs`) and proven end-to-end on the demo app
 ([`examples/demo-app/runs/2026-06-26T11-46-00Z/`](examples/demo-app/runs/2026-06-26T11-46-00Z/)):
 Haiku maker, Sonnet checker, distinct model families, checker approved with one question raised.

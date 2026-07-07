@@ -18,6 +18,7 @@ governs where docs live.
 - [compliance/openssf-badge-evidence.md](compliance/openssf-badge-evidence.md): OpenSSF Best Practices criteria mapped to artifacts, with a gap ledger.
 - [compliance/eu-ai-act-classification.md](compliance/eu-ai-act-classification.md): EU AI Act risk classification.
 - [guidelines/markdown-governance.md](guidelines/markdown-governance.md): documentation structure policy.
+- [LEXICON.md](LEXICON.md): the one preferred term per concept, enforced in CI by `scripts/check-style.mjs`.
 
 ## Enterprise
 
@@ -32,15 +33,20 @@ governs where docs live.
 
 - [versioning.md](versioning.md): embedding and upgrade contract.
 - [vscode-workflow.md](vscode-workflow.md): VS Code manual trigger workflow.
+- [control-panel-modes.md](control-panel-modes.md): the control panel's modes and permission
+  model. What host and self-governance mode each let you do, and why self-governance writes
+  are reserved to code owners.
 - [ops/runner-model-config.md](ops/runner-model-config.md): runner model configuration.
 - [ops/merge-governance-setup.md](ops/merge-governance-setup.md): merge governance setup.
 
 ## Architecture Decision Records
 
-- [adr/](adr/): 34 ADRs covering the major design decisions (25 Accepted, 9 Proposed,
-  mostly the cross-repo knowledge network series). The markdown governance decision is
+- [adr/](adr/): the ADRs covering the major design decisions, mostly the cross-repo
+  knowledge network series. The markdown governance decision is
   [adr/ADR-031-markdown-governance.md](adr/ADR-031-markdown-governance.md).
   The repo snapshot decision is [adr/ADR-033-repo-snapshot.md](adr/ADR-033-repo-snapshot.md).
+  The end-to-end governed operating model (many producers, two checkpoints, common CI) is
+  [adr/ADR-040-end-to-end-operating-model.md](adr/ADR-040-end-to-end-operating-model.md).
 
 ## Audits
 

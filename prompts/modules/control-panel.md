@@ -24,7 +24,9 @@ Information architecture:
 Controls: a kill switch, a mode switch with prerequisites shown, a dry-run button, cap
 editors, a trusted-author editor that requires owner approval, a protected-path editor where
 additions are allowed and removals require owner approval, and promote or prune learning
-actions.
+actions. A connected host repo is freely editable with write mode on; editing modonome's own
+governance (self-governance mode) is reserved to a code owner, and arming stays a two-key
+action the panel can never complete on its own.
 
 UX requirements: operational and scannable, host tokens and components, accessibility first
 (keyboard, visible focus, labels on icon buttons, contrast at least 4.5 to 1, color never the
@@ -57,6 +59,6 @@ happens to be open:
 
 When a checker or owner catches an IA problem neither gate catches (the wrong tab, a confusing
 grouping, a control that reads unclearly), that is a normal correction signal: stage it in
-`LEARNINGS.md` like any other gate failure or review fix. A lesson promoted from repeated
+`LESSONS.md` like any other gate failure or review fix. A lesson promoted from repeated
 friction here becomes a new check in `control-panel-audit.mjs`, the same way any other
 promoted learning becomes a new deterministic gate.

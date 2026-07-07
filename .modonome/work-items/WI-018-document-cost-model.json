@@ -12,5 +12,6 @@
   ],
   "gates": [
     "node scripts/check-style.mjs ."
-  ]
+  ],
+  "type": "update-docs"
 }

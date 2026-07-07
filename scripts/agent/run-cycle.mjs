@@ -19,7 +19,7 @@ import { mkdirSync, writeFileSync, appendFileSync, readFileSync, existsSync } fr
 import { fileURLToPath } from "node:url";
 import { dirname, join, basename, resolve } from "node:path";
 import { loadConfig } from "../validate-config.mjs";
-import { resolveRole } from "./resolve-role.mjs";
+import { resolveRole, resolveRoleModelChain } from "./resolve-role.mjs";
 import { isBillable, resolveProvider } from "./providers.mjs";
 import { renderPrompt, snapshotContext } from "./render-prompt.mjs";
 import { readPromotedLearnings } from "../lib/learnings.mjs";
@@ -63,6 +63,37 @@ export function resolveRoleSequence(cfg) {
 export function resolveExecMode(cfg, model) {
   const mode = cfg?.models?.[model]?.exec_mode;
   return mode === "tool-loop" ? "tool-loop" : "patch";
+}
+
+// Build a role's ordered runtime fallback chain: the resolved primary first (so a
+// --maker-model/--checker-model CLI override always wins as chain[0]), then the rest of
+// the role's configured `models` list with the primary's own entry (if repeated there)
+// removed to avoid a duplicate attempt. Only registry-known models are usable fallback
+// candidates; the primary already passed the pinning check the caller runs beforehand,
+// so this only prunes additional entries, never throws. A role with no configured
+// fallback list still gets a valid one-entry chain (the primary alone).
+export function buildFallbackChain(cfg, role, resolved, known) {
+  const primary = {
+    model: resolved.model,
+    modelProvider: resolved.modelProvider,
+    modelBaseUrl: resolved.modelBaseUrl,
+    transport: resolved.transport,
+    costClass: resolved.costClass,
+    authEnv: resolved.authEnv,
+  };
+  const rest = resolveRoleModelChain(cfg, role).filter((c) => c.model !== primary.model);
+  const chain = [primary, ...rest];
+  return known.size > 0 ? chain.filter((c) => known.has(c.model)) : chain;
+}
+
+// Conservative classifier: only a network-level failure (connection refused/reset, DNS
+// failure, a request timeout) counts as "unreachable" and is safe to retry against the
+// next model in a role's fallback chain. Anything else, an auth failure, a malformed
+// response, a real non-2xx answer, came from a reachable endpoint and must propagate,
+// never trigger a silent fallback to a different model.
+export function isUnreachableError(err) {
+  const msg = String((err && err.message) || err || "");
+  return /ECONNREFUSED|ECONNRESET|ENOTFOUND|EAI_AGAIN|fetch failed|timed out after \d+ms/i.test(msg);
 }
 
 export function parseArgs(argv) {
@@ -122,6 +153,12 @@ export function planCycle(opts, cfg, runId) {
     }
   }
 
+  // Runtime fallback chain: a role whose primary model turns out unreachable at
+  // invocation time falls back to the next entry here rather than failing the whole
+  // cycle. See invokeRoleOpenAI and isUnreachableError.
+  maker.chain = buildFallbackChain(cfg, "maker", maker, known);
+  checker.chain = buildFallbackChain(cfg, "checker", checker, known);
+
   // Turn cap.
   const maxTurns = opts.maxTurns ?? DEFAULT_MAX_TURNS;
   if (!Number.isInteger(maxTurns) || maxTurns <= 0) throw new Error(msg("agent-run.run-cycle.max-turns-not-positive", {}));
@@ -166,6 +203,7 @@ export function planCycle(opts, cfg, runId) {
     if (known.size > 0 && !known.has(crew.model)) {
       throw new Error(msg("agent-run.run-cycle.model-not-registered", { role, model: crew.model }));
     }
+    crew.chain = buildFallbackChain(cfg, role, crew, known);
     const route = resolveExecutionTarget(crew, cfg, overrides);
     plan[role] = { ...crew, id: `${role}:${appName}:${runId}:${crew.model}`, route, execMode: resolveExecMode(cfg, crew.model) };
     if (isBillable(crew.costClass)) plan.usesRemote = true;
@@ -263,32 +301,64 @@ function invokeRoleClaudeCli(plan, role, env) {
 export async function invokeRoleOpenAI(plan, role, env, deps = {}) {
   const chatCompletionImpl = deps.chatCompletionImpl ?? chatCompletion;
   const applyPatchImpl = deps.applyPatchImpl ?? applyPatch;
-
   const r = plan[role];
-  const prompt = buildRolePrompt(plan, role, env);
-  const baseUrl = r.modelBaseUrl ?? deps.defaultBaseUrl ?? resolveProvider(r.modelProvider).defaultBaseUrl;
-  const authToken = r.authEnv ? env[r.authEnv] : undefined;
 
-  const result = await chatCompletionImpl({
-    baseUrl,
-    authToken,
-    model: r.model,
-    messages: [{ role: "user", content: prompt }],
-    maxTokens: deps.maxTokens,
-    timeoutMs: deps.timeoutMs,
-  });
+  const attemptOnce = async (er, extraMetric) => {
+    const prompt = buildRolePrompt({ ...plan, [role]: er }, role, env);
+    const baseUrl = er.modelBaseUrl ?? deps.defaultBaseUrl ?? resolveProvider(er.modelProvider).defaultBaseUrl;
+    const authToken = er.authEnv ? env[er.authEnv] : undefined;
 
-  const diff = extractDiff(result.text);
-  const patch = diff
-    ? applyPatchImpl(diff, resolve(root, plan.target))
-    : { applied: false, reason: "no diff found in model response." };
+    const result = await chatCompletionImpl({
+      baseUrl,
+      authToken,
+      model: er.model,
+      messages: [{ role: "user", content: prompt }],
+      maxTokens: deps.maxTokens,
+      timeoutMs: deps.timeoutMs,
+    });
 
-  const transcript = `${result.text}\n\n[patch applied: ${patch.applied}] ${patch.reason}\n`;
-  writeTranscriptAndMetric(plan, role, r, transcript, {
-    patch_applied: patch.applied,
-    patch_reason: patch.reason,
-  });
-  return 0;
+    const diff = extractDiff(result.text);
+    const patch = diff
+      ? applyPatchImpl(diff, resolve(root, plan.target))
+      : { applied: false, reason: "no diff found in model response." };
+
+    const transcript = `${result.text}\n\n[patch applied: ${patch.applied}] ${patch.reason}\n`;
+    writeTranscriptAndMetric(plan, role, er, transcript, {
+      patch_applied: patch.applied,
+      patch_reason: patch.reason,
+      ...extraMetric,
+    });
+  };
+
+  // No runtime fallback chain (a hand-built plan, or a role with a single-model chain):
+  // exactly the original one-shot behavior. Any error propagates uncaught, as before.
+  const chain = Array.isArray(r.chain) && r.chain.length > 1 ? r.chain : null;
+  if (!chain) {
+    await attemptOnce(r, {});
+    return 0;
+  }
+
+  const attempted = [];
+  let lastErr;
+  for (let i = 0; i < chain.length; i++) {
+    const candidate = chain[i];
+    // Never silently spend past the budget: skip a paid candidate this run cannot
+    // afford exactly as if it were never in the chain, no attempt, no error.
+    if (isBillable(candidate.costClass) && !plan.remoteAllowed) continue;
+
+    attempted.push(candidate.model);
+    const er = { ...r, ...candidate, id: `${role}:${plan.appName}:${plan.runId}:${candidate.model}` };
+    try {
+      await attemptOnce(er, attempted.length > 1 ? { model_fallback_from: attempted.slice(0, -1) } : {});
+      return 0;
+    } catch (err) {
+      const isLast = i === chain.length - 1;
+      if (!isUnreachableError(err) || isLast) throw err;
+      lastErr = err;
+    }
+  }
+  // Every candidate was unaffordable under the current budget; none was attempted.
+  throw lastErr ?? new Error(`${role}: no model in the fallback chain is affordable under the current budget.`);
 }
 
 // Load the single agentic-CLI adapter entry from adapters.json for the tool-loop
