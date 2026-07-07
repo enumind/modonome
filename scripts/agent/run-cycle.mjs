@@ -29,6 +29,7 @@ import { chatCompletion } from "./openai-client.mjs";
 import { extractDiff, applyPatch } from "./apply-patch.mjs";
 import { parseCheckerTelemetry } from "./parse-checker-telemetry.mjs";
 import { runToolLoopAdapter } from "./tool-loop-adapter.mjs";
+import { deriveTriggerSequence } from "./triggers.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..", "..");
@@ -53,6 +54,11 @@ export function resolveRoleSequence(cfg, opts = {}) {
   if (Array.isArray(opts.roles) && opts.roles.length > 0) return [...opts.roles];
   const seq = cfg?.role_sequence;
   if (Array.isArray(seq) && seq.length > 0) return [...seq];
+  // A role that declares trigger.after chains the sequence (WI-032). deriveTriggerSequence
+  // returns null when no role chains, preserving the maker/checker default exactly, and
+  // throws fail-closed on a cycle or a dangling role name before any model call.
+  const chained = deriveTriggerSequence(cfg);
+  if (chained) return chained;
   return [...CORE_ROLE_SEQUENCE];
 }
 
