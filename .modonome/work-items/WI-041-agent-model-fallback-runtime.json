@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "id": "WI-041-agent-model-fallback-runtime",
-  "state": "queued",
+  "state": "done",
   "type": "develop-feature",
   "assigned_role": "maker",
   "attempts": 0,

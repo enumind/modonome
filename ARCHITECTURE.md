@@ -122,7 +122,14 @@ default until an owner arms it.
   `apply-patch.mjs` (diff application), `parse-checker-telemetry.mjs` (checker feedback
   parsing), and `tool-loop-adapter.mjs` (spawns an external agentic CLI for the tool-loop
   execution mode, ADR-032). This is what `npm run demo:agent` and the maker/checker jobs in
-  `.github/workflows/modonome-auto.yml` actually run. `review-diff.mjs` (ADR-038 spike) is
+  `.github/workflows/modonome-auto.yml` actually run. A role with a prioritized `models` list
+  (ADR-039) also gets a runtime fallback chain (`buildFallbackChain` in `run-cycle.mjs`,
+  WI-041): if the resolved primary model turns out unreachable at invocation time (a
+  network-layer failure or a timeout), the openai-http transport retries the next model in
+  the role's chain rather than failing the whole cycle, skipping any candidate the current
+  budget cannot afford. A real answer from a reachable endpoint, an auth failure, a bad
+  status, a malformed response, is never retried; only unreachability is. `review-diff.mjs`
+  (ADR-038 spike) is
   the same checker decoupled from the maker: an author-agnostic, review-only pass over any
   diff (a human's, an agent session's, or the internal maker's), run on every pull request by
   `.github/workflows/modonome-review.yml` so a change gets an independent review before merge
