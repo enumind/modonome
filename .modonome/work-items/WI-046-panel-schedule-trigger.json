@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "id": "WI-046-panel-schedule-trigger",
+  "state": "done",
+  "type": "develop-feature",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": false,
+  "lease_owner": "techseek4vr",
+  "allowed_edit_set": [
+    "apps/control-panel/src/state/types.ts",
+    "apps/control-panel/src/screens/SettingsScreen.tsx",
+    "tests/schedule-trigger-schema.test.mjs",
+    ".modonome/work-items/WI-046-panel-schedule-trigger.json",
+    ".modonome/snapshot/*",
+    ".modonome/work-items/*"
+  ],
+  "gates": [
+    "node scripts/check-control-panel-coherence.mjs",
+    "node scripts/check-control-panel-coverage.mjs",
+    "node --test tests/schedule-trigger-schema.test.mjs",
+    "npm run verify"
+  ],
+  "queued_at": "2026-07-07"
+}
