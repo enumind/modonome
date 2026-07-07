@@ -120,8 +120,11 @@ default until an owner arms it.
   `route-action.mjs` and `action-queue.mjs` (execution-target routing and the durable action
   queue), `openai-client.mjs` (the zero-dependency OpenAI-compatible HTTP client),
   `apply-patch.mjs` (diff application), `parse-checker-telemetry.mjs` (checker feedback
-  parsing), and `tool-loop-adapter.mjs` (spawns an external agentic CLI for the tool-loop
-  execution mode, ADR-032). This is what `npm run demo:agent` and the maker/checker jobs in
+  parsing), `tool-loop-adapter.mjs` (spawns an external agentic CLI for the tool-loop
+  execution mode, ADR-032), and `triggers.mjs` (the configurable trigger and schedule layer,
+  WI-032: it turns per-role `schedule`/`trigger` config into an executed order for after-role
+  chains, consumed by `resolveRoleSequence`, and emits the scheduled-crew workflow
+  `.github/workflows/modonome-schedule.yml` so no one hand-edits a workflow per agent). This is what `npm run demo:agent` and the maker/checker jobs in
   `.github/workflows/modonome-auto.yml` actually run. A role with a prioritized `models` list
   (ADR-039) also gets a runtime fallback chain (`buildFallbackChain` in `run-cycle.mjs`,
   WI-041): if the resolved primary model turns out unreachable at invocation time (a

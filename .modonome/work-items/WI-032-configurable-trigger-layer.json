@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "id": "WI-032-configurable-trigger-layer",
-  "state": "queued",
+  "state": "done",
   "attempts": 0,
   "max_attempts": 3,
   "touches_protected_path": true,
@@ -10,8 +10,12 @@
     "schemas/config.schema.json",
     ".github/workflows/modonome-schedule.yml",
     "scripts/agent/run-cycle.mjs",
-    "tests/triggers.test.mjs"
+    "tests/triggers.test.mjs",
+    "ARCHITECTURE.md",
+    ".modonome/snapshot/*",
+    ".modonome/work-items/*"
   ],
+  "lease_owner": "techseek4vr",
   "gates": [
     "node --test tests/triggers.test.mjs",
     "node scripts/check-style.mjs .",
