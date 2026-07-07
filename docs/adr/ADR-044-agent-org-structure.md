@@ -80,11 +80,15 @@ Shipped:
 - The configurable trigger and schedule layer (WI-032): schema fields, `scripts/agent/triggers.mjs`,
   `resolveRoleSequence` consumption, and the generated `.github/workflows/modonome-schedule.yml`.
 - This ADR and the canonical roster in `docs/agent-org.md`.
+- Per-agent `schedule` and `trigger` editors in the control panel Agents tab (WI-046).
+- The `envisioner` and `marketresearcher` roles, with prompts and capability profiles (WI-053).
+  `marketresearcher` carries no hyphen because `scripts/agent/render-prompt.mjs` requires a role
+  name matching `^[a-z]+$`.
 
 Follow-up, each under its own gates and tracked against Milestone 5:
 
-- The `envisioner` and `market-researcher` roles, with prompts and capability profiles.
 - A config-to-runtime generator that emits the container-runner workflow and local schedules
-  from the same config, plus a freshness gate.
-- Per-agent `schedule` and `trigger` editors in the control panel Agents tab, with a regenerate
-  action on the gated write path.
+  from the same config, plus a freshness gate (the crew-only schedule generator from WI-032
+  covers scheduled roles; a unified generator including the maker/checker pair is not yet built).
+- A "Regenerate runtime" action in the control panel wired to the gated write path.
+- The proposal priority score surfaced in `report` and the panel.
