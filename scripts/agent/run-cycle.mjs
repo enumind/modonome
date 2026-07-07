@@ -46,11 +46,16 @@ const HARD_TURN_CAP = 80;
 // invocations that do not participate in the maker/checker distinctness pairing.
 const CORE_ROLE_SEQUENCE = ["maker", "checker"];
 
-// Derive the ordered list of roles the cycle executes. An explicit cfg.role_sequence
-// (a non-empty array of role names) is honored so a crew role added in config runs
-// with no code change; otherwise it defaults to the maker/checker pair, preserving
-// current behavior exactly. Pure: reads config, returns a fresh array.
-export function resolveRoleSequence(cfg) {
+// Derive the ordered list of roles the cycle executes. An explicit --roles CLI
+// override (opts.roles) takes precedence, so a single invocation can run just the
+// researcher (or any other subset) without editing config, matching the scheduled
+// operating model (ADR-040): research, make, and check can run on independent
+// schedules against the same config. Absent that, an explicit cfg.role_sequence (a
+// non-empty array of role names) is honored so a crew role added in config runs with
+// no code change; otherwise it defaults to the maker/checker pair, preserving current
+// behavior exactly. Pure: reads config and opts, returns a fresh array.
+export function resolveRoleSequence(cfg, opts = {}) {
+  if (Array.isArray(opts.roles) && opts.roles.length > 0) return [...opts.roles];
   const seq = cfg?.role_sequence;
   if (Array.isArray(seq) && seq.length > 0) return [...seq];
   return [...CORE_ROLE_SEQUENCE];
@@ -109,6 +114,7 @@ export function parseArgs(argv) {
     else if (a === "--dry-run") opts.execute = false;
     else if (a === "--enqueue") opts.enqueue = true;
     else if (a === "--worker-env") opts.workerEnv = argv[++i];
+    else if (a === "--roles") opts.roles = argv[++i].split(",").map((s) => s.trim()).filter(Boolean);
   }
   return opts;
 }
@@ -183,7 +189,7 @@ export function planCycle(opts, cfg, runId) {
     runId,
     maker: { ...maker, id: `maker:${appName}:${runId}:${maker.model}`, route: makerRoute, execMode: resolveExecMode(cfg, maker.model) },
     checker: { ...checker, id: `checker:${appName}:${runId}:${checker.model}`, route: checkerRoute, execMode: resolveExecMode(cfg, checker.model) },
-    roleSequence: resolveRoleSequence(cfg),
+    roleSequence: resolveRoleSequence(cfg, opts),
     maxTurns,
     transcriptDir: join(opts.target, "runs", runId),
     budget,
@@ -198,6 +204,12 @@ export function planCycle(opts, cfg, runId) {
   // crew role's model is still budget-classified and route-resolved (fail-closed).
   for (const role of plan.roleSequence) {
     if (role === "maker" || role === "checker" || plan[role]) continue;
+    // Every transport renders prompts/roles/<role>.txt (buildRolePrompt), so a role
+    // added to role_sequence with no prompt file is caught here, during planning and
+    // dry-run, rather than surfacing as an ENOENT deep inside a real --execute run.
+    if (!existsSync(join(root, "prompts", "roles", `${role}.txt`))) {
+      throw new Error(`role "${role}" is in role_sequence but has no prompt at prompts/roles/${role}.txt.`);
+    }
     const crew = resolveRole(cfg, role);
     if (opts.runner) crew.runner = opts.runner;
     if (known.size > 0 && !known.has(crew.model)) {
