@@ -378,7 +378,29 @@ And the standing prohibitions, regardless of tier:
   without allowlist validation.
 - Never read secret files into model context.
 
-## 7. Command crib sheet
+## 7. Runbooks
+
+The four highest-traffic procedures are written as vendor-neutral runbooks under
+`docs/ops/`, so any agent (Codex, Claude Code, or a human) can drive this repo the
+same way:
+
+- [docs/ops/preflight.md](docs/ops/preflight.md): pre-push readiness, gates in
+  fast-fail order, and a failure-id-to-fix map.
+- [docs/ops/add-gate.md](docs/ops/add-gate.md): add a new deterministic check end
+  to end (ADR, script, tests, CI wiring, self-application registration).
+- [docs/ops/add-control.md](docs/ops/add-control.md): add or change a config
+  control across its four synced representations.
+- [docs/ops/work-item.md](docs/ops/work-item.md): create, claim, transition, and
+  close work items without state drift or ID collisions.
+
+The runbooks are the single source of truth. Claude Code additionally surfaces
+each one as a slash-skill through a thin adapter under `.claude/skills/`; the
+adapters carry no procedure content of their own. Vendor-specific glue (adapters,
+hook packs, editor settings) always points at a neutral artifact rather than
+holding the content itself, following the Tripwires pattern in
+`templates/.claude/` and `templates/.cursor/`.
+
+## 8. Command crib sheet
 
 | Task | Command |
 | --- | --- |

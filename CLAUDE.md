@@ -20,16 +20,19 @@ and re-verify with `modonome snapshot . --verify` before you commit.
 
 ## Skills
 
-Four repo skills live under `.claude/skills/` and encode the procedures that burn
-the most time when done from memory:
+The four highest-traffic procedures live as vendor-neutral runbooks under
+`docs/ops/` (see AGENTS.md, section 7), so Codex and Claude Code drive this repo
+the same way. Claude Code surfaces them as slash-skills through thin adapters
+under `.claude/skills/`:
 
-- `/preflight`: pre-push readiness. Runs the right gates in fast-fail order and maps
-  each failure id to its fix.
-- `/add-gate`: add a new deterministic check end-to-end (ADR, script, tests, CI
-  wiring, self-application registration).
-- `/add-control`: add or change a config control across its four synced
-  representations without tripping the drift guard.
-- `/work-item`: create, claim, transition, and close work items without state drift
-  or ID collisions.
+- `/preflight` follows `docs/ops/preflight.md`: pre-push readiness, gates in
+  fast-fail order, failure-id-to-fix map.
+- `/add-gate` follows `docs/ops/add-gate.md`: add a new deterministic check end
+  to end.
+- `/add-control` follows `docs/ops/add-control.md`: change a config control
+  across its four synced representations.
+- `/work-item` follows `docs/ops/work-item.md`: queue discipline without state
+  drift or ID collisions.
 
+The runbooks are the source of truth; the adapters carry no procedure content.
 Before pushing anything, run `/preflight` or, at minimum, `npm run verify`.
