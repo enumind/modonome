@@ -24,6 +24,25 @@ or CVE identifier where one exists.
   as an `ENOENT` deep inside a real `--execute` run.
 - No schema or config-lever change.
 
+### Runtime model fallback for a role's prioritized model chain (WI-041)
+
+- `scripts/agent/run-cycle.mjs` now walks a role's prioritized `models` chain (ADR-039) at
+  invocation time: when the resolved primary model turns out unreachable (a network-layer
+  failure, or a timeout), the openai-http transport (`invokeRoleOpenAI`) falls back to the
+  next model in the chain instead of failing the whole cycle. A candidate the current daily
+  budget cannot afford is skipped without an attempt, so a fallback can never silently spend
+  past the budget. A real answer from a reachable endpoint, an auth failure, a bad status, a
+  malformed response, is never retried, only genuine unreachability is, so a broken diff or a
+  rejected request never gets silently re-tried against a different model.
+  `resolveRoleModelChain`/`selectUsableModel` (ADR-039) already picked the best model a
+  budget affords, statically, before any call; this is what that explicitly left out.
+  The metric recorded for a fallback run reflects the model that actually answered, plus a
+  `model_fallback_from` field listing every unreachable candidate tried first, so the audit
+  trail never misattributes a diff to the originally planned model.
+- Fully backward compatible: a plan built without a runtime chain (any hand-built plan, or a
+  role with a single configured model) takes the exact original one-shot code path, no new
+  checks, no behavior change.
+
 ### Full CRUD for maker/checker wiring, agent capability profiles, and two governed checkpoints
 
 - Added full add/edit/remove UI in the control panel for `roles`, `models`, `providers`, and
