@@ -10,7 +10,8 @@
     "schemas/config.schema.json",
     ".github/workflows/modonome-schedule.yml",
     "scripts/agent/run-cycle.mjs",
-    "tests/triggers.test.mjs"
+    "tests/triggers.test.mjs",
+    "ARCHITECTURE.md"
   ],
   "gates": [
     "node --test tests/triggers.test.mjs",
