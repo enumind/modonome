@@ -365,12 +365,18 @@ flowchart LR
   class gate floor
 ```
 
-Market and standards scans are planned for a dedicated market-researcher role (roadmap,
-not shipped). When implemented and enabled, sourced findings would flow to the steward
-role, which scores and routes proposals, and would default off. Net-new claims would need
-owner approval before any roadmap change. The
-proposal priority score (`safety + user_value + repo_fit + reuse + evidence - effort -
-blast_radius - uncertainty`) surfaces the highest-value, lowest-risk improvements first.
+The researcher role (ADR-039) is wired into the loop (WI-042): `prompts/roles/researcher.txt`
+has it read the repo's own state, draft one proposal, run it past the independent check at
+Checkpoint 1 (`review-proposals.mjs`, ADR-040), and, only on approval, author a schema-valid
+work item itself. It is not on the default `role_sequence`, so a plain cycle still runs just
+maker and checker; run it on its own schedule with `run-cycle.mjs --roles researcher
+--execute`, or add it to `role_sequence` to run every cycle. `planCycle` fails closed during
+planning, before any execution, when a configured role has no prompt file. Real external
+market and standards scans (the `web-search` tool a researcher can declare, ADR-039) are
+still descriptive only pending gated tool execution (WI-043); until then the researcher's
+findings come from the repo's own durable state, not the outside world. The proposal
+priority score (`safety + user_value + repo_fit + reuse + evidence - effort - blast_radius -
+uncertainty`) surfaces the highest-value, lowest-risk improvements first.
 
 ## Trust boundaries and security invariants
 
