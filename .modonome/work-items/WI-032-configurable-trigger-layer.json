@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "id": "WI-032-configurable-trigger-layer",
-  "state": "queued",
+  "state": "done",
   "attempts": 0,
   "max_attempts": 3,
   "touches_protected_path": true,
@@ -19,5 +19,6 @@
     "npm run verify"
   ],
   "queued_at": "2026-07-01",
-  "type": "develop-feature"
+  "type": "develop-feature",
+  "lease_owner": "techseek4vr"
 }
