@@ -1,0 +1,111 @@
+// Catalog entries for scripts/guard-ratchet.mjs.
+export const MESSAGES = {
+  "gate.ratchet.staged-diff-failed": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "git diff --cached failed",
+  },
+  "gate.ratchet.unsafe-ref": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "refusing to diff against unsafe ref: {ref}",
+  },
+  "gate.ratchet.diff-failed": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "git diff {base}...HEAD failed",
+  },
+  "gate.ratchet.assertion-removal": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "{file}: removes more test assertions than it adds (+{added} / -{removed}).",
+  },
+  "gate.ratchet.skip-injection": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "{file}: adds a skipped or focused test: {line}",
+  },
+  "gate.ratchet.homoglyph-disguise": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "{file}: adds a gate construct disguised with Unicode homoglyphs: {line}",
+  },
+  "gate.ratchet.vacuous-assertion": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "{file}: adds a vacuous assertion that can never fail: {line}",
+  },
+  "gate.ratchet.vacuous-python-assertion": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "{file}: adds a vacuous Python assertion that can never fail: {line}",
+  },
+  "gate.ratchet.type-escape-ts": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "{file}: adds a broad type escape: {line}",
+  },
+  "gate.ratchet.type-escape-java": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: '{file}: adds @SuppressWarnings("unchecked"): address the type safety issue directly: {line}',
+  },
+  "gate.ratchet.type-escape-dotnet": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "{file}: adds #pragma warning disable: fix the warning rather than suppressing it: {line}",
+  },
+  "gate.ratchet.ts-strictness-weakened": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "{file}: weakens TypeScript strictness: {line}",
+  },
+  "gate.ratchet.coverage-threshold-removed": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "{file}: removes a coverage threshold: {line}",
+  },
+  "gate.ratchet.coverage-threshold-lowered": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "{file}: lowers a coverage threshold ({oldVal} -> {newVal}): {line}",
+  },
+  "gate.ratchet.coverage-floor-lowered": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "{file}: lowers the {key} coverage floor ({oldVal} -> {newVal}).",
+  },
+  "gate.ratchet.assertion-strength-downgrade": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "{file}: downgrades assertion strength (strong value-checks {strongAdded} added / {strongRemoved} removed, replaced by {weakAdded} existence-only check(s)). Existence checks do not prove the expected value.",
+  },
+  "gate.ratchet.fail-header": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "Anti-gaming ratchet rejected this change:\n",
+  },
+  "gate.ratchet.fail-footer": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "\nDo not weaken gates to go green. Get owner review for an intended exception.",
+  },
+};

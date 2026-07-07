@@ -15,10 +15,12 @@ import { readFileSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve, relative, sep } from "node:path";
 import { isCyclic, topoSort, reachableFrom } from "./lib/graph.mjs";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const DEFAULT_PATH = resolve(here, "../schemas/gate-graph.json");
 const REPO_ROOT = resolve(here, "..");
+const overrides = loadMessageOverrides(resolve(REPO_ROOT, ".modonome"));
 
 // The deterministic detectors and the two orchestrators that consume them. A
 // promotion may only TIGHTEN these by editing their own literals; none of them
@@ -85,8 +87,11 @@ export function determinismBoundaryErrors(root = REPO_ROOT) {
     for (const forbidden of FORBIDDEN_IMPORTS) {
       if (reach.has(forbidden.file)) {
         errors.push(
-          `${entry} can reach ${forbidden.file} through its import graph. A deterministic ` +
-            `detector must never import ${forbidden.why}.`,
+          formatMessage(
+            "gate.gate-dag.forbidden-import",
+            { entry, forbiddenFile: forbidden.file, why: forbidden.why },
+            overrides,
+          ).message,
         );
       }
     }
@@ -106,7 +111,7 @@ export function gateGraphErrors(graph) {
   for (const gate of gates) {
     for (const dep of graph[gate]) {
       if (!declared.has(dep)) {
-        errors.push(`dangling edge: ${gate} -> ${dep} (${dep} is not a declared gate)`);
+        errors.push(formatMessage("gate.gate-dag.dangling-edge", { gate, dep }, overrides).message);
       }
     }
   }
@@ -115,7 +120,7 @@ export function gateGraphErrors(graph) {
   // the offending loop even when an edge is also missing a target.
   const { cyclic, cycle } = isCyclic(graph);
   if (cyclic) {
-    errors.push(`cycle detected: ${cycle.join(" -> ")}`);
+    errors.push(formatMessage("gate.gate-dag.cycle-detected", { cycle: cycle.join(" -> ") }, overrides).message);
   }
 
   if (errors.length > 0) return { errors, order: [] };
@@ -134,11 +139,11 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const boundaryErrors = determinismBoundaryErrors();
   if (errors.length > 0 || boundaryErrors.length > 0) {
     if (errors.length > 0) {
-      console.error(`Gate graph invalid: ${path}`);
+      console.error(formatMessage("gate.gate-dag.invalid-header", { path }, overrides).message);
       for (const e of errors) console.error("  - " + e);
     }
     if (boundaryErrors.length > 0) {
-      console.error("Determinism boundary violated:");
+      console.error(formatMessage("gate.gate-dag.boundary-violated-header", {}, overrides).message);
       for (const e of boundaryErrors) console.error("  - " + e);
     }
     process.exit(1);

@@ -3,8 +3,10 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { formatMessage, loadMessageOverrides } from './lib/messages.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+const overrides = loadMessageOverrides(join(root, '.modonome'));
 
 function run(cmd, opts = {}) {
   return execSync(cmd, { cwd: root, encoding: 'utf8', ...opts }).trim();
@@ -12,21 +14,21 @@ function run(cmd, opts = {}) {
 
 const bumpType = process.argv[2];
 if (!['patch', 'minor', 'major'].includes(bumpType)) {
-  console.error('Usage: npm run release -- patch|minor|major');
+  console.error(formatMessage('agent-run.release.usage', {}, overrides).message);
   process.exit(1);
 }
 
 // Assert clean working tree
 const dirty = run('git status --porcelain');
 if (dirty) {
-  console.error('Working tree is not clean. Commit or stash changes first.');
+  console.error(formatMessage('agent-run.release.dirty-tree', {}, overrides).message);
   process.exit(1);
 }
 
 // Assert on main branch
 const branch = run('git rev-parse --abbrev-ref HEAD');
 if (branch !== 'main') {
-  console.error(`Must be on main branch (currently on "${branch}").`);
+  console.error(formatMessage('agent-run.release.wrong-branch', { branch }, overrides).message);
   process.exit(1);
 }
 
@@ -44,7 +46,7 @@ else newVersion = `${major}.${minor}.${patch + 1}`;
 try {
   const found = run(`npm view modonome@${newVersion} version 2>/dev/null || echo ""`);
   if (found === newVersion) {
-    console.error(`${newVersion} is already published on npm. Bump again or unpublish first.`);
+    console.error(formatMessage('agent-run.release.already-published', { version: newVersion }, overrides).message);
     process.exit(1);
   }
 } catch {

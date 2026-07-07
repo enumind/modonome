@@ -9,9 +9,11 @@ import { fileURLToPath } from "node:url";
 import { dirname, join, extname } from "node:path";
 import { validate } from "./jsonschema.mjs";
 import { parseFlatYaml } from "./yaml-lite.mjs";
+import { formatMessage, loadMessageOverrides } from "./messages.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const schema = JSON.parse(readFileSync(join(here, "..", "..", "schemas", "config.schema.json"), "utf8"));
+const overrides = loadMessageOverrides(join(here, "..", "..", ".modonome"));
 
 export function loadConfig(path) {
   const text = readFileSync(path, "utf8");
@@ -40,15 +42,17 @@ function primaryRoleModel(roleCfg) {
 export function safetyErrors(cfg) {
   const errs = [];
   if (cfg.auto_merge === true) {
-    if (!(cfg.max_merges_per_day > 0)) errs.push("auto_merge is on but max_merges_per_day is 0.");
-    if (cfg.require_distinct_maker_checker !== true) errs.push("auto_merge is on but require_distinct_maker_checker is not true.");
-    if (cfg.require_branch_protection !== true) errs.push("auto_merge is on but require_branch_protection is not true.");
+    if (!(cfg.max_merges_per_day > 0)) errs.push(formatMessage("gate.config.auto-merge-no-cap", {}, overrides).message);
+    if (cfg.require_distinct_maker_checker !== true)
+      errs.push(formatMessage("gate.config.auto-merge-no-distinct-maker-checker", {}, overrides).message);
+    if (cfg.require_branch_protection !== true)
+      errs.push(formatMessage("gate.config.auto-merge-no-branch-protection", {}, overrides).message);
   }
   if (cfg.autonomy_enabled === true && Array.isArray(cfg.trusted_author_allowlist) && cfg.trusted_author_allowlist.length === 0) {
-    errs.push("autonomy_enabled is on but trusted_author_allowlist is empty, which means no autonomous action.");
+    errs.push(formatMessage("gate.config.autonomy-empty-allowlist", {}, overrides).message);
   }
   if (cfg.repo_network_enabled === true && cfg.share_raw_code_across_repos === true) {
-    errs.push("repo_network_enabled with share_raw_code_across_repos is unsafe by default.");
+    errs.push(formatMessage("gate.config.repo-network-unsafe-sharing", {}, overrides).message);
   }
   // WS-H: enforce distinct models for maker and checker when the flag is on. The
   // primary model is an explicit `model`, else the head of the prioritized `models`
@@ -57,9 +61,7 @@ export function safetyErrors(cfg) {
     const makerModel = primaryRoleModel(cfg.roles?.maker);
     const checkerModel = primaryRoleModel(cfg.roles?.checker);
     if (makerModel && checkerModel && makerModel === checkerModel) {
-      errs.push(
-        `require_distinct_maker_checker_model is on but roles.maker and roles.checker both resolve to primary model "${makerModel}".`
-      );
+      errs.push(formatMessage("gate.config.maker-checker-same-model", { model: makerModel }, overrides).message);
     }
   }
   return errs;

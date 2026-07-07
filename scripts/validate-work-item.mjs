@@ -7,7 +7,12 @@
 // bundles it as a dependency (see that file's header comment for why that matters).
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
 import { modelFamily, governanceErrors, validateWorkItem } from "./lib/work-item-validate.mjs";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
+
+const here = dirname(fileURLToPath(import.meta.url));
+const overrides = loadMessageOverrides(join(here, "..", ".modonome"));
 
 export { modelFamily, governanceErrors, validateWorkItem };
 
@@ -19,7 +24,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   }
   const errors = validateWorkItem(JSON.parse(readFileSync(path, "utf8")));
   if (errors.length > 0) {
-    console.error(`Work item invalid: ${path}`);
+    console.error(formatMessage("gate.work-item.invalid", { path }, overrides).message);
     for (const e of errors) console.error("  - " + e);
     process.exit(1);
   }

@@ -11,6 +11,7 @@ import { execFileSync } from "node:child_process";
 import yaml from "js-yaml";
 import { parseStagedLine } from "./learningsFormat.mjs";
 import { buildRemediationView } from "./remediationView.mjs";
+import { listMessages, loadMessageOverrides } from "../../../scripts/lib/messages.mjs";
 
 const GATE_STATUS_RANK = { fail: 0, flaky: 1, running: 2, pending: 3, pass: 4 };
 
@@ -46,6 +47,7 @@ export function readModonomeState(modonomeDir, { mode }) {
     protectedPaths: buildProtectedPaths(config, items),
     ...buildTrends(runs),
     agentProofScore: latestAgentProofScore(runs),
+    messages: readMessages(modonomeDir),
     ...(gauntlet ? { gauntletScore: gauntlet.score, gauntletApplicable: gauntlet.applicable } : {}),
     remediation: buildRemediationView({
       config,
@@ -90,6 +92,23 @@ function readConfig(modonomeDir) {
     runners: raw.runners ?? {},
     providers: raw.providers ?? {},
   };
+}
+
+// The built-in catalog plus this subject's own messages.yaml overrides,
+// resolved through the exact same clamp scripts/check-message-catalog-integrity.mjs
+// enforces in CI, so the panel can never display a resolved state CI would reject.
+function readMessages(modonomeDir) {
+  const overrides = loadMessageOverrides(modonomeDir);
+  return listMessages(overrides).map((m) => ({
+    id: m.id,
+    category: m.category,
+    defaultSeverity: m.default_severity,
+    defaultTemplate: m.default_template,
+    nonSuppressible: m.non_suppressible,
+    severity: m.severity,
+    text: m.text,
+    suppressed: m.suppressed,
+  }));
 }
 
 function readWorkItems(modonomeDir) {

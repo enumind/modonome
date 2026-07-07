@@ -124,6 +124,24 @@ jobs:
             echo "scripts/check-decisions-authority.mjs not yet on base branch; skipping trust-isolation checkout (first introduction)."
           fi
 
+      # Like check-decisions-authority.mjs above, this gate and the message
+      # catalog files that define its severity floors are new: the first PR
+      # that introduces them has no prior version on the base branch to load,
+      # so the checkout is skipped (not failed) when the base branch doesn't
+      # have them yet. Every PR after this one merges finds them there, so a
+      # PR cannot silence a gate-blocking message by editing the catalog's
+      # own floor in the same PR that's supposed to be judged by it.
+      - name: Load message catalog and its integrity gate from the base branch
+        if: github.event_name == 'pull_request'
+        run: |
+          if git cat-file -e "origin/${{ github.base_ref }}:scripts/check-message-catalog-integrity.mjs" 2>/dev/null; then
+            git checkout "origin/${{ github.base_ref }}" -- scripts/check-message-catalog-integrity.mjs
+            git checkout "origin/${{ github.base_ref }}" -- scripts/lib/messages.mjs
+            git checkout "origin/${{ github.base_ref }}" -- scripts/lib/message-catalog/
+          else
+            echo "message catalog integrity gate not yet on base branch; skipping trust-isolation checkout (first introduction)."
+          fi
+
       # Governance-relevant change assertion matching tests/ws-d-governed-change.test.mjs criteria
       - name: Governance-relevant change assertion
         run: node scripts/assert-governed-change.mjs origin/main
@@ -182,6 +200,9 @@ jobs:
 
       - name: Run checker engagement gate
         run: node scripts/check-checker-engagement.mjs
+
+      - name: Run message catalog integrity gate
+        run: node scripts/check-message-catalog-integrity.mjs
 
       - name: Run design-system build
         run: npm run build --prefix design-system

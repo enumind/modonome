@@ -17,11 +17,12 @@ import {
   saveConfig,
   releaseLeaseLive,
   pruneLearningLive,
+  saveMessagesLive,
   createWorkItemLive,
   updateWorkItemLive,
   deleteWorkItemLive,
 } from "./state/liveClient";
-import type { PanelState, ModonomeConfig, WriteActions, NewWorkItemInput, WorkItemPatch } from "./state/types";
+import type { PanelState, ModonomeConfig, MessageOverridePatch, WriteActions, NewWorkItemInput, WorkItemPatch } from "./state/types";
 import { OverviewScreen } from "./screens/OverviewScreen";
 import { ArmingScreen } from "./screens/ArmingScreen";
 import { WorkQueueScreen } from "./screens/WorkQueueScreen";
@@ -99,6 +100,8 @@ export function App() {
         withWrite(() => updateWorkItemLive(mode, itemId, patch, hostDir || undefined)),
       onDeleteWorkItem: (itemId: string) => withWrite(() => deleteWorkItemLive(mode, itemId, hostDir || undefined)),
       onPruneLearning: (lesson: string) => withWrite(() => pruneLearningLive(mode, lesson, hostDir || undefined)),
+      onSaveMessages: (patch: Record<string, MessageOverridePatch>) =>
+        withWrite(() => saveMessagesLive(mode, patch, hostDir || undefined)),
     }),
     [state, mode, hostDir, withWrite],
   );

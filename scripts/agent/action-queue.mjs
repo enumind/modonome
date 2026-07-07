@@ -11,6 +11,7 @@ import { mkdirSync, readdirSync, readFileSync, writeFileSync, renameSync } from 
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { validate } from "../lib/jsonschema.mjs";
+import { formatMessage, loadMessageOverrides } from "../lib/messages.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..", "..");
@@ -19,13 +20,14 @@ export const DEFAULT_QUEUE_DIR = join(root, ".modonome", "queue");
 export const DEFAULT_LEASE_MINUTES = 30;
 
 const schema = JSON.parse(readFileSync(join(root, "schemas", "action-queue.schema.json"), "utf8"));
+const overrides = loadMessageOverrides(join(root, ".modonome"));
 
 // Validate a record against the action-queue schema. Throws with the collected
 // errors so a malformed action can never be enqueued.
 function assertValid(record) {
   const errors = validate(schema, record);
   if (errors.length > 0) {
-    throw new Error(`action-queue: invalid record:\n  - ${errors.join("\n  - ")}`);
+    throw new Error(formatMessage("agent-run.action-queue.invalid-record", { errors: errors.join("\n  - ") }, overrides).message);
   }
 }
 
@@ -72,7 +74,8 @@ function listRecords(dir) {
  * @returns {object}
  */
 export function enqueue(action, dir = DEFAULT_QUEUE_DIR) {
-  if (!action || !action.id) throw new Error("action-queue: enqueue requires an action with an id.");
+  if (!action || !action.id)
+    throw new Error(formatMessage("agent-run.action-queue.missing-id", {}, overrides).message);
   const record = {
     schema_version: action.schema_version ?? 1,
     state: "queued",

@@ -5,11 +5,16 @@
 // answer) on the operator's behalf; those need real human content and stay out of
 // scope for an automated write.
 import { readFileSync, writeFileSync, existsSync, rmSync, openSync, closeSync } from "node:fs";
-import { join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
 import yaml from "js-yaml";
 import { parseStagedLine } from "./learningsFormat.mjs";
+import { checkOverridesIntegrity } from "../../../scripts/lib/messages.mjs";
+import { parseFlatYaml } from "../../../scripts/lib/yaml-lite.mjs";
 import { validateConfig } from "../../../scripts/lib/config-validate.mjs";
 import { validateWorkItem } from "../../../scripts/lib/work-item-validate.mjs";
+
+const here = dirname(fileURLToPath(import.meta.url));
 
 const SCALAR_CONFIG_KEYS = new Set([
   "autonomy_enabled",
@@ -378,6 +383,42 @@ export function deleteWorkItem(modonomeDir, itemId) {
     );
   }
   rmSync(file);
+}
+
+const messagesSchema = JSON.parse(readFileSync(join(here, "..", "..", "..", "schemas", "messages.schema.json"), "utf8"));
+
+// Merge a patch of { id: { severity?, text?, suppressed? } } into
+// .modonome/messages.yaml's overrides map, re-validate against both the
+// schema and the severity-floor rule (the same checkOverridesIntegrity()
+// scripts/check-message-catalog-integrity.mjs runs in CI), and only then
+// write. A patch entry with every field cleared removes that id's override
+// entirely, resetting it to the catalog default. The header comment block
+// is preserved; only the schema_version/overrides data is re-serialized,
+// since (unlike config.yaml) there is no hand-written per-key commentary
+// inside the overrides map to lose.
+export function patchMessages(modonomeDir, patch) {
+  const file = join(modonomeDir, "messages.yaml");
+  const text = readFileSync(file, "utf8");
+  const headerLines = text.split("\n").filter((l) => l.trim().startsWith("#") || l.trim() === "");
+  const header = headerLines.length ? headerLines.join("\n") + "\n" : "";
+
+  const doc = parseFlatYaml(text);
+  const overrides = { ...(doc.overrides || {}) };
+  for (const [id, fields] of Object.entries(patch || {})) {
+    const merged = { ...(overrides[id] || {}), ...fields };
+    const cleaned = Object.fromEntries(Object.entries(merged).filter(([, v]) => v !== undefined));
+    if (Object.keys(cleaned).length === 0) delete overrides[id];
+    else overrides[id] = cleaned;
+  }
+  const nextDoc = { schema_version: doc.schema_version ?? 1, overrides };
+
+  const problems = checkOverridesIntegrity(nextDoc, messagesSchema);
+  if (problems.length > 0) throw new Error(`Message override rejected:\n  - ${problems.join("\n  - ")}`);
+
+  const nextText = header + yaml.dump(nextDoc, { lineWidth: -1 });
+  yaml.load(nextText); // Re-parse before writing so a bad patch never lands on disk.
+  writeFileSync(file, nextText);
+  return nextDoc;
 }
 
 export function pruneLearning(modonomeDir, lesson) {

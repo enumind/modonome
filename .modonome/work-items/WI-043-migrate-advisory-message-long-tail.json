@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "id": "WI-043-migrate-advisory-message-long-tail",
+  "state": "done",
+  "attempts": 1,
+  "max_attempts": 3,
+  "touches_protected_path": true,
+  "allowed_edit_set": [
+    "scripts/lib/message-catalog/index.mjs",
+    "scripts/hygiene.mjs",
+    "scripts/sign-packet.mjs",
+    "scripts/verify-packet.mjs",
+    "scripts/validate-knowledge-packet.mjs",
+    "scripts/sync-site-data.mjs",
+    "scripts/audit-learnings.mjs",
+    "scripts/build-release-evidence.mjs",
+    "scripts/preflight-embedding.mjs",
+    "scripts/build-prompt.mjs",
+    "scripts/migrate-config.mjs",
+    "scripts/lib/github-api.mjs",
+    "scripts/lib/learnings.mjs",
+    "scripts/lib/message-catalog/advisory/hygiene.mjs",
+    "scripts/lib/message-catalog/advisory/sign-packet.mjs",
+    "scripts/lib/message-catalog/advisory/verify-packet.mjs",
+    "scripts/lib/message-catalog/advisory/validate-knowledge-packet.mjs",
+    "scripts/lib/message-catalog/advisory/sync-site-data.mjs",
+    "scripts/lib/message-catalog/advisory/audit-learnings.mjs",
+    "scripts/lib/message-catalog/advisory/build-release-evidence.mjs",
+    "scripts/lib/message-catalog/advisory/preflight-embedding.mjs",
+    "scripts/lib/message-catalog/advisory/build-prompt.mjs",
+    "scripts/lib/message-catalog/advisory/migrate-config.mjs",
+    "scripts/lib/message-catalog/advisory/github-api.mjs",
+    "scripts/lib/message-catalog/advisory/learnings.mjs"
+  ],
+  "gates": [
+    "node scripts/check-message-catalog-integrity.mjs",
+    "node scripts/check-style.mjs .",
+    "npm run verify"
+  ],
+  "queued_at": "2026-07-04"
+}

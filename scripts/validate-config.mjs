@@ -6,7 +6,12 @@
 // this file's shebang never has to travel into a context that bundles it as a
 // dependency (see that file's header comment for why that matters).
 import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
 import { loadConfig, safetyErrors, validateConfig } from "./lib/config-validate.mjs";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
+
+const here = dirname(fileURLToPath(import.meta.url));
+const overrides = loadMessageOverrides(join(here, "..", ".modonome"));
 
 export { loadConfig, safetyErrors, validateConfig };
 
@@ -18,7 +23,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   }
   const errors = validateConfig(loadConfig(path));
   if (errors.length > 0) {
-    console.error(`Config invalid: ${path}`);
+    console.error(formatMessage("gate.config.invalid", { path }, overrides).message);
     for (const e of errors) console.error("  - " + e);
     process.exit(1);
   }

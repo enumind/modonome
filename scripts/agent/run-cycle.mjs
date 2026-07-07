@@ -29,9 +29,14 @@ import { chatCompletion } from "./openai-client.mjs";
 import { extractDiff, applyPatch } from "./apply-patch.mjs";
 import { parseCheckerTelemetry } from "./parse-checker-telemetry.mjs";
 import { runToolLoopAdapter } from "./tool-loop-adapter.mjs";
+import { formatMessage, loadMessageOverrides } from "../lib/messages.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..", "..");
+const overrides = loadMessageOverrides(join(root, ".modonome"));
+function msg(id, params) {
+  return formatMessage(id, params, overrides).message;
+}
 
 const DEFAULT_MAX_TURNS = 40;
 const HARD_TURN_CAP = 80;
@@ -126,7 +131,7 @@ function localEnv(opts, env) {
 // the passed config and runId and throws on any policy violation. This is the testable
 // core of the harness; the execute path below only acts on a plan this function approves.
 export function planCycle(opts, cfg, runId) {
-  if (!opts.target) throw new Error("run-cycle: --target is required (for example examples/demo-app).");
+  if (!opts.target) throw new Error(msg("agent-run.run-cycle.target-required", {}));
   const appName = basename(opts.target);
 
   const maker = resolveRole(cfg, "maker");
@@ -140,7 +145,7 @@ export function planCycle(opts, cfg, runId) {
 
   // Separation of duties: the maker and checker must run distinct models (default on).
   if (cfg.require_distinct_maker_checker_model !== false && maker.model === checker.model) {
-    throw new Error(`maker and checker resolve to the same model (${maker.model}); distinct models are required.`);
+    throw new Error(msg("agent-run.run-cycle.maker-checker-same-model", { model: maker.model }));
   }
 
   // Pinned model ids: every model used must be declared in the config registry, so a
@@ -149,7 +154,7 @@ export function planCycle(opts, cfg, runId) {
   if (known.size > 0) {
     for (const [role, model] of [["maker", maker.model], ["checker", checker.model]]) {
       if (!known.has(model)) {
-        throw new Error(`${role} model "${model}" is not in the models registry; pin it in .modonome/config.yaml.`);
+        throw new Error(msg("agent-run.run-cycle.model-not-registered", { role, model }));
       }
     }
   }
@@ -162,8 +167,9 @@ export function planCycle(opts, cfg, runId) {
 
   // Turn cap.
   const maxTurns = opts.maxTurns ?? DEFAULT_MAX_TURNS;
-  if (!Number.isInteger(maxTurns) || maxTurns <= 0) throw new Error("max-turns must be a positive integer.");
-  if (maxTurns > HARD_TURN_CAP) throw new Error(`max-turns ${maxTurns} exceeds the hard cap ${HARD_TURN_CAP}.`);
+  if (!Number.isInteger(maxTurns) || maxTurns <= 0) throw new Error(msg("agent-run.run-cycle.max-turns-not-positive", {}));
+  if (maxTurns > HARD_TURN_CAP)
+    throw new Error(msg("agent-run.run-cycle.max-turns-exceeds-cap", { maxTurns, cap: HARD_TURN_CAP }));
 
   // Budget: only a billable (paid cost class) role requires the daily budget to be
   // above zero. Free and local roles never gate on budget, regardless of provider name.
@@ -174,8 +180,8 @@ export function planCycle(opts, cfg, runId) {
   // Execution-target routing: resolve where each role's model endpoint can run.
   // This throws fail-closed when a role's endpoint has no reachable runner target,
   // so an unreachable combination is caught during planning (including dry-run).
-  const makerRoute = resolveExecutionTarget(maker, cfg);
-  const checkerRoute = resolveExecutionTarget(checker, cfg);
+  const makerRoute = resolveExecutionTarget(maker, cfg, overrides);
+  const checkerRoute = resolveExecutionTarget(checker, cfg, overrides);
 
   const plan = {
     appName,
@@ -207,10 +213,10 @@ export function planCycle(opts, cfg, runId) {
     const crew = resolveRole(cfg, role);
     if (opts.runner) crew.runner = opts.runner;
     if (known.size > 0 && !known.has(crew.model)) {
-      throw new Error(`${role} model "${crew.model}" is not in the models registry; pin it in .modonome/config.yaml.`);
+      throw new Error(msg("agent-run.run-cycle.model-not-registered", { role, model: crew.model }));
     }
     crew.chain = buildFallbackChain(cfg, role, crew, known);
-    const route = resolveExecutionTarget(crew, cfg);
+    const route = resolveExecutionTarget(crew, cfg, overrides);
     plan[role] = { ...crew, id: `${role}:${appName}:${runId}:${crew.model}`, route, execMode: resolveExecMode(cfg, crew.model) };
     if (isBillable(crew.costClass)) plan.usesRemote = true;
   }
@@ -441,7 +447,7 @@ export function runCycle(opts, { execute, cfg, runId, env = process.env, queueDi
   if (!execute) return { ...plan, mode: "dry-run" };
 
   if (plan.usesRemote && !plan.remoteAllowed) {
-    throw new Error("A hosted model is selected but remote_model_budget_usd_per_day is 0. Raise the budget or select a local model.");
+    throw new Error(msg("agent-run.run-cycle.budget-zero", {}));
   }
 
   // Routed execution. A role runs inline when the local environment already is
@@ -488,11 +494,13 @@ function runRoles(plan, roles, env, deps) {
   const status = invokeRole(plan, role, env, deps);
   if (status && typeof status.then === "function") {
     return status.then((resolved) => {
-      if (resolved !== 0) throw new Error(`${role} session exited with status ${resolved}. See ${plan.transcriptDir}/${role}.txt.`);
+      if (resolved !== 0)
+        throw new Error(msg("agent-run.run-cycle.session-exit-nonzero", { role, status: resolved, transcriptDir: plan.transcriptDir }));
       return runRoles(plan, rest, env, deps);
     });
   }
-  if (status !== 0) throw new Error(`${role} session exited with status ${status}. See ${plan.transcriptDir}/${role}.txt.`);
+  if (status !== 0)
+    throw new Error(msg("agent-run.run-cycle.session-exit-nonzero", { role, status, transcriptDir: plan.transcriptDir }));
   return runRoles(plan, rest, env, deps);
 }
 
@@ -520,7 +528,7 @@ async function main() {
       console.log(`Cycle complete. Transcript and metrics under ${result.transcriptDir}/`);
     }
   } catch (e) {
-    console.error(`run-cycle failed: ${e.message}`);
+    console.error(msg("agent-run.run-cycle.failed", { error: e.message }));
     process.exit(1);
   }
 }

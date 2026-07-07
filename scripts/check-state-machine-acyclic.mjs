@@ -7,7 +7,13 @@
 // Usage: node scripts/check-state-machine-acyclic.mjs <path/to/fixture.json>
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
 import { isCyclic, topoSort } from "./lib/graph.mjs";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
+
+const here = dirname(fileURLToPath(import.meta.url));
+const root = join(here, "..");
+const overrides = loadMessageOverrides(join(root, ".modonome"));
 
 // Build the adjacency map { state: [to, ...] } from the transition list.
 // When includeCapGuard is false, cap_guard edges are dropped: those are the
@@ -52,7 +58,7 @@ export function stateMachineErrors(machine) {
   // loop is not flagged; any remaining cycle has no escape and is illegal.
   const { cyclic, cycle } = isCyclic(guarded);
   if (cyclic) {
-    errs.push(`unguarded cycle: ${cycle.join(" -> ")}`);
+    errs.push(formatMessage("gate.state-machine-acyclic.unguarded-cycle", { cycle: cycle.join(" -> ") }, overrides).message);
   }
 
   for (const state of states) {
@@ -61,13 +67,13 @@ export function stateMachineErrors(machine) {
     // (3) No non-terminal sink: a non-terminal state with no outgoing edge
     // strands any item that lands there.
     if ((full[state] || []).length === 0) {
-      errs.push(`non-terminal sink: ${state} has no outgoing transitions`);
+      errs.push(formatMessage("gate.state-machine-acyclic.non-terminal-sink", { state }, overrides).message);
       continue;
     }
 
     // (2) Every non-terminal state must reach a terminal state.
     if (!reaches(full, state, terminal)) {
-      errs.push(`unreachable terminal: ${state} cannot reach any terminal state`);
+      errs.push(formatMessage("gate.state-machine-acyclic.unreachable-terminal", { state }, overrides).message);
     }
   }
 
@@ -77,13 +83,13 @@ export function stateMachineErrors(machine) {
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const path = process.argv[2];
   if (!path) {
-    console.error("Usage: node scripts/check-state-machine-acyclic.mjs <fixture.json>");
+    console.error(formatMessage("gate.state-machine-acyclic.usage", {}, overrides).message);
     process.exit(2);
   }
   const machine = JSON.parse(readFileSync(path, "utf8"));
   const errors = stateMachineErrors(machine);
   if (errors.length > 0) {
-    console.error(`State machine invalid: ${path}`);
+    console.error(formatMessage("gate.state-machine-acyclic.invalid", { path }, overrides).message);
     for (const e of errors) console.error("  - " + e);
     process.exit(1);
   }

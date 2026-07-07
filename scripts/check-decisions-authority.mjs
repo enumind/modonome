@@ -44,9 +44,11 @@ import { readFileSync, existsSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = process.env.MODONOME_ROOT ? process.env.MODONOME_ROOT : join(here, "..");
+const overrides = loadMessageOverrides(join(root, ".modonome"));
 
 const DECISIONS_REL = ".modonome/DECISIONS.md";
 const ALLOWED_HEADINGS = new Set(["Resolved", "Open"]);
@@ -76,9 +78,7 @@ export function parseDecisions(text) {
       const title = h2[1];
       if (!ALLOWED_HEADINGS.has(title)) {
         violations.push(
-          `${DECISIONS_REL}:${lineNo}: heading "## ${title}" is not permitted. ` +
-            `Only "## Resolved" and "## Open" are allowed; approval-bearing prose ` +
-            `outside those two sections cannot be added this way.`
+          formatMessage("gate.decisions-authority.disallowed-heading", { lineNo, title }, overrides).message
         );
       }
       section = ALLOWED_HEADINGS.has(title) ? title : "unknown";
@@ -107,7 +107,11 @@ export function parseDecisions(text) {
     const missing = REQUIRED_RESOLVED_KEYS.filter((k) => !entry.keys.has(k));
     if (missing.length > 0) {
       violations.push(
-        `${DECISIONS_REL}:${entry.lineNo}: Resolved entry "${entry.id}" is missing required key(s): ${missing.join(", ")}.`
+        formatMessage(
+          "gate.decisions-authority.missing-keys",
+          { lineNo: entry.lineNo, id: entry.id, missing: missing.join(", ") },
+          overrides
+        ).message
       );
     }
   }
@@ -171,7 +175,9 @@ async function fetchPRReviews(repoSlug, prNumber, token) {
     },
   });
   if (!res.ok) {
-    throw new Error(`GitHub API ${res.status} fetching PR #${prNumber} reviews`);
+    throw new Error(
+      formatMessage("gate.decisions-authority.github-api-error", { status: res.status, prNumber }, overrides).message
+    );
   }
   return res.json();
 }
@@ -249,32 +255,44 @@ async function main() {
   }
 
   if (newEntries.length > 0) {
+    const entryWord = newEntries.length === 1 ? "entry" : "entries";
+    const entryIds = newEntries.map((e) => e.id).join(", ");
     const ctx = readPRContext();
     if (!ctx) {
       violations.push(
-        `${DECISIONS_REL}: ${newEntries.length} new Resolved entr${newEntries.length === 1 ? "y" : "ies"} ` +
-          `(${newEntries.map((e) => e.id).join(", ")}) added, but no PR context (repo/PR number/token) is ` +
-          `available to verify who approved ${newEntries.length === 1 ? "it" : "them"}. Run this check in CI on the pull request.`
+        formatMessage(
+          "gate.decisions-authority.no-pr-context",
+          { count: newEntries.length, entryWord, ids: entryIds, pronoun: newEntries.length === 1 ? "it" : "them" },
+          overrides
+        ).message
       );
     } else {
       const codeownersUsers = readCodeownersUsers(root);
       if (codeownersUsers === null) {
-        violations.push("No CODEOWNERS file found; cannot verify Resolved-entry authorship.");
+        violations.push(formatMessage("gate.decisions-authority.no-codeowners", {}, overrides).message);
       } else {
         let reviews;
         try {
           reviews = await fetchPRReviews(ctx.repoSlug, ctx.prNumber, ctx.token);
         } catch (e) {
-          violations.push(`${DECISIONS_REL}: could not fetch PR #${ctx.prNumber} reviews: ${e.message}`);
+          violations.push(
+            formatMessage(
+              "gate.decisions-authority.fetch-reviews-failed",
+              { prNumber: ctx.prNumber, reason: e.message },
+              overrides
+            ).message
+          );
           reviews = null;
         }
         if (reviews) {
           const approved = hasEligibleApproval(reviews, ctx.prAuthor, codeownersUsers);
           if (!approved) {
             violations.push(
-              `${DECISIONS_REL}: new Resolved entr${newEntries.length === 1 ? "y" : "ies"} ` +
-                `(${newEntries.map((e) => e.id).join(", ")}) needs an APPROVED review from a CODEOWNERS-listed ` +
-                `account other than the PR author (${ctx.prAuthor || "unknown"}). Self-approval does not count.`
+              formatMessage(
+                "gate.decisions-authority.no-eligible-approval",
+                { entryWord, ids: entryIds, author: ctx.prAuthor || "unknown" },
+                overrides
+              ).message
             );
           }
         }
@@ -283,12 +301,9 @@ async function main() {
   }
 
   if (violations.length > 0) {
-    console.error("Decisions-authority gate rejected this change:\n");
+    console.error(formatMessage("gate.decisions-authority.fail-header", {}, overrides).message);
     for (const v of violations) console.error("  - " + v);
-    console.error(
-      "\nDECISIONS.md records real decisions with real authority behind them. " +
-        "Approval-bearing content cannot be added outside that process."
-    );
+    console.error(formatMessage("gate.decisions-authority.fail-footer", {}, overrides).message);
     return 1;
   }
   console.log("Decisions-authority gate: headings, entry shape, and new-entry provenance all clean.");
