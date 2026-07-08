@@ -55,6 +55,8 @@ governs where docs live.
 
 ## Audits
 
+- [audits/claims-audit-2026-07-08.md](audits/claims-audit-2026-07-08.md): claims audit,
+  2026-07-08. Supersedes the 2026-07-01 audit below.
 - [audits/claims-audit-2026-07-01.md](audits/claims-audit-2026-07-01.md): claims audit,
   2026-07-01. Supersedes the 2026-06-25 audit below.
 - [audits/claims-audit-2026-06-25.md](audits/claims-audit-2026-06-25.md): claims audit, 2026-06-25.
@@ -65,3 +67,11 @@ governs where docs live.
   governance mesh (RD-027 through RD-032).
 - [research/knowledge-network-architecture.md](research/knowledge-network-architecture.md):
   cross-repo knowledge network design (Milestone 2, not shipped).
+
+## Launch
+
+- [launch/show-hn.md](launch/show-hn.md): Show HN draft, not postable until the OWNER-ACTIONS.md
+  gates clear.
+- [launch/article-seeds.md](launch/article-seeds.md): structured seeds for the Goodhart cross-post
+  update and post-launch pieces.
+- [launch/x-thread.md](launch/x-thread.md): the @ModonomeLab launch thread skeleton.

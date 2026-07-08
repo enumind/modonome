@@ -192,7 +192,7 @@ self-application, work items, tests, AgentProof) with no network or secrets.
 | Security policy | [SECURITY.md](SECURITY.md) · [GOVERNANCE.md](GOVERNANCE.md) |
 | Versioning and safe upgrades | [docs/versioning.md](docs/versioning.md) |
 | Roadmap and milestones | [ROADMAP.md](ROADMAP.md) |
-| Contributing | [CONTRIBUTING.md](CONTRIBUTING.md) |
+| Contributing, support, and what a merge commits us to | [CONTRIBUTING.md](CONTRIBUTING.md) · [SUPPORT.md](SUPPORT.md) |
 
 ## License
 
