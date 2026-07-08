@@ -183,3 +183,34 @@ A full dry-run output example is at [examples/dry-run-transcript.txt](examples/d
 To trigger a single work item from VS Code without a scheduled harness, see
 [docs/vscode-workflow.md](docs/vscode-workflow.md). It covers model selection,
 turn caps, and how to review and merge the resulting PR.
+
+## Cost model
+
+Modonome's cost is entirely the LLM API you use. The tool itself is zero-cost
+(MIT, no telemetry, no service). There is no central service call.
+
+| Run type | Turns | Approximate API cost |
+|---|---|---|
+| Dry-run sweep (read-only) | 2-4 | $0.01 - $0.05 |
+| Tier 1 work item (docs, tests) | 6-10 | $0.05 - $0.20 |
+| Tier 2 work item (scripts, schemas) | 10-20 | $0.20 - $1.00 |
+| Full autonomous cycle (5 items) | 40-60 | $0.50 - $2.00 |
+
+Figures assume Claude Sonnet pricing at June 2026 rates. Haiku runs Tier 1 items
+at roughly one-fifth the cost. Opus is appropriate for security-critical Tier 2
+items. Match model tier to work item tier with the role and model map in
+[docs/agents.md](docs/agents.md).
+
+If you run modonome via the Claude Code CLI with a Claude Pro or Teams subscription
+(not an API key), the cost is zero beyond your subscription. VS Code with the Claude
+Code extension uses the same subscription-based billing.
+
+## Embed it
+
+- Reference: link to the prompt and keep your state local.
+- Vendor: copy `prompts/`, `templates/`, `schemas/`, and `scripts/` into your repo and pin a
+  release tag.
+- Package: import the schemas and scripts, keep config and state local.
+
+Upgrades preserve your config. New controls always arrive with safe defaults, so an update
+leaves an engine disarmed unless an owner arms it. See [docs/versioning.md](docs/versioning.md).

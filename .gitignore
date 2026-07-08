@@ -29,6 +29,14 @@ __pycache__/
 CLAUDE.md
 runs/
 
+# examples/demo-app/runs/ holds intentionally committed, verbatim evidence captures
+# (dry-run output, ratchet rejections, Gauntlet scores) that back README and
+# WALKTHROUGH.md claims: un-ignore that one path from the bare `runs/` rule above,
+# which otherwise silently drops it from `git add -A` with no warning. Do not widen
+# this to other `runs/` directories; agent-runtime scratch state stays ignored.
+!examples/demo-app/runs/
+!examples/demo-app/runs/**
+
 # Tripwires ships a real .claude/settings.json under templates/: un-ignore that one
 # tracked template (never the root-level, session-local .claude/ above).
 !templates/.claude/

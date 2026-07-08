@@ -41,9 +41,10 @@ a change pass; add tests instead.
 
 ## How we respond
 
-We triage new issues and pull requests within 5 business days, and label them so you know
-where they stand. Security reports follow the faster timeline in [SECURITY.md](SECURITY.md)
-(acknowledged within 7 days). If a thread goes quiet, a polite nudge is welcome.
+There is no guaranteed response time on issues or pull requests; see [SUPPORT.md](SUPPORT.md)
+for the honest version of what to expect and how things get triaged. Security reports follow
+the faster, real timeline in [SECURITY.md](SECURITY.md) (acknowledged within 7 days). If a
+thread goes quiet, a polite nudge is welcome.
 
 ## House style
 

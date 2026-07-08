@@ -1,0 +1,9 @@
+$ node scripts/guard-ratchet.mjs 192b590
+Anti-gaming ratchet rejected this change:
+
+  - tests/OrderService.test.js: removes more test assertions than it adds (+0 / -2).
+  - tests/OrderService.test.js: adds a skipped or focused test: it.skip("throws when order is not found", async () => {
+
+Do not weaken gates to go green. Get owner review for an intended exception.
+Advisory (not a gate): 1 test file(s) touched, +0 / -2 assertions net across this diff. Per-file findings above are the enforcement; this line is context only.
+exit code: 1

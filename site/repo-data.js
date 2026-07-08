@@ -160,7 +160,7 @@ window.__MODONOME_REPO = {
 
   // ---- Roadmap: honest about what is committed vs. a community direction ----
   milestones: [
-    { phase: 'v0.1-alpha', status: 'Shipping now', tone: 'now', title: 'Hardened alpha', body: 'The core loop, the anti-gaming ratchet, config and packet validators, the drift guard, and Ed25519-signed evidence packets, all machine-verified, with safe defaults and two runnable examples.' },
+    { phase: 'v0.1-alpha', status: 'Shipping now', tone: 'now', title: 'Hardened alpha', body: 'The core loop, the anti-gaming ratchet, config and packet validators, the drift guard, and evidence attestation (Sigstore-signed via CI), all machine-verified, with safe defaults and two runnable examples.' },
     { phase: 'Milestone 3', status: 'In progress', tone: 'now', title: 'Operator control panel', body: 'A dashboard for governance events, gate status, and the levers an owner uses to arm, pause, and review autonomy across a repository.' },
     { phase: 'v0.2', status: 'Next', tone: 'planned', title: 'Signed work items & debt metrics', body: 'Ed25519-signed work items and before/after tech-debt measurement, the groundwork for sharing patterns as verifiable evidence.' },
     { phase: 'v0.3', status: 'Planned', tone: 'planned', title: 'Telemetry & estate metrics', body: 'OpenTelemetry spans for governance events and multi-team estate aggregation, for audit trails and fleet-wide visibility.' },

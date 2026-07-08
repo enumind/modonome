@@ -18,7 +18,7 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://modonome.com/">
 <meta property="og:title" content="Modonome - Guardrails for AI coding agents in CI">
-<meta property="og:description" content="An off-by-default autonomy loop that adopts your repo rules, proposes small reviewable PRs, and gates them in CI so weakened tests cannot merge. AgentProof scores 25/25 HARDENED for gate integrity, 35/35 scenarios total.">
+<meta property="og:description" content="An off-by-default autonomy loop that adopts your repo rules, proposes small reviewable PRs, and gates them in CI so structurally weakened tests cannot merge. Scores 25/25 on AgentProof, its self-graded gate-integrity benchmark.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@ModonomeLab">
 <meta name="twitter:image" content="https://modonome.com/assets/og-card.png">
@@ -27,14 +27,14 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Modonome">
-<meta name="keywords" content="agentproof, autonomous agent benchmark, CI governance, anti-gaming ratchet, agentic AI safety, tech debt automation, test integrity, agent gate integrity, governed autonomy, modonome">
+<meta name="keywords" content="CI guardrails for AI coding agents, gate integrity, AgentProof benchmark, governed autonomy">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": "Modonome",
   "applicationCategory": "DeveloperApplication",
-  "description": "Governed autonomy framework for software engineering agents. Includes AgentProof, the adversarial benchmark for agent gate-integrity, scoring 25/25 HARDENED against known gaming patterns including assertion removal, skip injection, type escape, coverage removal, identity collapse, prompt injection, and resource exhaustion. A further ten extended hardening scenarios also pass, for 35/35 total.",
+  "description": "Governed autonomy framework for software engineering agents. Includes AgentProof, a self-graded adversarial benchmark for agent gate-integrity covering known gaming patterns such as assertion removal, skip injection, type escape, and coverage removal. Modonome scores 25/25 HARDENED on it.",
   "url": "https://modonome.com",
   "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
   "license": "https://opensource.org/licenses/MIT",
@@ -43,7 +43,7 @@
     "@type": "SoftwareSourceCode",
     "codeRepository": "https://github.com/enumind/modonome",
     "name": "AgentProof",
-    "description": "Adversarial benchmark for agent gate-integrity. 25 normative scenarios covering assertion removal, skip injection, type escape, coverage removal, identity collapse, prompt injection inertness, state machine acyclicity, trust boundary, audit trail integrity, model diversity, concurrency safety, gate DAG validation, evidence secret screening, and resource caps, plus 10 extended hardening scenarios. Score: 25/25 HARDENED, 35/35 total."
+    "description": "Self-graded adversarial benchmark for agent gate-integrity: 25 normative scenarios covering known gaming patterns such as assertion removal, skip injection, type escape, and coverage removal. Score: 25/25 HARDENED."
   }
 }
 </script>
@@ -86,8 +86,8 @@
 <p>Modonome is a prompt and a set of scripts that run inside a harness you already have: a coding agent, a CI job, or a human session. A maker proposes one small change pinned by a test. An independent checker reviews it. Deterministic gates and an anti-gaming ratchet run in your CI, outside the agent's write scope, and keep tests, types, and coverage honest across JavaScript, Python, Java, and .NET. A human owner holds merge authority over anything protected.</p>
 <h2>Capabilities</h2>
 <p>Small, test-backed changes. Separate maker, checker, and merge roles. An anti-gaming ratchet in CI. Adopts your existing CI, code owners, and branch rules. Improves as it goes by promoting corrections into durable rules. An operator control panel for gate status and governance events. A Merkle-verified repository snapshot for trustworthy agent context. Compliance evidence and attestation through an MCP server. A drop-in GitHub Action with a signed gate-integrity receipt. Disclosure and adoption of governance policy as signed evidence between repositories.</p>
-<h2>AgentProof: 25/25 HARDENED, 35/35 total</h2>
-<p>AgentProof is the adversarial benchmark for agent gate-integrity. It proves through 25 normative scenarios that an implementation's gates hold under attack, and a further 10 extended hardening scenarios also pass, for 35/35 total. Modonome scores 25/25 HARDENED. Conformance levels: HARDENED is 25/25 normative scenarios, PARTIAL is 20 to 24, UNHARDENED is 19 or fewer.</p>
+<h2>AgentProof: 25/25 HARDENED</h2>
+<p>AgentProof is a self-graded adversarial benchmark for agent gate-integrity: executable scenarios, authored alongside the enforcement code they test, that any framework can run against its own gates. Modonome scores 25/25 HARDENED on the normative suite (extended hardening scenarios also pass). Conformance levels: HARDENED is 25/25 normative scenarios, PARTIAL is 20 to 24, UNHARDENED is 19 or fewer.</p>
 <p>Scenarios covered: assertion removal (JS/TS, Java, .NET, Python), test skip injection, broad type escape, coverage threshold removal, unsafe config combinations, identity collapse (maker/checker same session or same model family), raw code leakage, schema/prompt/template drift, protected-path escalation, prompt injection inertness, state machine acyclicity, deterministic gate ordering, trust boundary (base-branch code loading), audit trail append-only integrity, model diversity enforcement, concurrent mutation serialization, gate DAG acyclicity, evidence secret screening, resource cap enforcement.</p>
 <h2>Get started</h2>
 <p>Preview safely with <code>npx modonome dry-run .</code>, then scaffold local state with <code>npx modonome scaffold . --write</code>. Autonomy stays at rest until an owner switches it on. Prove the controls on your own setup with <code>node agentproof/runner.mjs</code>.</p>
@@ -410,7 +410,7 @@
         <div style="max-width:660px">
           <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#5dd4ab;margin-bottom:14px">AgentProof benchmark</div>
           <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(28px,3.6vw,40px);line-height:1.1;letter-spacing:-.02em;margin:0 0 14px;color:#f6f4ee">Twenty-five gate-integrity scenarios. Machine-verified, every one.</h2>
-          <p style="font-size:16px;line-height:1.6;color:#aeb9c8;margin:0 0 12px">AgentProof is a standalone, language-agnostic benchmark. Each of the twenty-five scenarios runs a real adversarial attempt against the controls and confirms it is caught, so a passing score is verifiable evidence rather than a claim. A further ten extended hardening scenarios also pass, for 35/35 total. Any agentic system can run it, which makes it a practical conformance test for the wider field, and beyond Modonome.</p>
+          <p style="font-size:16px;line-height:1.6;color:#aeb9c8;margin:0 0 12px">AgentProof is a standalone, language-agnostic benchmark. Each of the twenty-five scenarios runs a real adversarial attempt against the controls and confirms it is caught: an executable, falsifiable check rather than a claim. It is self-graded (the scenarios live beside the enforcement code they test), which is exactly why anyone can run it against their own agentic system, extend it, or submit an attack the current gates fail.</p>
           <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#7c8aa0">Conformance: HARDENED = 25/25 gate-integrity scenarios · PARTIAL = 20–24 · UNHARDENED ≤ 19</div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:center;gap:6px;background:rgba(93,212,171,.08);border:1px solid rgba(93,212,171,.32);border-radius:16px;padding:22px 34px">
@@ -691,14 +691,16 @@
           <span style="margin-left:8px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#7c8aa0">modonome · zsh</span>
         </div>
         <div class="mn-term" style="padding:22px 20px;font-family:'IBM Plex Mono',monospace;line-height:1.9">
-          <div style="color:#7c8aa0"># Try it safely, this changes nothing</div>
+          <div style="color:#7c8aa0"># The demo app, verbatim (examples/demo-app). Changes nothing.</div>
           <div style="color:#e8ebf0"><span style="color:#5dd4ab">$</span> npx modonome dry-run .</div>
-          <div style="color:#9fabbc">  ✓ detected: node · typescript · jest · github-actions</div>
-          <div style="color:#9fabbc">  → 5 small changes proposed · 0 files written</div>
+          <div style="color:#9fabbc">  Stack: Node or TypeScript (npm)</div>
+          <div style="color:#9fabbc">  Proposed work (3 bounded items) · nothing applied</div>
           <div style="height:10px"></div>
-          <div style="color:#7c8aa0"># Scaffold local state (still disabled)</div>
-          <div style="color:#e8ebf0"><span style="color:#5dd4ab">$</span> npx modonome scaffold . --write</div>
-          <div style="color:#9fabbc">  ✓ .modonome/ created · autonomy_enabled: false</div>
+          <div style="color:#7c8aa0"># An agent skips a failing test and deletes its assertions</div>
+          <div style="color:#e8ebf0"><span style="color:#5dd4ab">$</span> npx modonome ratchet main</div>
+          <div style="color:#ff7b72">  Anti-gaming ratchet rejected this change · exit 1</div>
+          <div style="color:#ff7b72">  - removes more test assertions than it adds (+0 / -2)</div>
+          <div style="color:#ff7b72">  - adds a skipped or focused test: it.skip("throws when ...")</div>
           <div style="height:10px"></div>
           <div style="color:#7c8aa0"># Prove the guarantees yourself</div>
           <div style="color:#e8ebf0"><span style="color:#5dd4ab">$</span> node agentproof/runner.mjs</div>

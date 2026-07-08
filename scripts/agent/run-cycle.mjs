@@ -288,15 +288,59 @@ function writeTranscriptAndMetric(plan, role, r, transcriptText, extra = {}) {
   appendFileSync(join(root, plan.transcriptDir, "metrics.jsonl"), JSON.stringify(metric) + "\n");
 }
 
-function invokeRoleClaudeCli(plan, role, env) {
-  const r = plan[role];
-  const prompt = buildRolePrompt(plan, role, env);
-  const res = spawnSync(r.cliPath, [
-    "--dangerously-skip-permissions",
+// Tool allowlist for the CLI-transport maker/checker roles (ADR-045 5.4). Covers
+// what the role prompts actually do: read/edit files within the pinned cwd, and
+// drive git/gh for branch, commit, push, and PR operations, plus the gate runners
+// the multi-language ratchet supports (JS/TS, Python, Java, .NET). This is
+// deliberately broader than a single language, since the gates a work item
+// declares are host-repo-specific and the ratchet itself supports all four.
+const ROLE_ALLOWED_TOOLS = [
+  "Read", "Edit", "Write",
+  "Bash(git *)", "Bash(gh *)",
+  "Bash(npm *)", "Bash(node *)", "Bash(yarn *)", "Bash(pnpm *)",
+  "Bash(pytest *)", "Bash(python *)", "Bash(python3 *)",
+  "Bash(mvn *)", "Bash(gradle *)",
+  "Bash(dotnet *)",
+];
+
+/**
+ * Build the argv for the CLI-transport maker/checker invocation. Exported and
+ * pure (no spawn) so a test can assert on the exact flags without launching a
+ * real binary or spending tokens.
+ * @param {{ model: string }} r - Resolved role descriptor.
+ * @param {{ maxTurns: number }} plan
+ * @param {string} prompt
+ * @returns {string[]}
+ */
+export function buildRoleCliArgs(r, plan, prompt) {
+  return [
+    "--permission-mode", "manual",
+    "--allowedTools", ...ROLE_ALLOWED_TOOLS,
     "--model", r.model,
     "--max-turns", String(plan.maxTurns),
     "-p", prompt,
-  ], { cwd: resolve(root, plan.target), encoding: "utf8", env: buildRunnerEnv(env, r) });
+  ];
+}
+
+function invokeRoleClaudeCli(plan, role, env, deps = {}) {
+  const spawnImpl = deps.spawnImpl ?? spawnSync;
+  const r = plan[role];
+  const prompt = buildRolePrompt(plan, role, env);
+  // Empirically verified (2026-07-08) rather than assumed from --help text alone:
+  // `--permission-mode acceptEdits` does NOT confine execution to --allowedTools
+  // as one might expect; a live test allowed an unlisted `rm` deletion through it.
+  // `--permission-mode manual` does: it denies anything outside --allowedTools with
+  // a clean, non-hanging response even in non-interactive `-p` mode (no TTY means no
+  // prompt to answer, so a denial resolves immediately rather than blocking). This
+  // is a real narrowing of the blast radius versus --dangerously-skip-permissions
+  // (which permits arbitrary shell execution, arbitrary file reads, and network
+  // calls), though it is not the only containment layer: the pinned cwd below, the
+  // CI-side gate integrity check running from a base-branch copy this session
+  // cannot touch, the separate checker review, and the MODONOME_ARMED opt-in all
+  // hold independently of what this session does inside its own permission scope.
+  const res = spawnImpl(r.cliPath, buildRoleCliArgs(r, plan, prompt), {
+    cwd: resolve(root, plan.target), encoding: "utf8", env: buildRunnerEnv(env, r),
+  });
   writeTranscriptAndMetric(plan, role, r, (res.stdout || "") + (res.stderr || ""));
   return res.status ?? 1;
 }
@@ -435,7 +479,7 @@ function invokeRole(plan, role, env, deps) {
       ? invokeRoleToolLoop(plan, role, env, deps)
       : invokeRoleOpenAI(plan, role, env, deps);
   }
-  return invokeRoleClaudeCli(plan, role, env);
+  return invokeRoleClaudeCli(plan, role, env, deps);
 }
 
 // Execute a plan. Refuses a hosted run when the budget is zero. Runs the maker, then

@@ -8,11 +8,18 @@ mirrored into a review repo.
 
 ## Adoption surfaces
 
-| Estate | Adoption surface | Safe first use |
+**Shipped in v0.1-alpha:**
+
+| Estate | Adoption surface | Today |
 | --- | --- | --- |
 | Product app repo | Git files, CI, tests, issues, code owners | Dry-run map, test hardening, small modernization PRs |
 | Monorepo | Package graph, owners, affected-test tooling | Bounded packets per package or capability |
 | Microservice estate | Service catalog, API contracts, deploy metadata | Cross-service debt themes and contract-test gaps |
+
+**Planned for Milestone 4 (Enterprise estate adapters):**
+
+| Estate | Adoption surface | Designed to support |
+| --- | --- | --- |
 | Mainframe | COBOL, JCL, copybooks, schedules, exported SCM metadata | Read-only modernization map, job-flow evidence |
 | SAP | ABAP, CDS, transports, extensions, change documents | Transport-aware proposals, evidence gaps |
 | Oracle | PL/SQL, forms, reports, EBS or Fusion extensions | Dependency and release-evidence mapping |
@@ -21,22 +28,13 @@ mirrored into a review repo.
 | Low-code or RPA | Exported metadata, bot scripts, run history | Fragile workflow detection, owner-gated proposals |
 | Data or BI | SQL, dbt, notebooks, lineage, scheduler config | Lineage-backed quality gates, migration sequencing |
 
-## Mirror mode
+## Mirror mode (roadmap, not shipped)
 
-When the platform has no ordinary Git change flow, Modonome starts in mirror mode: read
-exports, build an adoption map, identify modernization work, and produce owner-reviewable
-proposals. Direct write-back into a proprietary platform requires platform-specific gates,
-test evidence, rollback evidence, and owner approval. Until then, Modonome files proposals,
-produces packets, updates local state, and leaves deployment to the platform's release
-process.
+When the platform has no ordinary Git change flow, Modonome is designed to support mirror mode: read exports, build an adoption map, identify modernization work, and produce owner-reviewable proposals. Direct write-back into a proprietary platform requires platform-specific gates, test evidence, rollback evidence, and owner approval. Until then, Modonome files proposals, produces packets, updates local state, and leaves deployment to the platform's release process. This capability is planned for Milestone 4.
 
-## Cross-repo learning
+## Cross-repo learning (roadmap, not shipped)
 
-Repos that opt in can share minimized, classified, provenance-backed knowledge packets. The
-network is advisory and off by default. A pattern learned in one repo is a candidate
-elsewhere until the local repo validates it through its own gates and owners. There is no
-central authority that can merge, arm, or override a repo. See the network module in the
-prompt and `schemas/knowledge-packet.schema.json`.
+Modonome is designed to support a cross-repo knowledge network where repos can share minimized, classified, provenance-backed knowledge packets. When shipped in Milestone 2, the network will be advisory and off by default. A pattern learned in one repo will be a candidate elsewhere until the local repo validates it through its own gates and owners. There is no central authority that can merge, arm, or override a repo. Design details are in the network module in the prompt and `schemas/knowledge-packet.schema.json`.
 
 ## Org-level provisioning and multi-repo posture
 

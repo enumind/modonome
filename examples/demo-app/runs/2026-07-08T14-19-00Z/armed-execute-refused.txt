@@ -1,0 +1,4 @@
+$ MODONOME_ARMED=true node scripts/agent/run-cycle.mjs --target examples/demo-app --execute
+# autonomy_enabled: true, dry_run: false in .modonome/config.yaml; MODONOME_ARMED=true in env; remote_model_budget_usd_per_day: 0 (unchanged)
+run-cycle failed: A hosted model is selected but remote_model_budget_usd_per_day is 0. Raise the budget or select a local model.
+exit code: 1

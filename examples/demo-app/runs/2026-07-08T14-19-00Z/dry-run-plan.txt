@@ -1,0 +1,24 @@
+$ node scripts/agent/run-cycle.mjs --target examples/demo-app
+Dry run (no model called). Resolved cycle plan:
+{
+  "target": "examples/demo-app",
+  "maker": {
+    "id": "maker:demo-app:2026-07-08T14-32-52-920Z:claude-sonnet-4-6",
+    "model": "claude-sonnet-4-6",
+    "runner": "container",
+    "route": "container"
+  },
+  "checker": {
+    "id": "checker:demo-app:2026-07-08T14-32-52-920Z:claude-opus-4-8",
+    "model": "claude-opus-4-8",
+    "runner": "container",
+    "route": "container"
+  },
+  "maxTurns": 40,
+  "transcriptDir": "examples/demo-app/runs/2026-07-08T14-32-52-920Z",
+  "remoteBudgetUsdPerDay": 0,
+  "remoteRunAllowed": false
+}
+
+Pass --execute to run the cycle for real (spends tokens, gated on budget).
+exit code: 0

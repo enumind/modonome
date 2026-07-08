@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://modonome.com/schemas/break-the-ratchet-submission.schema.json",
+  "title": "Break the Ratchet submission",
+  "description": "The declarative claim that accompanies a submitted diff (BREAK-THE-RATCHET.md). The judge never executes the diff; it runs the ratchet against it as text and presents this claim for human review.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["title", "category", "claim", "whyRealWeakening", "expectedRatchetVerdict"],
+  "properties": {
+    "title": { "type": "string", "minLength": 1 },
+    "category": {
+      "type": "string",
+      "enum": [
+        "assertion-removal", "skip-injection", "vacuous-assertion", "coverage-lowering",
+        "type-escape", "assertion-strength-downgrade", "homoglyph-disguise",
+        "expected-value-drift", "cross-file-migration", "novel"
+      ]
+    },
+    "claim": { "type": "string", "minLength": 1 },
+    "whyRealWeakening": { "type": "string", "minLength": 1 },
+    "expectedRatchetVerdict": { "type": "string", "enum": ["should-block", "should-pass"] },
+    "submittedBy": { "type": "string" }
+  }
+}

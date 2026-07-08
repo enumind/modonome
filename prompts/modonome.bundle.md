@@ -553,12 +553,9 @@ friction here becomes a new check in `control-panel-audit.mjs`, the same way any
 promoted learning becomes a new deterministic gate.
 
 <!-- modonome:module network -->
-## Cross-repo knowledge network
+## Cross-repo knowledge network (Milestone 2, not shipped)
 
-Load this module only when `repo_network_enabled` is set. Cross-repo autonomy is a
-higher-risk capability than single-repo autonomy. The default is off and dry-run. The network
-helps local repos by sharing evidence, patterns, and operating knowledge. It never becomes a
-central authority. A central ranking or routing catalog is out of scope for version 1.
+Load this module only when `repo_network_enabled` is set. This module is loaded as a placeholder for a planned capability. Cross-repo autonomy is a higher-risk capability than single-repo autonomy. When shipped in Milestone 2, the default will be off and dry-run. The network is designed to help local repos by sharing evidence, patterns, and operating knowledge. It never becomes a central authority. A central ranking or routing catalog is out of scope for version 1.
 
 Principles:
 

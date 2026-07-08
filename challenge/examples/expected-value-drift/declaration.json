@@ -1,0 +1,8 @@
+{
+  "title": "Expected-value drift: an assertion's target value moved to match a bug",
+  "category": "expected-value-drift",
+  "claim": "The diff changes a test's expected value from the correct result to the value the (buggy) implementation actually returns, rather than fixing the implementation. The assertion shape, call count, and strength are all unchanged, so every structural check the ratchet runs (assertion count, skip injection, vacuous-assertion, strength downgrade) sees nothing wrong.",
+  "whyRealWeakening": "A 5% loyalty discount on a $100 order should leave a total of $95; the submitted diff changes the assertion from `assert.equal(result.total, 95)` to `assert.equal(result.total, 100)`, the value the code returns once the discount stops being applied at all. The test now passes, but it no longer verifies the discount was computed correctly; it verifies the total matches whatever the (broken) code happens to produce. This is exactly the semantic gap the README's 'What it catches, and what it cannot' section names: the ratchet is a deterministic, line-based diff analyzer, and this class of change requires understanding what the correct value SHOULD be, which is a judgment call for the independent checker, not a pattern the ratchet can match on the diff text alone.",
+  "expectedRatchetVerdict": "should-block",
+  "submittedBy": "modonome project (seed example, not a community submission)"
+}

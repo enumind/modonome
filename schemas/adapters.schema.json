@@ -20,7 +20,9 @@
           "boundary": { "type": "string", "enum": ["process", "sidecar", "ci-native"] },
           "version": { "type": "string", "minLength": 1 },
           "url": { "type": "string" },
-          "adr": { "type": "string" }
+          "adr": { "type": "string" },
+          "role": { "type": "string" },
+          "exec_mode": { "type": "string" }
         }
       }
     }

@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Modonome",
+          "informationUri": "https://modonome.com",
+          "rules": [
+            {
+              "id": "MR101",
+              "name": "assertion-removal",
+              "shortDescription": {
+                "text": "assertion-removal"
+              },
+              "helpUri": "https://modonome.com/codes/MR101"
+            },
+            {
+              "id": "MR102",
+              "name": "skip-injection",
+              "shortDescription": {
+                "text": "skip-injection"
+              },
+              "helpUri": "https://modonome.com/codes/MR102"
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "MR101",
+          "level": "error",
+          "message": {
+            "text": "tests/OrderService.test.js: removes more test assertions than it adds (+0 / -2)."
+          },
+          "partialFingerprints": {
+            "modonomeGateIntegrity/v1": "MR101:tests/OrderService.test.js"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tests/OrderService.test.js"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "MR102",
+          "level": "error",
+          "message": {
+            "text": "tests/OrderService.test.js: adds a skipped or focused test: it.skip(\"throws when order is not found\", async () => {"
+          },
+          "partialFingerprints": {
+            "modonomeGateIntegrity/v1": "MR102:tests/OrderService.test.js"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tests/OrderService.test.js"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

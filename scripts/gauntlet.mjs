@@ -504,6 +504,16 @@ function main(argv) {
   console.log("weakening of a file the repo actually has. It runs guard-ratchet against a synthetic diff; it");
   console.log("does not invoke GitHub Actions. N/A categories are languages or file types this repo does not use.");
   console.log("");
+  if (applicable > 0) {
+    // A copy-paste line for a README or a post. The badge encodes only what was
+    // measured: blocked-over-applicable for this repo, on this day.
+    const badgeColor = level === "HARDENED" ? "brightgreen" : level === "PARTIAL" ? "yellow" : "red";
+    const badgeLabel = encodeURIComponent("Gauntlet");
+    const badgeValue = encodeURIComponent(`${pass}/${applicable} attacks blocked`);
+    console.log(`Share it: Gauntlet ${pass}/${applicable} gate-weakening attacks blocked (${level}) via npx modonome gauntlet`);
+    console.log(`Badge:    ![Gauntlet](https://img.shields.io/badge/${badgeLabel}-${badgeValue}-${badgeColor})`);
+    console.log("");
+  }
 
   process.exit(0);
 }

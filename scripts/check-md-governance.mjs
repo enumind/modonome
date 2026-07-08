@@ -40,6 +40,7 @@ const ROOT_ALLOW_LIST = new Set([
   "CONTRIBUTING.md",
   "CODE_OF_CONDUCT.md",
   "SECURITY.md",
+  "SUPPORT.md",
   "GOVERNANCE.md",
   "AGENTS.md",
   "CLAUDE.md",
@@ -49,6 +50,8 @@ const ROOT_ALLOW_LIST = new Set([
   "ADOPTION-GUIDE.md",
   "ARCHITECTURE.md",
   "ROADMAP.md",
+  "OWNER-ACTIONS.md",
+  "BREAK-THE-RATCHET.md",
 ]);
 
 // Agent-critical files that a future cleanup pass must never silently relocate.

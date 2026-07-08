@@ -1,7 +1,7 @@
 ---
 status: active
 owner: "@nateshpp"
-last_reviewed: 2026-07-05
+last_reviewed: 2026-07-08
 canonical: [openssf-badge-evidence]
 ---
 
@@ -41,7 +41,7 @@ evidence exists, work remains), **Gap** (not satisfied yet, with the remediation
 
 | Criterion | Status | Evidence |
 |-----------|--------|----------|
-| DCO or CLA | Partial | sign-off note in `CONTRIBUTING.md`; enforce in a later PR |
+| DCO or CLA | Gap | no sign-off note in `CONTRIBUTING.md` and no CI enforcement yet; corrected 2026-07-08, previously listed as Partial with evidence that does not exist |
 | Governance and roles documented | Met | `GOVERNANCE.md`, `.github/CODEOWNERS` |
 | Code of conduct | Met | `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1) |
 | Statement coverage 80% or higher | Met | `npm run test:coverage`, CI floor 80% lines (current 84.56%) |
@@ -75,10 +75,15 @@ These criteria are not met today. They are recorded here rather than claimed.
    assets. Remediation toward gold: expose pure functions from the larger CLI scripts so
    their branches are measured in process, then raise the floor. Tracked. The floor is
    held below the line floor on purpose so the gap stays visible and ratcheted.
-2. **Two unassociated significant contributors and bus factor of two (gold).** The
-   project is single-maintainer today (`@nateshpp` in `.github/CODEOWNERS`). This is a
-   people criterion that code cannot satisfy. Remediation: add a second maintainer, then
-   update `GOVERNANCE.md` and `CODEOWNERS` to require two-person review on protected paths.
+2. **Two unassociated significant contributors and bus factor of two (gold).**
+   `.github/CODEOWNERS` lists two owners (`@nateshpp @techseek4vr`), but commit history to
+   date shows contributions from one (corrected 2026-07-08: previously this stated
+   single-maintainer, which undercounted the CODEOWNERS roster; the more precise gap is
+   that the criterion needs demonstrated contribution activity from both, and a listed
+   reviewer alone does not satisfy it). This is a people criterion that code cannot
+   satisfy. Remediation:
+   confirm the second CODEOWNER is actively reviewing and contributing, then update
+   `GOVERNANCE.md` and `CODEOWNERS` to require two-person review on protected paths.
 3. **Two-person review of changes (silver and gold).** Depends on item 2. The branch
    protection and CODEOWNERS structure is ready to require it once a second reviewer exists.
 4. **Cryptographic release and artifact signing (gold).** npm provenance is in place, and
@@ -86,8 +91,9 @@ These criteria are not met today. They are recorded here rather than claimed.
    Sigstore/Rekor in CI. Signing of work items, knowledge packets, and release evidence
    themselves is designed in `docs/adr/ADR-017-knowledge-network-packet-signing.md` and
    remains tracked as a dedicated PR.
-5. **DCO enforcement (silver).** A sign-off note exists in `CONTRIBUTING.md`. Enforcing it
-   in CI is tracked.
+5. **DCO enforcement (silver).** Neither a sign-off note nor CI enforcement exists today
+   (corrected 2026-07-08; a prior version of this document claimed a sign-off note that was
+   never actually present in `CONTRIBUTING.md`). Both are tracked as a gap, not a partial.
 
 ## Notes
 

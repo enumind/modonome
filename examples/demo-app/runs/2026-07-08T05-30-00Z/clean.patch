@@ -1,0 +1,49 @@
+diff --git a/tests/OrderService.test.js b/tests/OrderService.test.js
+index cfc8cbe..b6b1923 100644
+--- a/tests/OrderService.test.js
++++ b/tests/OrderService.test.js
+@@ -62,3 +62,44 @@ describe("OrderService.createOrder", () => {
+     );
+   });
+ });
++
++// Added coverage for the three previously untested refund branches.
++describe("OrderService.refund branch coverage", () => {
++  async function makeOrder(db, status) {
++    const service = new OrderService(db, fakePaymentClient);
++    const order = await db.orders.create({ userId: "u1", total: 25, paymentRef: "pay-1", status });
++    return { service, order };
++  }
++
++  it("signals alreadyRefunded instead of double-refunding", async () => {
++    const db = makeDb();
++    const { service, order } = await makeOrder(db, "refunded");
++    const result = await service.refund(order.id, "duplicate");
++    assert.equal(result.alreadyRefunded, true);
++    const stored = await db.orders.findById(order.id);
++    assert.equal(stored.status, "refunded");
++  });
++
++  it("rejects a refund when the order is not in a refundable status", async () => {
++    const db = makeDb();
++    const { service, order } = await makeOrder(db, "pending");
++    await assert.rejects(
++      () => service.refund(order.id, "too early"),
++      (err) => {
++        assert(err instanceof Error);
++        assert.match(err.message, /Cannot refund order in status/);
++        return true;
++      }
++    );
++  });
++
++  it("refunds a completed order and records the reason", async () => {
++    const db = makeDb();
++    const { service, order } = await makeOrder(db, "completed");
++    const result = await service.refund(order.id, "customer request");
++    assert.equal(result.status, "refunded");
++    const stored = await db.orders.findById(order.id);
++    assert.equal(stored.status, "refunded");
++    assert.equal(stored.refundReason, "customer request");
++  });
++});

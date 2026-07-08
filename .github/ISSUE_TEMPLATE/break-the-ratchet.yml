@@ -1,0 +1,75 @@
+name: Break the Ratchet submission
+description: Submit a diff you believe genuinely weakens a gate without the ratchet flagging it
+labels: ["break-the-ratchet", "community"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Read [BREAK-THE-RATCHET.md](../../BREAK-THE-RATCHET.md) before filing. The judge never
+        executes your diff; it runs the ratchet against it as text, and a maintainer reviews the
+        claim by hand.
+
+        Run `npx modonome break-the-ratchet path/to/your-submission/` locally first and paste its
+        output below.
+  - type: input
+    id: title
+    attributes:
+      label: One-line description
+      placeholder: "Expected-value drift in a currency-conversion assertion"
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - assertion-removal
+        - skip-injection
+        - vacuous-assertion
+        - coverage-lowering
+        - type-escape
+        - assertion-strength-downgrade
+        - homoglyph-disguise
+        - expected-value-drift
+        - cross-file-migration
+        - novel
+    validations:
+      required: true
+  - type: textarea
+    id: claim
+    attributes:
+      label: What does the diff do, mechanically?
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why is this a real weakening?
+      description: What does the test stop proving? Why would a maintainer merging this be worse off?
+    validations:
+      required: true
+  - type: textarea
+    id: patch
+    attributes:
+      label: The diff (submission.patch content)
+      description: Paste the unified diff. This is read as text only, never applied or executed.
+      render: diff
+    validations:
+      required: true
+  - type: textarea
+    id: judge-output
+    attributes:
+      label: Local judge output
+      description: Output of `npx modonome break-the-ratchet path/to/your-submission/`
+      render: text
+    validations:
+      required: true
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I ran the judge locally and it reported candidate-break or false-positive-candidate
+          required: true
+        - label: This represents a realistic attack an autonomous agent could plausibly attempt, not a contrived edge case
+          required: true
