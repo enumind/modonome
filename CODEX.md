@@ -11,3 +11,8 @@ Always open the live file before editing; the snapshot is for navigation, not a 
 for the current bytes. Plan against `merkle_root`, re-verify with
 `modonome snapshot . --verify` before you commit, and reconcile with
 `modonome snapshot . --since <ref>` if it moved.
+
+The four highest-traffic procedures (pre-push readiness, adding a gate, changing a
+config control, work-item queue discipline) are vendor-neutral runbooks under
+`docs/ops/`, indexed in AGENTS.md section 7. Follow them directly; they are the same
+procedures other agents use.

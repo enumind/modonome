@@ -43,6 +43,12 @@ governs where docs live.
   model. What host and self-governance mode each let you do, and why self-governance writes
   are reserved to code owners.
 - [ops/merge-governance-setup.md](ops/merge-governance-setup.md): merge governance setup.
+- [ops/preflight.md](ops/preflight.md): pre-push readiness runbook; gates in fast-fail
+  order and a failure-id-to-fix map.
+- [ops/add-gate.md](ops/add-gate.md): runbook for adding a deterministic check end to end.
+- [ops/add-control.md](ops/add-control.md): runbook for changing a config control across
+  its four synced representations.
+- [ops/work-item.md](ops/work-item.md): work-item queue discipline runbook.
 
 ## Architecture Decision Records
 
