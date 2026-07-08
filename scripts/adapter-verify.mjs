@@ -37,7 +37,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { validate } from "./lib/jsonschema.mjs";
 import { checkLicenses } from "./check-licenses.mjs";
-import { resolveAdapterCommand, containedCwd, buildAdapterArgs, runToolLoopAdapter } from "./agent/tool-loop-adapter.mjs";
+import { resolveAdapterCommand, buildAdapterArgs, runToolLoopAdapter } from "./agent/tool-loop-adapter.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
@@ -219,12 +219,12 @@ async function main(argv) {
     return 2;
   }
 
-  let manifest, entry, staticProblems;
+  let entry, staticProblems;
   if (selfTest) {
     entry = { name: "reference-adapter", command: "node", args: [join(root, "fixtures", "adapters", "reference-adapter.mjs"), "--prompt-stdin"], license: "MIT", boundary: "process", version: "0" };
     staticProblems = [];
   } else {
-    ({ manifest, entry, problems: staticProblems } = loadAndValidateManifest(root, name));
+    ({ entry, problems: staticProblems } = loadAndValidateManifest(root, name));
     if (!entry) {
       const msg = `Adapter '${name}' is not registered in adapters.json.`;
       if (jsonMode) { console.log(JSON.stringify({ name, result: "not-registered", problems: [msg] }, null, 2)); return 1; }
