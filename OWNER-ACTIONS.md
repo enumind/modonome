@@ -57,37 +57,47 @@ start:
 2. **Ratchet language coverage gap.** Pick a common assertion or skip idiom in a supported
    language (JS/TS, Python, Java, .NET) not yet recognized, add fixtures and a test. Template:
    the `node-assert-member-call-removal.diff` fix in `scripts/guard-ratchet.mjs`.
-3. **A second adapter registration.** Implement the contract in `docs/adapters.md` for a
-   different agentic CLI (aider, codex-cli, or similar), register it in `adapters.json`, and
-   attach a transcript demonstrating the checklist in that doc. This is also the natural trigger
-   for building the deferred `adapter-verify` command (see below).
+3. **A second adapter registration.** `npx modonome adapter-verify` shipped (ADR-046); implement
+   the contract in `docs/adapters.md` for a different agentic CLI (aider, codex-cli, or similar),
+   register it in `adapters.json`, run `npx modonome adapter-verify <name>` locally, and attach
+   its output to the PR.
 4. **Gauntlet output polish.** The share line and badge snippet
    (`scripts/gauntlet.mjs`) are new; propose refinements based on real usage (a `--quiet` flag,
    a machine-readable summary line, whatever real users ask for).
 5. **Docs nits.** `docs/README.md` still flags `docs/workflow-fixes.md` as unlinked from the
    index (advisory, `check-md-governance`); link it or fold it into a linked doc.
-6. **CheckerProof corpus entries** (once the benchmark exists, see below): seeded-defect maker
-   diffs matching the categories in the hardened `prompts/roles/checker.txt` rubric (expected-
-   value drift, cross-file assertion migration, vacuous-in-spirit assertions).
+6. **CheckerProof corpus entries.** The benchmark shipped (ADR-046, `checkerproof/README.md`);
+   add more seeded-defect maker diffs matching categories in the hardened
+   `prompts/roles/checker.txt` rubric, or propose a genuinely new category alongside a rubric
+   update.
+7. **Break the Ratchet triage.** Watch for submissions via the issue template
+   (`.github/ISSUE_TEMPLATE/break-the-ratchet.yml`) and review `candidate-break` verdicts by
+   hand; see `BREAK-THE-RATCHET.md`.
 
-## Deferred, demand-gated work (ADR-045; do not build ahead of real demand)
+## Shipped, per ADR-046 (superseding ADR-045's deferral of these three)
 
-Each of these was scoped out of this branch on purpose, with the rationale recorded in
-`docs/adr/ADR-045-scope-focus.md`. Build them when the trigger condition is real, not on a
-schedule:
+Direct owner instruction reversed the original demand-gating call. All three are real, tested,
+and (where live evidence applies) actually run, not stubbed:
 
-- **`adapter-verify` conformance command.** Trigger: a second adapter is proposed (good first
-  issue 3 above). Until then, `docs/adapters.md` is the specification a reviewer checks by hand.
-- **CheckerProof seeded-defect benchmark.** Trigger: bandwidth for a benchmark that needs
-  recurring, owner-run model calls (it cannot be a CI gate: nondeterministic, requires model
-  access). When built, it must SKIP with an explicit status in any environment without model
-  access, never report a fake zero score, and stay advisory, never a merge gate.
-- **Break-the-Ratchet public challenge harness.** Trigger: enough external interest that a
-  standing submissions queue has someone to triage it. Until then, the invitation lives in the
-  README and routes through the existing AgentProof scenario issue form, which already has a
-  human triaging it.
+- **`adapter-verify`** (`scripts/adapter-verify.mjs`, `npx modonome adapter-verify`). Static tier
+  always runs; live tier skips cleanly when a binary is absent. Ships with a working reference
+  adapter and a `--self-test` mode.
+- **CheckerProof** (`checkerproof/`, `npx modonome checkerproof`). Advisory, always exits 0,
+  skips rather than fabricates a score when no model is reachable. First evidence file is a real
+  live run against this repo's configured checker (`claude-opus-4-8`): 5/5 on 2026-07-08. Owner
+  follow-up: **re-run periodically** (`node checkerproof/runner.mjs --write-evidence`) and decide
+  what a declining catch rate should trigger; one run is a baseline, not a trend.
+- **Break the Ratchet** (`BREAK-THE-RATCHET.md`, `challenge/judge.mjs`,
+  `npx modonome break-the-ratchet`). Submissions are never executed, only text-analyzed by the
+  ratchet itself. Seeded with one real, honest hall-of-fame entry. Owner follow-up: **triage
+  incoming submissions** (good first issue 7 above); `SUPPORT.md`'s no-SLA framing applies.
+
+## Still genuinely deferred (ADR-045, unaffected by ADR-046)
+
 - **A second host-adoption example** (governing a real repo that is not modonome). Trigger: the
   armed-week gate above clears and produces evidence worth generalizing into a second example.
+- **The AST analysis tier.** Cut, not deferred: see ADR-045 point 2. Contradicts the
+  zero-dependency guarantee; the honest-limits framing makes regex-only defensible.
 
 ## Notes on what NOT to do
 

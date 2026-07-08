@@ -26,16 +26,22 @@ things this audience actually evaluates a security claim on.
 > It is also honest about its limits: [What it catches, and what it cannot](https://github.com/enumind/modonome#what-it-catches-and-what-it-cannot)
 > in the README. It catches structural gaming. It does not catch an assertion whose expected
 > value was quietly changed to match a bug. That gap is the independent checker's job, and
-> that's a much harder problem than pattern matching a diff.
+> that's a much harder problem than pattern matching a diff, which is exactly why I built
+> [CheckerProof](https://github.com/enumind/modonome/tree/main/checkerproof): a seeded-defect
+> benchmark that measures the checker's actual catch rate on planted semantic weaknesses
+> (expected-value drift, cross-file coverage migration, and so on) instead of assuming a prompt
+> that says "review adversarially" works. First real run: 5/5, committed evidence, not a claim.
 >
 > Try it read-only in 60 seconds: `npx modonome dry-run .` then `npx modonome gauntlet .`
 > (the second one scores your repo's own CI gate against 25 known gaming patterns, no arming,
 > writes nothing).
 >
-> If you can construct a diff that weakens a gate and slips past the ratchet, I want it: file
-> it as an AgentProof scenario and it's a named, credited addition to the benchmark. The
-> project's own claims audits (linked in docs/audits/) are written to be uncharitable to our
-> own marketing on purpose, that's the standard I'd want applied to a tool that gates my CI.
+> If you can construct a diff that weakens a gate and slips past the ratchet, I want it:
+> [Break the Ratchet](https://github.com/enumind/modonome/blob/main/BREAK-THE-RATCHET.md).
+> Submissions are never executed, only text-analyzed by the ratchet itself; a confirmed break is
+> a named, credited hall-of-fame entry. The project's own claims audits (linked in docs/audits/)
+> are written to be uncharitable to our own marketing on purpose, that's the standard I'd want
+> applied to a tool that gates my CI.
 
 ## Rules for all launch copy
 

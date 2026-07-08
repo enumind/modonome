@@ -2,6 +2,11 @@
 
 **Status:** Accepted
 **Date:** 2026-07-08
+**Partially superseded:** [ADR-046-ship-the-deferred-features.md](ADR-046-ship-the-deferred-features.md)
+reverses the deferral of adapter-verify, Break the Ratchet, and CheckerProof (point 5 below) on
+direct owner instruction, while holding every safety and scope constraint this ADR attached to
+them. The AST-tier cut, the false-positive-only ratchet constraint, and the advisory-only
+cross-file signal (points 2-4) are unaffected and still stand.
 
 ## Context
 
@@ -31,14 +36,13 @@ hard line between launch-blocking work and demand-driven work.
 4. **The repo-level assertion-delta signal is advisory.** It runs alongside, never instead
    of, the per-file check; summed counts are gameable by padding and false-positive on
    refactors, so the per-file check remains the enforcement path.
-5. **Deferred until demand exists (post-launch, owner decision):** a Break-the-Ratchet
-   challenge harness (the invitation lives in the README and the AgentProof scenario issue
-   form; if a harness is ever built it judges on the ratchet's static verdict and never
-   executes submitted test suites in CI); a CheckerProof seeded-defect benchmark for
-   checker efficacy (when built: CI skips with an explicit requires-model status rather
-   than reporting a fake zero, results are owner-run evidence stamped with model and date,
-   advisory, never a gate); an adapter conformance verifier (the adapter contract is
-   documented; the verifier is a community invitation); a second host-adoption example.
+5. ~~Deferred until demand exists (post-launch, owner decision)~~ **Superseded by
+   [ADR-046](ADR-046-ship-the-deferred-features.md):** direct owner instruction reversed this
+   deferral. The Break-the-Ratchet challenge harness, the CheckerProof benchmark, and the
+   adapter conformance verifier all shipped, each holding exactly the constraint this point
+   originally specified (the judge never executes a submission; CheckerProof skips rather than
+   fabricates a score and stays advisory; the adapter verifier degrades gracefully when a binary
+   is absent). Only the second host-adoption example remains deferred.
 6. **Research stays labeled research.** The cross-repo knowledge network design moved to
    `docs/research/`, joining the governance-mesh series. Standards-body language in
    AgentProof is reframed from submission-in-progress to aspiration contingent on adoption.

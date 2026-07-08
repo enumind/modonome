@@ -22,8 +22,11 @@ cross-post update should:
 
 ## 2. New: we benchmark our AI code reviewer with planted bugs
 
-Write only once CheckerProof exists and has run (see OWNER-ACTIONS.md; this is explicitly
-post-launch, not a launch-week piece). Structure to have ready:
+CheckerProof shipped and has a real first evidence run (`checkerproof/evidence/`, ADR-046):
+5/5 on 2026-07-08 against `claude-opus-4-8`. This piece can be written now rather than waiting;
+consider holding it for a second data point (re-run `node checkerproof/runner.mjs
+--write-evidence` closer to publish) so the piece can show a trend, not a single sample. Structure
+to have ready:
 
 - Thesis: everyone benchmarks the coding agent. Almost no one benchmarks the reviewer that is
   supposed to catch what the coding agent gets wrong. The reviewer's catch rate is the actual
