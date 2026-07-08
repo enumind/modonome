@@ -54,6 +54,8 @@ Usage:
   npx modonome gauntlet [dir]             replay gate-weakening attacks against this repo's own files. Read-only.
   npx modonome mcp                       run the read-only governance MCP server (stdio) for any MCP harness.
   npx modonome connect [dir]             register the MCP server with your agent (.mcp.json). Add --write to apply.
+  npx modonome adapter-verify <name>     check a registered external agentic CLI against the docs/adapters.md contract.
+  npx modonome adapter-verify --self-test  run the same checks against the bundled reference adapter.
   npx modonome help                      show this message.
 
 Modonome stays off until an owner arms it through the environment or CI.`;
@@ -186,6 +188,9 @@ function main(argv) {
       break;
     case "connect":
       run("connect.mjs", rest);
+      break;
+    case "adapter-verify":
+      run("adapter-verify.mjs", rest);
       break;
     case "migrate": {
       const renameLessonsIdx = rest.indexOf("--rename-lessons");

@@ -15,10 +15,29 @@ wall-clock timeout, and transcript capture around it. The tool is a component; t
 stays here (ADR-032: "adapt, don't absorb", zero runtime dependencies preserved).
 
 **Status:** the contract below is real and exercised by `opencode` (the only registered adapter
-today, `adapters.json`). There is no automated conformance verifier yet, this doc is the
-specification a contributor implements and a reviewer checks by hand. An `adapter-verify`
-command that automates these checks is a natural, well-scoped follow-up once a second adapter is
-proposed (see `OWNER-ACTIONS.md` for the current contribution on-ramp list).
+today, `adapters.json`). `npx modonome adapter-verify <name>` automates the checklist:
+
+```bash
+npx modonome adapter-verify opencode      # checks the registered opencode entry
+npx modonome adapter-verify --self-test   # runs the same checks against the bundled
+                                            # reference adapter; always runnable, proves
+                                            # the verifier's own logic without needing
+                                            # any external binary installed
+```
+
+It runs in two tiers, and the second degrades gracefully rather than failing hard:
+
+1. **Static** (always runs): the `adapters.json` entry matches `schemas/adapters.schema.json`,
+   and `scripts/check-licenses.mjs`'s license/boundary gate accepts it.
+2. **Live** (runs only when the named command is found on `PATH`): spawns the real binary
+   through the actual `runToolLoopAdapter` code path (not a reimplementation of it) against a
+   scratch, git-free target directory and a local mock OpenAI-compatible endpoint, no real
+   network or cost, and confirms the adapter both consumed the stdin-delivered prompt and wrote
+   its output inside the pinned target, not elsewhere.
+
+When the command is not on `PATH`, tier 2 is reported `SKIPPED`, never a silent pass and never a
+hard failure. `fixtures/adapters/reference-adapter.mjs` is a minimal, real, working example that
+satisfies the contract end to end. Read it alongside the checklist below.
 
 ## Declaring an adapter
 
@@ -70,28 +89,28 @@ The CLI is invoked as a child process (`runToolLoopAdapter` in `tool-loop-adapte
    `writeTranscriptAndMetric` path as the single-shot maker/checker route, so the cycle continues
    rather than crashing.
 
-## What a reviewer checks by hand today
+## What `adapter-verify` checks, and what a reviewer still checks by hand
 
-Until an automated `adapter-verify` exists, a PR adding a new adapter should demonstrate, with a
-committed transcript or a recorded local run:
+`adapter-verify`'s live tier proves the two properties that are genuinely specific to the
+adapter binary: it reads and acts on the stdin-delivered prompt, and it writes only inside its
+pinned working directory. It deliberately does not re-prove the timeout and non-zero-exit
+guarantees per adapter, because those are Modonome's own code (`runToolLoopAdapter`), enforced
+identically regardless of which adapter is registered, and already covered once for all adapters
+by `tests/tool-loop-adapter.test.mjs`. A reviewer adding a new adapter should still:
 
-- The adapter accepts a prompt on stdin and does not require it on argv.
-- The adapter reads `OPENAI_BASE_URL`/`OPENAI_MODEL`/`OPENAI_API_KEY` from its environment and
-  does not require credentials elsewhere.
-- A deliberately out-of-bounds target (a path escaping the repo root) is refused by Modonome
-  before the adapter starts, not something the adapter itself needs to guard.
-- A deliberately slow or hung invocation is killed by Modonome's timeout, independent of the
-  adapter's own turn accounting.
-- A non-zero exit from the adapter surfaces as a `status !== 0` result Modonome logs and moves on
-  from, not an unhandled crash.
+- Run `npx modonome adapter-verify <name>` and attach its output to the PR.
+- Confirm the adapter's flag surface matches its `adapters.json` entry (`args`, if the CLI's
+  flags differ from the opencode/aider convention `buildAdapterArgs` assumes by default).
+- Skim the transcript from a real invocation for anything surprising: unexpected network calls,
+  writes outside the target the automated check might not have exercised, or credential-shaped
+  strings in argv or logs.
 
 ## Adding your own
 
 1. Confirm the license and boundary fit ADR-032. Add the `adapters.json` entry; `check-licenses.mjs`
    validates it in CI.
 2. If the CLI's flags differ from the opencode/aider convention, set `args` on the adapter entry.
-3. Run it through the checklist above locally, ideally against `fixtures/` or a scratch repo, and
-   attach the transcript to the PR.
+3. Run `npx modonome adapter-verify <name>` locally and attach its output to the PR.
 4. Add or update a role's `models`/`runner` in `.modonome/config.yaml` to route through the new
    adapter's `exec_mode: tool-loop` path. See [agents.md](agents.md) for the role configuration
    reference.

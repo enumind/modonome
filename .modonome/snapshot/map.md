@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:1459a6af900942b3dd6133fe22f9f1c0f66f0cf4e8b8ecc756255a4c37c7b482
-Files: 997  Bytes: 3662960  Map tokens: 132128/120000
+Merkle root: sha256:1ab52a0a6b1936b5d6ee57452af86c1896b360da2a2b80e090fb930b4cce0cb2
+Files: 1000  Bytes: 3688553  Map tokens: 133207/120000
 
 ## Modules
 
@@ -255,6 +255,7 @@ Files: 997  Bytes: 3662960  Map tokens: 132128/120000
 - examples/python-service/README.md [F:ae227d695d]: Example: Python service
 - examples/python-service/app/orders.py [F:7ccad64380]: Apply a percentage discount to a list of items. Args: items: List of dicts with "price" key discount_percent: Discount percentage (0-100) Returns: Total after d
 - examples/python-service/tests/test_orders.py [F:2c2cc77861]: Test discount with 0% - should return full amount. Note: This covers only the zero-discount case. The function should be tested with non-zero discounts (10%, 50
+- fixtures/adapters/reference-adapter.mjs [F:c72e6949b9]: !/usr/bin/env node
 - fixtures/evidence-tampered.md [F:fdaf1308e4]: RELEASE-EVIDENCE
 - fixtures/negative-controls/app-syntax-error.js [F:a1411f1423]: Negative control: intentional syntax error in example app
 - fixtures/portability/prompt-injection-host/docs/guide.md [F:6fdd929a92]: Host Documentation
@@ -269,6 +270,7 @@ Files: 997  Bytes: 3662960  Map tokens: 132128/120000
 - prompts/modules/roles.md [F:8f62475ebe]: Agent roles
 - prompts/modules/snapshot.md [F:c324fab0cc]: Repo snapshot
 - prompts/modules/state-machine.md [F:9a28b4e90e]: Durable state machine
+- scripts/adapter-verify.mjs [F:f5d313e9f1]: Load and schema-validate adapters.json, then run the license/boundary gate * against it. Pure aside from the two reads. Returns { manifest, entry, problems } * 
 - scripts/agent/action-queue.mjs [F:5b113a0914]: Validate a record against the action-queue schema. Throws with the collected errors so a malformed action can never be enqueued.
 - scripts/agent/apply-patch.mjs [F:872221b1da]: A body looks like a unified diff when it has a "diff --git" header, or a paired "--- "/"+++ " file header, or an "@@ " hunk marker.
 - scripts/agent/openai-client.mjs [F:8d2cb93236]: Join a base URL with the chat-completions path, tolerating a trailing slash * or a base URL that already ends in "/chat/completions". * * @param {string} baseUr
@@ -445,6 +447,7 @@ Files: 997  Bytes: 3662960  Map tokens: 132128/120000
 - templates/.modonome/control-panel.md [F:75c1125713]: Modonome control panel
 - terraform/README.md [F:2148814594]: Modonome org-provisioning module
 - tests/action-queue.test.mjs [F:195e9217ca]: function tmpQueue
+- tests/adapter-verify.test.mjs [F:cacaab56e1]: Coverage for the adapter conformance verifier (docs/adapters.md). Tier 1
 - tests/agent-model-fallback.test.mjs [F:18f569225a]: WI-041 (ADR-039 follow-up): runtime model fallback in the loop. resolveRoleModelChain
 - tests/agentproof-attestation.test.mjs [F:1bc6d1449f]: Tests for the AgentProof conformance attestation (ADR-042). The Statement shape and
 - tests/arm-disarm.test.mjs [F:940d5f4399]: Tests for `modonome arm` and `modonome disarm`: the guided ceremony that flips
@@ -1728,6 +1731,11 @@ Files: 997  Bytes: 3662960  Map tokens: 132128/120000
 - S:644e7adeef const tokens `export const tokens =` L56
 ### scripts/lib/message-catalog/advisory/detect-near-miss.mjs [F:c6bd51a324]
 - S:f80ff247d7 const MESSAGES `export const MESSAGES =` L1
+### fixtures/adapters/reference-adapter.mjs [F:c72e6949b9]
+- S:d029f96a64 function flagValue `function flagValue(argv, name)` L27
+- S:44a852f5e1 function readStdin `function readStdin()` L32
+- S:276edd396a function postJson `function postJson(url, body, apiKey)` L45
+- S:301d436113 function main `async function main(argv)` L80
 ### scripts/audit-learnings.mjs [F:c9493b5275]
 - S:9299cd9a70 function matches `function matches(l)` L31
 ### tests/terraform-module-shape.test.mjs [F:ca05b6ba1c]
@@ -1738,6 +1746,8 @@ Files: 997  Bytes: 3662960  Map tokens: 132128/120000
 - S:ee9b2c90d1 function walk `function walk(dir, out = [])` L53
 ### .design-sync/previews/Sparkline.tsx [F:ca13fe2a5b]
 - S:aa4de9995b function Trends `export const Trends = () => (` L4
+### tests/adapter-verify.test.mjs [F:cacaab56e1]
+- S:66ac4b8d64 function makeFakeSpawn `function makeFakeSpawn(script = {})` L83
 ### scripts/lib/work-item-validate.mjs [F:cb3c5f7715]
 - S:039c3576c4 function modelFamily `export function modelFamily(model)` L23 : Resolve a model name to its family by longest-matching prefix. Returns null when no prefix matches, so unrecognized models are treated as distinct families (they fall through the family check and are 
 - S:b128b3a196 function governanceErrors `export function governanceErrors(item, config = {})` L36 : Governance rules that JSON Schema cannot express (cross-field invariants).
@@ -1969,6 +1979,13 @@ Files: 997  Bytes: 3662960  Map tokens: 132128/120000
 - S:075e86ea7c function topoSort `export function topoSort(adjacency, nodes)` L48 : topoSort(adjacency, nodes) -> { order: [...], error?: string } Returns a topological ordering of `nodes` given the directed edges in `adjacency`. Nodes not present in `nodes` but reachable via edges a
 - S:cb1a5f81e0 function reachableFrom `export function reachableFrom(adjacency, start)` L78 : reachableFrom(adjacency, start) -> Set of nodes reachable from `start` by following directed edges (breadth-first). `start` itself is not included unless the graph has a path back to it. Used by the d
 - S:9ec4198171 function collectNodes `function collectNodes(adjacency)` L93 : Collect every node mentioned either as a key or as a neighbour value.
+### scripts/adapter-verify.mjs [F:f5d313e9f1]
+- S:c063b246d1 function loadAndValidateManifest `export function loadAndValidateManifest(rootDir, name)` L53 : Load and schema-validate adapters.json, then run the license/boundary gate * against it. Pure aside from the two reads. Returns { manifest, entry, problems } * where entry is undefined if `name` is no
+- S:45bcd8bd18 function checkArgvSanity `export function checkArgvSanity(entry)` L77 : Confirm the pure argv-construction helpers resolve without throwing and * produce a shape that never carries a prompt or a credential-like value. * Pure. Returns a list of problem strings (empty means
+- S:753ca853b2 function commandOnPath `function commandOnPath(command)` L99
+- S:59cd81d0e0 function startProbeServer `function startProbeServer(replyContent)` L121 : Minimal local OpenAI-compatible chat-completions mock. No real network, no cost, no external dependency. Scripted to echo back a fixed marker so a conforming adapter that forwards the model's reply in
+- S:781c2d6b40 function runLiveProbe `export async function runLiveProbe(entry, opts = {})` L151 : Run the live conformance probe for one adapter entry. Returns * { status: "pass"|"fail"|"skipped", detail }. Never throws: every failure * mode (binary absent, timeout, non-zero exit, containment viol
+- S:c63f60f015 function main `async function main(argv)` L209
 ### .design-sync/previews/Button.tsx [F:f6e100ab45]
 - S:f988f356bd function Variants `export const Variants = () => (` L4
 - S:edacefac29 function Sizes `export const Sizes = () => (` L19
@@ -1981,10 +1998,10 @@ Files: 997  Bytes: 3662960  Map tokens: 132128/120000
 - S:a3bf9f1833 interface QueueBoardProps `export interface QueueBoardProps` L4
 - S:16975f80af function QueueBoard `export function QueueBoard({ items, onSelect }: QueueBoardProps)` L18 : The work queue as a board. Items are grouped into the columns of the durable state * machine (queued, claimed, making, checking, merge ready, done, escalated), with * rework folded into making and mer
 ### bin/modonome.mjs [F:f90930c3c3]
-- S:5835c8b608 function resolveArming `export function resolveArming(targetDir, env = process.env)` L65 : The authoritative arming gate. A config file the agent can write can never arm the engine on its own: arming requires the MODONOME_ARMED=true environment variable, which lives in CI or operator scope,
-- S:53b9eda0f8 function run `function run(script, args)` L86
-- S:214691c25d function targetDirFrom `function targetDirFrom(rest)` L96
-- S:9249714b12 function main `function main(argv)` L100
+- S:5835c8b608 function resolveArming `export function resolveArming(targetDir, env = process.env)` L67 : The authoritative arming gate. A config file the agent can write can never arm the engine on its own: arming requires the MODONOME_ARMED=true environment variable, which lives in CI or operator scope,
+- S:53b9eda0f8 function run `function run(script, args)` L88
+- S:214691c25d function targetDirFrom `function targetDirFrom(rest)` L98
+- S:9249714b12 function main `function main(argv)` L102
 ### tests/decisions-authority.test.mjs [F:f921eecad7]
 - S:b1b5323930 function runGate `function runGate(dir, args = [])` L77
 - S:0b25fbc8fe function plainDecisionsDir `function plainDecisionsDir(content)` L81
@@ -2636,6 +2653,9 @@ Files: 997  Bytes: 3662960  Map tokens: 132128/120000
 - scripts/validate-work-item.mjs -> scripts/lib/work-item-validate.mjs
 - design-system/src/components/Toggle/index.ts -> design-system/src/components/Toggle/Toggle.tsx
 - design-system/src/components/CostPanel/index.ts -> design-system/src/components/CostPanel/CostPanel.tsx
+- scripts/adapter-verify.mjs -> scripts/lib/jsonschema.mjs
+- scripts/adapter-verify.mjs -> scripts/agent/tool-loop-adapter.mjs
+- scripts/adapter-verify.mjs -> scripts/check-licenses.mjs
 - design-system/src/components/Slider/index.ts -> design-system/src/components/Slider/Slider.tsx
 - examples/demo-app/tests/InventoryService.test.js -> examples/demo-app/src/InventoryService.js
 - design-system/src/components/QueueBoard/QueueBoard.tsx -> design-system/src/components/WorkItemCard/WorkItemCard.tsx
@@ -2654,54 +2674,54 @@ Files: 997  Bytes: 3662960  Map tokens: 132128/120000
 
 ## Attention (centrality + pagerank)
 
-1. scripts/lib/messages.mjs centrality=63 pagerank=0.039468
-2. scripts/lib/message-catalog/index.mjs centrality=58 pagerank=0.011906
-3. design-system/src/lib/cx.ts centrality=32 pagerank=0.027508
-4. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.017833
-5. design-system/src/index.ts centrality=48 pagerank=0.000723
-6. scripts/lib/yaml-lite.mjs centrality=21 pagerank=0.01722
-7. scripts/lib/jsonschema.mjs centrality=13 pagerank=0.018762
-8. scripts/agent/run-cycle.mjs centrality=25 pagerank=0.005303
-9. apps/control-panel/src/state/types.ts centrality=13 pagerank=0.006995
-10. scripts/validate-config.mjs centrality=15 pagerank=0.004777
-11. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.006069
-12. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.004326
-13. scripts/lib/learnings.mjs centrality=11 pagerank=0.004757
-14. scripts/lib/canonical-json.mjs centrality=10 pagerank=0.00367
-15. scripts/agent/resolve-role.mjs centrality=10 pagerank=0.003326
-16. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.00121
-17. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.003489
-18. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.003972
-19. scripts/validate-work-item.mjs centrality=9 pagerank=0.00269
-20. scripts/lib/config-validate.mjs centrality=7 pagerank=0.003497
-21. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.004048
-22. scripts/validate-knowledge-packet.mjs centrality=8 pagerank=0.002549
-23. apps/control-panel/src/App.tsx centrality=10 pagerank=0.001031
-24. scripts/agent/render-prompt.mjs centrality=7 pagerank=0.002841
-25. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002113
-26. apps/control-panel/server/modonomeWriter.mjs centrality=8 pagerank=0.00184
-27. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.002529
-28. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.00121
-29. scripts/lib/graph.mjs centrality=5 pagerank=0.002973
-30. scripts/lib/branch-name.mjs centrality=4 pagerank=0.003465
-31. scripts/agent/providers.mjs centrality=3 pagerank=0.00408
-32. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.003928
-33. scripts/snapshot.mjs centrality=8 pagerank=0.000723
-34. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001349
-35. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.001832
-36. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.00307
-37. apps/control-panel/src/lib/messages.ts centrality=6 pagerank=0.001735
-38. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002113
-39. design-system/src/lib/format.ts centrality=5 pagerank=0.002112
-40. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.003231
-41. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001349
-42. scripts/lib/work-item-validate.mjs centrality=4 pagerank=0.00218
-43. apps/control-panel/src/screens/SettingsScreen.tsx centrality=6 pagerank=0.000821
-44. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.000821
-45. examples/demo-app/src/index.js centrality=6 pagerank=0.000723
-46. scripts/build-policy-attestation.mjs centrality=6 pagerank=0.000723
-47. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001349
-48. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001349
-49. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.001349
-50. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.001349
+1. scripts/lib/messages.mjs centrality=63 pagerank=0.039677
+2. scripts/lib/message-catalog/index.mjs centrality=58 pagerank=0.011963
+3. design-system/src/lib/cx.ts centrality=32 pagerank=0.027412
+4. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.017771
+5. design-system/src/index.ts centrality=48 pagerank=0.000721
+6. scripts/lib/yaml-lite.mjs centrality=21 pagerank=0.017258
+7. scripts/lib/jsonschema.mjs centrality=14 pagerank=0.018999
+8. scripts/agent/run-cycle.mjs centrality=25 pagerank=0.005285
+9. apps/control-panel/src/state/types.ts centrality=13 pagerank=0.00697
+10. scripts/validate-config.mjs centrality=15 pagerank=0.00476
+11. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.006048
+12. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.004311
+13. scripts/lib/learnings.mjs centrality=11 pagerank=0.00474
+14. scripts/lib/canonical-json.mjs centrality=10 pagerank=0.003657
+15. scripts/agent/resolve-role.mjs centrality=10 pagerank=0.003315
+16. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001206
+17. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.003477
+18. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.003958
+19. scripts/validate-work-item.mjs centrality=9 pagerank=0.002681
+20. scripts/lib/config-validate.mjs centrality=7 pagerank=0.003484
+21. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.004034
+22. scripts/validate-knowledge-packet.mjs centrality=8 pagerank=0.00254
+23. apps/control-panel/src/App.tsx centrality=10 pagerank=0.001027
+24. scripts/agent/render-prompt.mjs centrality=7 pagerank=0.002831
+25. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002106
+26. apps/control-panel/server/modonomeWriter.mjs centrality=8 pagerank=0.001834
+27. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.00252
+28. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001206
+29. scripts/lib/graph.mjs centrality=5 pagerank=0.002963
+30. scripts/lib/branch-name.mjs centrality=4 pagerank=0.003453
+31. scripts/agent/providers.mjs centrality=3 pagerank=0.004066
+32. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.003914
+33. scripts/snapshot.mjs centrality=8 pagerank=0.000721
+34. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001344
+35. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.001826
+36. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.003059
+37. apps/control-panel/src/lib/messages.ts centrality=6 pagerank=0.001729
+38. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002106
+39. design-system/src/lib/format.ts centrality=5 pagerank=0.002105
+40. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001344
+41. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.00322
+42. scripts/lib/work-item-validate.mjs centrality=4 pagerank=0.002172
+43. apps/control-panel/src/screens/SettingsScreen.tsx centrality=6 pagerank=0.000818
+44. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.000818
+45. examples/demo-app/src/index.js centrality=6 pagerank=0.000721
+46. scripts/build-policy-attestation.mjs centrality=6 pagerank=0.000721
+47. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001344
+48. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001344
+49. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.001344
+50. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.001344
 
