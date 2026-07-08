@@ -33,9 +33,13 @@ Every gate will be verified before any merge is attempted.
 
 ## What happened when it ran
 
-See [WALKTHROUGH.md](./WALKTHROUGH.md) for the full play-by-play: what merged,
-what the ratchet blocked, and what the governance report showed at the end of
-the first week.
+See [WALKTHROUGH.md](./WALKTHROUGH.md) for the play-by-play: what the dry-run
+proposed, and one recorded maker/checker cycle (a Haiku maker proposed
+refund-flow tests; a distinct Sonnet checker reviewed them and raised one real
+question). The cycle is committed as evidence in
+[`runs/2026-06-26T11-46-00Z/`](./runs/2026-06-26T11-46-00Z/), not applied to
+the sample, so the planted debt below stays in place for the corpus and the CI
+negative control.
 
 ## Try it yourself
 
@@ -53,15 +57,19 @@ npx modonome dry-run .
 # 4. See the governance report
 npx modonome report .
 
-# 5. Run AgentProof (25/25 HARDENED required to merge anything)
+# 5. Run AgentProof (the self-graded gate-integrity benchmark; CI requires it green)
 npx modonome agentproof
 ```
 
 ## The tech debt intentionally left in this repo
+
+The dry-run proposes the first three items below as bounded work. The fourth
+(the missing coverage threshold) is left planted deliberately: it is what the
+gate-integrity corpus and the CI negative control detect.
 
 | File | Issue | Modonome proposal |
 |---|---|---|
 | `src/OrderService.js` | Refund flow has 0 tests, 14 recent changes | Add 4 assertions |
 | `src/CheckoutService.js` | `ENABLE_LEGACY_CHECKOUT` flag dead for 62 days | Remove ~180 lines |
 | `src/PaymentProcessor.js` | 7 implicit-any, strict mode off | Enable strict mode, fix types |
-| `package.json` | No coverage threshold | Add 80% threshold |
+| `package.json` | No coverage threshold | Left planted for the ratchet corpus |
