@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 // Anti-gaming ratchet. Rejects diffs that make gates pass by weakening the gates.
 // Runs in CI, outside the agent loop. High-signal checks only: inline // and #
-// comments are stripped before pattern matching, but block comments and string
-// literals are NOT excluded (stripping them would be brittle).
+// comments are stripped before pattern matching. For the type-escape check,
+// string literals and block comments that provably open and close on the same
+// line are also stripped (false-positive-only, ADR-045); multi-line spans are
+// left alone because a line-based scanner cannot see their state.
 // Supports: JavaScript/TypeScript, Python, Java (JUnit/Mockito/JaCoCo),
 //           C# .NET (MSTest/NUnit/xUnit/FluentAssertions/Coverlet).
 //
@@ -106,6 +108,12 @@ function getDiff() {
 const ASSERT = new RegExp([
   // JS / TS / Python
   String.raw`\b(expect|assert|assertEqual|assertTrue|assertFalse|should)\b\s*\(`,
+  // Node built-in assert module, member-call style: assert.equal, assert.strictEqual,
+  // assert.deepEqual, assert.match, assert.rejects, assert.throws, assert.ok, and so
+  // on. The bare-call pattern above (`\bassert\b\s*\(`) does not match this: after
+  // "assert" comes "." not "(". This is the dominant assertion style in this
+  // project's own test suite (node:assert/strict), so its absence was a real gap.
+  String.raw`\bassert\s*\.\s*\w+\s*\(`,
   // Java: JUnit 4/5, AssertJ, Hamcrest, Mockito
   String.raw`\b(assertEquals|assertNotEquals|assertNotNull|assertNull|assertSame|assertThat|assertThrows|assertDoesNotThrow|assertAll|assertArrayEquals|fail)\s*\(`,
   String.raw`\bverify\s*\(`,
@@ -172,6 +180,8 @@ const VACUOUS_EQUALITY = [
 const STRONG_ASSERT = new RegExp([
   // JS / TS (Jest, Vitest, Jasmine)
   String.raw`\.\s*(?:toBe|toEqual|toStrictEqual|toMatchObject|toContain|toHaveBeenCalledWith|toThrow|toBeCloseTo)\s*\(`,
+  // Node built-in assert module, value-comparing member calls (see ASSERT above).
+  String.raw`\bassert\s*\.\s*(?:equal|strictEqual|deepEqual|deepStrictEqual|match|throws|rejects)\s*\(`,
   // JUnit / AssertJ (value comparison)
   String.raw`\b(?:assertEquals|assertArrayEquals|assertSame|assertThat)\s*\(`,
   String.raw`\.\s*isEqualTo\s*\(`,
@@ -183,6 +193,9 @@ const STRONG_ASSERT = new RegExp([
 // Vacuous-existence matchers: pass for nearly any value, prove no concrete result.
 const WEAK_EXISTENCE = new RegExp([
   String.raw`\.\s*(?:toBeDefined|toBeUndefined|toBeNull|toBeTruthy|toBeFalsy|toBeNaN)\s*\(\s*\)`,
+  // Node built-in assert module, existence-only member calls (see ASSERT above):
+  // ok/ifError prove truthiness or absence-of-error, not a concrete expected value.
+  String.raw`\bassert\s*\.\s*(?:ok|ifError)\s*\(`,
   String.raw`\b(?:assertNotNull|assertNull)\s*\(`,
   String.raw`\bAssert\s*\.\s*(?:IsNotNull|IsNull|NotNull|Null)\s*\(`,
 ].join("|"), "g");
@@ -206,8 +219,10 @@ const PY_VACUOUS_ASSERT = [
 
 // Type escape injection: language-specific, non-test files only.
 // TS / JS: broad any.
-// NOTE: inline // and # comments are stripped before matching, but block comments
-// and string literals are NOT stripped, so matches inside them are possible.
+// NOTE: inline // and # comments are stripped before matching, and same-line
+// string literals / block comments are stripped for this check (ADR-045).
+// Matches inside multi-line strings or block comments remain possible: the
+// line-local stripper deliberately bails on anything it cannot prove closed.
 const TS_ANY_ESCAPE   = /(:\s*any\b|\bas\s+any\b)/;
 // Java: suppress unchecked cast warnings (equivalent of `as any`)
 const JAVA_UNCHECKED  = /@SuppressWarnings\s*\(\s*"unchecked"/;
@@ -244,6 +259,16 @@ const COVERAGE_THRESHOLD = new RegExp([
 
 const diff = getDiff();
 const problems = [];
+
+// Advisory-only repo-level assertion tally (ADR-045). This is deliberately NOT a
+// check: the per-file assertion-removal check above already flags any single test
+// file whose removed-assertion count exceeds its added count, and a repo-level sum
+// of non-negative per-file deltas can never itself go negative without at least one
+// per-file delta already being negative and already reported. Summing therefore adds
+// no new detection power; it exists purely to give a human reviewer one line of
+// cross-file context (how many test files this diff touches, and the aggregate
+// shape) alongside the per-file findings above. It never affects the exit code.
+let assertionTally = { filesWithTests: 0, added: 0, removed: 0 };
 
 const files = {};
 let current = null;
@@ -306,6 +331,53 @@ const NON_ASCII = /[^\x00-\x7F]/;
 function stripInlineComment(line) {
   // Remove // comments (JS/TS/Java/C#) and # comments (Python).
   return line.replace(/\/\/.*$/, "").replace(/#.*$/, "");
+}
+
+// Strip string literals and block comments that provably open AND close on the
+// same diff line, replacing their contents with nothing. Anything uncertain
+// (a quote or /* that does not close on this line, or a possible regex literal
+// ahead of a quote) returns the line unchanged, so the caller falls back to
+// today's behavior. This is a false-positive-only relaxation for checks where a
+// match means REJECT: it can only let provably-benign lines through, never hide
+// a token the raw line would not also have hidden (ADR-045).
+function stripLineLocalNoise(line) {
+  let out = "";
+  let i = 0;
+  const n = line.length;
+  while (i < n) {
+    const ch = line[i];
+    if (ch === '"' || ch === "'" || ch === "`") {
+      let j = i + 1;
+      let closed = false;
+      while (j < n) {
+        if (line[j] === "\\") { j += 2; continue; }
+        if (line[j] === ch) { closed = true; break; }
+        j++;
+      }
+      if (!closed) return line; // string continues past this line: uncertain
+      out += ch + ch; // keep the empty quotes so the line stays structurally intact
+      i = j + 1;
+      continue;
+    }
+    if (ch === "/" && line[i + 1] === "*") {
+      const close = line.indexOf("*/", i + 2);
+      if (close === -1) return line; // block comment continues past this line: uncertain
+      i = close + 2;
+      continue;
+    }
+    if (ch === "/") {
+      // A bare slash ahead of a quote could be a regex literal containing that
+      // quote, which would fool this scanner into eating real code as if it were
+      // string content. Adversarially constructible, so bail to the raw line.
+      if (/["'`]/.test(line.slice(i + 1))) return line;
+      out += ch;
+      i++;
+      continue;
+    }
+    out += ch;
+    i++;
+  }
+  return out;
 }
 
 function isVacuousAssertion(line) {
@@ -374,6 +446,9 @@ for (const [file, { added, removed }] of Object.entries(files)) {
       addedAsserts   += countBareAsserts(added);
       removedAsserts += countBareAsserts(removed);
     }
+    assertionTally.filesWithTests += 1;
+    assertionTally.added += addedAsserts;
+    assertionTally.removed += removedAsserts;
     if (removedAsserts > addedAsserts) {
       problems.push(
         formatMessage(
@@ -436,9 +511,13 @@ for (const [file, { added, removed }] of Object.entries(files)) {
   }
 
   // 3a. TS/JS broad type escape injection in non-test source files.
+  // Same-line string literals and block comments are stripped first (ADR-045):
+  // a ": any" inside `"cast as any is banned"` or `/* not: any */` is prose, not
+  // a type escape. The stripper bails to the raw line on anything uncertain, so
+  // this is a false-positive-only relaxation.
   if (isTsSrc) {
     for (const l of added) {
-      const clean = stripInlineComment(l);
+      const clean = stripInlineComment(stripLineLocalNoise(l));
       if (TS_ANY_ESCAPE.test(clean)) {
         problems.push(formatMessage("gate.ratchet.type-escape-ts", { file, line: l.trim() }, overrides).message);
       }
@@ -663,10 +742,24 @@ if (FORMAT !== "human") {
   process.exit(problems.length > 0 ? 1 : 0);
 }
 
+// Advisory-only, informational, never affects the exit code (see the comment where
+// assertionTally is declared above). Printed in both outcomes so a reviewer sees the
+// cross-file shape whether or not a specific file was rejected.
+function printAssertionTallyAdvisory() {
+  if (assertionTally.filesWithTests === 0) return;
+  console.log(
+    `Advisory (not a gate): ${assertionTally.filesWithTests} test file(s) touched, ` +
+    `+${assertionTally.added} / -${assertionTally.removed} assertions net across this diff. ` +
+    `Per-file findings above are the enforcement; this line is context only.`
+  );
+}
+
 if (problems.length > 0) {
   console.error(formatMessage("gate.ratchet.fail-header", {}, overrides).message);
   for (const p of problems) console.error("  - " + p);
   console.error(formatMessage("gate.ratchet.fail-footer", {}, overrides).message);
+  printAssertionTallyAdvisory();
   process.exit(1);
 }
 console.log("Anti-gaming ratchet: no weakened tests, skips, type escapes, or loosened gates.");
+printAssertionTallyAdvisory();

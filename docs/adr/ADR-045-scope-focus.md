@@ -43,6 +43,20 @@ hard line between launch-blocking work and demand-driven work.
    `docs/research/`, joining the governance-mesh series. Standards-body language in
    AgentProof is reframed from submission-in-progress to aspiration contingent on adoption.
 
+## Implementation note (added after execution)
+
+Building the constrained fixtures for point 3 surfaced a real, unrelated false
+negative: the assertion patterns recognized only bare `assert(...)` and Jest-style
+`expect(...)` calls, not Node's built-in `assert` module's member-call style
+(`assert.equal`, `assert.match`, `assert.rejects`, and so on), which is the dominant
+style in this project's own test suite. This is a strict, no-new-false-positive
+coverage extension of the same kind already accepted for C#'s `Assert.Method(...)`
+pattern, so it was folded into this same change rather than deferred: it makes the
+per-file removal check (and the assertion-strength-downgrade check) correctly see a
+style the ratchet was already supposed to cover. The demo app's committed evidence
+run reflects the corrected count (two removed assertions, not one, once
+`assert.match` is recognized alongside the bare `assert(...)` call).
+
 ## Consequences
 
 - The zero-dependency claim stays true and checkable, and the honest-limits framing stays
