@@ -143,6 +143,7 @@ export function SettingsScreen({ state, write }: { state: PanelState; write: Wri
   const [newSkill, setNewSkill] = useState("");
   const [newTool, setNewTool] = useState("");
   const [priorityModelToAdd, setPriorityModelToAdd] = useState("");
+  const [newAfter, setNewAfter] = useState("");
 
   const [modelDraft, setModelDraft] = useState<ModelDraft>(EMPTY_MODEL_DRAFT);
   const [editingModelId, setEditingModelId] = useState<string | null>(null);
@@ -192,6 +193,71 @@ export function SettingsScreen({ state, write }: { state: PanelState; write: Wri
       field,
       current.filter((x) => x !== value),
     );
+  }
+
+  // Schedule and trigger editing (WI-046). A role's schedule.cron and trigger
+  // (a string shorthand or an object) are set here so an operator picks when and how
+  // each agent fires from the same tab, without hand-editing config.yaml.
+  type TriggerObject = Exclude<ModonomeConfig["roles"][string]["trigger"], string | undefined>;
+  type TriggerType = NonNullable<TriggerObject["type"]>;
+  const TRIGGER_TYPES: TriggerType[] = ["schedule", "manual", "webhook", "on-merge", "after-role"];
+
+  function triggerAsObject(t: ModonomeConfig["roles"][string]["trigger"]): TriggerObject {
+    if (!t) return {};
+    if (typeof t === "string") return { type: t as TriggerType };
+    return t;
+  }
+
+  function setRoleScheduleCron(role: string, cron: string) {
+    setConfig((c) => {
+      const trimmed = cron.trim();
+      const next = { ...c.roles[role] };
+      // An emptied field clears the schedule, so it is never saved as an invalid
+      // empty-string cron (the schema requires minLength 1).
+      if (trimmed) next.schedule = { ...next.schedule, cron: trimmed };
+      else delete next.schedule;
+      return { ...c, roles: { ...c.roles, [role]: next } };
+    });
+  }
+
+  function setRoleTriggerType(role: string, type: string) {
+    setConfig((c) => {
+      const next = { ...c.roles[role] };
+      if (!type) {
+        delete next.trigger;
+      } else {
+        const current = triggerAsObject(c.roles[role]?.trigger);
+        next.trigger = { ...current, type: type as TriggerType };
+      }
+      return { ...c, roles: { ...c.roles, [role]: next } };
+    });
+  }
+
+  function addRoleTriggerAfter(role: string, value: string) {
+    const v = value.trim();
+    if (!v) return;
+    setConfig((c) => {
+      const current = triggerAsObject(c.roles[role]?.trigger);
+      const after = current.after ?? [];
+      if (after.includes(v)) return c;
+      return {
+        ...c,
+        roles: { ...c.roles, [role]: { ...c.roles[role], trigger: { ...current, after: [...after, v] } } },
+      };
+    });
+  }
+
+  function removeRoleTriggerAfter(role: string, value: string) {
+    setConfig((c) => {
+      const current = triggerAsObject(c.roles[role]?.trigger);
+      return {
+        ...c,
+        roles: {
+          ...c.roles,
+          [role]: { ...c.roles[role], trigger: { ...current, after: (current.after ?? []).filter((x) => x !== value) } },
+        },
+      };
+    });
   }
 
   function addAuthor() {
@@ -872,6 +938,59 @@ export function SettingsScreen({ state, write }: { state: PanelState; write: Wri
                             </div>
                             <Button type="submit" size="sm" disabled={!priorityModelToAdd}>Add</Button>
                           </form>
+                        </div>
+
+                        <div>
+                          <p className="mdn-label">Schedule</p>
+                          <Input
+                            label="Cron"
+                            placeholder="0 6 * * 1"
+                            value={agent.schedule?.cron ?? ""}
+                            onChange={(e) => setRoleScheduleCron(role, e.target.value)}
+                          />
+                        </div>
+
+                        <div>
+                          <p className="mdn-label">Trigger</p>
+                          <div style={{ maxWidth: 240 }}>
+                            <Select
+                              label="Trigger type"
+                              hint="How this agent is fired: on a schedule, manually, by webhook, on merge, or after another role finishes."
+                              options={[
+                                { value: "", label: "None" },
+                                ...TRIGGER_TYPES.map((t) => ({ value: t, label: t })),
+                              ]}
+                              value={triggerAsObject(agent.trigger).type ?? ""}
+                              onValueChange={(v) => setRoleTriggerType(role, v)}
+                            />
+                          </div>
+                          {triggerAsObject(agent.trigger).type === "after-role" ? (
+                            <>
+                              {(triggerAsObject(agent.trigger).after ?? []).length === 0 ? (
+                                <p className="mdn-faint" style={{ margin: "4px 0" }}>None yet.</p>
+                              ) : (
+                                <div style={{ display: "flex", flexWrap: "wrap", gap: 8, margin: "4px 0" }}>
+                                  {(triggerAsObject(agent.trigger).after ?? []).map((item) => (
+                                    <span key={item} style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                                      <StatusPill tone="neutral" size="sm">{item}</StatusPill>
+                                      <IconButton icon="x" label={`Remove ${item}`} size="sm" onClick={() => removeRoleTriggerAfter(role, item)} />
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
+                              <form
+                                style={{ display: "flex", gap: 8, alignItems: "flex-end" }}
+                                onSubmit={(e) => {
+                                  e.preventDefault();
+                                  addRoleTriggerAfter(role, newAfter);
+                                  setNewAfter("");
+                                }}
+                              >
+                                <Input label="Run after role" placeholder="researcher" value={newAfter} onChange={(e) => setNewAfter(e.target.value)} />
+                                <Button type="submit" size="sm">Add</Button>
+                              </form>
+                            </>
+                          ) : null}
                         </div>
                       </div>
                     );
