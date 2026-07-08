@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:5d3c50b55c031b400b0f2e57397bf56f3c406f684398974cff8ad06decaa520c
-Files: 970  Bytes: 3573383  Map tokens: 131059/120000
+Merkle root: sha256:5c8b2b06867da2c07e8766db14a5a9901ac6dc781697cc4f2d203c8211cb42e3
+Files: 972  Bytes: 3582195  Map tokens: 131084/120000
 
 ## Modules
 
@@ -578,32 +578,32 @@ Files: 970  Bytes: 3573383  Map tokens: 131059/120000
 - S:3e9158c80b type RiskTier `export type RiskTier = 1 | 2 | 3 | 4;` L22
 - S:86cb290127 interface Subject `export interface Subject` L25 : The subject a mode points at: which repo the panel is reading.
 - S:a337ae8f0b interface ModonomeConfig `export interface ModonomeConfig` L37 : The engine configuration (schemas/config.schema.json), the levers the panel edits.
-- S:577a1daeb3 type MessageSeverity `export type MessageSeverity = "ok" | "info" | "attention" | "blocked";` L85
-- S:6605365375 interface MessageCatalogEntryVM `export interface MessageCatalogEntryVM` L94 : One entry of the built-in message catalog (scripts/lib/messages.mjs), with * this subject's .modonome/messages.yaml overrides already resolved. A * non_suppressible entry's severity/suppressed always 
-- S:d22e005d52 interface MessageOverridePatch `export interface MessageOverridePatch` L108 : A patch to one message's override, as sent to onSaveMessages. Omitted * fields reset to the catalog default; severity/suppressed are rejected * server-side for a non_suppressible id.
-- S:d56c1854d7 interface ArmingCheck `export interface ArmingCheck` L115 : One prerequisite in the armed-mode gate checklist.
-- S:6bc87187a8 interface ArmingStatus `export interface ArmingStatus` L123
-- S:a4a9a79fbe type WorkItemType `export type WorkItemType = "fix-issue" | "develop-feature" | "create-article" | "create-plan" | "update-docs" | "chore";` L130
-- S:3f93aaa307 const IN_FLIGHT_STATES `export const IN_FLIGHT_STATES: WorkState[] = ["claimed", "making", "checking", "rework", "merge_ready", "merging"];` L134 : True for any state where a real actor could be actively working the item: * mutating it destructively (delete) needs the lease released first.
-- S:5a49db2766 interface WorkItemVM `export interface WorkItemVM` L136
-- S:f3e5c99141 interface LeaseVM `export interface LeaseVM` L162
-- S:dddb39652d type GateStatus `export type GateStatus = "pass" | "fail" | "flaky" | "running" | "pending";` L169
-- S:9bc07de53c interface GateVM `export interface GateVM` L171
-- S:126357e421 interface CostByModel `export interface CostByModel` L180
-- S:ebe2964819 interface CostVM `export interface CostVM` L188
-- S:72a5c214ac interface LearningVM `export interface LearningVM` L197
-- S:e03cf612ca interface DecisionVM `export interface DecisionVM` L207
-- S:6ef3b2f2e5 interface RemediationProposalVM `export interface RemediationProposalVM` L217 : One commit the metadata-only remediator would rewrite, and why.
-- S:b41535d6e7 interface RemediationVM `export interface RemediationVM` L228 : The armed metadata-only remediator (ADR-035) as a read-only surface plus one owner * lever. `applyEnabled` mirrors the config flag; `ready` is true only when every arming * condition is met, and `bloc
-- S:3ad2d564a8 type AuditKind `export type AuditKind =` L237
-- S:7c6ba2a644 interface AuditEventVM `export interface AuditEventVM` L252
-- S:19226d4902 interface ProtectedPathVM `export interface ProtectedPathVM` L259
-- S:61e677ae40 interface TrendPoint `export interface TrendPoint` L266
-- S:cefb8c3f64 interface PanelSource `export interface PanelSource` L272 : Where a loaded PanelState actually came from, so the UI never presents demo data as real.
-- S:4a0171ecb5 interface PanelState `export interface PanelState` L285
-- S:6dcad3cdf1 interface NewWorkItemInput `export interface NewWorkItemInput` L321 : Fields a new work item is created with. Always starts in state "queued".
-- S:7934857ce3 interface WorkItemPatch `export interface WorkItemPatch` L333 : Safe-to-edit-anytime fields: never state, owner, or lease, since those change only * through the existing lease/transition machinery, never a generic metadata edit.
-- S:a2d9480f78 interface WriteActions `export interface WriteActions` L342
+- S:577a1daeb3 type MessageSeverity `export type MessageSeverity = "ok" | "info" | "attention" | "blocked";` L95
+- S:6605365375 interface MessageCatalogEntryVM `export interface MessageCatalogEntryVM` L104 : One entry of the built-in message catalog (scripts/lib/messages.mjs), with * this subject's .modonome/messages.yaml overrides already resolved. A * non_suppressible entry's severity/suppressed always 
+- S:d22e005d52 interface MessageOverridePatch `export interface MessageOverridePatch` L118 : A patch to one message's override, as sent to onSaveMessages. Omitted * fields reset to the catalog default; severity/suppressed are rejected * server-side for a non_suppressible id.
+- S:d56c1854d7 interface ArmingCheck `export interface ArmingCheck` L125 : One prerequisite in the armed-mode gate checklist.
+- S:6bc87187a8 interface ArmingStatus `export interface ArmingStatus` L133
+- S:a4a9a79fbe type WorkItemType `export type WorkItemType = "fix-issue" | "develop-feature" | "create-article" | "create-plan" | "update-docs" | "chore";` L140
+- S:3f93aaa307 const IN_FLIGHT_STATES `export const IN_FLIGHT_STATES: WorkState[] = ["claimed", "making", "checking", "rework", "merge_ready", "merging"];` L144 : True for any state where a real actor could be actively working the item: * mutating it destructively (delete) needs the lease released first.
+- S:5a49db2766 interface WorkItemVM `export interface WorkItemVM` L146
+- S:f3e5c99141 interface LeaseVM `export interface LeaseVM` L172
+- S:dddb39652d type GateStatus `export type GateStatus = "pass" | "fail" | "flaky" | "running" | "pending";` L179
+- S:9bc07de53c interface GateVM `export interface GateVM` L181
+- S:126357e421 interface CostByModel `export interface CostByModel` L190
+- S:ebe2964819 interface CostVM `export interface CostVM` L198
+- S:72a5c214ac interface LearningVM `export interface LearningVM` L207
+- S:e03cf612ca interface DecisionVM `export interface DecisionVM` L217
+- S:6ef3b2f2e5 interface RemediationProposalVM `export interface RemediationProposalVM` L227 : One commit the metadata-only remediator would rewrite, and why.
+- S:b41535d6e7 interface RemediationVM `export interface RemediationVM` L238 : The armed metadata-only remediator (ADR-035) as a read-only surface plus one owner * lever. `applyEnabled` mirrors the config flag; `ready` is true only when every arming * condition is met, and `bloc
+- S:3ad2d564a8 type AuditKind `export type AuditKind =` L247
+- S:7c6ba2a644 interface AuditEventVM `export interface AuditEventVM` L262
+- S:19226d4902 interface ProtectedPathVM `export interface ProtectedPathVM` L269
+- S:61e677ae40 interface TrendPoint `export interface TrendPoint` L276
+- S:cefb8c3f64 interface PanelSource `export interface PanelSource` L282 : Where a loaded PanelState actually came from, so the UI never presents demo data as real.
+- S:4a0171ecb5 interface PanelState `export interface PanelState` L295
+- S:6dcad3cdf1 interface NewWorkItemInput `export interface NewWorkItemInput` L331 : Fields a new work item is created with. Always starts in state "queued".
+- S:7934857ce3 interface WorkItemPatch `export interface WorkItemPatch` L343 : Safe-to-edit-anytime fields: never state, owner, or lease, since those change only * through the existing lease/transition machinery, never a generic metadata edit.
+- S:a2d9480f78 interface WriteActions `export interface WriteActions` L352
 ### scripts/verify-packet.mjs [F:0c1c5ad5d9]
 - S:6dd199eea1 function resolveActiveKey `export function resolveActiveKey(peerKeys, alias, now = new Date(), overrides = {})` L24 : Resolve an alias to an active, in-window key entry in the allowlist. `overrides` (from loadMessageOverrides()) is an optional caller-supplied parameter rather than something this function reads itself
 - S:f3b8628cdb function verifyPacket `export function verifyPacket(packet, peerKeys, { now = new Date(), skipContentGate = false, overrides = {} } = {})` L41 : Full ordered verification. options.skipContentGate runs only the signature checks (steps 3 to 5), used when the caller already ran the schema and redaction gate.
@@ -2394,6 +2394,7 @@ Files: 970  Bytes: 3573383  Map tokens: 131059/120000
 - scripts/build-release-evidence.mjs -> scripts/lib/yaml-lite.mjs
 - scripts/build-release-evidence.mjs -> scripts/lib/learnings.mjs
 - scripts/check-edit-set-compliance.mjs -> scripts/lib/messages.mjs
+- tests/schedule-trigger-schema.test.mjs -> scripts/lib/jsonschema.mjs
 - design-system/src/components/LeaseTable/LeaseTable.tsx -> design-system/src/components/StatusPill/StatusPill.tsx
 - design-system/src/components/LeaseTable/LeaseTable.tsx -> design-system/src/lib/format.ts
 - design-system/src/components/LeaseTable/LeaseTable.tsx -> design-system/src/components/Button/Button.tsx
@@ -2638,54 +2639,54 @@ Files: 970  Bytes: 3573383  Map tokens: 131059/120000
 
 ## Attention (centrality + pagerank)
 
-1. scripts/lib/messages.mjs centrality=63 pagerank=0.040109
-2. scripts/lib/message-catalog/index.mjs centrality=58 pagerank=0.012104
-3. design-system/src/lib/cx.ts centrality=32 pagerank=0.028125
-4. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.018233
-5. design-system/src/index.ts centrality=48 pagerank=0.000739
-6. scripts/lib/yaml-lite.mjs centrality=21 pagerank=0.017529
-7. scripts/lib/jsonschema.mjs centrality=12 pagerank=0.018459
-8. scripts/agent/run-cycle.mjs centrality=24 pagerank=0.004794
-9. apps/control-panel/src/state/types.ts centrality=13 pagerank=0.007151
-10. scripts/validate-config.mjs centrality=15 pagerank=0.004821
-11. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.006205
-12. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.004423
-13. scripts/lib/learnings.mjs centrality=11 pagerank=0.004819
-14. scripts/lib/canonical-json.mjs centrality=10 pagerank=0.003752
-15. scripts/agent/resolve-role.mjs centrality=10 pagerank=0.003356
-16. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001237
-17. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.003567
-18. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.004061
-19. scripts/validate-work-item.mjs centrality=9 pagerank=0.002751
-20. scripts/lib/config-validate.mjs centrality=7 pagerank=0.003548
-21. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.004139
-22. scripts/validate-knowledge-packet.mjs centrality=8 pagerank=0.002606
-23. apps/control-panel/src/App.tsx centrality=10 pagerank=0.001054
-24. scripts/agent/render-prompt.mjs centrality=7 pagerank=0.00286
-25. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002161
-26. apps/control-panel/server/modonomeWriter.mjs centrality=8 pagerank=0.001881
-27. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.002585
-28. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001237
-29. scripts/lib/graph.mjs centrality=5 pagerank=0.003021
-30. scripts/lib/branch-name.mjs centrality=4 pagerank=0.003543
-31. scripts/agent/providers.mjs centrality=3 pagerank=0.004089
-32. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.004016
-33. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001379
-34. scripts/snapshot.mjs centrality=8 pagerank=0.000739
-35. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.001873
-36. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.003139
-37. apps/control-panel/src/lib/messages.ts centrality=6 pagerank=0.001773
-38. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002161
-39. design-system/src/lib/format.ts centrality=5 pagerank=0.002159
-40. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.003303
-41. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001379
-42. scripts/lib/work-item-validate.mjs centrality=4 pagerank=0.002228
-43. apps/control-panel/src/screens/SettingsScreen.tsx centrality=6 pagerank=0.000839
-44. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.000839
-45. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001379
-46. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001379
-47. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.001379
-48. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.001379
-49. examples/demo-app/src/index.js centrality=6 pagerank=0.000739
-50. scripts/build-policy-attestation.mjs centrality=6 pagerank=0.000739
+1. scripts/lib/messages.mjs centrality=63 pagerank=0.040025
+2. scripts/lib/message-catalog/index.mjs centrality=58 pagerank=0.012078
+3. design-system/src/lib/cx.ts centrality=32 pagerank=0.028066
+4. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.018194
+5. design-system/src/index.ts centrality=48 pagerank=0.000738
+6. scripts/lib/yaml-lite.mjs centrality=21 pagerank=0.017492
+7. scripts/lib/jsonschema.mjs centrality=13 pagerank=0.019047
+8. scripts/agent/run-cycle.mjs centrality=24 pagerank=0.004783
+9. apps/control-panel/src/state/types.ts centrality=13 pagerank=0.007136
+10. scripts/validate-config.mjs centrality=15 pagerank=0.00481
+11. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.006192
+12. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.004414
+13. scripts/lib/learnings.mjs centrality=11 pagerank=0.004809
+14. scripts/lib/canonical-json.mjs centrality=10 pagerank=0.003744
+15. scripts/agent/resolve-role.mjs centrality=10 pagerank=0.003349
+16. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001234
+17. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.00356
+18. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.004052
+19. scripts/validate-work-item.mjs centrality=9 pagerank=0.002745
+20. scripts/lib/config-validate.mjs centrality=7 pagerank=0.003541
+21. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.00413
+22. scripts/validate-knowledge-packet.mjs centrality=8 pagerank=0.002601
+23. apps/control-panel/src/App.tsx centrality=10 pagerank=0.001052
+24. scripts/agent/render-prompt.mjs centrality=7 pagerank=0.002854
+25. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002156
+26. apps/control-panel/server/modonomeWriter.mjs centrality=8 pagerank=0.001877
+27. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.00258
+28. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001235
+29. scripts/lib/graph.mjs centrality=5 pagerank=0.003015
+30. scripts/lib/branch-name.mjs centrality=4 pagerank=0.003535
+31. scripts/agent/providers.mjs centrality=3 pagerank=0.00408
+32. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.004008
+33. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001376
+34. scripts/snapshot.mjs centrality=8 pagerank=0.000738
+35. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.001869
+36. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.003132
+37. apps/control-panel/src/lib/messages.ts centrality=6 pagerank=0.00177
+38. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002156
+39. design-system/src/lib/format.ts centrality=5 pagerank=0.002155
+40. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.003296
+41. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001376
+42. scripts/lib/work-item-validate.mjs centrality=4 pagerank=0.002224
+43. apps/control-panel/src/screens/SettingsScreen.tsx centrality=6 pagerank=0.000837
+44. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.000837
+45. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001376
+46. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001376
+47. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.001376
+48. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.001376
+49. examples/demo-app/src/index.js centrality=6 pagerank=0.000738
+50. scripts/build-policy-attestation.mjs centrality=6 pagerank=0.000738
 

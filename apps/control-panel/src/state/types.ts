@@ -73,7 +73,17 @@ export interface ModonomeConfig {
       tools?: string[];
       provider?: string;
       transport?: string;
-      trigger?: string;
+      /** Declarative cadence for a scheduled crew role. cron is a standard 5-field
+       * expression; timezone is an optional IANA name. */
+      schedule?: { cron: string; timezone?: string };
+      /** How this role is fired. A bare string is shorthand for { type: <string> }. */
+      trigger?:
+        | string
+        | {
+            type?: "schedule" | "manual" | "webhook" | "on-merge" | "after-role";
+            after?: string[];
+            cron?: string;
+          };
       execution_target?: string;
     }
   >;
