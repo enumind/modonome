@@ -1,0 +1,17 @@
+$ curl -sS "$HTTPS_PROXY/__agentproxy/status"
+recentRelayFailures:
+  - host: models.github.ai:443
+    kind: connect_rejected
+    detail: "gateway answered 403 to CONNECT (policy denial or upstream failure)"
+
+$ curl -sS -m 10 -o /dev/null -w "huggingface.co: %{http_code}\n" https://huggingface.co
+curl: (56) CONNECT tunnel failed, response 403
+huggingface.co: 000
+
+Per this session's proxy documentation (/root/.ccr/README.md), a 403/407 from the proxy
+means "the destination host is not allowed by your organization's egress policy for this
+session. Do not retry or route around it -- report the blocked host." This session's
+network policy allowlists only Anthropic (paid cost class) and package registries
+(npm, pypi, crates.io, jsr.io, the Go module proxy). No free-tier (github-models) or
+local-inference (huggingface.co, for model weights) host was reachable, which is why
+this evidence run stops at the budget gate rather than a completed live cycle.

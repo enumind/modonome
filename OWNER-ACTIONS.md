@@ -6,11 +6,23 @@ branch. Nothing here is launch-blocking by default except where marked **[GATE]*
 
 ## Before any Show HN or public launch push
 
-- **[GATE] Run the loop in armed mode on this repo for at least a week, then publish the real
-  evidence.** Every piece of copy in this branch is honest about the current state: the
-  maker/checker loop is wired and exercised once (`examples/demo-app/runs/2026-06-26T11-46-00Z/`),
-  never armed on a live repo. A skeptical reader will find this in about the time it takes to
-  read `docs/audits/`. Close it before launch, not after someone else points it out.
+- **[GATE] Run the loop in armed mode on this repo for at least a week with a live model
+  exchange, then publish the real evidence.** Partially closed 2026-07-08
+  (`examples/demo-app/runs/2026-07-08T14-19-00Z/`): the full two-key arming mechanism was
+  exercised live, for real (`autonomy_enabled: true` + `dry_run: false` + `MODONOME_ARMED=true`,
+  `--execute`), and the code correctly refused to spend before any network call, at the default
+  `remote_model_budget_usd_per_day: 0`. That closes "does arming actually work under a real
+  attempt," which is real, new evidence, not review of the code. It does **not** close "does a
+  live maker propose something and an independent checker review it": that attempt was made
+  from a sandboxed session whose network policy allowlisted only the paid Anthropic provider
+  (both the free-tier `models.github.ai` and `huggingface.co`, a source for local model
+  weights, returned a hard `403` policy denial, not an application error; see
+  `network-policy-check.txt` in that evidence directory). **To close this fully:** either
+  allowlist a free/local model host on wherever this next runs, or explicitly raise
+  `remote_model_budget_usd_per_day` above `0` on purpose (the README's own cost table puts a
+  Tier 1 item at roughly $0.05-0.20), then run at least one real cycle and, ideally, a full
+  week armed. A skeptical reader will still find the gap between "arming works" and "a live
+  cycle happened" in about the time it takes to read `docs/audits/`. Close it before launch.
 - **[GATE] Verify the GitHub Marketplace listing is live and installable.** The README sells
   `uses: enumind/modonome@v1` as a drop-in Action; `action.yml` has the branding metadata
   Marketplace requires, but nothing in this repo can confirm the listing is actually published
