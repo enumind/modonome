@@ -4,12 +4,14 @@
 
 <h1 align="center">Modonome</h1>
 
-<p align="center"><strong>The autonomous engineering loop that arms only on your command, sends every change through an independent checker, and keeps your tests at full strength.</strong></p>
+<p align="center"><strong>The autonomous engineering loop that arms only on your command, sends every change through an independent checker, and blocks the known structural ways agents weaken tests.</strong></p>
 
 <p align="center">
-When armed, it finds tech debt your team keeps deferring and proposes bounded pull requests,
-with a CI gate that keeps every test assertion intact. Maker, checker, and merge authority are
-structurally separate, enforced in CI. Off by default, and it runs without a central service.
+When armed, it finds tech debt your team keeps deferring and proposes bounded pull requests.
+A CI gate integrity check, run from a base-branch copy the agent's run does not control,
+rejects diffs that structurally weaken tests or gates: removed assertions, injected skips,
+type escapes, lowered coverage. Maker, checker, and merge authority are structurally
+separate, enforced in CI. Off by default, and it runs without a central service.
 </p>
 
 <p align="center">
@@ -31,13 +33,11 @@ structurally separate, enforced in CI. Off by default, and it runs without a cen
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License" /></a>
   <a href="agentproof/README.md"><img src="https://img.shields.io/badge/AgentProof-25%2F25-brightgreen" alt="AgentProof 25/25" /></a>
   <a href="https://scorecard.dev/viewer/?uri=github.com/enumind/modonome"><img src="https://api.securityscorecards.dev/projects/github.com/enumind/modonome/badge" alt="OpenSSF Scorecard" /></a>
-  <!-- OpenSSF Best Practices badge: register the project at https://www.bestpractices.dev to obtain a numeric PROJECT_ID, then add the line below.
-       <a href="https://www.bestpractices.dev/projects/PROJECT_ID"><img src="https://www.bestpractices.dev/projects/PROJECT_ID/badge" alt="OpenSSF Best Practices" /></a> -->
 </p>
 
 ---
 
-Autonomous coding agents have a predictable failure mode: they weaken gates to go green (removing test assertions, adding skips, loosening type checks). Modonome blocks that in CI: the anti-gaming ratchet runs from a base-branch copy the agent's run does not control, and it rejects diffs that weaken a gate. We published the [governed-autonomy spec](docs/specs/governed-autonomy-spec.md), and Modonome is the reference implementation for agent gate integrity, scoring **[25/25 on AgentProof](agentproof/README.md)** (hardening against known gaming patterns, not a certificate of full autonomy governance).
+Autonomous coding agents have a predictable failure mode: they weaken gates to go green (removing test assertions, adding skips, loosening type checks). Modonome blocks the known structural forms of that in CI: the anti-gaming ratchet runs from a base-branch copy the agent's run does not control, and it rejects diffs that structurally weaken a gate. We published the [governed-autonomy spec](docs/specs/governed-autonomy-spec.md), and Modonome is the reference implementation for agent gate integrity, scoring **[25/25 on AgentProof](agentproof/README.md)**, our self-graded adversarial benchmark of known gaming patterns (hardening against those patterns, not third-party certification and not a certificate of full autonomy governance). The check is deterministic and narrow by design; [what it cannot catch](#what-the-gate-integrity-check-cannot-catch) is documented rather than papered over.
 
 ## Why businesses adopt Modonome
 
@@ -72,7 +72,7 @@ This prints a preview. Add `--write` to apply the files:
 npx modonome scaffold . --write
 ```
 
-**[See the walkthrough](examples/demo-app/WALKTHROUGH.md)**: one week on a real Node.js app. What the dry-run proposed, what the ratchet blocked, and what the end-of-week report showed. No setup required to read it.
+**[See the walkthrough](examples/demo-app/WALKTHROUGH.md)**: a real Node.js app with planted tech debt. What the dry-run proposed, plus one recorded maker/checker cycle (distinct models, one real question raised by the independent checker), with every step backed by a committed evidence file. No setup required to read it.
 
 ## Defaults that stay in your control
 
@@ -138,7 +138,7 @@ arming levers are gated by the `MODONOME_ARMED` environment variable, enforced a
 with it unset, `autonomy_enabled` is forced to false no matter what the config file says. The
 levers are read from your environment or CI, never from a file the engine can rewrite.
 
-[AgentProof](agentproof/README.md) proves this with 25 adversarial scenarios: assertion removal,
+[AgentProof](agentproof/README.md), our self-graded adversarial benchmark, exercises this with 25 scenarios: assertion removal,
 skip injection, type escape, coverage removal, unsafe config combinations, identity collapse,
 raw code leakage, drift, protected-path bypass, Java and .NET ratchet coverage, prompt
 injection inertness, state-machine acyclicity, deterministic gate ordering, trust-boundary code
@@ -152,6 +152,29 @@ node agentproof/runner.mjs
 
 Read [SECURITY.md](SECURITY.md), [GOVERNANCE.md](GOVERNANCE.md), and
 [docs/specs/governed-autonomy-spec.md](docs/specs/governed-autonomy-spec.md).
+
+## What the gate integrity check cannot catch
+
+The ratchet is a deterministic, line-based diff analyzer. That makes it fast, dependency-free,
+and immune to prompt injection. It also bounds what it can see. It catches **structural**
+gate-weakening: removed or downgraded assertions, injected skips, type escapes, lowered or
+deleted coverage thresholds, across JS/TS, Python, Java, and .NET. It does not catch
+**semantic** weakening: an expected value quietly changed to match buggy output, an assertion
+whose operands were loosened while its shape stayed intact, or a test rewritten to pass
+vacuously.
+
+Two layers cover that gap, and we say so rather than imply the ratchet does:
+
+- The **independent checker** reviews every armed change with a distinct identity and model
+  family; semantic review is its job, and the separation is enforced structurally, not by
+  prompt (see [How it works](#how-it-works)).
+- **The Gauntlet** (`npx modonome gauntlet .`) replays known weakening attacks against your
+  repo's own files and scores your actually-configured gates, with an honest denominator:
+  languages you don't use count as N/A, not as passes.
+
+If you can construct a diff that weakens a gate and slips past the ratchet, we want it:
+file it with the [AgentProof scenario issue form](https://github.com/enumind/modonome/issues/new/choose)
+and it becomes a named scenario credited to you.
 
 ## Repo snapshot for LLM context
 
@@ -189,7 +212,7 @@ leaves an engine disarmed unless an owner arms it. See [docs/versioning.md](docs
 
 ## Examples
 
-- **[Demo app walkthrough](examples/demo-app/WALKTHROUGH.md)**: one week on a Node.js app. Dry-run, ratchet blocks, merges, and governance report. No setup required to read it.
+- **[Demo app walkthrough](examples/demo-app/WALKTHROUGH.md)**: a Node.js app with planted debt. Dry-run proposals and one recorded, independently checked maker/checker cycle, each step backed by committed evidence. No setup required to read it.
 - [examples/node-typescript](examples/node-typescript): Node and TypeScript service with [dry-run transcript](examples/node-typescript/dry-run-transcript.txt).
 - [examples/python-service](examples/python-service): Python service with [dry-run transcript](examples/python-service/dry-run-transcript.txt).
 
@@ -198,7 +221,7 @@ leaves an engine disarmed unless an owner arms it. See [docs/versioning.md](docs
 **Modonome Guard (v0.1, shipped today)** is the guardrail layer any team can adopt in minutes:
 
 - Anti-gaming ratchet: blocks assertion removal, skip injection, type escape, coverage removal across JS/TS, Python, Java, .NET
-- [AgentProof](agentproof/README.md): 25/25 HARDENED adversarial benchmark for gate integrity
+- [AgentProof](agentproof/README.md): self-graded adversarial benchmark for gate integrity, 25/25 HARDENED
 - Validators: config, work-item, drift, self-application, evidence, learning traceability
 - CLI: `dry-run`, `scaffold`, `validate`, `report`
 
@@ -234,10 +257,11 @@ step instead? The ratchet is one dependency-free script:
 ```
 
 **Modonome Loop (v0.2, roadmap)** is the governed maker/checker loop. The machinery is fully
-wired (`modonome-auto.yml`, `run-cycle.mjs`) and proven end-to-end on the demo app
+wired (`modonome-auto.yml`, `run-cycle.mjs`) and exercised end-to-end once on the demo app
 ([`examples/demo-app/runs/2026-06-26T11-46-00Z/`](examples/demo-app/runs/2026-06-26T11-46-00Z/)):
-Haiku maker, Sonnet checker, distinct model families, checker approved with one question raised.
-It has not yet run in armed mode on a live production repository. That is v0.2.
+Haiku maker, Sonnet checker, distinct model families, checker approved with one question
+raised. The cycle is recorded as evidence, not applied to the sample. It has not yet run in
+armed mode on a live production repository. That is v0.2.
 
 ## Alpha limitations (v0.1-alpha)
 

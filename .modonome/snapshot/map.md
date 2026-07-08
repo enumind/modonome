@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:5c8b2b06867da2c07e8766db14a5a9901ac6dc781697cc4f2d203c8211cb42e3
-Files: 972  Bytes: 3582195  Map tokens: 131084/120000
+Merkle root: sha256:a6ea08d2279dc9fb56d9f79a5ad296e6b5f7b9c71093351af6700105d44c9177
+Files: 972  Bytes: 3585741  Map tokens: 131090/120000
 
 ## Modules
 
@@ -254,7 +254,7 @@ Files: 972  Bytes: 3582195  Map tokens: 131084/120000
 - prompts/modules/adoption.md [F:41623f0bcd]: Adoption pass
 - prompts/modules/control-panel.md [F:36693b0d8b]: Operator control panel
 - prompts/modules/gates.md [F:02359d48d5]: Deterministic gates
-- prompts/modules/network.md [F:c98f6b55e3]: Cross-repo knowledge network
+- prompts/modules/network.md [F:c98f6b55e3]: Cross-repo knowledge network (Milestone 2, not shipped)
 - prompts/modules/roles.md [F:8f62475ebe]: Agent roles
 - prompts/modules/snapshot.md [F:c324fab0cc]: Repo snapshot
 - prompts/modules/state-machine.md [F:9a28b4e90e]: Durable state machine

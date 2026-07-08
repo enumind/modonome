@@ -1,7 +1,7 @@
 {
   "name": "modonome",
   "version": "0.1.0-alpha",
-  "description": "Blocks AI coding agents from weakening your tests. An off-by-default governed-autonomy loop that adopts your repo's rules, proposes small reviewable changes, and gates them in CI so weakened tests cannot merge.",
+  "description": "Catches the known structural patterns AI coding agents use to game test gates (assertion removal, skip injection, type escapes, coverage lowering) from a CI copy the agent's run cannot touch. Plus an off-by-default governed maker/checker loop that adopts your repo's rules and proposes small reviewable changes.",
   "type": "module",
   "bin": {
     "modonome": "bin/modonome.mjs"
@@ -47,8 +47,7 @@
     "schemas",
     "scripts",
     "docs",
-    "agentproof",
-    "tests"
+    "agentproof"
   ],
   "publishConfig": {
     "access": "public",
