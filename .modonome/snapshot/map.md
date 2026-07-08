@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:2d551f3b4c5441c133dcc41f3a913c7c05ecca7ede10efde376b39d4b9302393
-Files: 1026  Bytes: 3797840  Map tokens: 135721/120000
+Merkle root: sha256:62a6e870efbe7c63703b73f821d612775640a9ee75f8943294157dd250b4acef
+Files: 1028  Bytes: 3801669  Map tokens: 135721/120000
 
 ## Modules
 
@@ -1584,17 +1584,17 @@ Files: 1026  Bytes: 3797840  Map tokens: 135721/120000
 - S:3c2bad87be function snapshotDir `function snapshotDir(root) { return join(root, ".modonome", "snapshot"); }` L40
 - S:5353762af1 function loadCommittedSignature `function loadCommittedSignature(root)` L42
 - S:d5719588cb function llmsText `function llmsText(signature)` L48
-- S:88bd705d3f function badgeJson `function badgeJson(signature, map)` L62
-- S:bc3262b829 function writeArtifact `function writeArtifact(root, built)` L71
-- S:3466f40801 function buildOptions `function buildOptions(root, argv, now)` L81
-- S:6584162247 function nowIso `function nowIso() { return new Date().toISOString(); }` L95
-- S:383c03d511 function incrementalInputs `function incrementalInputs(root, argv)` L100 : Resolve incremental build inputs. --full forces a from-scratch rebuild. Otherwise load the cache and ask git what changed; a missing cache or unusable git yields a full rebuild that produces identical
-- S:df5cb6eb12 function recomputeMerkle `function recomputeMerkle(root)` L108 : Recompute file hashes and the Merkle root directly from disk. Used by --verify.
-- S:8d131c2429 function isSafeGitRevision `function isSafeGitRevision(value)` L119 : A --since ref is free-form git revision syntax (branch, tag, HEAD~N, a SHA), so it cannot be restricted to a fixed pattern the way a cache-internal SHA can. The one property that must hold is that it 
-- S:2a5511d42c function gitDelta `function gitDelta(root, ref)` L123
-- S:2ce7a5bbe7 function positional `function positional(argv)` L144
-- S:ecd0da924a function maybeRegisterParser `async function maybeRegisterParser(root, argv)` L156 : Register the tree-sitter parser when requested via --parser or config, with a graceful fallback to the heuristic default when tree-sitter is not installed.
-- S:68308360b1 function main `async function main(argv)` L164
+- S:88bd705d3f function badgeJson `function badgeJson(signature, map)` L64
+- S:bc3262b829 function writeArtifact `function writeArtifact(root, built)` L73
+- S:3466f40801 function buildOptions `function buildOptions(root, argv, now)` L83
+- S:6584162247 function nowIso `function nowIso() { return new Date().toISOString(); }` L97
+- S:383c03d511 function incrementalInputs `function incrementalInputs(root, argv)` L102 : Resolve incremental build inputs. --full forces a from-scratch rebuild. Otherwise load the cache and ask git what changed; a missing cache or unusable git yields a full rebuild that produces identical
+- S:df5cb6eb12 function recomputeMerkle `function recomputeMerkle(root)` L110 : Recompute file hashes and the Merkle root directly from disk. Used by --verify.
+- S:8d131c2429 function isSafeGitRevision `function isSafeGitRevision(value)` L121 : A --since ref is free-form git revision syntax (branch, tag, HEAD~N, a SHA), so it cannot be restricted to a fixed pattern the way a cache-internal SHA can. The one property that must hold is that it 
+- S:2a5511d42c function gitDelta `function gitDelta(root, ref)` L125
+- S:2ce7a5bbe7 function positional `function positional(argv)` L146
+- S:ecd0da924a function maybeRegisterParser `async function maybeRegisterParser(root, argv)` L158 : Register the tree-sitter parser when requested via --parser or config, with a graceful fallback to the heuristic default when tree-sitter is not installed.
+- S:68308360b1 function main `async function main(argv)` L166
 ### scripts/lib/message-catalog/gate/test-prompt-behavior.mjs [F:a104667369]
 - S:f6264503e8 const MESSAGES `export const MESSAGES =` L1
 ### fixtures/negative-controls/app-syntax-error.js [F:a1411f1423]
@@ -2717,54 +2717,54 @@ Files: 1026  Bytes: 3797840  Map tokens: 135721/120000
 
 ## Attention (centrality + pagerank)
 
-1. scripts/lib/messages.mjs centrality=63 pagerank=0.039239
-2. scripts/lib/message-catalog/index.mjs centrality=58 pagerank=0.011822
-3. design-system/src/lib/cx.ts centrality=32 pagerank=0.026768
-4. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.017353
-5. design-system/src/index.ts centrality=48 pagerank=0.000704
-6. scripts/lib/yaml-lite.mjs centrality=21 pagerank=0.017035
-7. scripts/lib/jsonschema.mjs centrality=15 pagerank=0.019842
-8. scripts/agent/run-cycle.mjs centrality=25 pagerank=0.00516
-9. scripts/validate-config.mjs centrality=16 pagerank=0.005003
-10. apps/control-panel/src/state/types.ts centrality=13 pagerank=0.006806
-11. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.005905
-12. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.00421
-13. scripts/lib/learnings.mjs centrality=11 pagerank=0.004629
-14. scripts/agent/resolve-role.mjs centrality=11 pagerank=0.003592
-15. scripts/lib/canonical-json.mjs centrality=10 pagerank=0.003571
-16. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001177
-17. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.003395
-18. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.003865
-19. scripts/validate-work-item.mjs centrality=9 pagerank=0.002618
-20. scripts/lib/config-validate.mjs centrality=7 pagerank=0.003553
-21. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.003939
-22. scripts/validate-knowledge-packet.mjs centrality=8 pagerank=0.00248
-23. apps/control-panel/src/App.tsx centrality=10 pagerank=0.001003
-24. scripts/agent/render-prompt.mjs centrality=7 pagerank=0.002764
-25. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002056
-26. apps/control-panel/server/modonomeWriter.mjs centrality=8 pagerank=0.001791
-27. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.00246
-28. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001178
-29. scripts/agent/providers.mjs centrality=3 pagerank=0.004272
-30. scripts/lib/graph.mjs centrality=5 pagerank=0.002893
-31. scripts/lib/branch-name.mjs centrality=4 pagerank=0.003372
-32. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.003822
-33. scripts/snapshot.mjs centrality=8 pagerank=0.000704
-34. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001313
-35. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.001783
-36. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.002987
-37. apps/control-panel/src/lib/messages.ts centrality=6 pagerank=0.001688
-38. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002056
-39. design-system/src/lib/format.ts centrality=5 pagerank=0.002055
-40. scripts/agent/openai-client.mjs centrality=5 pagerank=0.002027
-41. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001313
-42. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.003144
-43. scripts/agent/review-diff.mjs centrality=5 pagerank=0.001579
-44. scripts/lib/work-item-validate.mjs centrality=4 pagerank=0.002121
-45. apps/control-panel/src/screens/SettingsScreen.tsx centrality=6 pagerank=0.000798
-46. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.000798
-47. examples/demo-app/src/index.js centrality=6 pagerank=0.000704
-48. scripts/build-policy-attestation.mjs centrality=6 pagerank=0.000704
-49. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001313
-50. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001313
+1. scripts/lib/messages.mjs centrality=63 pagerank=0.039184
+2. scripts/lib/message-catalog/index.mjs centrality=58 pagerank=0.011805
+3. design-system/src/lib/cx.ts centrality=32 pagerank=0.02673
+4. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.017328
+5. design-system/src/index.ts centrality=48 pagerank=0.000703
+6. scripts/lib/yaml-lite.mjs centrality=21 pagerank=0.017011
+7. scripts/lib/jsonschema.mjs centrality=15 pagerank=0.019814
+8. scripts/agent/run-cycle.mjs centrality=25 pagerank=0.005153
+9. scripts/validate-config.mjs centrality=16 pagerank=0.004996
+10. apps/control-panel/src/state/types.ts centrality=13 pagerank=0.006797
+11. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.005897
+12. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.004204
+13. scripts/lib/learnings.mjs centrality=11 pagerank=0.004622
+14. scripts/agent/resolve-role.mjs centrality=11 pagerank=0.003587
+15. scripts/lib/canonical-json.mjs centrality=10 pagerank=0.003566
+16. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001176
+17. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.00339
+18. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.00386
+19. scripts/validate-work-item.mjs centrality=9 pagerank=0.002614
+20. scripts/lib/config-validate.mjs centrality=7 pagerank=0.003548
+21. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.003934
+22. scripts/validate-knowledge-packet.mjs centrality=8 pagerank=0.002477
+23. apps/control-panel/src/App.tsx centrality=10 pagerank=0.001001
+24. scripts/agent/render-prompt.mjs centrality=7 pagerank=0.00276
+25. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002053
+26. apps/control-panel/server/modonomeWriter.mjs centrality=8 pagerank=0.001788
+27. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.002457
+28. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001176
+29. scripts/agent/providers.mjs centrality=3 pagerank=0.004266
+30. scripts/lib/graph.mjs centrality=5 pagerank=0.002889
+31. scripts/lib/branch-name.mjs centrality=4 pagerank=0.003367
+32. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.003817
+33. scripts/snapshot.mjs centrality=8 pagerank=0.000703
+34. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001311
+35. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.00178
+36. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.002983
+37. apps/control-panel/src/lib/messages.ts centrality=6 pagerank=0.001686
+38. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002053
+39. design-system/src/lib/format.ts centrality=5 pagerank=0.002052
+40. scripts/agent/openai-client.mjs centrality=5 pagerank=0.002024
+41. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001311
+42. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.00314
+43. scripts/agent/review-diff.mjs centrality=5 pagerank=0.001576
+44. scripts/lib/work-item-validate.mjs centrality=4 pagerank=0.002118
+45. apps/control-panel/src/screens/SettingsScreen.tsx centrality=6 pagerank=0.000797
+46. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.000797
+47. examples/demo-app/src/index.js centrality=6 pagerank=0.000703
+48. scripts/build-policy-attestation.mjs centrality=6 pagerank=0.000703
+49. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001311
+50. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001311
 

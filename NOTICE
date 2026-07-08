@@ -1,0 +1,28 @@
+Modonome
+Copyright (c) 2026 nateshpp and the Modonome contributors
+
+Canonical sources
+  Website:    https://modonome.com
+  Repository: https://github.com/enumind/modonome
+  npm:        https://www.npmjs.com/package/modonome
+
+License and attribution
+  This software is licensed under the MIT License (see LICENSE). The MIT
+  License requires that the above copyright notice and the permission notice
+  in LICENSE be included in all copies or substantial portions of the
+  Software. If you redistribute Modonome, in source or modified form, you
+  must retain the LICENSE file and this NOTICE file.
+
+Trademarks
+  "Modonome" and the Modonome logo identify the original project published
+  at the canonical sources above. The MIT License grants rights to the code;
+  it does not grant any right to use the Modonome name or logo. Forks and
+  derivative works must not present themselves as the original Modonome
+  project or as endorsed by it, and should use a different name for any
+  publicly distributed derivative. Factual references ("based on Modonome",
+  "compatible with Modonome") are welcome and encouraged, with a link back
+  to the canonical repository.
+
+Provenance
+  If you found this code elsewhere without this NOTICE, the authoritative,
+  maintained version lives at https://github.com/enumind/modonome.

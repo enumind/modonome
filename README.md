@@ -201,6 +201,27 @@ self-application, work items, tests, AgentProof) with no network or secrets.
 | Roadmap and milestones | [ROADMAP.md](ROADMAP.md) |
 | Contributing, support, and what a merge commits us to | [CONTRIBUTING.md](CONTRIBUTING.md) · [SUPPORT.md](SUPPORT.md) |
 
-## License
+## License, attribution, and trademarks
 
-MIT. See [LICENSE](LICENSE).
+Modonome is © 2026 nateshpp and the Modonome contributors, released under the
+[MIT License](LICENSE). The license is permissive on purpose: use it, fork it,
+ship it, sell it. It carries two conditions worth stating plainly:
+
+- **Attribution is required, not optional.** The MIT License requires the
+  copyright notice and permission notice to be included in all copies or
+  substantial portions of the software. If you redistribute Modonome or a
+  derivative, keep the [LICENSE](LICENSE) and [NOTICE](NOTICE) files intact.
+- **The name is not part of the grant.** "Modonome" and the Modonome logo
+  identify the original project. The MIT License covers the code, not the
+  brand: forks must not present themselves as the original project or use the
+  name for a publicly distributed derivative. Factual references ("based on
+  Modonome") with a link back to
+  [github.com/enumind/modonome](https://github.com/enumind/modonome) are
+  welcome.
+
+Citing Modonome in writing or research? Use the repository's
+[CITATION.cff](CITATION.cff) (GitHub's "Cite this repository" button). The
+canonical home of this project is
+**[github.com/enumind/modonome](https://github.com/enumind/modonome)**; the
+maintained releases are published to
+[npm as `modonome`](https://www.npmjs.com/package/modonome).
