@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "id": "WI-053-envisioner-marketresearcher-roles",
+  "state": "done",
+  "type": "develop-feature",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": true,
+  "lease_owner": "techseek4vr",
+  "allowed_edit_set": [
+    "prompts/roles/envisioner.txt",
+    "prompts/roles/marketresearcher.txt",
+    ".modonome/config.yaml",
+    ".github/workflows/modonome-schedule.yml",
+    "docs/agent-org.md",
+    "docs/adr/ADR-044-agent-org-structure.md",
+    "tests/researcher-role.test.mjs",
+    "tests/envisioner-role.test.mjs",
+    "tests/marketresearcher-role.test.mjs",
+    ".modonome/work-items/WI-053-envisioner-marketresearcher-roles.json",
+    ".modonome/snapshot/*",
+    ".modonome/work-items/*"
+  ],
+  "gates": [
+    "node --test tests/envisioner-role.test.mjs",
+    "node --test tests/marketresearcher-role.test.mjs",
+    "node --test tests/researcher-role.test.mjs",
+    "npm run verify"
+  ],
+  "queued_at": "2026-07-07"
+}
