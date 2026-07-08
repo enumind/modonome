@@ -83,6 +83,36 @@ flowchart TB
 | Agent harness (agent scope) | The engine loop: adopt, sweep, make, check, gate | Each harness turn while a run is active | The host's ordinary surfaces: branches, pull requests, and `.modonome/` state |
 | CI (enforcement scope) | Ratchet, validators, drift and style guards | On every pull request and on push to the default branch | Read-only judgment. It blocks merges and writes no application code |
 
+## Host vs. self: the two governance targets
+
+Modonome governs two different kinds of target with the same mechanism, and the distinction
+matters for what evidence exists and what "armed" means in each case.
+
+- **Host mode**: Modonome adopts a repository that is not itself. This is the product: any
+  team's codebase, with its own CI, CODEOWNERS, and conventions, governed the way
+  [QUICKSTART.md](QUICKSTART.md) and the [README](README.md) describe. `examples/demo-app/`
+  is the committed, publicly reproducible instance of this: real dry-run and gate-integrity
+  evidence, run against a target that is not modonome's own repo.
+- **Self-governance**: Modonome applies its own rules to its own repository. `.modonome/` at
+  the repo root is the tool's own state, `self-govern.yml` runs modonome against itself on a
+  schedule, and `check-self-application.mjs` verifies the tool actually eats its own dogfood
+  rather than exempting itself. This is real and continuously exercised, but it is one
+  instance, not a second host: no public evidence yet demonstrates modonome governing a
+  third-party repository it does not maintain (see the alpha-limitations table in the
+  [README](README.md#the-loop-armed-mode)).
+
+The [control panel](apps/control-panel/README.md) makes this duality concrete in its write
+model: pointing the panel at a connected host repo and writing to it requires only
+`MODONOME_PANEL_WRITE=1`, "evolve it freely." Pointing it at modonome's *own* `.modonome/`
+requires that plus the caller's git identity resolving to a CODEOWNERS-listed owner of
+`config.yaml`, enforced on the resolved filesystem path so a client cannot relabel a
+self-governance write as a host write to dodge the gate. See
+[docs/control-panel-modes.md](docs/control-panel-modes.md) for the full model.
+
+Neither mode changes what "armed" means: `MODONOME_ARMED` and `autonomy_enabled` gate the
+loop identically whether the target is a host repo or modonome itself, and a config file
+alone can never arm either one (see "Why it is safe to run" in the README).
+
 ## Prerequisites
 
 Modonome degrades gracefully. The read-only CLI and the CI enforcement need only Node.js.
@@ -140,7 +170,7 @@ default until an owner arms it.
   at Checkpoint 1: it vets a proposal before it becomes a work item, so `queue.mjs` can gate
   the backlog the way the pull request gates `main`. The crew itself (the roster, what each
   agent is for, and how each is configured on a model, runner, schedule, and trigger) is
-  documented in [docs/agent-org.md](docs/agent-org.md), with the structure decision in
+  documented in [docs/agents.md](docs/agents.md), with the structure decision in
   [docs/adr/ADR-044-agent-org-structure.md](docs/adr/ADR-044-agent-org-structure.md).
 - The snapshot utility (`scripts/snapshot.mjs` plus `scripts/lib/snapshot-*.mjs` and
   `scripts/lib/lang-adapters/`). A dependency-free pipeline (walk, Merkle hash, per-file

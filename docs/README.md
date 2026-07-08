@@ -25,9 +25,13 @@ governs where docs live.
 
 ## Autonomy
 
-- [agent-org.md](agent-org.md): the agent org roster. Who is in the crew, what each agent is
-  for, and how each is configured on a model, runner, schedule, and trigger. Structure decision
-  in [adr/ADR-044-agent-org-structure.md](adr/ADR-044-agent-org-structure.md).
+- [agents.md](agents.md): canonical reference for the crew roster, how an agent is configured
+  (runner, model, provider, cost class), and worked recipes (local models, zero-cost pairs,
+  adding a new role). Structure decision in
+  [adr/ADR-044-agent-org-structure.md](adr/ADR-044-agent-org-structure.md). ([agent-org.md](agent-org.md)
+  and [ops/runner-model-config.md](ops/runner-model-config.md) redirect here.)
+- [adapters.md](adapters.md): the contract for bringing an external agentic CLI into the
+  tool-loop execution path (ADR-032). What the adapter must do, what a reviewer checks by hand.
 - [autonomy-plan.md](autonomy-plan.md): the session-independent plan for governed autonomy
   on free models, paired with the WI-026 through WI-040 work-item queue.
 
@@ -38,7 +42,6 @@ governs where docs live.
 - [control-panel-modes.md](control-panel-modes.md): the control panel's modes and permission
   model. What host and self-governance mode each let you do, and why self-governance writes
   are reserved to code owners.
-- [ops/runner-model-config.md](ops/runner-model-config.md): runner model configuration.
 - [ops/merge-governance-setup.md](ops/merge-governance-setup.md): merge governance setup.
 
 ## Architecture Decision Records

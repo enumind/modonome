@@ -199,7 +199,7 @@ Modonome's cost is entirely the LLM API you use. The tool itself is zero-cost
 Figures assume Claude Sonnet pricing at June 2026 rates. Haiku runs Tier 1 items
 at roughly one-fifth the cost. Opus is appropriate for security-critical Tier 2
 items. Match model tier to work item tier with the role and model map in
-[docs/ops/runner-model-config.md](docs/ops/runner-model-config.md).
+[docs/agents.md](docs/agents.md).
 
 If you run modonome via the Claude Code CLI with a Claude Pro or Teams subscription
 (not an API key), the cost is zero beyond your subscription. VS Code with the Claude
