@@ -32,6 +32,7 @@
 import { readFileSync, existsSync, mkdtempSync, mkdirSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { createServer } from "node:http";
+import { randomUUID } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { validate } from "./lib/jsonschema.mjs";
@@ -154,7 +155,7 @@ export async function runLiveProbe(entry, opts = {}) {
     return { status: "skipped", detail: `'${command}' not found on PATH. Static checks only.` };
   }
 
-  const marker = `CONFORMANCE-PROBE-${Math.random().toString(36).slice(2, 10)}`;
+  const marker = `CONFORMANCE-PROBE-${randomUUID().slice(0, 8)}`;
   const server = opts.serverImpl ? await opts.serverImpl(marker) : await startProbeServer(marker);
   const scratchRoot = opts.scratchRoot ?? mkdtempSync(join(tmpdir(), "modonome-adapter-verify-"));
   try {

@@ -128,7 +128,11 @@ Two layers cover that gap, and we say so rather than imply the ratchet does:
 
 - The **independent checker** reviews every armed change with a distinct identity and model
   family; semantic review is its job, and the separation is enforced structurally, not by
-  prompt (see [the loop](#the-loop-armed-mode)).
+  prompt (see [the loop](#the-loop-armed-mode)). Its catch rate on exactly these categories
+  (expected-value drift, cross-file migration, vacuous-in-spirit assertions, scope creep) is
+  measured, not assumed: **[CheckerProof](checkerproof/README.md)** is a seeded-defect benchmark,
+  run live against the real configured checker, with a negative control so a checker that
+  rejects everything cannot score well by accident.
 - **The Gauntlet** (`npx modonome gauntlet .`) replays known weakening attacks against your
   repo's own files and scores your actually-configured gates, with an honest denominator:
   languages you don't use count as N/A, not as passes.
@@ -185,6 +189,8 @@ self-application, work items, tests, AgentProof) with no network or secrets.
 | Architecture, host vs. self governance, execution contexts | [ARCHITECTURE.md](ARCHITECTURE.md) |
 | Agents, roles, runners, models, budgets | [docs/agents.md](docs/agents.md) |
 | AgentProof benchmark and spec | [agentproof/README.md](agentproof/README.md) |
+| CheckerProof: measured checker efficacy, not assumed | [checkerproof/README.md](checkerproof/README.md) |
+| Break the Ratchet: the public adversarial challenge | [BREAK-THE-RATCHET.md](BREAK-THE-RATCHET.md) |
 | Governed-autonomy specification | [docs/specs/governed-autonomy-spec.md](docs/specs/governed-autonomy-spec.md) |
 | Repo snapshot for LLM context (Merkle-verified) | [docs/adr/ADR-033-repo-snapshot.md](docs/adr/ADR-033-repo-snapshot.md) |
 | Operator control panel (Milestone 3, in progress) | [apps/control-panel/README.md](apps/control-panel/README.md) |

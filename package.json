@@ -33,6 +33,7 @@
     "dry-run": "node scripts/dry-run-sweep.mjs",
     "scaffold": "node scripts/scaffold.mjs",
     "agentproof": "node agentproof/runner.mjs",
+    "checkerproof": "node checkerproof/runner.mjs",
     "report": "node scripts/report.mjs",
     "demo:agent": "node scripts/agent/run-cycle.mjs",
     "prepare": "node scripts/install-hooks.mjs",
