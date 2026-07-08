@@ -9,6 +9,17 @@ or CVE identifier where one exists.
 
 ## Unreleased
 
+**Highlights since the published `0.1.0-alpha` (npm, 2026-06-27; `next` dist-tag tracks
+these):** AgentProof expanded from 16 to 25 normative scenarios plus 10 extended
+(HARDENED); the Gauntlet gate-integrity replay with a shareable score line; multi-language
+gate coverage hardening; the repo snapshot utility (Merkle-verified, tiered); governed
+remediation phases 1-4 (near-miss widener, metadata-only history remediator, policy packs);
+the researcher, envisioner, and market-researcher crew roles (configured, off the default
+sequence); runtime model fallback chains per role; two governed checkpoints around the
+maker/checker loop; deterministic gate-rejection evidence on the demo app; and a
+documentation truth pass (claims reconciled to committed evidence, self-graded benchmark
+framing, honest scope labels). Full detail below, newest first.
+
 ### Wire the researcher role into the agent loop (WI-042)
 
 - Added `prompts/roles/researcher.txt`: reads the repo's own durable state, drafts one
