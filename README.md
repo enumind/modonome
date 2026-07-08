@@ -37,6 +37,13 @@ separate, enforced in CI. Off by default, and it runs without a central service.
 
 ---
 
+<p align="center">
+  <img src="docs/assets/ratchet-demo.svg" alt="Terminal capture: the gate integrity check rejects a diff that skips a failing test and removes its assertions; the honest fix passes the same gate." width="760" />
+</p>
+<p align="center"><sub>Real output. The diffs and the verbatim rejection are committed in
+<a href="examples/demo-app/runs/2026-07-08T05-30-00Z/">examples/demo-app/runs/2026-07-08T05-30-00Z/</a>
+and reproduce deterministically: no model involved.</sub></p>
+
 Autonomous coding agents have a predictable failure mode: they weaken gates to go green (removing test assertions, adding skips, loosening type checks). Modonome blocks the known structural forms of that in CI: the anti-gaming ratchet runs from a base-branch copy the agent's run does not control, and it rejects diffs that structurally weaken a gate. We published the [governed-autonomy spec](docs/specs/governed-autonomy-spec.md), and Modonome is the reference implementation for agent gate integrity, scoring **[25/25 on AgentProof](agentproof/README.md)**, our self-graded adversarial benchmark of known gaming patterns (hardening against those patterns, not third-party certification and not a certificate of full autonomy governance). The check is deterministic and narrow by design; [what it cannot catch](#what-the-gate-integrity-check-cannot-catch) is documented rather than papered over.
 
 ## Why businesses adopt Modonome
@@ -59,8 +66,20 @@ npx modonome dry-run .
 ```
 
 Modonome reads your repo, detects your stack and gates, and prints the work it would
-propose. It writes nothing. When you are ready, scaffold the local state files (still
-disabled and dry-run):
+propose. It writes nothing. Then score the gates you already have:
+
+```bash
+npx modonome gauntlet .
+```
+
+The Gauntlet replays 25 known gate-weakening attacks against your repo's own files and
+grades what your CI would actually catch today, with an honest denominator (languages you
+don't use count as N/A, not as passes). The demo app goes from 0/3 UNHARDENED to 3/3
+HARDENED by wiring one workflow file:
+[before](examples/demo-app/runs/2026-07-08T05-30-00Z/gauntlet-before.txt) /
+[after](examples/demo-app/runs/2026-07-08T05-30-00Z/gauntlet-after.txt).
+
+When you are ready, scaffold the local state files (still disabled and dry-run):
 
 ```bash
 npx modonome scaffold .
