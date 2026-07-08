@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="400" viewBox="0 0 760 400" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" role="img" aria-label="Terminal capture: the Modonome gate integrity check rejects a diff that skips a failing test and removes its assertions, exit code 1. The honest fix passes the same gate.">
+  <title>Modonome gate integrity check rejecting a gaming diff</title>
+  <desc>An agent commits "fix: stabilize flaky refund test" which skips a failing test and deletes two assertions. npx modonome ratchet rejects it, naming the assertion removal and the injected skip. The honest fix passes the same gate with exit code 0. This is verbatim output committed at examples/demo-app/runs/2026-07-08T05-30-00Z.</desc>
+  <rect width="760" height="400" rx="12" fill="#0b1220"/>
+  <rect width="760" height="34" rx="12" fill="#111a2e"/>
+  <rect y="22" width="760" height="12" fill="#111a2e"/>
+  <circle cx="22" cy="17" r="6" fill="#ff5f57"/>
+  <circle cx="42" cy="17" r="6" fill="#febc2e"/>
+  <circle cx="62" cy="17" r="6" fill="#28c840"/>
+  <text x="380" y="22" text-anchor="middle" fill="#7c8aa0" font-size="12">demo-app : the agent tried to go green</text>
+
+  <g fill="#e8ebf0">
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1" dur="0.3s" begin="0.4s" fill="freeze"/>
+      <text x="24" y="64"><tspan fill="#5dd4ab">$</tspan> git log -1 --oneline</text>
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1" dur="0.3s" begin="1.0s" fill="freeze"/>
+      <text x="24" y="88" fill="#aeb9c8">e15f3a2 fix: stabilize flaky refund test</text>
+      <text x="420" y="88" fill="#7c8aa0" font-style="italic">(it.skip + 2 assertions deleted)</text>
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1" dur="0.3s" begin="1.9s" fill="freeze"/>
+      <text x="24" y="122"><tspan fill="#5dd4ab">$</tspan> npx modonome ratchet main</text>
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1" dur="0.4s" begin="2.9s" fill="freeze"/>
+      <text x="24" y="150" fill="#ff7b72" font-weight="bold">Anti-gaming ratchet rejected this change:</text>
+      <text x="40" y="178" fill="#ff7b72">- tests/OrderService.test.js: removes more test assertions</text>
+      <text x="52" y="196" fill="#ff7b72">than it adds (+0 / -1).</text>
+      <text x="40" y="220" fill="#ff7b72">- tests/OrderService.test.js: adds a skipped or focused test:</text>
+      <text x="52" y="238" fill="#ff7b72">it.skip("throws when order is not found", ...)</text>
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1" dur="0.4s" begin="3.9s" fill="freeze"/>
+      <text x="24" y="268" fill="#e8ebf0">Do not weaken gates to go green. Get owner review for an</text>
+      <text x="24" y="286" fill="#e8ebf0">intended exception.</text>
+      <text x="24" y="310" fill="#7c8aa0">exit code: 1</text>
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1" dur="0.4s" begin="5.2s" fill="freeze"/>
+      <text x="24" y="344"><tspan fill="#5dd4ab">$</tspan> git apply clean.patch <tspan fill="#7c8aa0">&#160;# the honest fix: real tests added</tspan></text>
+      <text x="24" y="368"><tspan fill="#5dd4ab">$</tspan> npx modonome ratchet main <tspan fill="#5dd4ab">&#160;&#8594; exit 0, no weakened gates</tspan></text>
+    </g>
+  </g>
+</svg>
