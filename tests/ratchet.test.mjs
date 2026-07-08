@@ -165,3 +165,61 @@ test("--staged checks the index against HEAD, for pre-commit hook use", () => {
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+// ADR-045: false-positive-only same-line string/comment stripping ahead of the
+// TS/JS type-escape check, plus Node built-in assert-module member-call coverage.
+
+test("ADR-045: a same-line string or block comment containing ': any' text is not a type escape", () => {
+  const r = ratchet(join(fx, "ratchet-diffs", "clean", "ts-any-in-string-and-comment.diff"));
+  assert.equal(r.status, 0, `prose containing 'any' inside a string/comment must pass:\n${r.stderr}`);
+});
+
+test("ADR-045: a real 'as any' cast is still caught even when preceded by a string decoy on the same line", () => {
+  const r = ratchet(join(fx, "ratchet-diffs", "gaming", "ts-any-behind-string-decoy.diff"));
+  assert.equal(r.status, 1, `type escape hidden behind a string decoy must still be rejected:\n${r.stdout}`);
+  assert.match(r.stderr, /broad type escape/, "must report the type escape");
+});
+
+test("ADR-045: a multi-line (unterminated on this line) string is left unstripped, not silently accepted", () => {
+  // The stripper must bail to the raw line when a quote does not close on the same
+  // line, rather than guessing. A raw 'as any' on such a line still matches directly.
+  const diff = [
+    "diff --git a/src/multiline.ts b/src/multiline.ts",
+    "--- a/src/multiline.ts",
+    "+++ b/src/multiline.ts",
+    "@@",
+    '+  const s = "unterminated on this line as any',
+  ].join("\n") + "\n";
+  const tmpPath = join(root, "fixtures", "ratchet-diffs", "gaming", "_multiline-tmp.diff");
+  writeFileSync(tmpPath, diff, "utf8");
+  try {
+    const r = ratchet(tmpPath);
+    assert.equal(r.status, 1, `unterminated string with 'as any' text must still be flagged, not silently trusted:\n${r.stdout}`);
+  } finally {
+    spawnSync("rm", ["-f", tmpPath]);
+  }
+});
+
+test("ADR-045: Node built-in assert module member calls (assert.equal etc.) count as assertions", () => {
+  const r = ratchet(join(fx, "ratchet-diffs", "gaming", "node-assert-member-call-removal.diff"));
+  assert.equal(r.status, 1, `removed assert.equal(...) calls must be caught:\n${r.stdout}`);
+  assert.match(r.stderr, /removes more test assertions/, "must report the net assertion drop");
+});
+
+test("ADR-045: the advisory assertion tally is informational only and never changes the exit code", () => {
+  const clean = ratchet(join(fx, "ratchet-diffs", "clean", "add-tests.diff"));
+  assert.equal(clean.status, 0);
+  assert.match(clean.stdout, /Advisory \(not a gate\)/, "clean diffs still print the advisory context line");
+
+  const gaming = ratchet(join(fx, "ratchet-diffs", "gaming", "remove-assert.diff"));
+  assert.equal(gaming.status, 1);
+  assert.match(gaming.stdout, /Advisory \(not a gate\)/, "rejected diffs also print the advisory context line");
+});
+
+test("ADR-045: --json output is unaffected by the advisory tally (findings-only, no advisory noise)", () => {
+  const r = spawnSync("node", [guard, "--diff", join(fx, "ratchet-diffs", "gaming", "remove-assert.diff"), "--json"], { encoding: "utf8" });
+  assert.equal(r.status, 1);
+  const parsed = JSON.parse(r.stdout);
+  assert.equal(parsed.result, "fail");
+  assert.ok(Array.isArray(parsed.findings) && parsed.findings.length > 0);
+});

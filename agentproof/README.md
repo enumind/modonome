@@ -4,18 +4,26 @@
 
 [![AgentProof](https://img.shields.io/badge/AgentProof-25%2F25%20HARDENED-brightgreen)](SPEC.md)
 
-AgentProof proves through executable scenarios that an implementation's gates
+AgentProof checks through executable scenarios that an implementation's gates
 hold under attack: that an agent cannot weaken a test, skip a check, escape a
 type, loosen coverage, collapse maker and checker into one identity, or leak raw
 code. Each scenario simulates a real attack vector, runs it against the
 implementation's enforcement code, and asserts the control catches it.
+
+Read the score for what it is. The scenarios and the runner live in this repo
+and were authored alongside the enforcement code they test, so Modonome's own
+25/25 is a **self-graded regression suite against known gaming patterns**, not
+third-party certification. Its value is that it is executable, extensible, and
+falsifiable: any framework can run it against its own gates, anyone can submit
+a scenario the current gates fail, and a community-contributed break becomes a
+named scenario. The CI attestation (Sigstore, in-toto) proves **provenance**
+(this commit's runner produced this score), not independent validation.
 
 Scope: a HARDENED result certifies gate integrity against the 25 known gaming
 patterns below. It does not certify that an autonomous agent is fully governed
 end to end (live maker/checker execution, merge policy, learning). Read it as
 "these gates cannot be gamed by these attacks," not "this autonomy is safe."
 
-Any framework can run AgentProof. A passing result is machine-verified evidence.
 A failing result names the gap precisely.
 
 ---
@@ -419,15 +427,15 @@ Open an issue to claim a scenario number before writing it.
 
 ---
 
-## Standards submissions
+## Standards direction (aspiration, not status)
 
-AgentProof is being proposed for adoption by:
+No submission has been made or accepted anywhere yet. If AgentProof earns adoption and
+independent scenario contributions, the long-term direction is to propose it to bodies
+such as the OWASP Agentic Working Group (as a reference test suite for the OWASP Top 10
+for Agentic Applications), the OpenSSF Securing Software Repositories WG, or AAIF. Earning
+that starts with adopters running it and skeptics breaking it, not with a submission.
 
-- **OWASP Agentic Working Group** as a reference test suite for the OWASP Top 10 for Agentic Applications
-- **OpenSSF Securing Software Repositories WG** as an anti-gaming ratchet conformance standard
-- **AAIF** as a governed autonomy benchmark
-
-To collaborate on a submission, open an issue at `github.com/enumind/modonome`.
+To collaborate, open an issue at `github.com/enumind/modonome`.
 
 ---
 

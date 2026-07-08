@@ -1,0 +1,121 @@
+# Owner actions
+
+Everything below requires access, credentials, or a judgment call an agent session cannot make.
+Compiled across the truth-reconciliation, evidence, hardening, and launch-prep work in this
+branch. Nothing here is launch-blocking by default except where marked **[GATE]**.
+
+## Before any Show HN or public launch push
+
+- **[GATE] Run the loop in armed mode on this repo for at least a week with a live model
+  exchange, then publish the real evidence.** Partially closed 2026-07-08
+  (`examples/demo-app/runs/2026-07-08T14-19-00Z/`): the full two-key arming mechanism was
+  exercised live, for real (`autonomy_enabled: true` + `dry_run: false` + `MODONOME_ARMED=true`,
+  `--execute`), and the code correctly refused to spend before any network call, at the default
+  `remote_model_budget_usd_per_day: 0`. That closes "does arming actually work under a real
+  attempt," which is real, new evidence, not review of the code. It does **not** close "does a
+  live maker propose something and an independent checker review it": that attempt was made
+  from a sandboxed session whose network policy allowlisted only the paid Anthropic provider
+  (both the free-tier `models.github.ai` and `huggingface.co`, a source for local model
+  weights, returned a hard `403` policy denial, not an application error; see
+  `network-policy-check.txt` in that evidence directory). **To close this fully:** either
+  allowlist a free/local model host on wherever this next runs, or explicitly raise
+  `remote_model_budget_usd_per_day` above `0` on purpose (the README's own cost table puts a
+  Tier 1 item at roughly $0.05-0.20), then run at least one real cycle and, ideally, a full
+  week armed. A skeptical reader will still find the gap between "arming works" and "a live
+  cycle happened" in about the time it takes to read `docs/audits/`. Close it before launch.
+- **[GATE] Verify the GitHub Marketplace listing is live and installable.** The README sells
+  `uses: enumind/modonome@v1` as a drop-in Action; `action.yml` has the branding metadata
+  Marketplace requires, but nothing in this repo can confirm the listing is actually published
+  and searchable. A reader who clicks through to a missing listing is a lost install.
+- **[GATE] Confirm the second CODEOWNER is actively reviewing, beyond being named on paper.**
+  `.github/CODEOWNERS` already names two owners (`@nateshpp @techseek4vr`), so this may already
+  be true rather than a recruiting task, worth confirming rather than assuming either way. A
+  bus-factor of two, both reviewing, is a real answer to the "solo project" line of attack; a
+  bus-factor of one with a second name on paper is not.
+- Register the project at bestpractices.dev for the OpenSSF Best Practices badge (the
+  placeholder was removed from the README rather than shipped broken, see the truth-audit
+  commit). Add the real badge back once a `PROJECT_ID` exists.
+- Enable GitHub Discussions and file the good-first-issues below with labels.
+- Post the Show HN draft (`docs/launch/show-hn.md`) and the X thread
+  (`docs/launch/x-thread.md`), in that order, only after the two gates above are cleared.
+
+## Infrastructure and DNS (cannot be verified from this environment)
+
+- `site/CNAME` contains `www.modonome.com`; every canonical/OG URL in `site/index.html` is the
+  apex `https://modonome.com/`. Confirm at the DNS/GitHub Pages level that the apex redirects to
+  or serves identically to the `www` host, so there is no redirect hop or Pages custom-domain
+  warning for a visitor landing on the canonical URL.
+- The real Content-Security-Policy served to site visitors lives in a Cloudflare Transform Rule,
+  not in this repo (see the comment at the top of `site/index.html` and `site/_headers`).
+  Confirm the live rule still matches `site/_headers`' reference values; this cannot be audited
+  from source.
+
+## Release timing (the pipeline itself needs no setup, it already works)
+
+- `modonome@0.1.0-alpha` is live on npm (`latest`/`alpha` dist-tags), with an active `next`
+  edge channel. `publish.yml`/`publish-edge.yml` are OIDC trusted-publishing, already exercised.
+  **Do not treat this as unfinished plumbing.** The only owner decision is *when* to cut the
+  next tagged release and what the CHANGELOG highlights section should say at that point
+  (`CHANGELOG.md` already has an `## [0.1.0-alpha]` highlights digest ready to extend).
+
+## Good first issues to file
+
+Each of these is scoped, has clear acceptance criteria, and does not require deep context to
+start:
+
+1. **New AgentProof false-positive fixture.** Find a real code pattern that trips the ratchet's
+   type-escape or coverage checks incorrectly, add a `fixtures/ratchet-diffs/clean/` fixture and
+   a test proving it now passes. Template: `fixtures/ratchet-diffs/clean/ts-any-in-string-and-comment.diff`.
+2. **Ratchet language coverage gap.** Pick a common assertion or skip idiom in a supported
+   language (JS/TS, Python, Java, .NET) not yet recognized, add fixtures and a test. Template:
+   the `node-assert-member-call-removal.diff` fix in `scripts/guard-ratchet.mjs`.
+3. **A second adapter registration.** `npx modonome adapter-verify` shipped (ADR-046); implement
+   the contract in `docs/adapters.md` for a different agentic CLI (aider, codex-cli, or similar),
+   register it in `adapters.json`, run `npx modonome adapter-verify <name>` locally, and attach
+   its output to the PR.
+4. **Gauntlet output polish.** The share line and badge snippet
+   (`scripts/gauntlet.mjs`) are new; propose refinements based on real usage (a `--quiet` flag,
+   a machine-readable summary line, whatever real users ask for).
+5. **Docs nits.** `docs/README.md` still flags `docs/workflow-fixes.md` as unlinked from the
+   index (advisory, `check-md-governance`); link it or fold it into a linked doc.
+6. **CheckerProof corpus entries.** The benchmark shipped (ADR-046, `checkerproof/README.md`);
+   add more seeded-defect maker diffs matching categories in the hardened
+   `prompts/roles/checker.txt` rubric, or propose a genuinely new category alongside a rubric
+   update.
+7. **Break the Ratchet triage.** Watch for submissions via the issue template
+   (`.github/ISSUE_TEMPLATE/break-the-ratchet.yml`) and review `candidate-break` verdicts by
+   hand; see `BREAK-THE-RATCHET.md`.
+
+## Shipped, per ADR-046 (superseding ADR-045's deferral of these three)
+
+Direct owner instruction reversed the original demand-gating call. All three are real, tested,
+and (where live evidence applies) actually run, not stubbed:
+
+- **`adapter-verify`** (`scripts/adapter-verify.mjs`, `npx modonome adapter-verify`). Static tier
+  always runs; live tier skips cleanly when a binary is absent. Ships with a working reference
+  adapter and a `--self-test` mode.
+- **CheckerProof** (`checkerproof/`, `npx modonome checkerproof`). Advisory, always exits 0,
+  skips rather than fabricates a score when no model is reachable. First evidence file is a real
+  live run against this repo's configured checker (`claude-opus-4-8`): 5/5 on 2026-07-08. Owner
+  follow-up: **re-run periodically** (`node checkerproof/runner.mjs --write-evidence`) and decide
+  what a declining catch rate should trigger; one run is a baseline, not a trend.
+- **Break the Ratchet** (`BREAK-THE-RATCHET.md`, `challenge/judge.mjs`,
+  `npx modonome break-the-ratchet`). Submissions are never executed, only text-analyzed by the
+  ratchet itself. Seeded with one real, honest hall-of-fame entry. Owner follow-up: **triage
+  incoming submissions** (good first issue 7 above); `SUPPORT.md`'s no-SLA framing applies.
+
+## Still genuinely deferred (ADR-045, unaffected by ADR-046)
+
+- **A second host-adoption example** (governing a real repo that is not modonome). Trigger: the
+  armed-week gate above clears and produces evidence worth generalizing into a second example.
+- **The AST analysis tier.** Cut, not deferred: see ADR-045 point 2. Contradicts the
+  zero-dependency guarantee; the honest-limits framing makes regex-only defensible.
+
+## Notes on what NOT to do
+
+- Do not bump the npm version, cut a git tag, or edit `publish.yml`/`publish-edge.yml` without
+  reading this section first: the pipeline works, and version timing is a business decision, not
+  a technical one.
+- Do not silently widen the `.gitignore` `!examples/demo-app/runs/` exception to other `runs/`
+  directories; it was scoped narrowly on purpose after a real evidence-commit was silently
+  dropped by the bare `runs/` rule during this work (see the "fix: harden the ratchet" commit).

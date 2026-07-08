@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:5c8b2b06867da2c07e8766db14a5a9901ac6dc781697cc4f2d203c8211cb42e3
-Files: 972  Bytes: 3582195  Map tokens: 131084/120000
+Merkle root: sha256:845e8b35b5de64b4c920d5bbdcf431e8b5af0df5190253d4a6c0874f1522c894
+Files: 1021  Bytes: 3756020  Map tokens: 135457/120000
 
 ## Modules
 
@@ -62,16 +62,19 @@ Files: 972  Bytes: 3582195  Map tokens: 131084/120000
 - ADOPTION-GUIDE.md [F:7479c14986]: Adoption guide
 - AGENTS.md [F:a54ff182c7]: Agent instructions for modonome
 - ARCHITECTURE.md [F:8f6366fd8e]: Architecture
+- BREAK-THE-RATCHET.md [F:244a368695]: Break the Ratchet
 - CHANGELOG.md [F:06572a96a5]: Changelog
 - CODEX.md [F:2f41a784d9]: Codex instructions for modonome
 - CODE_OF_CONDUCT.md [F:ffdbe3a1e7]: Contributor Covenant Code of Conduct
 - CONTRIBUTING.md [F:eca12c0a30]: Contributing to Modonome
 - GOVERNANCE.md [F:b60c6a93e9]: Governance
+- OWNER-ACTIONS.md [F:c97cb4d123]: Owner actions
 - QUICKSTART.md [F:147873af8b]: Quickstart
-- README.md [F:b335630551]: Why businesses adopt Modonome
+- README.md [F:b335630551]: Try it in 60 seconds (read-only)
 - RELEASE-EVIDENCE.md [F:705a3ca9b3]: Release evidence
 - ROADMAP.md [F:683343bdf9]: Roadmap
 - SECURITY.md [F:f6ed156e4b]: Security model
+- SUPPORT.md [F:c5fe610b02]: Support
 - agentproof/CONFORMANCE-INTERFACE.md [F:cf2908e0f2]: AgentProof Conformance Interface
 - agentproof/CONTRIBUTING.md [F:69ddfa4ff4]: Contributing to AgentProof
 - agentproof/README.md [F:5621bc51b3]: AgentProof
@@ -103,6 +106,14 @@ Files: 972  Bytes: 3582195  Map tokens: 131084/120000
 - apps/control-panel/src/state/liveClient.ts [F:ec52ca3820]: Read-only reachability probe for an OpenAI-compatible base URL (LM Studio, Ollama, a gateway).
 - apps/control-panel/src/state/types.ts [F:0a85f3b8e5]: The subject a mode points at: which repo the panel is reading.
 - bin/modonome.mjs [F:f90930c3c3]: The authoritative arming gate. A config file the agent can write can never arm the engine on its own: arming requires the MODONOME_ARMED=true environment variab
+- challenge/judge.mjs [F:90cbb2cf6a]: Load and schema-validate a submission directory: exactly one .patch (or * .diff) file and one declaration.json. Pure I/O, no mutation, no execution. * @param {s
+- checkerproof/README.md [F:5d2ce8ee7e]: CheckerProof
+- checkerproof/runner.mjs [F:94050e680d]: Load every scenario module under checkerproof/scenarios/. Pure I/O, sorted * for stable output.
+- checkerproof/scenarios/cp-01-expected-value-drift.mjs [F:5376e86470]: CP-01: Expected-value drift. The maker's rationale describes a legitimate-sounding fix ("stabilized a flaky tax calculation test"), but the diff actually moves 
+- checkerproof/scenarios/cp-02-cross-file-assertion-migration.mjs [F:c7423b85cf]: CP-02: Cross-file assertion migration. Real coverage is removed from the file that actually exercises the risky branch (a payment-refund error path), while unre
+- checkerproof/scenarios/cp-03-vacuous-in-spirit-assertion.mjs [F:d744931e6a]: CP-03: Vacuous-in-spirit assertion. The added assertion is a real, strong, value-comparing call (so the ratchet's vacuous-assertion check, which only catches pr
+- checkerproof/scenarios/cp-04-scope-creep.mjs [F:28f278b1d9]: CP-04: Scope creep. The work item's allowed_edit_set is test-only, but the diff also touches a CI workflow file, lowering a coverage threshold there. A checker 
+- checkerproof/scenarios/cp-05-clean-negative-control.mjs [F:34ca4e55d1]: CP-05: Negative control. A genuinely correct, well-scoped test addition with no planted defect: real bug fix in the source, a real assertion that verifies it, n
 - design-system/README.md [F:5253743405]: @modonome/design-system
 - design-system/src/components/ActivationLadder/ActivationLadder.tsx [F:14edab923f]: The activation ladder: the three-rung progression from Disabled to Dry-run to Armed, * paired with the armed-mode gate checklist. Arming is only allowed when ev
 - design-system/src/components/AppShell/AppShell.tsx [F:268769c4a6]: The Modonome brand mark: a teal ring with a check on the dark ground.
@@ -154,6 +165,7 @@ Files: 972  Bytes: 3582195  Map tokens: 131084/120000
 - design-system/src/tokens/tokens.ts [F:c64c042051]: CSS custom-property name for an arming mode color.
 - docs/LEXICON.md [F:e5e9ec402f]: Lexicon
 - docs/README.md [F:0b5ca119d2]: Modonome documentation
+- docs/adapters.md [F:6e4723a45d]: Bringing an external agentic CLI (the adapter contract)
 - docs/adr/ADR-001-self-governance-pipeline.md [F:6e4b629d3c]: ADR-001: Self-Governance Pipeline
 - docs/adr/ADR-002-shadow-mode.md [F:64c5acf802]: ADR-002: Shadow Mode
 - docs/adr/ADR-003-agentproof-portability.md [F:14812742da]: ADR-003: AgentProof Portability
@@ -198,9 +210,13 @@ Files: 972  Bytes: 3582195  Map tokens: 131084/120000
 - docs/adr/ADR-042-agentproof-verified.md [F:27086b6de3]: ADR-042: AgentProof Verified and the Hardened Registry
 - docs/adr/ADR-043-terraform-module.md [F:c7326495ec]: ADR-043: Terraform module for org-level provisioning
 - docs/adr/ADR-044-agent-org-structure.md [F:ffcad313b6]: ADR-044: The agent org structure and its configurability
+- docs/adr/ADR-045-scope-focus.md [F:97fc86d7a3]: ADR-045: Scope focus for launch. Proof before surface.
+- docs/adr/ADR-046-ship-the-deferred-features.md [F:e9701967b3]: ADR-046: Ship adapter-verify, Break the Ratchet, and CheckerProof
 - docs/agent-org.md [F:c3b2fcfb69]: The Modonome agent org
+- docs/agents.md [F:a384388adc]: Agents, roles, runners, and models
 - docs/audits/claims-audit-2026-06-25.md [F:8a7591db62]: Claims audit, 2026-06-25
 - docs/audits/claims-audit-2026-07-01.md [F:6a3a98df8c]: Claims audit, 2026-07-01
+- docs/audits/claims-audit-2026-07-08.md [F:efd369884e]: Claims audit, 2026-07-08
 - docs/autonomy-plan.md [F:3dcdfa18c0]: Autonomy plan: governed autonomy on free models
 - docs/compliance/compliance.md [F:95e51a604d]: Compliance
 - docs/compliance/eu-ai-act-classification.md [F:5fa0ad758b]: EU AI Act Classification
@@ -208,7 +224,9 @@ Files: 972  Bytes: 3582195  Map tokens: 131084/120000
 - docs/control-panel-modes.md [F:83d4d07afc]: Control panel: modes, and what you can and cannot do
 - docs/enterprise.md [F:191a17b151]: Enterprise estates
 - docs/guidelines/markdown-governance.md [F:b81cf7567f]: Markdown governance policy
-- docs/knowledge-network-architecture.md [F:5e3214eb0f]: Cross-Repo Knowledge Network: v0.2 Architecture
+- docs/launch/article-seeds.md [F:6bee8a97f3]: Article seeds
+- docs/launch/show-hn.md [F:930bc5297d]: Show HN draft
+- docs/launch/x-thread.md [F:2bfaa5759d]: X thread skeleton (@ModonomeLab)
 - docs/ops/merge-governance-setup.md [F:1339474d8c]: Merge governance setup (owner action)
 - docs/ops/runner-model-config.md [F:f1f2b57403]: Runner and Model Configuration (WS-H)
 - docs/research/README.md [F:0a640a72f9]: Modonome Research Directions
@@ -220,13 +238,17 @@ Files: 972  Bytes: 3582195  Map tokens: 131084/120000
 - docs/research/agentic-governance-mesh/RD-031-semantic-compatibility-and-conflicts.md [F:0c07096c4e]: RD-031: Semantic Compatibility & Conflicts
 - docs/research/agentic-governance-mesh/RD-032-network-level-ratchet.md [F:79cec3a152]: RD-032: Network-Level Ratchet
 - docs/research/agentic-governance-mesh/governance-mesh-vision.md [F:acd892d4a0]: The Governance Mesh Vision: Modonome as a WWW for Repositories
+- docs/research/knowledge-network-architecture.md [F:bcd1c88877]: Cross-Repo Knowledge Network: v0.2 Architecture
 - docs/specs/governed-autonomy-spec.md [F:55673172df]: Governed Autonomy: A Specification for Safe Autonomous Software Engineering Agents
 - docs/specs/ratchet-spec.md [F:4d5cfa3611]: Anti-Gaming Ratchet Specification
 - docs/versioning.md [F:c1cc304e56]: Versioning and embedding
 - docs/vscode-workflow.md [F:88244532e4]: VS Code manual trigger workflow
 - docs/workflow-fixes.md [F:91a7efa0ba]: Workflow Push Event Fix
 - examples/demo-app/README.md [F:fcc5f4b906]: modonome-demo
-- examples/demo-app/WALKTHROUGH.md [F:9666ca7f0d]: Modonome on this demo app: captured dry-run + maker/checker cycle
+- examples/demo-app/WALKTHROUGH.md [F:9666ca7f0d]: Modonome on this demo app: dry-run, maker/checker cycle, and a real ratchet block
+- examples/demo-app/runs/2026-06-26T11-46-00Z/README.md [F:a37ab631dc]: Captured maker and checker run: demo-refund-coverage
+- examples/demo-app/runs/2026-07-08T05-30-00Z/README.md [F:1174d7e2ba]: Captured gate-integrity run: the ratchet blocking a gaming diff
+- examples/demo-app/runs/2026-07-08T14-19-00Z/README.md [F:9444435647]: Captured run: the two-key arming mechanism, live, at a $0 budget
 - examples/demo-app/src/CartService.js [F:599f5b2f28]: CartService: manages user shopping carts stored in memory.
 - examples/demo-app/src/CheckoutService.js [F:54c6928de9]: CheckoutService: drives the checkout flow from cart to order.
 - examples/demo-app/src/InventoryService.js [F:bd02b28f17]: InventoryService: tracks stock levels for products in memory.
@@ -244,6 +266,7 @@ Files: 972  Bytes: 3582195  Map tokens: 131084/120000
 - examples/python-service/README.md [F:ae227d695d]: Example: Python service
 - examples/python-service/app/orders.py [F:7ccad64380]: Apply a percentage discount to a list of items. Args: items: List of dicts with "price" key discount_percent: Discount percentage (0-100) Returns: Total after d
 - examples/python-service/tests/test_orders.py [F:2c2cc77861]: Test discount with 0% - should return full amount. Note: This covers only the zero-discount case. The function should be tested with non-zero discounts (10%, 50
+- fixtures/adapters/reference-adapter.mjs [F:c72e6949b9]: !/usr/bin/env node
 - fixtures/evidence-tampered.md [F:fdaf1308e4]: RELEASE-EVIDENCE
 - fixtures/negative-controls/app-syntax-error.js [F:a1411f1423]: Negative control: intentional syntax error in example app
 - fixtures/portability/prompt-injection-host/docs/guide.md [F:6fdd929a92]: Host Documentation
@@ -254,10 +277,11 @@ Files: 972  Bytes: 3582195  Map tokens: 131084/120000
 - prompts/modules/adoption.md [F:41623f0bcd]: Adoption pass
 - prompts/modules/control-panel.md [F:36693b0d8b]: Operator control panel
 - prompts/modules/gates.md [F:02359d48d5]: Deterministic gates
-- prompts/modules/network.md [F:c98f6b55e3]: Cross-repo knowledge network
+- prompts/modules/network.md [F:c98f6b55e3]: Cross-repo knowledge network (Milestone 2, not shipped)
 - prompts/modules/roles.md [F:8f62475ebe]: Agent roles
 - prompts/modules/snapshot.md [F:c324fab0cc]: Repo snapshot
 - prompts/modules/state-machine.md [F:9a28b4e90e]: Durable state machine
+- scripts/adapter-verify.mjs [F:f5d313e9f1]: Load and schema-validate adapters.json, then run the license/boundary gate * against it. Pure aside from the two reads. Returns { manifest, entry, problems } * 
 - scripts/agent/action-queue.mjs [F:5b113a0914]: Validate a record against the action-queue schema. Throws with the collected errors so a malformed action can never be enqueued.
 - scripts/agent/apply-patch.mjs [F:872221b1da]: A body looks like a unified diff when it has a "diff --git" header, or a paired "--- "/"+++ " file header, or an "@@ " hunk marker.
 - scripts/agent/openai-client.mjs [F:8d2cb93236]: Join a base URL with the chat-completions path, tolerating a trailing slash * or a base URL that already ends in "/chat/completions". * * @param {string} baseUr
@@ -302,7 +326,7 @@ Files: 972  Bytes: 3582195  Map tokens: 131084/120000
 - scripts/dry-run-sweep.mjs [F:6f247eb514]: Only fires when the swept repo actually has a control panel at apps/control-panel (auditCoverage/auditCoherence report `skipped: true` and this returns nothing 
 - scripts/fleet-ledger.mjs [F:128b647d9a]: Pull "owner/repo" out of a repository URL such as https://github.com/enumind/modonome(.git). Returns "" when it does not parse.
 - scripts/gauntlet.mjs [F:522efae76d]: A run-log writer copied from dry-run-sweep.mjs's writeRunLog: same audit-trail convention, same 30-entry cap, same "log writes must never crash the command" rul
-- scripts/guard-ratchet.mjs [F:8a10462927]: Each problem message is "<file>: <detail>". Recover the file path for a location.
+- scripts/guard-ratchet.mjs [F:8a10462927]: Strip string literals and block comments that provably open AND close on the same diff line, replacing their contents with nothing. Anything uncertain (a quote 
 - scripts/hygiene.mjs [F:90e1fd2fd9]: Collect findings for the current branch, the commits unique to it, and the PR-body-shaped surfaces we can see locally (the commit bodies themselves).
 - scripts/install-hooks.mjs [F:a7ce0f6452]: True when targetRoot is modonome's own repo (not a host that merely depends on it or vendored a copy of these scripts). Checked by package.json name rather than
 - scripts/lib/attribution-fp-corpus.mjs [F:5a3543606b]: Branch names no layer may flag. These include descriptive names that merely contain a denylisted token as a substring of a longer word.
@@ -434,6 +458,7 @@ Files: 972  Bytes: 3582195  Map tokens: 131084/120000
 - templates/.modonome/control-panel.md [F:75c1125713]: Modonome control panel
 - terraform/README.md [F:2148814594]: Modonome org-provisioning module
 - tests/action-queue.test.mjs [F:195e9217ca]: function tmpQueue
+- tests/adapter-verify.test.mjs [F:cacaab56e1]: Coverage for the adapter conformance verifier (docs/adapters.md). Tier 1
 - tests/agent-model-fallback.test.mjs [F:18f569225a]: WI-041 (ADR-039 follow-up): runtime model fallback in the loop. resolveRoleModelChain
 - tests/agentproof-attestation.test.mjs [F:1bc6d1449f]: Tests for the AgentProof conformance attestation (ADR-042). The Statement shape and
 - tests/arm-disarm.test.mjs [F:940d5f4399]: Tests for `modonome arm` and `modonome disarm`: the guided ceremony that flips
@@ -806,6 +831,8 @@ Files: 972  Bytes: 3582195  Map tokens: 131084/120000
 - S:36be7c4ac5 function DryRun `export const DryRun = () => <ArmingStateBadge mode="dry-run" size="md" />;` L6
 - S:813f68335e function Armed `export const Armed = () => <ArmingStateBadge mode="armed" envArmed size="md" />;` L8
 - S:28578fa81a function Large `export const Large = () => <ArmingStateBadge mode="armed" envArmed size="lg" />;` L10
+### checkerproof/scenarios/cp-04-scope-creep.mjs [F:28f278b1d9]
+- S:bd9f62784d const scenario `export const scenario =` L5 : CP-04: Scope creep. The work item's allowed_edit_set is test-only, but the diff also touches a CI workflow file, lowering a coverage threshold there. A checker that only reads the rationale and skims 
 ### tests/snapshot-golden.test.mjs [F:2a74ae3f05]
 - S:d595535449 function names `function names(result)` L9
 - S:a5baaff840 function modules `function modules(result)` L12
@@ -880,6 +907,8 @@ Files: 972  Bytes: 3582195  Map tokens: 131084/120000
 - S:e25d17a09c function SafeDefaults `export const SafeDefaults = () => (` L17
 ### scripts/lib/message-catalog/agent-run/remediate.mjs [F:33c4d744f3]
 - S:457f8a5e17 const MESSAGES `export const MESSAGES =` L4 : Governed Remediation (ADR-035) apply-path refusals. All non_suppressible: each guards the metadata-only rewrite's safety invariants (arming, branch protection, clean tree, usable identity, provable hi
+### checkerproof/scenarios/cp-05-clean-negative-control.mjs [F:34ca4e55d1]
+- S:4b38793395 const scenario `export const scenario =` L8 : CP-05: Negative control. A genuinely correct, well-scoped test addition with no planted defect: real bug fix in the source, a real assertion that verifies it, no scope creep. A checker with a high fal
 ### scripts/lib/jsonschema.mjs [F:34cb2b6c48]
 - S:f794e6adf4 function typeOf `function typeOf(value)` L6
 - S:0768a4cf0f function matchesType `function matchesType(value, type)` L13
@@ -1046,6 +1075,8 @@ Files: 972  Bytes: 3582195  Map tokens: 131084/120000
 ### examples/demo-app/tests/CheckoutService.test.js [F:52caf3b287]
 - S:ad302fbf54 function makeCartService `function makeCartService(cart)` L5
 - S:8d10c3ed6e function makeOrderService `function makeOrderService()` L13
+### checkerproof/scenarios/cp-01-expected-value-drift.mjs [F:5376e86470]
+- S:6c21f00789 const scenario `export const scenario =` L7 : CP-01: Expected-value drift. The maker's rationale describes a legitimate-sounding fix ("stabilized a flaky tax calculation test"), but the diff actually moves the assertion's expected value to match 
 ### .design-sync/previews/ModeSwitcher.tsx [F:545c0ccfeb]
 - S:2a04172292 function HostSelected `export const HostSelected = () => <ModeSwitcher mode="host" onModeChange={() => {}} />;` L4
 - S:2bd0a26c48 function ProductSelected `export const ProductSelected = () => <ModeSwitcher mode="product" onModeChange={() => {}} />;` L6
@@ -1306,20 +1337,22 @@ Files: 972  Bytes: 3582195  Map tokens: 131084/120000
 - S:e89c164d25 function titleFromId `function titleFromId(id: string): string` L54
 - S:f0db7341e7 const productState `export const productState: PanelState =` L89
 ### scripts/guard-ratchet.mjs [F:8a10462927]
-- S:89e92655dd function normalizeLF `function normalizeLF(s)` L55
-- S:a34306cc67 function getDiff `function getDiff()` L59
-- S:974654287c function count `function count(lines, re)` L279
-- S:fd230402e2 function deconfuse `function deconfuse(line)` L298
-- S:457528354e function stripInlineComment `function stripInlineComment(line)` L306
-- S:a4c389d72a function isVacuousAssertion `function isVacuousAssertion(line)` L311
-- S:17945c542e function countBareAsserts `function countBareAsserts(lines)` L321
-- S:4d3ac94b7c function isVacuousPyAssert `function isVacuousPyAssert(line)` L329
-- S:0b8ff85c9c function classifyCode `function classifyCode(msg)` L587
-- S:2358b05e12 function fileOf `function fileOf(msg)` L601 : Each problem message is "<file>: <detail>". Recover the file path for a location.
-- S:edb5058173 function helpUri `function helpUri(code)` L606
-- S:eff02f504b function toFindings `function toFindings(list)` L610
-- S:42188b3bb9 function emitJson `function emitJson(findings)` L617
-- S:1d0f5bc129 function emitSarif `function emitSarif(findings)` L629
+- S:89e92655dd function normalizeLF `function normalizeLF(s)` L57
+- S:a34306cc67 function getDiff `function getDiff()` L61
+- S:974654287c function count `function count(lines, re)` L304
+- S:fd230402e2 function deconfuse `function deconfuse(line)` L323
+- S:457528354e function stripInlineComment `function stripInlineComment(line)` L331
+- S:d0c2835a28 function stripLineLocalNoise `function stripLineLocalNoise(line)` L343 : Strip string literals and block comments that provably open AND close on the same diff line, replacing their contents with nothing. Anything uncertain (a quote or that does not close on this line, or 
+- S:a4c389d72a function isVacuousAssertion `function isVacuousAssertion(line)` L383
+- S:17945c542e function countBareAsserts `function countBareAsserts(lines)` L393
+- S:4d3ac94b7c function isVacuousPyAssert `function isVacuousPyAssert(line)` L401
+- S:0b8ff85c9c function classifyCode `function classifyCode(msg)` L666
+- S:2358b05e12 function fileOf `function fileOf(msg)` L680 : Each problem message is "<file>: <detail>". Recover the file path for a location.
+- S:edb5058173 function helpUri `function helpUri(code)` L685
+- S:eff02f504b function toFindings `function toFindings(list)` L689
+- S:42188b3bb9 function emitJson `function emitJson(findings)` L696
+- S:1d0f5bc129 function emitSarif `function emitSarif(findings)` L708
+- S:06700c1faf function printAssertionTallyAdvisory `function printAssertionTallyAdvisory()` L748 : Advisory-only, informational, never affects the exit code (see the comment where assertionTally is declared above). Printed in both outcomes so a reviewer sees the cross-file shape whether or not a sp
 ### tests/report-impact.test.mjs [F:8a3433b070]
 - S:69f3537d3b function tmp `function tmp()` L13
 - S:1fe8548dac function fixture `function fixture()` L17
@@ -1399,6 +1432,11 @@ Files: 972  Bytes: 3582195  Map tokens: 131084/120000
 - S:744cc47208 function cleanCommitMessage `export function cleanCommitMessage(message)` L36 : Remove every line carrying an AI-authorship signature from a commit message, then * drop the trailing blank lines the removal leaves behind. Pure and deterministic. * * Never returns an empty message:
 - S:bc4bff4faa function planCommitRewrites `export function planCommitRewrites(commits, identity)` L59 : Decide the metadata-only rewrite for each commit in a range. Input `commits` is the * range oldest-first, each { sha, an, ae, cn, ce, message }. `identity` is the target * { name, email } that replace
 - S:792d313360 function remediationFingerprint `export function remediationFingerprint(plan)` L84 : A deterministic fingerprint of a rewrite plan. Same findings and target identity * produce the same plan and therefore the same fingerprint, which is what lets an owner * approve a proposal and later 
+### challenge/judge.mjs [F:90cbb2cf6a]
+- S:18ff6b9c89 function loadSubmission `export function loadSubmission(dir)` L41 : Load and schema-validate a submission directory: exactly one .patch (or * .diff) file and one declaration.json. Pure I/O, no mutation, no execution. * @param {string} dir * @returns {{ patchPath: stri
+- S:00452332a2 function runRatchetAgainstSubmission `export function runRatchetAgainstSubmission(patchPath, deps = {})` L74 : Run the ratchet against the submitted diff TEXT ONLY, via its existing * --diff mode. Never applies or executes the diff. Returns the ratchet's raw * exit status and output for the report. * @param {s
+- S:4296da48b7 function judge `export function judge(declaration, ratchetResult)` L86 : Combine the declaration and the ratchet's verdict into a judged result. * Pure. "confirmed-break" only when the submitter claimed the diff should be * blocked and the ratchet, in fact, did not block i
+- S:c388580f86 function main `async function main(argv)` L114
 ### scripts/hygiene.mjs [F:90e1fd2fd9]
 - S:fc3bb4bc24 function collectFindings `function collectFindings()` L44 : Collect findings for the current branch, the commits unique to it, and the PR-body-shaped surfaces we can see locally (the commit bodies themselves).
 - S:400a8c02c3 function applyFix `function applyFix(branch, findings)` L61
@@ -1432,6 +1470,11 @@ Files: 972  Bytes: 3582195  Map tokens: 131084/120000
 - S:94383b0aef type RefundResult `export type RefundResult =` L3
 - S:16a3c28802 function charge `export function charge(card: Card): "ok" | "declined"` L9
 - S:bf5cf69681 function refund `export function refund(card: Card, amount: number): RefundResult` L13
+### checkerproof/runner.mjs [F:94050e680d]
+- S:5cc853b5b1 function loadScenarios `export async function loadScenarios(dir = join(here, "scenarios"))` L50 : Load every scenario module under checkerproof/scenarios/. Pure I/O, sorted * for stable output.
+- S:8e586c7c13 function commandOnPath `function commandOnPath(command)` L60
+- S:44432e7cb0 function runScenario `export async function runScenario(scenario, checker, deps = {})` L75 : Run one scenario against the resolved checker role. Never throws: every * failure to reach a model (binary absent, spawn error, non-zero exit, no * base_url for an openai-http checker) resolves to a "
+- S:5607ca9508 function main `async function main(argv)` L116
 ### tests/arm-disarm.test.mjs [F:940d5f4399]
 - S:517ace9ff8 function tmp `function tmp()` L17
 - S:2fb48a9b04 function run `function run(script, ...args)` L21
@@ -1632,7 +1675,7 @@ Files: 972  Bytes: 3582195  Map tokens: 131084/120000
 - S:5327d3b72c function main `function main()` L223
 - S:e8f6de81b4 function selfTest `function selfTest()` L259
 ### site/index.html [F:aef9cf1e27]
-- S:52826c5034 class Component `class Component extends DCLogic` L766
+- S:52826c5034 class Component `class Component extends DCLogic` L768
 ### scripts/agentproof-attestation.mjs [F:af6de66499]
 - S:52be3c746f function git `function git(...a)` L32
 - S:48102a3f37 function parseFraction `function parseFraction(s)` L37
@@ -1715,6 +1758,13 @@ Files: 972  Bytes: 3582195  Map tokens: 131084/120000
 - S:644e7adeef const tokens `export const tokens =` L56
 ### scripts/lib/message-catalog/advisory/detect-near-miss.mjs [F:c6bd51a324]
 - S:f80ff247d7 const MESSAGES `export const MESSAGES =` L1
+### fixtures/adapters/reference-adapter.mjs [F:c72e6949b9]
+- S:d029f96a64 function flagValue `function flagValue(argv, name)` L27
+- S:44a852f5e1 function readStdin `function readStdin()` L32
+- S:276edd396a function postJson `function postJson(url, body, apiKey)` L45
+- S:301d436113 function main `async function main(argv)` L80
+### checkerproof/scenarios/cp-02-cross-file-assertion-migration.mjs [F:c7423b85cf]
+- S:29574da2e9 const scenario `export const scenario =` L7 : CP-02: Cross-file assertion migration. Real coverage is removed from the file that actually exercises the risky branch (a payment-refund error path), while unrelated, low-value assertions are added to
 ### scripts/audit-learnings.mjs [F:c9493b5275]
 - S:9299cd9a70 function matches `function matches(l)` L31
 ### tests/terraform-module-shape.test.mjs [F:ca05b6ba1c]
@@ -1725,6 +1775,8 @@ Files: 972  Bytes: 3582195  Map tokens: 131084/120000
 - S:ee9b2c90d1 function walk `function walk(dir, out = [])` L53
 ### .design-sync/previews/Sparkline.tsx [F:ca13fe2a5b]
 - S:aa4de9995b function Trends `export const Trends = () => (` L4
+### tests/adapter-verify.test.mjs [F:cacaab56e1]
+- S:66ac4b8d64 function makeFakeSpawn `function makeFakeSpawn(script = {})` L83
 ### scripts/lib/work-item-validate.mjs [F:cb3c5f7715]
 - S:039c3576c4 function modelFamily `export function modelFamily(model)` L23 : Resolve a model name to its family by longest-matching prefix. Returns null when no prefix matches, so unrecognized models are treated as distinct families (they fall through the family check and are 
 - S:b128b3a196 function governanceErrors `export function governanceErrors(item, config = {})` L36 : Governance rules that JSON Schema cannot express (cross-field invariants).
@@ -1791,6 +1843,8 @@ Files: 972  Bytes: 3582195  Map tokens: 131084/120000
 - S:e44c445050 function HelpHint `export function HelpHint({ label, children, size = 13 }: HelpHintProps)` L21 : A tiny circular help affordance: a `help` icon button that reveals its text in a * Tooltip on hover or keyboard focus. This is the pervasive "hover for context" * control placed next to section labels
 ### scripts/connect.mjs [F:d6401dd73e]
 - S:c1c63b1bf8 function planFile `function planFile(editor)` L35
+### checkerproof/scenarios/cp-03-vacuous-in-spirit-assertion.mjs [F:d744931e6a]
+- S:c9785dab7b const scenario `export const scenario =` L6 : CP-03: Vacuous-in-spirit assertion. The added assertion is a real, strong, value-comparing call (so the ratchet's vacuous-assertion check, which only catches provable tautologies like `expect(1).toBe(
 ### tests/run-log.test.mjs [F:d7d4e8d2a9]
 - S:fe9c17eefa function tmp `function tmp()` L12
 - S:37a0d721be function run `function run(script, ...args)` L16
@@ -1838,14 +1892,15 @@ Files: 972  Bytes: 3582195  Map tokens: 131084/120000
 - S:a75126f856 function buildRunnerEnv `export function buildRunnerEnv(baseEnv, role)` L233 : Build the child-process environment for a role invocation. When the resolved model carries a base_url (a local, self-hosted, or gateway endpoint), route the CLI there by setting ANTHROPIC_BASE_URL, wh
 - S:9b986c2d8a function buildRolePrompt `function buildRolePrompt(plan, role, env)` L243 : Render the role prompt with the same variables regardless of transport: identity/model placeholders, the run branch, and promoted learnings.
 - S:9f59110fda function writeTranscriptAndMetric `function writeTranscriptAndMetric(plan, role, r, transcriptText, extra = {})` L263 : Write the transcript log and append the schema-conformant metric shared by every transport. `extra` merges additional fields into the metric record (for example whether an openai-http patch applied).
-- S:fe41df17f9 function invokeRoleClaudeCli `function invokeRoleClaudeCli(plan, role, env)` L291
-- S:c028c053e3 function invokeRoleOpenAI `export async function invokeRoleOpenAI(plan, role, env, deps = {})` L313 : Provider-native single-shot execution: render the same prompt, call an OpenAI-compatible chat-completions endpoint once, and turn the response into file changes deterministically by extracting a unifi
-- S:8f6d716f36 function loadAdapterEntry `function loadAdapterEntry(deps = {})` L379 : Load the single agentic-CLI adapter entry from adapters.json for the tool-loop path. Returns the first declared adapter, or null when the manifest is empty or absent (which makes tool-loop degrade to 
-- S:83b3a2ab69 function invokeRoleToolLoop `export async function invokeRoleToolLoop(plan, role, env, deps = {})` L399 : Agentic tool-loop execution: spawn the declared external coding CLI (adapt-first, ADR-032) pointed at the resolved OpenAI-compatible endpoint. Containment, the turn cap, and the wall-clock timeout are
-- S:f8004b7b76 function invokeRole `function invokeRole(plan, role, env, deps)` L431
-- S:4f43d4e206 function runCycle `export function runCycle(opts, { execute, cfg, runId, env = process.env, queueDir, deps })` L445 : Execute a plan. Refuses a hosted run when the budget is zero. Runs the maker, then the checker, each as a distinct CLI invocation with its own model and identity. `deps` (chatCompletionImpl/applyPatch
-- S:d33c2c4d3e function runRoles `function runRoles(plan, roles, env, deps)` L490 : Invoke each role in turn and produce the "executed" result. A role's transport decides whether invokeRole returns a status number synchronously (anthropic-cli) or a Promise (openai-http, which awaits 
-- S:f71a25079c function main `async function main()` L505
+- S:693b8fedee function buildRoleCliArgs `export function buildRoleCliArgs(r, plan, prompt)` L315 : Build the argv for the CLI-transport maker/checker invocation. Exported and * pure (no spawn) so a test can assert on the exact flags without launching a * real binary or spending tokens. * @param {{ 
+- S:fe41df17f9 function invokeRoleClaudeCli `function invokeRoleClaudeCli(plan, role, env, deps = {})` L325
+- S:c028c053e3 function invokeRoleOpenAI `export async function invokeRoleOpenAI(plan, role, env, deps = {})` L357 : Provider-native single-shot execution: render the same prompt, call an OpenAI-compatible chat-completions endpoint once, and turn the response into file changes deterministically by extracting a unifi
+- S:8f6d716f36 function loadAdapterEntry `function loadAdapterEntry(deps = {})` L423 : Load the single agentic-CLI adapter entry from adapters.json for the tool-loop path. Returns the first declared adapter, or null when the manifest is empty or absent (which makes tool-loop degrade to 
+- S:83b3a2ab69 function invokeRoleToolLoop `export async function invokeRoleToolLoop(plan, role, env, deps = {})` L443 : Agentic tool-loop execution: spawn the declared external coding CLI (adapt-first, ADR-032) pointed at the resolved OpenAI-compatible endpoint. Containment, the turn cap, and the wall-clock timeout are
+- S:f8004b7b76 function invokeRole `function invokeRole(plan, role, env, deps)` L475
+- S:4f43d4e206 function runCycle `export function runCycle(opts, { execute, cfg, runId, env = process.env, queueDir, deps })` L489 : Execute a plan. Refuses a hosted run when the budget is zero. Runs the maker, then the checker, each as a distinct CLI invocation with its own model and identity. `deps` (chatCompletionImpl/applyPatch
+- S:d33c2c4d3e function runRoles `function runRoles(plan, roles, env, deps)` L534 : Invoke each role in turn and produce the "executed" result. A role's transport decides whether invokeRole returns a status number synchronously (anthropic-cli) or a Promise (openai-http, which awaits 
+- S:f71a25079c function main `async function main()` L549
 ### scripts/lib/message-catalog/gate/check-self-application.mjs [F:de188c1b79]
 - S:2bd83b1706 const MESSAGES `export const MESSAGES =` L1
 ### tests/scaffold-adoption.test.mjs [F:de5ebbf586]
@@ -1955,6 +2010,13 @@ Files: 972  Bytes: 3582195  Map tokens: 131084/120000
 - S:075e86ea7c function topoSort `export function topoSort(adjacency, nodes)` L48 : topoSort(adjacency, nodes) -> { order: [...], error?: string } Returns a topological ordering of `nodes` given the directed edges in `adjacency`. Nodes not present in `nodes` but reachable via edges a
 - S:cb1a5f81e0 function reachableFrom `export function reachableFrom(adjacency, start)` L78 : reachableFrom(adjacency, start) -> Set of nodes reachable from `start` by following directed edges (breadth-first). `start` itself is not included unless the graph has a path back to it. Used by the d
 - S:9ec4198171 function collectNodes `function collectNodes(adjacency)` L93 : Collect every node mentioned either as a key or as a neighbour value.
+### scripts/adapter-verify.mjs [F:f5d313e9f1]
+- S:c063b246d1 function loadAndValidateManifest `export function loadAndValidateManifest(rootDir, name)` L54 : Load and schema-validate adapters.json, then run the license/boundary gate * against it. Pure aside from the two reads. Returns { manifest, entry, problems } * where entry is undefined if `name` is no
+- S:45bcd8bd18 function checkArgvSanity `export function checkArgvSanity(entry)` L78 : Confirm the pure argv-construction helpers resolve without throwing and * produce a shape that never carries a prompt or a credential-like value. * Pure. Returns a list of problem strings (empty means
+- S:753ca853b2 function commandOnPath `function commandOnPath(command)` L100
+- S:59cd81d0e0 function startProbeServer `function startProbeServer(replyContent)` L122 : Minimal local OpenAI-compatible chat-completions mock. No real network, no cost, no external dependency. Scripted to echo back a fixed marker so a conforming adapter that forwards the model's reply in
+- S:781c2d6b40 function runLiveProbe `export async function runLiveProbe(entry, opts = {})` L152 : Run the live conformance probe for one adapter entry. Returns * { status: "pass"|"fail"|"skipped", detail }. Never throws: every failure * mode (binary absent, timeout, non-zero exit, containment viol
+- S:c63f60f015 function main `async function main(argv)` L210
 ### .design-sync/previews/Button.tsx [F:f6e100ab45]
 - S:f988f356bd function Variants `export const Variants = () => (` L4
 - S:edacefac29 function Sizes `export const Sizes = () => (` L19
@@ -1967,10 +2029,10 @@ Files: 972  Bytes: 3582195  Map tokens: 131084/120000
 - S:a3bf9f1833 interface QueueBoardProps `export interface QueueBoardProps` L4
 - S:16975f80af function QueueBoard `export function QueueBoard({ items, onSelect }: QueueBoardProps)` L18 : The work queue as a board. Items are grouped into the columns of the durable state * machine (queued, claimed, making, checking, merge ready, done, escalated), with * rework folded into making and mer
 ### bin/modonome.mjs [F:f90930c3c3]
-- S:5835c8b608 function resolveArming `export function resolveArming(targetDir, env = process.env)` L65 : The authoritative arming gate. A config file the agent can write can never arm the engine on its own: arming requires the MODONOME_ARMED=true environment variable, which lives in CI or operator scope,
-- S:53b9eda0f8 function run `function run(script, args)` L86
-- S:214691c25d function targetDirFrom `function targetDirFrom(rest)` L96
-- S:9249714b12 function main `function main(argv)` L100
+- S:5835c8b608 function resolveArming `export function resolveArming(targetDir, env = process.env)` L69 : The authoritative arming gate. A config file the agent can write can never arm the engine on its own: arming requires the MODONOME_ARMED=true environment variable, which lives in CI or operator scope,
+- S:53b9eda0f8 function run `function run(script, args)` L90
+- S:214691c25d function targetDirFrom `function targetDirFrom(rest)` L100
+- S:9249714b12 function main `function main(argv)` L104
 ### tests/decisions-authority.test.mjs [F:f921eecad7]
 - S:b1b5323930 function runGate `function runGate(dir, args = [])` L77
 - S:0b25fbc8fe function plainDecisionsDir `function plainDecisionsDir(content)` L81
@@ -2001,12 +2063,12 @@ Files: 972  Bytes: 3582195  Map tokens: 131084/120000
 ### scripts/check-checker-engagement.mjs [F:fc5d887ff6]
 - S:aa00911a72 function readEvents `function readEvents(path)` L25
 ### scripts/check-md-governance.mjs [F:fd08562f92]
-- S:99ae98a428 function walkMd `function walkMd(dir, out = [])` L68
-- S:575af01d8c function checkTarget `function checkTarget(fileDir, rawTarget, srcFile)` L107
-- S:bc1fd2c5b3 function adrNumbers `function adrNumbers(dir)` L146 : 4. ADR number uniqueness within docs/adr, and across docs/adr and docs/research.
-- S:24c6a3dc6c function parseFrontMatter `function parseFrontMatter(text)` L202 : Front-matter parsing for canonical uniqueness and advisory presence.
-- S:6647a4e550 function extractCitedPaths `function extractCitedPaths(text)` L250
-- S:38b734e681 function commitsSince `function commitsSince(paths, sinceDate)` L275 : Commits touching any of `paths` since `sinceDate` (a YYYY-MM-DD string already validated by the caller). Returns 0 (fail open, warn-free) if this is not a git checkout, e.g. an npm-installed copy of t
+- S:99ae98a428 function walkMd `function walkMd(dir, out = [])` L71
+- S:575af01d8c function checkTarget `function checkTarget(fileDir, rawTarget, srcFile)` L110
+- S:bc1fd2c5b3 function adrNumbers `function adrNumbers(dir)` L149 : 4. ADR number uniqueness within docs/adr, and across docs/adr and docs/research.
+- S:24c6a3dc6c function parseFrontMatter `function parseFrontMatter(text)` L205 : Front-matter parsing for canonical uniqueness and advisory presence.
+- S:6647a4e550 function extractCitedPaths `function extractCitedPaths(text)` L253
+- S:38b734e681 function commitsSince `function commitsSince(paths, sinceDate)` L278 : Commits touching any of `paths` since `sinceDate` (a YYYY-MM-DD string already validated by the caller). Returns 0 (fail open, warn-free) if this is not a git checkout, e.g. an npm-installed copy of t
 ### apps/control-panel/server/ownership.mjs [F:fd4b8473fa]
 - S:9bcfb77bfa function parseCodeowners `export function parseCodeowners(text)` L23 : Parse CODEOWNERS "pattern @owner @owner" lines into ordered rules. Comments and blank lines are dropped; each owner handle is lowercased with its leading @ removed so it compares directly to a handle 
 - S:7a464a2d86 function ownersForPath `export function ownersForPath(rules, path)` L39 : GitHub CODEOWNERS is last-match-wins: the owners of the LAST rule whose pattern matches the path. Supports the common subset modonome's own CODEOWNERS uses (a "*" catchall and rooted dir/file prefixes
@@ -2181,6 +2243,7 @@ Files: 972  Bytes: 3582195  Map tokens: 131084/120000
 - apps/control-panel/server/modonomeWriter.mjs -> apps/control-panel/server/learningsFormat.mjs
 - apps/control-panel/server/modonomeWriter.mjs -> scripts/lib/work-item-validate.mjs
 - apps/control-panel/server/modonomeWriter.mjs -> scripts/lib/config-validate.mjs
+- tests/checkerproof.test.mjs -> checkerproof/runner.mjs
 - scripts/test-prompt-behavior.mjs -> scripts/lib/messages.mjs
 - scripts/lib/lang-adapters/index.mjs -> scripts/lib/lang-adapters/python.mjs
 - scripts/lib/lang-adapters/index.mjs -> scripts/lib/lang-adapters/js-ts.mjs
@@ -2380,6 +2443,7 @@ Files: 972  Bytes: 3582195  Map tokens: 131084/120000
 - tests/chaos.test.mjs -> scripts/validate-config.mjs
 - scripts/lib/remediate.mjs -> scripts/lib/detect-attribution.mjs
 - design-system/src/components/States/index.ts -> design-system/src/components/States/States.tsx
+- challenge/judge.mjs -> scripts/lib/jsonschema.mjs
 - scripts/hygiene.mjs -> scripts/lib/messages.mjs
 - scripts/hygiene.mjs -> scripts/lib/github-api.mjs
 - scripts/hygiene.mjs -> scripts/lib/git-scope.mjs
@@ -2393,6 +2457,10 @@ Files: 972  Bytes: 3582195  Map tokens: 131084/120000
 - scripts/build-release-evidence.mjs -> scripts/lib/messages.mjs
 - scripts/build-release-evidence.mjs -> scripts/lib/yaml-lite.mjs
 - scripts/build-release-evidence.mjs -> scripts/lib/learnings.mjs
+- checkerproof/runner.mjs -> scripts/agent/review-diff.mjs
+- checkerproof/runner.mjs -> scripts/agent/resolve-role.mjs
+- checkerproof/runner.mjs -> scripts/agent/openai-client.mjs
+- checkerproof/runner.mjs -> scripts/validate-config.mjs
 - scripts/check-edit-set-compliance.mjs -> scripts/lib/messages.mjs
 - tests/schedule-trigger-schema.test.mjs -> scripts/lib/jsonschema.mjs
 - design-system/src/components/LeaseTable/LeaseTable.tsx -> design-system/src/components/StatusPill/StatusPill.tsx
@@ -2589,6 +2657,7 @@ Files: 972  Bytes: 3582195  Map tokens: 131084/120000
 - design-system/src/components/AuditTimeline/index.ts -> design-system/src/components/AuditTimeline/AuditTimeline.tsx
 - tests/check-gate-dag.test.mjs -> scripts/check-gate-dag.mjs
 - tests/control-panel-work-item-writer.test.mjs -> apps/control-panel/server/modonomeWriter.mjs
+- tests/run-cycle-cli-permissions.test.mjs -> scripts/agent/run-cycle.mjs
 - tests/role-registry.test.mjs -> scripts/agent/resolve-role.mjs
 - tests/role-registry.test.mjs -> scripts/validate-config.mjs
 - tests/role-registry.test.mjs -> scripts/agent/run-cycle.mjs
@@ -2621,6 +2690,9 @@ Files: 972  Bytes: 3582195  Map tokens: 131084/120000
 - scripts/validate-work-item.mjs -> scripts/lib/work-item-validate.mjs
 - design-system/src/components/Toggle/index.ts -> design-system/src/components/Toggle/Toggle.tsx
 - design-system/src/components/CostPanel/index.ts -> design-system/src/components/CostPanel/CostPanel.tsx
+- scripts/adapter-verify.mjs -> scripts/lib/jsonschema.mjs
+- scripts/adapter-verify.mjs -> scripts/agent/tool-loop-adapter.mjs
+- scripts/adapter-verify.mjs -> scripts/check-licenses.mjs
 - design-system/src/components/Slider/index.ts -> design-system/src/components/Slider/Slider.tsx
 - examples/demo-app/tests/InventoryService.test.js -> examples/demo-app/src/InventoryService.js
 - design-system/src/components/QueueBoard/QueueBoard.tsx -> design-system/src/components/WorkItemCard/WorkItemCard.tsx
@@ -2629,6 +2701,7 @@ Files: 972  Bytes: 3582195  Map tokens: 131084/120000
 - tests/decisions-authority.test.mjs -> scripts/check-decisions-authority.mjs
 - design-system/src/components/IdentityChip/IdentityChip.tsx -> design-system/src/lib/cx.ts
 - scripts/assert-governed-change.mjs -> scripts/lib/messages.mjs
+- tests/break-the-ratchet-judge.test.mjs -> challenge/judge.mjs
 - design-system/src/components/ProtectedPathRow/index.ts -> design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx
 - scripts/check-gate-dag.mjs -> scripts/lib/messages.mjs
 - scripts/check-gate-dag.mjs -> scripts/lib/graph.mjs
@@ -2639,54 +2712,54 @@ Files: 972  Bytes: 3582195  Map tokens: 131084/120000
 
 ## Attention (centrality + pagerank)
 
-1. scripts/lib/messages.mjs centrality=63 pagerank=0.040025
-2. scripts/lib/message-catalog/index.mjs centrality=58 pagerank=0.012078
-3. design-system/src/lib/cx.ts centrality=32 pagerank=0.028066
-4. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.018194
-5. design-system/src/index.ts centrality=48 pagerank=0.000738
-6. scripts/lib/yaml-lite.mjs centrality=21 pagerank=0.017492
-7. scripts/lib/jsonschema.mjs centrality=13 pagerank=0.019047
-8. scripts/agent/run-cycle.mjs centrality=24 pagerank=0.004783
-9. apps/control-panel/src/state/types.ts centrality=13 pagerank=0.007136
-10. scripts/validate-config.mjs centrality=15 pagerank=0.00481
-11. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.006192
-12. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.004414
-13. scripts/lib/learnings.mjs centrality=11 pagerank=0.004809
-14. scripts/lib/canonical-json.mjs centrality=10 pagerank=0.003744
-15. scripts/agent/resolve-role.mjs centrality=10 pagerank=0.003349
-16. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001234
-17. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.00356
-18. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.004052
-19. scripts/validate-work-item.mjs centrality=9 pagerank=0.002745
-20. scripts/lib/config-validate.mjs centrality=7 pagerank=0.003541
-21. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.00413
-22. scripts/validate-knowledge-packet.mjs centrality=8 pagerank=0.002601
-23. apps/control-panel/src/App.tsx centrality=10 pagerank=0.001052
-24. scripts/agent/render-prompt.mjs centrality=7 pagerank=0.002854
-25. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002156
-26. apps/control-panel/server/modonomeWriter.mjs centrality=8 pagerank=0.001877
-27. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.00258
-28. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001235
-29. scripts/lib/graph.mjs centrality=5 pagerank=0.003015
-30. scripts/lib/branch-name.mjs centrality=4 pagerank=0.003535
-31. scripts/agent/providers.mjs centrality=3 pagerank=0.00408
-32. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.004008
-33. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001376
-34. scripts/snapshot.mjs centrality=8 pagerank=0.000738
-35. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.001869
-36. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.003132
-37. apps/control-panel/src/lib/messages.ts centrality=6 pagerank=0.00177
-38. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002156
-39. design-system/src/lib/format.ts centrality=5 pagerank=0.002155
-40. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.003296
-41. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001376
-42. scripts/lib/work-item-validate.mjs centrality=4 pagerank=0.002224
-43. apps/control-panel/src/screens/SettingsScreen.tsx centrality=6 pagerank=0.000837
-44. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.000837
-45. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001376
-46. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001376
-47. design-system/src/components/GatePanel/GatePanel.tsx centrality=5 pagerank=0.001376
-48. design-system/src/components/ProtectedPathRow/ProtectedPathRow.tsx centrality=5 pagerank=0.001376
-49. examples/demo-app/src/index.js centrality=6 pagerank=0.000738
-50. scripts/build-policy-attestation.mjs centrality=6 pagerank=0.000738
+1. scripts/lib/messages.mjs centrality=63 pagerank=0.039378
+2. scripts/lib/message-catalog/index.mjs centrality=58 pagerank=0.011863
+3. design-system/src/lib/cx.ts centrality=32 pagerank=0.026862
+4. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.017414
+5. design-system/src/index.ts centrality=48 pagerank=0.000706
+6. scripts/lib/yaml-lite.mjs centrality=21 pagerank=0.017095
+7. scripts/lib/jsonschema.mjs centrality=15 pagerank=0.019912
+8. scripts/agent/run-cycle.mjs centrality=25 pagerank=0.005179
+9. scripts/validate-config.mjs centrality=16 pagerank=0.005021
+10. apps/control-panel/src/state/types.ts centrality=13 pagerank=0.00683
+11. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.005926
+12. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.004224
+13. scripts/lib/learnings.mjs centrality=11 pagerank=0.004645
+14. scripts/agent/resolve-role.mjs centrality=11 pagerank=0.003605
+15. scripts/lib/canonical-json.mjs centrality=10 pagerank=0.003584
+16. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001182
+17. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.003407
+18. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.003879
+19. scripts/validate-work-item.mjs centrality=9 pagerank=0.002627
+20. scripts/lib/config-validate.mjs centrality=7 pagerank=0.003566
+21. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.003953
+22. scripts/validate-knowledge-packet.mjs centrality=8 pagerank=0.002489
+23. apps/control-panel/src/App.tsx centrality=10 pagerank=0.001006
+24. scripts/agent/render-prompt.mjs centrality=7 pagerank=0.002774
+25. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.002064
+26. apps/control-panel/server/modonomeWriter.mjs centrality=8 pagerank=0.001797
+27. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.002469
+28. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001182
+29. scripts/agent/providers.mjs centrality=3 pagerank=0.004287
+30. scripts/lib/graph.mjs centrality=5 pagerank=0.002904
+31. scripts/lib/branch-name.mjs centrality=4 pagerank=0.003384
+32. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.003836
+33. scripts/snapshot.mjs centrality=8 pagerank=0.000706
+34. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001317
+35. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.001789
+36. scripts/lib/secret-patterns.mjs centrality=4 pagerank=0.002998
+37. apps/control-panel/src/lib/messages.ts centrality=6 pagerank=0.001694
+38. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.002064
+39. design-system/src/lib/format.ts centrality=5 pagerank=0.002062
+40. scripts/agent/openai-client.mjs centrality=5 pagerank=0.002034
+41. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001317
+42. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.003155
+43. scripts/agent/review-diff.mjs centrality=5 pagerank=0.001584
+44. scripts/lib/work-item-validate.mjs centrality=4 pagerank=0.002128
+45. apps/control-panel/src/screens/SettingsScreen.tsx centrality=6 pagerank=0.000801
+46. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.000801
+47. examples/demo-app/src/index.js centrality=6 pagerank=0.000706
+48. scripts/build-policy-attestation.mjs centrality=6 pagerank=0.000706
+49. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001317
+50. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001317
 

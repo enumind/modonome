@@ -15,7 +15,7 @@ can update the page in the same commit, so the page never drifts from the produc
 | `assets/modonome-logo.webp` | Logo image referenced from `index.html` and `repo-data.js`. |
 | `content/features.json` | Structured mirror of the features in `repo-data.js`. Updated by hand in sync with `repo-data.js`. |
 | `articles/` | Static, hand-maintained content pages (no build step, no React/DC runtime): a hub page plus one page per article. |
-| `CNAME` | Custom-domain marker for GitHub Pages (`modonome.com`). |
+| `CNAME` | Custom-domain marker for GitHub Pages. Contains `www.modonome.com`; the canonical URL is the apex `modonome.com`, which must redirect to or serve the same content (configured at the DNS level, verify there). |
 | `.nojekyll` | Tells GitHub Pages to serve files as-is, no Jekyll processing. |
 
 ## Runtime dependencies
