@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use Modonome or reference its gate-integrity mechanism, please cite it as below and link the canonical repository."
+title: "Modonome"
+abstract: "A governed autonomous engineering loop with a deterministic CI gate-integrity check that blocks the known structural ways coding agents weaken tests: removed assertions, injected skips, type escapes, and lowered coverage. Maker, checker, and merge authority are structurally separate."
+type: software
+authors:
+  - name: "nateshpp and the Modonome contributors"
+    website: "https://github.com/nateshpp"
+license: MIT
+repository-code: "https://github.com/enumind/modonome"
+url: "https://modonome.com"
+keywords:
+  - autonomous-agents
+  - ci
+  - gate-integrity
+  - agent-guardrails
+  - ai-safety
+  - code-review
