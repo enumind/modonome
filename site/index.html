@@ -691,14 +691,16 @@
           <span style="margin-left:8px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#7c8aa0">modonome · zsh</span>
         </div>
         <div class="mn-term" style="padding:22px 20px;font-family:'IBM Plex Mono',monospace;line-height:1.9">
-          <div style="color:#7c8aa0"># Try it safely, this changes nothing</div>
+          <div style="color:#7c8aa0"># The demo app, verbatim (examples/demo-app). Changes nothing.</div>
           <div style="color:#e8ebf0"><span style="color:#5dd4ab">$</span> npx modonome dry-run .</div>
-          <div style="color:#9fabbc">  ✓ detected: node · typescript · jest · github-actions</div>
-          <div style="color:#9fabbc">  → 5 small changes proposed · 0 files written</div>
+          <div style="color:#9fabbc">  Stack: Node or TypeScript (npm)</div>
+          <div style="color:#9fabbc">  Proposed work (3 bounded items) · nothing applied</div>
           <div style="height:10px"></div>
-          <div style="color:#7c8aa0"># Scaffold local state (still disabled)</div>
-          <div style="color:#e8ebf0"><span style="color:#5dd4ab">$</span> npx modonome scaffold . --write</div>
-          <div style="color:#9fabbc">  ✓ .modonome/ created · autonomy_enabled: false</div>
+          <div style="color:#7c8aa0"># An agent skips a failing test and deletes its assertions</div>
+          <div style="color:#e8ebf0"><span style="color:#5dd4ab">$</span> npx modonome ratchet main</div>
+          <div style="color:#ff7b72">  Anti-gaming ratchet rejected this change · exit 1</div>
+          <div style="color:#ff7b72">  - removes more test assertions than it adds (+0 / -1)</div>
+          <div style="color:#ff7b72">  - adds a skipped or focused test: it.skip("throws when ...")</div>
           <div style="height:10px"></div>
           <div style="color:#7c8aa0"># Prove the guarantees yourself</div>
           <div style="color:#e8ebf0"><span style="color:#5dd4ab">$</span> node agentproof/runner.mjs</div>

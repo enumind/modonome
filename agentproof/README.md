@@ -427,15 +427,15 @@ Open an issue to claim a scenario number before writing it.
 
 ---
 
-## Standards submissions
+## Standards direction (aspiration, not status)
 
-AgentProof is being proposed for adoption by:
+No submission has been made or accepted anywhere yet. If AgentProof earns adoption and
+independent scenario contributions, the long-term direction is to propose it to bodies
+such as the OWASP Agentic Working Group (as a reference test suite for the OWASP Top 10
+for Agentic Applications), the OpenSSF Securing Software Repositories WG, or AAIF. Earning
+that starts with adopters running it and skeptics breaking it, not with a submission.
 
-- **OWASP Agentic Working Group** as a reference test suite for the OWASP Top 10 for Agentic Applications
-- **OpenSSF Securing Software Repositories WG** as an anti-gaming ratchet conformance standard
-- **AAIF** as a governed autonomy benchmark
-
-To collaborate on a submission, open an issue at `github.com/enumind/modonome`.
+To collaborate, open an issue at `github.com/enumind/modonome`.
 
 ---
 
