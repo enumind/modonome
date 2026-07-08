@@ -10,12 +10,69 @@ name: Modonome scheduled crew
 # modonome-auto.yml; this workflow never touches that pair.
 
 on:
+  schedule:
+    - cron: '0 6 * * 1'
+    - cron: '0 7 * * 1'
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
+  envisioner:
+    runs-on: ubuntu-latest
+    if: github.event.schedule == '0 6 * * 1' || github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0   # v7.0.0
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e   # v6.4.0
+        with:
+          node-version: '20'
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+      - name: Run the envisioner role
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          MODONOME_ARMED: ${{ secrets.MODONOME_ARMED }}
+          MODONOME_ROLE: envisioner
+        run: |
+          set -o pipefail
+          # Dry-run by default: validates the plan and makes no model call, so it is
+          # green in the off-by-default, zero-budget posture. A live run needs the
+          # owner to arm and fund it: set the MODONOME_SCHEDULE_EXECUTE repository
+          # variable to true and provide a budget and key.
+          MODE="--dry-run"
+          if [ "${{ vars.MODONOME_SCHEDULE_EXECUTE }}" = "true" ]; then MODE="--execute"; fi
+          node scripts/agent/run-cycle.mjs --roles envisioner "$MODE"
+
+  marketresearcher:
+    runs-on: ubuntu-latest
+    if: github.event.schedule == '0 7 * * 1' || github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0   # v7.0.0
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e   # v6.4.0
+        with:
+          node-version: '20'
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+      - name: Run the marketresearcher role
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          MODONOME_ARMED: ${{ secrets.MODONOME_ARMED }}
+          MODONOME_ROLE: marketresearcher
+        run: |
+          set -o pipefail
+          # Dry-run by default: validates the plan and makes no model call, so it is
+          # green in the off-by-default, zero-budget posture. A live run needs the
+          # owner to arm and fund it: set the MODONOME_SCHEDULE_EXECUTE repository
+          # variable to true and provide a budget and key.
+          MODE="--dry-run"
+          if [ "${{ vars.MODONOME_SCHEDULE_EXECUTE }}" = "true" ]; then MODE="--execute"; fi
+          node scripts/agent/run-cycle.mjs --roles marketresearcher "$MODE"
+
   researcher:
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch'
