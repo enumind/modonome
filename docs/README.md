@@ -10,7 +10,6 @@ governs where docs live.
 
 - [specs/governed-autonomy-spec.md](specs/governed-autonomy-spec.md): the normative spec.
 - [specs/ratchet-spec.md](specs/ratchet-spec.md): the anti-gaming ratchet spec.
-- [knowledge-network-architecture.md](knowledge-network-architecture.md): knowledge network design.
 
 ## Governance and compliance
 
@@ -61,3 +60,5 @@ governs where docs live.
 
 - [research/README.md](research/README.md): pre-decision research, including the agentic
   governance mesh (RD-027 through RD-032).
+- [research/knowledge-network-architecture.md](research/knowledge-network-architecture.md):
+  cross-repo knowledge network design (Milestone 2, not shipped).
