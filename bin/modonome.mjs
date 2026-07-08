@@ -56,6 +56,7 @@ Usage:
   npx modonome connect [dir]             register the MCP server with your agent (.mcp.json). Add --write to apply.
   npx modonome adapter-verify <name>     check a registered external agentic CLI against the docs/adapters.md contract.
   npx modonome adapter-verify --self-test  run the same checks against the bundled reference adapter.
+  npx modonome break-the-ratchet <dir>   judge a Break the Ratchet submission (BREAK-THE-RATCHET.md). Never executes the diff.
   npx modonome help                      show this message.
 
 Modonome stays off until an owner arms it through the environment or CI.`;
@@ -191,6 +192,9 @@ function main(argv) {
       break;
     case "adapter-verify":
       run("adapter-verify.mjs", rest);
+      break;
+    case "break-the-ratchet":
+      process.exit(spawnSync("node", [join(here, "..", "challenge", "judge.mjs"), ...rest], { stdio: "inherit" }).status ?? 1);
       break;
     case "migrate": {
       const renameLessonsIdx = rest.indexOf("--rename-lessons");

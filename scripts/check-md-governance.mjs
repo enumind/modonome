@@ -51,6 +51,7 @@ const ROOT_ALLOW_LIST = new Set([
   "ARCHITECTURE.md",
   "ROADMAP.md",
   "OWNER-ACTIONS.md",
+  "BREAK-THE-RATCHET.md",
 ]);
 
 // Agent-critical files that a future cleanup pass must never silently relocate.

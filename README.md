@@ -134,8 +134,9 @@ Two layers cover that gap, and we say so rather than imply the ratchet does:
   languages you don't use count as N/A, not as passes.
 
 If you can construct a diff that weakens a gate and slips past the ratchet, we want it:
-file it with the [AgentProof scenario issue form](https://github.com/enumind/modonome/issues/new/choose)
-and it becomes a named scenario credited to you.
+**[Break the Ratchet](BREAK-THE-RATCHET.md)**. Submissions are never executed, only text-analyzed
+by the ratchet itself; a confirmed break is a named, credited hall-of-fame entry and, once fixed,
+a new AgentProof scenario.
 
 ## The loop (armed mode)
 
