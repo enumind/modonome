@@ -14,7 +14,7 @@
         "file": "README.md",
         "section": "Development practice",
         "found": true,
-        "sha256": "sha256:f36a5919bf1a05328bef6a0c863a3dff373d695aa54adb8d43ed47ae04d03223"
+        "sha256": "sha256:a19f2bf634e8ca46d8143daecac418cbccf5d9ba555dee40f448a2ec97e36a34"
       },
       {
         "file": "AGENTS.md",
@@ -111,5 +111,5 @@
     "autonomy_enabled": false,
     "dry_run": true
   },
-  "content_digest": "sha256:43c1db902ff659c8d33865a9ff2b32607f25848f1626b223e2772824210ef8bd"
+  "content_digest": "sha256:68a93f336f3c0d8978dcbedcdcb1fdfae1cdb0fe9d16850ce1c7f7d667d20d88"
 }

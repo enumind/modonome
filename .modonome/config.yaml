@@ -79,6 +79,31 @@ roles:
     models: [claude-opus-4-8, local-default]
     skills: [cite-sources, summarize-findings]
     tools: [web-search, read-only-fs]
+  # Envisioner agent (ADR-039/ADR-040, Milestone 5). Proposes scoped innovation
+  # candidates grounded in an owner-approved direction (DECISIONS.md, ROADMAP.md),
+  # gated the same way the researcher is: an independent check at
+  # scripts/agent/review-proposals.mjs before anything reaches the backlog. NOT on
+  # the active role_sequence; run it on its own schedule with
+  # `node scripts/agent/run-cycle.mjs --roles envisioner --execute`.
+  envisioner:
+    runner: container
+    models: [claude-opus-4-8, local-default]
+    skills: [strategic-ideation, prioritization]
+    tools: [read-only-fs]
+    schedule:
+      cron: '0 6 * * 1'
+  # Market-researcher agent (ADR-039/ADR-040, Milestone 5). Named "marketresearcher"
+  # (no hyphen) because scripts/agent/render-prompt.mjs requires a role name that
+  # matches ^[a-z]+$. Off by default: gated by market_scan_enabled (false above),
+  # so a scheduled run exits without a model call until an owner opts in. Findings
+  # are sourced and paraphrased only, never raw scraped content.
+  marketresearcher:
+    runner: container
+    models: [claude-haiku-4-5-20251001, local-default]
+    skills: [cite-sources, summarize-findings]
+    tools: [web-search, read-only-fs]
+    schedule:
+      cron: '0 7 * * 1'
 runners:
   local:
     labels: [self-hosted, mac-mini]

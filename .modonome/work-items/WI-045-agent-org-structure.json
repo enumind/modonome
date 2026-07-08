@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "id": "WI-045-agent-org-structure",
+  "state": "queued",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": false,
+  "allowed_edit_set": [
+    "docs/adr/ADR-044-agent-org-structure.md",
+    "docs/agent-org.md",
+    "docs/README.md",
+    "ARCHITECTURE.md",
+    ".modonome/snapshot/*",
+    ".modonome/work-items/*"
+  ],
+  "gates": [
+    "node scripts/check-md-governance.mjs",
+    "node scripts/check-style.mjs .",
+    "npm run verify"
+  ],
+  "queued_at": "2026-07-07",
+  "type": "update-docs"
+}

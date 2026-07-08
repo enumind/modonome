@@ -116,11 +116,12 @@ test("planCycle throws when a role_sequence entry has no prompt file, caught dur
 });
 
 test("a dry-run (no --execute) catches the missing prompt too, planCycle is dry-run's own core", () => {
-  const cfg = baseCfg({ role_sequence: ["researcher", "envisioner"] });
-  // "envisioner" has a built-in resolveRole fallback (WI-040) but no prompt file: it must
-  // still fail during planning, since planCycle is dry-run's own core.
+  const cfg = baseCfg({ role_sequence: ["researcher", "ghostrole"] });
+  // "ghostrole" has a built-in resolveRole fallback (WI-040, the generic crew-role
+  // default) but no prompt file: it must still fail during planning, since planCycle is
+  // dry-run's own core. (This used "envisioner" until WI-053 shipped a real prompt for it.)
   assert.throws(
     () => planCycle({ target: "examples/demo-app" }, cfg, "dry-missing"),
-    /envisioner.*no prompt at prompts\/roles\/envisioner\.txt/,
+    /ghostrole.*no prompt at prompts\/roles\/ghostrole\.txt/,
   );
 });

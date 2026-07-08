@@ -1,0 +1,10 @@
+diff --git a/src/handler.ts b/src/handler.ts
+index 3333333..4444444 100644
+--- a/src/handler.ts
++++ b/src/handler.ts
+@@ -1,4 +1,6 @@
+ export function handle(input: unknown) {
++  const note = "harmless label"; const widened = input as any;
++  const re = /'/; const alsoWidened = (input as any).payload;
+   return input;
+ }

@@ -69,7 +69,25 @@
           },
           "provider": { "type": "string", "minLength": 1 },
           "transport": { "type": "string", "minLength": 1 },
-          "trigger": { "type": "string", "minLength": 1 },
+          "schedule": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "Declarative cadence for a scheduled crew role. cron is a standard 5-field expression; timezone is an optional IANA name. Read by scripts/agent/triggers.mjs to emit .github/workflows/modonome-schedule.yml; it does not arm anything by itself.",
+            "properties": {
+              "cron": { "type": "string", "minLength": 1 },
+              "timezone": { "type": "string", "minLength": 1 }
+            }
+          },
+          "trigger": {
+            "type": ["string", "object"],
+            "additionalProperties": false,
+            "description": "How this role is fired. A bare string is shorthand for { type: <string> }. type schedule emits cron in the generated workflow; after-role chains this role after the roles named in `after` (ordered by scripts/lib/graph.mjs, fail-closed on a cycle or a dangling name); manual, webhook, and on-merge are inert at runtime and only select which generated trigger fires.",
+            "properties": {
+              "type": { "type": "string", "enum": ["schedule", "manual", "webhook", "on-merge", "after-role"] },
+              "after": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+              "cron": { "type": "string", "minLength": 1 }
+            }
+          },
           "execution_target": { "type": "string", "minLength": 1 }
         }
       }

@@ -1,0 +1,4 @@
+$ node scripts/guard-ratchet.mjs 192b590
+Anti-gaming ratchet: no weakened tests, skips, type escapes, or loosened gates.
+Advisory (not a gate): 1 test file(s) touched, +8 / -0 assertions net across this diff. Per-file findings above are the enforcement; this line is context only.
+exit code: 0

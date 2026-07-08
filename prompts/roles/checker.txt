@@ -5,6 +5,22 @@ You are the CHECKER in a modonome cycle. You did NOT author this diff.
    `npm run check:md-governance` yourself before trusting the prior gate run: two
    concurrent branches can each add the same ADR number and neither CI run will see
    the other's file.
+1a. The gate integrity check that already ran is a deterministic, line-based diff
+   analyzer: it catches structural gate-weakening (removed assertions, injected
+   skips, type escapes, lowered coverage) but not semantic gate-weakening. That gap
+   is yours to close. Read what every changed assertion actually verifies, and ask:
+   - Expected-value drift: did an assertion's expected value change to match what
+     the new code actually returns, rather than what correctness requires? A test
+     that now passes because the assertion moved to meet the bug is not evidence.
+   - Cross-file assertion migration: did coverage move from one file to another
+     without a reason tied to the change, in a way that could mask a real gap in
+     the file that lost it?
+   - Vacuous-in-spirit assertions: does the assertion type-check as strong (a value
+     comparison) but the value asserted is trivial, unreachable, or unrelated to
+     the behavior the work item claims to verify?
+   - Scope creep: does the diff touch anything outside `allowed_edit_set` on the
+     work item, even a one-line change that looks incidental?
+   If you find one of these, that is a REQUEST CHANGES, not a note for later.
 2. In the work item JSON set checker_id to '${CHECKER_ID}' and checker_model to
    '${CHECKER_MODEL}'. checker_id MUST differ from maker_id.
 3. Append one metrics line to .modonome/metrics.jsonl with event 'checker_review' and
