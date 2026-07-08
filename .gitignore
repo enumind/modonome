@@ -23,10 +23,13 @@ __pycache__/
 *.pyc
 *.egg-info/
 
-# Claude / Anthropic Caches and Settings
-.claude/
+# Claude / Anthropic caches and settings. Session-local state under the root
+# .claude/ stays untracked; the repo tracks .claude/skills/ (repo skills), the
+# root CLAUDE.md pointer to AGENTS.md, and the Tripwires template under
+# templates/.claude/ (unaffected by the anchored pattern below).
+.claude/*
+!.claude/skills/
 .claude_profile/
-CLAUDE.md
 runs/
 
 # examples/demo-app/runs/ holds intentionally committed, verbatim evidence captures
@@ -41,7 +44,6 @@ runs/
 # tracked template (never the root-level, session-local .claude/ above).
 !templates/.claude/
 !templates/.claude/**
-
 # Design-sync converter scratch, staged scripts, and generated upload bundle
 .ds-sync/
 ds-bundle/
