@@ -27,7 +27,7 @@
       <animate attributeName="opacity" values="0;1" dur="0.4s" begin="2.9s" fill="freeze"/>
       <text x="24" y="150" fill="#ff7b72" font-weight="bold">Anti-gaming ratchet rejected this change:</text>
       <text x="40" y="178" fill="#ff7b72">- tests/OrderService.test.js: removes more test assertions</text>
-      <text x="52" y="196" fill="#ff7b72">than it adds (+0 / -1).</text>
+      <text x="52" y="196" fill="#ff7b72">than it adds (+0 / -2).</text>
       <text x="40" y="220" fill="#ff7b72">- tests/OrderService.test.js: adds a skipped or focused test:</text>
       <text x="52" y="238" fill="#ff7b72">it.skip("throws when order is not found", ...)</text>
     </g>

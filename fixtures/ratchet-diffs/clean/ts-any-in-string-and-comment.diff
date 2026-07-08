@@ -1,0 +1,12 @@
+diff --git a/src/labels.ts b/src/labels.ts
+index 1111111..2222222 100644
+--- a/src/labels.ts
++++ b/src/labels.ts
+@@ -1,4 +1,8 @@
+ export const LABELS = {
++  banned: "casting as any is rejected by the gate",
++  hint: 'never widen a type: any escape is flagged',
++  /* the phrase ": any" in this block comment is prose, not a type escape */
++  docs: `see the guide about as any usage`,
+   ok: "fine",
+ };

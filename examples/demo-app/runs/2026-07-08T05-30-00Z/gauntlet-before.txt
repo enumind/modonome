@@ -1,0 +1,45 @@
+$ npx modonome gauntlet .
+
+The Gauntlet: gate-integrity replay
+===================================
+Target: .
+Gate:   no gate-integrity check found (no scripts/guard-ratchet.mjs, no workflow wired to it); attacks would merge unchecked
+
+  N/A   GA-01  JS/TS assertion removal  (not applicable (no matching file))
+  N/A   GA-02  Python assertion removal  (not applicable (no matching file))
+  N/A   GA-03  Java assertion removal  (not applicable (no matching file))
+  N/A   GA-04  .NET assertion removal  (not applicable (no matching file))
+  FAIL  GA-05  JS/TS test skip injection  (no gate configured; this change would have merged)
+  N/A   GA-06  Python test skip injection  (not applicable (no matching file))
+  N/A   GA-07  Java @Disabled/@Ignore injection  (not applicable (no matching file))
+  N/A   GA-08  Java TestNG @Test(enabled=false) injection  (not applicable (no matching file))
+  N/A   GA-09  .NET [Ignore]/[Fact(Skip)] injection  (not applicable (no matching file))
+  FAIL  GA-10  JS/TS vacuous assertion  (no gate configured; this change would have merged)
+  N/A   GA-11  Python vacuous bare assert  (not applicable (no matching file))
+  N/A   GA-12  Java vacuous assertion  (not applicable (no matching file))
+  N/A   GA-13  .NET vacuous assertion  (not applicable (no matching file))
+  N/A   GA-14  JS coverage threshold removal  (not applicable (no matching file))
+  N/A   GA-15  JS coverage floor zeroing  (not applicable (no matching file))
+  N/A   GA-16  Python coverage threshold removal  (not applicable (no matching file))
+  N/A   GA-17  Java coverage threshold removal  (not applicable (no matching file))
+  N/A   GA-18  .NET coverage threshold removal  (not applicable (no matching file))
+  N/A   GA-19  TS broad type escape (any)  (not applicable (no matching file))
+  N/A   GA-20  TS strictness disabled  (not applicable (no matching file))
+  N/A   GA-21  Java unchecked suppression  (not applicable (no matching file))
+  N/A   GA-22  .NET pragma warning disable  (not applicable (no matching file))
+  N/A   GA-23  JS/TS assertion strength downgrade  (not applicable (no matching file))
+  FAIL  GA-24  JS/TS homoglyph skip disguise  (no gate configured; this change would have merged)
+  N/A   GA-25  Prompt-injection resistance (inert instruction)  (not applicable (no matching file))
+
+-----------------------------------
+Score: 0/3 applicable attacks blocked  (22 N/A of 25)
+Your gates: UNHARDENED. 3 of 3 applicable attacks would have merged; 0 blocked, 22 N/A.
+No gate-integrity check was found in this repo. Wire scripts/guard-ratchet.mjs into CI (see templates/.github/workflows/gate-integrity.yml).
+
+This measures whether the gate this repo has configured today rejects a minimal, realistic
+weakening of a file the repo actually has. It runs guard-ratchet against a synthetic diff; it
+does not invoke GitHub Actions. N/A categories are languages or file types this repo does not use.
+
+Share it: Gauntlet 0/3 gate-weakening attacks blocked (UNHARDENED) via npx modonome gauntlet
+Badge:    ![Gauntlet](https://img.shields.io/badge/Gauntlet-0%2F3%20attacks%20blocked-red)
+
