@@ -138,7 +138,10 @@ default until an owner arms it.
   `.github/workflows/modonome-review.yml` so a change gets an independent review before merge
   regardless of who produced it. `review-proposals.mjs` (ADR-040, WI-044) is the same checker
   at Checkpoint 1: it vets a proposal before it becomes a work item, so `queue.mjs` can gate
-  the backlog the way the pull request gates `main`.
+  the backlog the way the pull request gates `main`. The crew itself (the roster, what each
+  agent is for, and how each is configured on a model, runner, schedule, and trigger) is
+  documented in [docs/agent-org.md](docs/agent-org.md), with the structure decision in
+  [docs/adr/ADR-044-agent-org-structure.md](docs/adr/ADR-044-agent-org-structure.md).
 - The snapshot utility (`scripts/snapshot.mjs` plus `scripts/lib/snapshot-*.mjs` and
   `scripts/lib/lang-adapters/`). A dependency-free pipeline (walk, Merkle hash, per-file
   signature extraction, redaction, import graph with PageRank, tier assembly, deterministic

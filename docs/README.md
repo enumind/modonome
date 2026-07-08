@@ -26,6 +26,9 @@ governs where docs live.
 
 ## Autonomy
 
+- [agent-org.md](agent-org.md): the agent org roster. Who is in the crew, what each agent is
+  for, and how each is configured on a model, runner, schedule, and trigger. Structure decision
+  in [adr/ADR-044-agent-org-structure.md](adr/ADR-044-agent-org-structure.md).
 - [autonomy-plan.md](autonomy-plan.md): the session-independent plan for governed autonomy
   on free models, paired with the WI-026 through WI-040 work-item queue.
 
