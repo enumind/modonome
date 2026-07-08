@@ -182,7 +182,7 @@ self-application, work items, tests, AgentProof) with no network or secrets.
 | Five-minute setup, arming, MCP wiring, cost model | [QUICKSTART.md](QUICKSTART.md) |
 | Adoption guide for teams | [ADOPTION-GUIDE.md](ADOPTION-GUIDE.md) |
 | Architecture, host vs. self governance, execution contexts | [ARCHITECTURE.md](ARCHITECTURE.md) |
-| Agents, roles, runners, models, budgets | [docs/agent-org.md](docs/agent-org.md), [docs/ops/runner-model-config.md](docs/ops/runner-model-config.md) |
+| Agents, roles, runners, models, budgets | [docs/agents.md](docs/agents.md) |
 | AgentProof benchmark and spec | [agentproof/README.md](agentproof/README.md) |
 | Governed-autonomy specification | [docs/specs/governed-autonomy-spec.md](docs/specs/governed-autonomy-spec.md) |
 | Repo snapshot for LLM context (Merkle-verified) | [docs/adr/ADR-033-repo-snapshot.md](docs/adr/ADR-033-repo-snapshot.md) |
