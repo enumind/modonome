@@ -42,6 +42,8 @@
     "prepublishOnly": "node --test tests/*.test.mjs"
   },
   "files": [
+    "NOTICE",
+    "CITATION.cff",
     "bin",
     "prompts",
     "templates",
@@ -55,9 +57,16 @@
     "registry": "https://registry.npmjs.org"
   },
   "license": "MIT",
+  "author": {
+    "name": "nateshpp",
+    "url": "https://github.com/nateshpp"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/enumind/modonome.git"
+  },
+  "bugs": {
+    "url": "https://github.com/enumind/modonome/issues"
   },
   "homepage": "https://modonome.com",
   "keywords": [
