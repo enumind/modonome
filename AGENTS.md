@@ -267,6 +267,25 @@ it. Most of these gates exist because the mistake actually happened here.
 18. **Inline site CSP.** Adding a meta CSP tag to `site/*.html`. It broke the live
     host once and was reverted (PR #106). Rule: CSP is enforced at Cloudflare and
     `site/_headers`; the site is a protected path.
+19. **Silent interpretation.** Acting on one reading of a goal that supports two or
+    more materially different readings. Rule: name the readings, recommend one, and
+    wait (ask in session, or add an Open entry with options and a recommendation to
+    `.modonome/DECISIONS.md`); when one reading is clearly intended, proceed and
+    state the assumption in the rationale. Gate: none; this one is on you and the
+    checker.
+20. **Speculative scope.** Building past the stated need: an extra feature, an
+    unrequested config control, an abstraction with a single call site, or handling
+    for inputs that cannot occur. Rule: build the smallest change that solves the
+    stated problem, and propose the simpler approach when you see one; every config
+    control costs four synced representations plus a changelog entry (section 5).
+    Gate: checker review; `max_diff_lines` caps only size.
+21. **Within-file scope drift.** Reformatting, renaming, or polishing adjacent code
+    inside a file the item allows. Entry 9 polices which files change; this entry
+    polices the lines inside them. Rule: every changed line traces to the goal;
+    match the file's existing style even where you would choose differently; flag
+    unrelated dead code in the review instead of deleting it. Removing code your own
+    change orphaned (an import, a variable, a helper) belongs to the change. Gate:
+    checker review; the edit-set gate cannot see inside a file.
 
 ## 5. Quality bar per deliverable
 
@@ -362,7 +381,9 @@ Stop and route to the owner when any of the following applies:
 8. Net-new product, market, architecture, security, legal, or policy claims
    (Tier 4, `GOVERNANCE.md`).
 9. The destination of a produced document is unclear: ask before writing.
-10. Anything Tier 3 or Tier 4 under `GOVERNANCE.md`: public API, schema, migration,
+10. The goal supports two or more materially different readings: present the
+    readings with a recommendation and wait, rather than choosing one silently.
+11. Anything Tier 3 or Tier 4 under `GOVERNANCE.md`: public API, schema, migration,
     CI, auth, secrets, protected docs, autonomous merge enablement, cross-repo
     changes.
 
