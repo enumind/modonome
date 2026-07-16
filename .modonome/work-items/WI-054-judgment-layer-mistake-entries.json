@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "id": "WI-054-judgment-layer-mistake-entries",
+  "state": "checking",
+  "type": "update-docs",
+  "attempts": 0,
+  "max_attempts": 3,
+  "touches_protected_path": false,
+  "allowed_edit_set": [
+    "AGENTS.md",
+    "CHANGELOG.md",
+    "RELEASE-EVIDENCE.md",
+    ".modonome/work-items/WI-054-judgment-layer-mistake-entries.json",
+    ".modonome/snapshot/*",
+    ".modonome/work-items/*"
+  ],
+  "gates": [
+    "node scripts/check-style.mjs .",
+    "npm run verify"
+  ],
+  "queued_at": "2026-07-16",
+  "maker_id": "techseek4vr",
+  "lease_owner": "techseek4vr"
+}
