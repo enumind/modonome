@@ -85,6 +85,14 @@ jobs:
       - name: Run policy attestation freshness gate
         run: node scripts/build-policy-attestation.mjs --check
 
+      # Risk Surface Guard allowlist validation gate (ADR-047 decision 11): like the
+      # promotion-safety gates above, this must run BEFORE the base-branch checkout so
+      # it judges the PR's own proposed allowlist edits, not the base copy. This is an
+      # author-feedback gate, not the trust boundary -- the trust boundary is the
+      # base-pinned checkout of the allowlist file and its loader below.
+      - name: Run risk-surface-guard allowlist validation gate
+        run: node scripts/check-risk-surface-allowlist.mjs
+
       # Mandatory Base-Branch Checkouts matching check-self-application.mjs criteria
       # NOTE: These steps only run on pull requests where github.base_ref is defined.
       # On push events, github.base_ref is empty, so these are skipped to prevent
@@ -145,6 +153,23 @@ jobs:
             git checkout "origin/${{ github.base_ref }}" -- scripts/lib/message-catalog/index.mjs
           else
             echo "scripts/risk-surface-guard.mjs not yet on base branch; skipping trust-isolation checkout (first introduction)."
+          fi
+
+      # The suppression allowlist (ADR-047 decision 9): a separate, independently
+      # bootstrap-tolerant step rather than folding into the checkout above, because
+      # that step's own bootstrap condition may already be permanently true by the
+      # time this lands, which would make an unguarded checkout of the not-yet-on-base
+      # allowlist file hard-fail this step on its own introducing PR. Both the data
+      # file and its loader must be pinned: an unpinned loader could be rewritten by a
+      # PR to ignore expiry or match anything.
+      - name: Load the risk-surface-guard suppression allowlist from the base branch
+        if: github.event_name == 'pull_request'
+        run: |
+          if git cat-file -e "origin/${{ github.base_ref }}:.modonome/risk-surface-allowlist.json" 2>/dev/null; then
+            git checkout "origin/${{ github.base_ref }}" -- .modonome/risk-surface-allowlist.json
+            git checkout "origin/${{ github.base_ref }}" -- scripts/lib/risk-surface-allowlist.mjs
+          else
+            echo ".modonome/risk-surface-allowlist.json not yet on base branch; skipping trust-isolation checkout (first introduction)."
           fi
 
       # Advisory only: proves the gate is wired into CI (REQUIRED_GATES in

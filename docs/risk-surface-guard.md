@@ -54,7 +54,16 @@ Example workflow:
 - uses: enumind/modonome@v1
   with:
     risk-surface: warn    # or 'fail', or 'off'
+    upload-sarif: 'true'  # also uploads Risk Surface Guard's SARIF; on by default
 ```
+
+Findings also upload to the GitHub Security tab as SARIF, sharing the action's
+existing `upload-sarif` toggle (default `true`) with the anti-gaming ratchet's
+own upload. Risk Surface Guard's results land under a separate
+`modonome-risk-surface` category, distinct from the ratchet's
+`modonome-gate-integrity` category, so both show up independently. The SARIF
+file path defaults to `modonome-risk-surface.sarif` and is configurable via
+the `risk-surface-sarif-file` input.
 
 The check also runs as a standalone CLI:
 
@@ -82,7 +91,36 @@ Each finding includes:
 - **reviewer_guidance**: Suggested questions or alternatives for the reviewer.
 - **limitation**: Constraints on what this rule can detect (e.g., "does not catch commented or obfuscated patterns").
 
-The CLI can emit findings as SARIF 2.1.0 (`--sarif`) or plain JSON (`--json`) for scripting. Unlike the anti-gaming ratchet, the GitHub Action does not currently upload Risk Surface Guard's SARIF output to the Security tab; that is a possible future enhancement, not something this version does.
+The CLI can emit findings as SARIF 2.1.0 (`--sarif`) or plain JSON (`--json`) for scripting. The GitHub Action uploads the SARIF output to the Security tab automatically when `upload-sarif` is `true` (the default) and `risk-surface` is not `off`, under the `modonome-risk-surface` category, as described above.
+
+## Suppressing a finding
+
+Findings can be suppressed with a base-branch-loaded allowlist. The trust model matters more than the mechanics: an entry you add in a pull request does not suppress a finding in that same pull request. CI loads `.modonome/risk-surface-allowlist.json` from the base branch, exactly like it loads `scripts/risk-surface-guard.mjs` itself, so a new suppression only takes effect starting with the next pull request opened after this one merges. A suppression always gets a full review cycle before it can hide anything; nothing in a PR's own diff can silence a finding in that PR.
+
+Add an entry to `.modonome/risk-surface-allowlist.json`:
+
+```json
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "RSAL-001",
+      "rule": "RS106",
+      "file": "src/auth/legacy-session.js",
+      "reason": "Reads a fixed, repo-authored env var name; not attacker-influenced.",
+      "added_by": "your-github-handle",
+      "added_at": "2026-07-27",
+      "expires_at": "2026-10-27"
+    }
+  ]
+}
+```
+
+Every field is required. `rule` is the finding's `id` (e.g., `RS106`). `file` matches the finding's `file` path; it accepts the same glob syntax as the tool's own protected-path list (`**` for any depth, `*` within one path segment), or a literal path for an exact match. `expires_at` is required and inclusive: the entry suppresses through and including that date, and stops the day after. There is no automatic renewal notice yet; a lapsed entry silently starts flagging again with no warning beyond the finding itself reappearing, which is a known limitation of this version. A pull request that adds or edits an entry is validated at author-feedback time by `node scripts/check-risk-surface-allowlist.mjs`, which runs in CI before the base-branch checkout so a malformed entry is caught on the PR that introduces it.
+
+A suppressed finding stays visible, marked, in `--json` and the default human-readable output (a `[SUPPRESSED]` marker and the entry's reason), but is excluded entirely from `--sarif` output, since SARIF feeds the GitHub Security tab, which should only ever list findings still awaiting review. A suppressed finding never counts toward the exit code or the summary count in any mode, including fail mode: suppression fully removes it from the pass/warn/fail decision while keeping the audit trail intact.
+
+If the allowlist file is missing, that is the default state (zero suppressions), not an error. If it is present but malformed (invalid JSON, a schema violation, a duplicate id, an unrecognized rule, or `expires_at` before `added_at`), the scan fails closed: it prints a warning and proceeds as if zero entries were suppressed, so a broken allowlist can only ever produce more findings, never fewer.
 
 ## Why warn mode is the default in alpha
 
@@ -118,4 +156,4 @@ The tool scans diffs, not running code. Semantic obfuscation can evade it. A det
 
 False-positive discipline applies: only added lines are flagged; removals of risky code never trigger a finding; same-line comments are skipped; and pinned official GitHub Actions and SHA-pinned third-party actions are exempted from the unpinned-action rule.
 
-No inline suppression comments are supported in this version. If a finding is a false positive specific to your repository, discuss it in a GitHub issue or reach out to the maintainers.
+No inline suppression comments are supported in this version. See "Suppressing a finding" above for the base-branch-loaded allowlist, the supported mechanism for a false positive specific to your repository. For anything the allowlist does not fit, discuss it in a GitHub issue or reach out to the maintainers.

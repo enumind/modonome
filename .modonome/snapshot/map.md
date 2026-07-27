@@ -2,8 +2,8 @@
 
 Modonome snapshot. Read this before reading the repo. Tier 0 (signature.json) is the fingerprint: if merkle_root matches your last read, nothing changed. Tier 1 (map.json / map.md) lists modules, public API signatures, import edges, and attention ranking. Cite anchors (F: for files, S: for symbols); each resolves to a path and line so you can act without re-reading the whole repo.
 
-Merkle root: sha256:c1daa79484edf32eae0f0b3a4bf545dec57dc1db32eba3503259c70c7829f595
-Files: 1081  Bytes: 3926905  Map tokens: 138602/120000
+Merkle root: sha256:00937728fdf5de9a8af526bf191da7ed19afeb83fd2a5a75a508e8bc6cad0473
+Files: 1094  Bytes: 3971943  Map tokens: 139595/120000
 
 ## Modules
 
@@ -406,6 +406,7 @@ Files: 1081  Bytes: 3926905  Map tokens: 138602/120000
 - scripts/lib/message-catalog/gate/check-promotion-readiness.mjs [F:973aca5f3e]: const MESSAGES
 - scripts/lib/message-catalog/gate/check-regex-safety.mjs [F:b4f4e16ca1]: const MESSAGES
 - scripts/lib/message-catalog/gate/check-repo-hygiene.mjs [F:597cc7ae15]: Catalog entries for scripts/check-repo-hygiene.mjs.
+- scripts/lib/message-catalog/gate/check-risk-surface-allowlist.mjs [F:b37de0ee8e]: const MESSAGES
 - scripts/lib/message-catalog/gate/check-self-application.mjs [F:de188c1b79]: const MESSAGES
 - scripts/lib/message-catalog/gate/check-state-machine-acyclic.mjs [F:179564da6f]: const MESSAGES
 - scripts/lib/message-catalog/gate/check-style.mjs [F:9dbf431d3e]: Catalog entries for scripts/check-style.mjs.
@@ -425,6 +426,7 @@ Files: 1081  Bytes: 3926905  Map tokens: 138602/120000
 - scripts/lib/policy-manifest.mjs [F:4db1101024]: v2 adds the required `generator` credit block (Phase 4: policy-pack adoption tooling, ADR-037). Because `generator` is required and content-digested, a vendored
 - scripts/lib/remediate.mjs [F:8ffb11f281]: Remove every line carrying an AI-authorship signature from a commit message, then * drop the trailing blank lines the removal leaves behind. Pure and determinis
 - scripts/lib/repo-detect.mjs [F:ae46bbab81]: Build the small file helpers a detector needs, bound to one target directory.
+- scripts/lib/risk-surface-allowlist.mjs [F:33ffae019c]: parseAllowlist(text) -> { entries, errors }. Fail-closed is guaranteed at this boundary: whenever errors is non-empty, entries is always []. Callers never need 
 - scripts/lib/risk-surface-rules.mjs [F:2f3e98ab2c]: Simple "#" to end of line stripper for YAML and shell-like formats. Not quote-aware (a "#" inside a quoted YAML string is still treated as a comment start) -- a
 - scripts/lib/run-gate-capped.mjs [F:b014028f57]: Thin wrapper around spawnSync with a hard timeout and output-size cap.
 - scripts/lib/secret-patterns.mjs [F:68c4da7fe8]: Returns an array of { name } objects for every pattern that matches text.
@@ -446,7 +448,7 @@ Files: 1081  Bytes: 3926905  Map tokens: 138602/120000
 - scripts/release.mjs [F:edf42fb1af]: !/usr/bin/env node
 - scripts/remediate.mjs [F:1e5ef6ba70]: Resolve the full arming posture. Config values are advisory; the MODONOME_ARMED environment variable is authoritative (ADR-004). The capability flag layers ADR-
 - scripts/report.mjs [F:3b382f95c0]: A source module counts as "documented" if its first non-shebang line is a `//` comment, or the file contains a ` ... ` JSDoc block anywhere. This is a simple he
-- scripts/risk-surface-guard.mjs [F:116adfb9f8]: !/usr/bin/env node
+- scripts/risk-surface-guard.mjs [F:116adfb9f8]: A suppressed finding (allowlist match) never counts toward the exit code, the result verdict, or the finding count in the summary line, even though it stays vis
 - scripts/run-gate-pipeline.mjs [F:edb11415f0]: parseArgs(argv) -> { diff, "work-item" } map of fixture paths by gate arg name.
 - scripts/scaffold.mjs [F:5e450ff82c]: Turn snapshot consumption on during adoption: generate the first snapshot, install a host pre-commit hook, and drop an AGENTS.md pointer when none exists. Skipp
 - scripts/score-proposals.mjs [F:e11f907cba]: Fill in missing signal fields with the documented neutral value and clamp every field to the [SIGNAL_MIN, SIGNAL_MAX] scale.
@@ -477,6 +479,7 @@ Files: 1081  Bytes: 3926905  Map tokens: 138602/120000
 - tests/check-architecture-drift.test.mjs [F:564b053598]: function makeMinimalRepo
 - tests/check-gate-dag.test.mjs [F:df4b55ecef]: Build a temp repo whose detect-attribution.mjs imports whatever `daImports` says.
 - tests/check-md-governance.test.mjs [F:0391f3b249]: Build a minimal repo that satisfies the root allow-list, protected-file manifest, link integrity, and audit-naming checks, so only the ADR-number logic under te
+- tests/check-risk-surface-allowlist.test.mjs [F:54784dcc0a]: function run
 - tests/check-style-lexicon.test.mjs [F:e359adb110]: Tests for the Lexicon Gate wired into scripts/check-style.mjs: a banned term from
 - tests/cli-dispatch.test.mjs [F:40e4f39b59]: function cli
 - tests/compliance-evidence.test.mjs [F:3ea503e7c0]: Helper reused by the mapping test.
@@ -562,7 +565,7 @@ Files: 1081  Bytes: 3926905  Map tokens: 138602/120000
 - S:bac2ebbef5 function gitCommit `function gitCommit(tmp, message)` L53
 - S:cd2e7eba8f function gitCommitAt `function gitCommitAt(tmp, message, isoDate)` L61 : Commit with an explicit, backdated timestamp, so staleness tests do not depend on same-day wall-clock ordering between setup commits and a `last_reviewed` stamp (git's `--since` treats a bare date as 
 ### scripts/lib/message-catalog/index.mjs [F:03f476958e]
-- S:405ee38bbe const CATALOG_PARTIALS `export const CATALOG_PARTIALS = [` L66
+- S:405ee38bbe const CATALOG_PARTIALS `export const CATALOG_PARTIALS = [` L67
 ### examples/demo-app/tests/OrderService.test.js [F:044b762a79]
 - S:949f988c9e function makeDb `function makeDb(orders = new Map())` L10
 ### scripts/lib/message-catalog/gate/check-edit-set-compliance.mjs [F:05a0f0d5a5]
@@ -664,23 +667,24 @@ Files: 1081  Bytes: 3926905  Map tokens: 138602/120000
 ### apps/control-panel/src/App.tsx [F:113387361d]
 - S:a1d4334d94 function App `export function App()` L44
 ### scripts/risk-surface-guard.mjs [F:116adfb9f8]
-- S:f034e67219 function normalizeLF `function normalizeLF(s)` L36
-- S:e23dca26d1 function stripFlags `export function stripFlags(argv)` L45
-- S:8fc6479414 function getDiff `function getDiff(positional)` L72
-- S:6202790aac class UsageError `class UsageError extends Error {}` L103
-- S:a8ccdc0c7d function parseDiff `export function parseDiff(diffText)` L112
-- S:4295d27685 function makeFinding `function makeFinding(rule, file, line, rawText)` L158
-- S:afdc9fa742 function scanFile `export function scanFile(filePath, addedLines)` L172
-- S:9435112073 function scanDiff `export function scanDiff(diffText)` L194
-- S:34df82b1c2 function hasHighOrCritical `function hasHighOrCritical(findings)` L215
-- S:672926584c function decideExitCode `export function decideExitCode(mode, findings)` L219
-- S:6117b8ec80 function decideResult `export function decideResult(mode, findings)` L224
-- S:74c8951fb9 function severityToSarifLevel `export function severityToSarifLevel(severity)` L230
-- S:8b3d7e9050 function summaryMessage `function summaryMessage(mode, findings)` L240
-- S:17bc177192 function formatHuman `export function formatHuman(findings, { mode })` L251
-- S:82407637b4 function emitJson `export function emitJson(findings, { mode })` L266
-- S:38407e52ac function emitSarif `export function emitSarif(findings)` L274
-- S:9f6788d90d function runCli `function runCli()` L314
+- S:f034e67219 function normalizeLF `function normalizeLF(s)` L41
+- S:e23dca26d1 function stripFlags `export function stripFlags(argv)` L50
+- S:8fc6479414 function getDiff `function getDiff(positional)` L78
+- S:6202790aac class UsageError `class UsageError extends Error {}` L109
+- S:a8ccdc0c7d function parseDiff `export function parseDiff(diffText)` L118
+- S:4295d27685 function makeFinding `function makeFinding(rule, file, line, rawText)` L164
+- S:afdc9fa742 function scanFile `export function scanFile(filePath, addedLines)` L178
+- S:9435112073 function scanDiff `export function scanDiff(diffText)` L200
+- S:34df82b1c2 function hasHighOrCritical `function hasHighOrCritical(findings)` L221
+- S:40aaf05c36 function activeFindings `function activeFindings(findings)` L229 : A suppressed finding (allowlist match) never counts toward the exit code, the result verdict, or the finding count in the summary line, even though it stays visible in the output. This is the whole po
+- S:672926584c function decideExitCode `export function decideExitCode(mode, findings)` L233
+- S:6117b8ec80 function decideResult `export function decideResult(mode, findings)` L238
+- S:74c8951fb9 function severityToSarifLevel `export function severityToSarifLevel(severity)` L245
+- S:8b3d7e9050 function summaryMessage `function summaryMessage(mode, findings)` L255
+- S:17bc177192 function formatHuman `export function formatHuman(findings, { mode })` L267
+- S:82407637b4 function emitJson `export function emitJson(findings, { mode })` L284
+- S:38407e52ac function emitSarif `export function emitSarif(findings)` L292
+- S:9f6788d90d function runCli `function runCli()` L336
 ### scripts/lib/snapshot-cache.mjs [F:119e3c0fce]
 - S:670e55d75a const CACHE_SCHEMA_VERSION `export const CACHE_SCHEMA_VERSION = 1;` L10
 - S:31032f0509 function isPlausibleRevision `export function isPlausibleRevision(value)` L17 : A value safe to pass as a git revision argument: a short-to-full hex SHA. Rejects anything else, in particular a leading "-", which git would parse as an option (some git options can read or write fil
@@ -912,15 +916,15 @@ Files: 1081  Bytes: 3926905  Map tokens: 138602/120000
 - S:2216bfd660 function isTerraformScope `export function isTerraformScope(path)` L79
 - S:f88ca29ea3 function isBroadScope `export function isBroadScope(path)` L90
 - S:823d7fa306 const PROTECTED_PATH_GLOBS `export const PROTECTED_PATH_GLOBS = [` L100
-- S:2dc33a851f function globToRegExp `function globToRegExp(glob)` L120
+- S:2dc33a851f function globToRegExp `export function globToRegExp(glob)` L120
 - S:5e20ef9f71 function matchesProtectedPath `export function matchesProtectedPath(path)` L132
 - S:bb036fe763 function stripSameLineNoise `export function stripSameLineNoise(rawLine)` L144
 - S:7d38304e55 function stripPythonSameLineNoise `export function stripPythonSameLineNoise(line)` L173
 - S:cf9f3a025e function stripHashComment `export function stripHashComment(line)` L199 : Simple "#" to end of line stripper for YAML and shell-like formats. Not quote-aware (a "#" inside a quoted YAML string is still treated as a comment start) -- an accepted simplification, matching the 
 - S:d9eda62ca5 function stripForScope `export function stripForScope(path, line)` L205
 - S:e4bb79a957 function redactMatchedText `export function redactMatchedText(text, opts = {})` L219
-- S:ec6c0b3d73 const RULES `export const RULES = [` L245
-- S:02759ae11a const RULES_BY_ID `export const RULES_BY_ID = new Map(RULES.map((r) => [r.id, r]));` L955
+- S:ec6c0b3d73 const RULES `export const RULES = [` L250
+- S:02759ae11a const RULES_BY_ID `export const RULES_BY_ID = new Map(RULES.map((r) => [r.id, r]));` L973
 ### design-system/src/components/States/States.tsx [F:2f6c42c5ee]
 - S:c504685956 interface EmptyStateProps `export interface EmptyStateProps` L4
 - S:80e9a1f555 function EmptyState `export function EmptyState({ title, message, icon = "queue", action }: EmptyStateProps)` L20 : Calm, muted placeholder for a screen or panel that has no content yet. Use for * empty queues, empty search results, or a fresh workspace before any work items * exist. Centered and low-emphasis so it
@@ -957,6 +961,11 @@ Files: 1081  Bytes: 3926905  Map tokens: 138602/120000
 - S:e25d17a09c function SafeDefaults `export const SafeDefaults = () => (` L17
 ### scripts/lib/message-catalog/agent-run/remediate.mjs [F:33c4d744f3]
 - S:457f8a5e17 const MESSAGES `export const MESSAGES =` L4 : Governed Remediation (ADR-035) apply-path refusals. All non_suppressible: each guards the metadata-only rewrite's safety invariants (arming, branch protection, clean tree, usable identity, provable hi
+### scripts/lib/risk-surface-allowlist.mjs [F:33ffae019c]
+- S:52027883f7 function parseAllowlist `export function parseAllowlist(text)` L24 : parseAllowlist(text) -> { entries, errors }. Fail-closed is guaranteed at this boundary: whenever errors is non-empty, entries is always []. Callers never need to remember to check errors before trust
+- S:8c5294d2ea function loadAllowlist `export function loadAllowlist(path)` L49 : loadAllowlist(path) -> { entries, errors }. A missing file is the default, backward-compatible state (zero suppressions), never an error.
+- S:27874d43ac function isSuppressed `export function isSuppressed(finding, entries, today)` L62 : isSuppressed(finding, entries, today) -> the matching entry, or null. `today` is a "YYYY-MM-DD" string passed explicitly by the caller (never read from the system clock in here), so this stays determi
+- S:f4e42f5cd6 function applyAllowlist `export function applyAllowlist(findings, entries, today)` L75 : applyAllowlist(findings, entries, today) -> findings with a new `suppressed` field on each ({entry_id, reason} or null). Every other field is untouched.
 ### checkerproof/scenarios/cp-05-clean-negative-control.mjs [F:34ca4e55d1]
 - S:4b38793395 const scenario `export const scenario =` L8 : CP-05: Negative control. A genuinely correct, well-scoped test addition with no planted defect: real bug fix in the source, a real assertion that verifies it, no scope creep. A checker with a high fal
 ### scripts/lib/jsonschema.mjs [F:34cb2b6c48]
@@ -1039,7 +1048,7 @@ Files: 1081  Bytes: 3926905  Map tokens: 138602/120000
 - S:fa6785fa4b const MESSAGES `export const MESSAGES =` L1
 ### scripts/check-self-application.mjs [F:4096620673]
 - S:91c42b4f27 function read `function read(rel)` L23
-- S:87c8d03eb8 function dirsFromCodeowners `function dirsFromCodeowners()` L126 : 4. The two protected-path surfaces must agree. CODEOWNERS is what GitHub enforces; protected_paths_extra is what the engine reads. If they disagree, a path is protected in name only (the bin/ gap that
+- S:87c8d03eb8 function dirsFromCodeowners `function dirsFromCodeowners()` L132 : 4. The two protected-path surfaces must agree. CODEOWNERS is what GitHub enforces; protected_paths_extra is what the engine reads. If they disagree, a path is protected in name only (the bin/ gap that
 ### scripts/lib/message-catalog/gate/check-architecture-drift.mjs [F:40d8f235fd]
 - S:4287ee7685 const MESSAGES `export const MESSAGES =` L1
 ### tests/cli-dispatch.test.mjs [F:40e4f39b59]
@@ -1062,9 +1071,9 @@ Files: 1081  Bytes: 3926905  Map tokens: 138602/120000
 ### scripts/check-architecture-drift.mjs [F:4749cc43a0]
 - S:fd2e16186e function escapeRegExp `function escapeRegExp(s)` L66 : Escape regex metacharacters so an unexpected schema value (e.g. containing "." or "+") cannot produce an invalid pattern or change what the word-boundary match means. schemas/work-item.schema.json is 
 ### tests/self-application.test.mjs [F:48355ccf4d]
-- S:e3c36060ec function makeMinimalRepo `function makeMinimalRepo()` L95 : Build a minimal passing temp repo and return the path. Caller must rmSync(tmp, {recursive:true}).
-- S:7c9eb8f22d function runScript `function runScript(tmp)` L113
-- S:43cc2b28a1 function withStubRunner `function withStubRunner(tmp, score, extendedScore, totalScore)` L227
+- S:e3c36060ec function makeMinimalRepo `function makeMinimalRepo()` L98 : Build a minimal passing temp repo and return the path. Caller must rmSync(tmp, {recursive:true}).
+- S:7c9eb8f22d function runScript `function runScript(tmp)` L116
+- S:43cc2b28a1 function withStubRunner `function withStubRunner(tmp, score, extendedScore, totalScore)` L230
 ### scripts/lib/detect-attribution.mjs [F:4a7eaceb5c]
 - S:bb570e99d8 const AI_SIGNATURE_RE `export const AI_SIGNATURE_RE = new RegExp(P, "iu");` L40
 - S:ba4cb77f9c function branchHasModelSegment `export function branchHasModelSegment(name)` L51 : True when any path segment of a branch name exactly equals a denylisted token. * This is a strict superset of isModelIdentifierBranch (which checks only the first * segment): it also catches evasions 
@@ -1109,8 +1118,8 @@ Files: 1081  Bytes: 3926905  Map tokens: 138602/120000
 - S:d49b633132 function isValidUrl `function isValidUrl(value: string): boolean` L67
 - S:6d2334f815 function SettingsScreen `export function SettingsScreen({ state, write }: { state: PanelState; write: WriteActions })` L125 : The advanced-configuration screen, one conceptual area per tab so nothing forces an * operator to scroll past unrelated subsystems to reach the one they came for. Full * CRUD lives here for the model-
 ### tests/risk-surface-guard.test.mjs [F:4fad18c892]
-- S:fcf3c9d4a4 function run `function run(diffPath, extraArgs = [])` L39
-- S:9e3d232a1b function fixture `function fixture(dir, name)` L43
+- S:fcf3c9d4a4 function run `function run(diffPath, extraArgs = [])` L40
+- S:9e3d232a1b function fixture `function fixture(dir, name)` L44
 ### scripts/gauntlet.mjs [F:522efae76d]
 - S:d439b00c59 function writeRunLog `function writeRunLog(runsDir, command, payload)` L73 : A run-log writer copied from dry-run-sweep.mjs's writeRunLog: same audit-trail convention, same 30-entry cap, same "log writes must never crash the command" rule.
 - S:76dbb025c9 function removeFirstMatch `function removeFirstMatch(text, re)` L116
@@ -1133,6 +1142,8 @@ Files: 1081  Bytes: 3926905  Map tokens: 138602/120000
 ### .design-sync/previews/ModeSwitcher.tsx [F:545c0ccfeb]
 - S:2a04172292 function HostSelected `export const HostSelected = () => <ModeSwitcher mode="host" onModeChange={() => {}} />;` L4
 - S:2bd0a26c48 function ProductSelected `export const ProductSelected = () => <ModeSwitcher mode="product" onModeChange={() => {}} />;` L6
+### tests/check-risk-surface-allowlist.test.mjs [F:54784dcc0a]
+- S:0d3e338a93 function run `function run(...args)` L15
 ### tests/learnings.test.mjs [F:54a3c626d9]
 - S:5e3d6fa91f function run `function run(script, args = [], env = {})` L20
 - S:2f1892a712 function makeStagedFixture `function makeStagedFixture(stagedLines = [])` L127
@@ -1745,6 +1756,8 @@ Files: 1081  Bytes: 3926905  Map tokens: 138602/120000
 - S:41ad75ea93 function buildLargeDiff `function buildLargeDiff(lines)` L17 : Build a synthetic 1000-line diff that is clean (no gaming patterns).
 ### scripts/lib/message-catalog/gate/check-trust-boundary.mjs [F:b2efd505ef]
 - S:d0587dc399 const MESSAGES `export const MESSAGES =` L1
+### scripts/lib/message-catalog/gate/check-risk-surface-allowlist.mjs [F:b37de0ee8e]
+- S:dbaef09fdf const MESSAGES `export const MESSAGES =` L1
 ### design-system/src/components/ModeSwitcher/ModeSwitcher.tsx [F:b3a2ad52bb]
 - S:3e2d44a335 type PanelMode `export type PanelMode = "host" | "product";` L4
 - S:0c7a33bcbe interface ModeSwitcherProps `export interface ModeSwitcherProps` L6
@@ -2197,6 +2210,7 @@ Files: 1081  Bytes: 3926905  Map tokens: 138602/120000
 - scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/agent-run/run-cycle.mjs
 - scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/gate/check-md-governance.mjs
 - scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/gate/check-trust-boundary.mjs
+- scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/gate/check-risk-surface-allowlist.mjs
 - scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/gate/check-regex-safety.mjs
 - scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/gate/check-control-panel-coverage.mjs
 - scripts/lib/message-catalog/index.mjs -> scripts/lib/message-catalog/gate/validate-work-item.mjs
@@ -2260,6 +2274,7 @@ Files: 1081  Bytes: 3926905  Map tokens: 138602/120000
 - scripts/risk-surface-guard.mjs -> scripts/lib/messages.mjs
 - scripts/risk-surface-guard.mjs -> scripts/lib/cli-args.mjs
 - scripts/risk-surface-guard.mjs -> scripts/lib/risk-surface-rules.mjs
+- scripts/risk-surface-guard.mjs -> scripts/lib/risk-surface-allowlist.mjs
 - scripts/lib/packet-id.mjs -> scripts/lib/canonical-json.mjs
 - design-system/src/components/Carousel/index.ts -> design-system/src/components/Carousel/Carousel.tsx
 - design-system/src/components/ActivationLadder/ActivationLadder.tsx -> design-system/src/lib/cx.ts
@@ -2323,6 +2338,8 @@ Files: 1081  Bytes: 3926905  Map tokens: 138602/120000
 - scripts/agent/review-diff.mjs -> scripts/agent/resolve-role.mjs
 - scripts/agent/review-diff.mjs -> scripts/agent/openai-client.mjs
 - scripts/agent/review-diff.mjs -> scripts/validate-config.mjs
+- scripts/check-risk-surface-allowlist.mjs -> scripts/lib/messages.mjs
+- scripts/check-risk-surface-allowlist.mjs -> scripts/lib/risk-surface-allowlist.mjs
 - scripts/lib/risk-surface-rules.mjs -> scripts/lib/secret-patterns.mjs
 - design-system/src/components/States/States.tsx -> design-system/src/components/Icon/Icon.tsx
 - design-system/src/components/StatusPill/StatusPill.tsx -> design-system/src/lib/cx.ts
@@ -2333,6 +2350,8 @@ Files: 1081  Bytes: 3926905  Map tokens: 138602/120000
 - apps/control-panel/src/screens/GatesScreen.tsx -> apps/control-panel/src/lib/messages.ts
 - scripts/check-learning-traceability.mjs -> scripts/lib/messages.mjs
 - scripts/check-learning-traceability.mjs -> scripts/lib/learnings.mjs
+- scripts/lib/risk-surface-allowlist.mjs -> scripts/lib/risk-surface-rules.mjs
+- scripts/lib/risk-surface-allowlist.mjs -> scripts/lib/jsonschema.mjs
 - design-system/src/components/RoleBadge/RoleBadge.tsx -> design-system/src/lib/cx.ts
 - design-system/src/components/RoleBadge/RoleBadge.tsx -> design-system/src/components/Icon/Icon.tsx
 - examples/demo-app/tests/PaymentProcessor.test.js -> examples/demo-app/src/PaymentProcessor.js
@@ -2377,12 +2396,14 @@ Files: 1081  Bytes: 3926905  Map tokens: 138602/120000
 - apps/control-panel/src/screens/SettingsScreen.tsx -> apps/control-panel/src/lib/confirm.tsx
 - apps/control-panel/src/screens/SettingsScreen.tsx -> apps/control-panel/src/lib/messages.ts
 - apps/control-panel/src/screens/SettingsScreen.tsx -> apps/control-panel/src/state/liveClient.ts
+- tests/risk-surface-guard.test.mjs -> scripts/lib/risk-surface-allowlist.mjs
 - scripts/disarm.mjs -> scripts/lib/messages.mjs
 - scripts/disarm.mjs -> scripts/lib/yaml-lite.mjs
 - design-system/src/components/RoleBadge/index.ts -> design-system/src/components/RoleBadge/RoleBadge.tsx
 - tests/openai-client.test.mjs -> tests/helpers/mock-openai-server.mjs
 - examples/demo-app/tests/CheckoutService.test.js -> examples/demo-app/src/CheckoutService.js
 - tests/near-miss.test.mjs -> scripts/lib/learnings.mjs
+- tests/check-risk-surface-allowlist.test.mjs -> scripts/lib/risk-surface-allowlist.mjs
 - design-system/src/components/SafetyStrip/SafetyStrip.tsx -> design-system/src/components/StatusPill/StatusPill.tsx
 - design-system/src/components/SafetyStrip/SafetyStrip.tsx -> design-system/src/components/HelpHint/HelpHint.tsx
 - tests/run-cycle-openai.test.mjs -> scripts/agent/apply-patch.mjs
@@ -2772,54 +2793,54 @@ Files: 1081  Bytes: 3926905  Map tokens: 138602/120000
 
 ## Attention (centrality + pagerank)
 
-1. scripts/lib/messages.mjs centrality=64 pagerank=0.037911
-2. scripts/lib/message-catalog/index.mjs centrality=59 pagerank=0.011418
-3. design-system/src/lib/cx.ts centrality=32 pagerank=0.025731
-4. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.016681
-5. design-system/src/index.ts centrality=48 pagerank=0.000677
-6. scripts/lib/yaml-lite.mjs centrality=21 pagerank=0.01643
-7. scripts/lib/jsonschema.mjs centrality=15 pagerank=0.019128
-8. scripts/agent/run-cycle.mjs centrality=25 pagerank=0.004961
-9. scripts/validate-config.mjs centrality=16 pagerank=0.00481
-10. apps/control-panel/src/state/types.ts centrality=13 pagerank=0.006543
-11. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.005677
-12. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.004047
-13. scripts/lib/learnings.mjs centrality=11 pagerank=0.004449
-14. scripts/agent/resolve-role.mjs centrality=11 pagerank=0.003453
-15. scripts/lib/canonical-json.mjs centrality=10 pagerank=0.003433
-16. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001132
-17. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.003264
-18. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.003715
-19. scripts/validate-work-item.mjs centrality=9 pagerank=0.002517
-20. scripts/lib/config-validate.mjs centrality=7 pagerank=0.003416
-21. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.003787
-22. scripts/validate-knowledge-packet.mjs centrality=8 pagerank=0.002384
-23. apps/control-panel/src/App.tsx centrality=10 pagerank=0.000964
-24. scripts/agent/render-prompt.mjs centrality=7 pagerank=0.002657
-25. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.001977
-26. scripts/lib/secret-patterns.mjs centrality=5 pagerank=0.003609
-27. apps/control-panel/server/modonomeWriter.mjs centrality=8 pagerank=0.001721
-28. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.002365
-29. scripts/agent/providers.mjs centrality=3 pagerank=0.004106
-30. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001132
-31. scripts/lib/graph.mjs centrality=5 pagerank=0.002781
-32. scripts/lib/branch-name.mjs centrality=4 pagerank=0.003241
-33. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.003674
-34. scripts/snapshot.mjs centrality=8 pagerank=0.000677
-35. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001262
-36. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.001714
-37. apps/control-panel/src/lib/messages.ts centrality=6 pagerank=0.001623
-38. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.001977
-39. design-system/src/lib/format.ts centrality=5 pagerank=0.001975
-40. scripts/agent/openai-client.mjs centrality=5 pagerank=0.001948
-41. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001262
-42. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.003022
-43. scripts/agent/review-diff.mjs centrality=5 pagerank=0.001518
-44. scripts/lib/work-item-validate.mjs centrality=4 pagerank=0.002039
-45. apps/control-panel/src/screens/SettingsScreen.tsx centrality=6 pagerank=0.000768
-46. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.000768
-47. examples/demo-app/src/index.js centrality=6 pagerank=0.000677
-48. scripts/build-policy-attestation.mjs centrality=6 pagerank=0.000677
-49. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001262
-50. design-system/src/components/CostPanel/CostPanel.tsx centrality=5 pagerank=0.001262
+1. scripts/lib/messages.mjs centrality=65 pagerank=0.037644
+2. scripts/lib/message-catalog/index.mjs centrality=60 pagerank=0.011333
+3. design-system/src/lib/cx.ts centrality=32 pagerank=0.025389
+4. design-system/src/components/Icon/Icon.tsx centrality=23 pagerank=0.016459
+5. scripts/lib/jsonschema.mjs centrality=16 pagerank=0.019887
+6. design-system/src/index.ts centrality=48 pagerank=0.000668
+7. scripts/lib/yaml-lite.mjs centrality=21 pagerank=0.016278
+8. scripts/agent/run-cycle.mjs centrality=25 pagerank=0.004895
+9. scripts/validate-config.mjs centrality=16 pagerank=0.004746
+10. apps/control-panel/src/state/types.ts centrality=13 pagerank=0.006456
+11. design-system/src/components/HelpHint/HelpHint.tsx centrality=12 pagerank=0.005601
+12. design-system/src/components/StatusPill/StatusPill.tsx centrality=12 pagerank=0.003993
+13. scripts/lib/learnings.mjs centrality=11 pagerank=0.00439
+14. scripts/agent/resolve-role.mjs centrality=11 pagerank=0.003407
+15. scripts/lib/canonical-json.mjs centrality=10 pagerank=0.003387
+16. scripts/lib/snapshot-core.mjs centrality=13 pagerank=0.001117
+17. design-system/src/components/Button/Button.tsx centrality=9 pagerank=0.00322
+18. scripts/lib/detect-attribution.mjs centrality=7 pagerank=0.003666
+19. scripts/validate-work-item.mjs centrality=9 pagerank=0.002483
+20. scripts/lib/config-validate.mjs centrality=7 pagerank=0.00337
+21. scripts/lib/secret-patterns.mjs centrality=5 pagerank=0.004326
+22. design-system/src/components/IconButton/IconButton.tsx centrality=6 pagerank=0.003736
+23. scripts/validate-knowledge-packet.mjs centrality=8 pagerank=0.002353
+24. apps/control-panel/src/App.tsx centrality=10 pagerank=0.000951
+25. scripts/agent/render-prompt.mjs centrality=7 pagerank=0.002622
+26. design-system/src/components/WorkItemCard/WorkItemCard.tsx centrality=8 pagerank=0.00195
+27. apps/control-panel/server/modonomeWriter.mjs centrality=8 pagerank=0.001698
+28. design-system/src/tokens/tokens.ts centrality=6 pagerank=0.002334
+29. scripts/agent/providers.mjs centrality=3 pagerank=0.004052
+30. scripts/lib/lang-adapters/index.mjs centrality=8 pagerank=0.001117
+31. scripts/lib/risk-surface-allowlist.mjs centrality=6 pagerank=0.002228
+32. scripts/lib/graph.mjs centrality=5 pagerank=0.002744
+33. scripts/lib/branch-name.mjs centrality=4 pagerank=0.003198
+34. design-system/src/components/Tooltip/Tooltip.tsx centrality=3 pagerank=0.003625
+35. scripts/snapshot.mjs centrality=8 pagerank=0.000668
+36. design-system/src/components/WorkItemDrawer/WorkItemDrawer.tsx centrality=7 pagerank=0.001245
+37. apps/control-panel/src/lib/confirm.tsx centrality=6 pagerank=0.001691
+38. apps/control-panel/src/lib/messages.ts centrality=6 pagerank=0.001601
+39. design-system/src/components/Card/Card.tsx centrality=5 pagerank=0.00195
+40. design-system/src/lib/format.ts centrality=5 pagerank=0.001949
+41. scripts/agent/openai-client.mjs centrality=5 pagerank=0.001922
+42. design-system/src/components/LeaseTable/LeaseTable.tsx centrality=6 pagerank=0.001245
+43. scripts/lib/commit-identity.mjs centrality=3 pagerank=0.002982
+44. scripts/agent/review-diff.mjs centrality=5 pagerank=0.001497
+45. scripts/lib/work-item-validate.mjs centrality=4 pagerank=0.002012
+46. apps/control-panel/src/screens/SettingsScreen.tsx centrality=6 pagerank=0.000757
+47. apps/control-panel/src/state/adapter.ts centrality=6 pagerank=0.000757
+48. examples/demo-app/src/index.js centrality=6 pagerank=0.000668
+49. scripts/build-policy-attestation.mjs centrality=6 pagerank=0.000668
+50. design-system/src/components/ActivationLadder/ActivationLadder.tsx centrality=5 pagerank=0.001245
 

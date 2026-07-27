@@ -117,7 +117,7 @@ export const PROTECTED_PATH_GLOBS = [
   ".modonome/**",
 ];
 
-function globToRegExp(glob) {
+export function globToRegExp(glob) {
   // Split on the literal "**" substring first, so each segment holds at most
   // single "*" wildcards, then escape and rejoin with ".*" for where "**" was.
   // This sidesteps the placeholder round-trip that corrupted an earlier draft.
@@ -242,6 +242,11 @@ export function redactMatchedText(text, opts = {}) {
 // YAML mapping key does.
 // ---------------------------------------------------------------------------
 
+// RS106: environment variable names common enough, and benign enough, that a
+// bare read of one in an auth/secret/credential-named file is routine rather
+// than worth a reviewer's attention.
+const RS106_BENIGN_VARS = new Set(["NODE_ENV", "PORT", "HOST", "DEBUG", "LOG_LEVEL", "CI", "HOME", "PATH", "PWD", "TZ", "LANG"]);
+
 export const RULES = [
   // ---- RS1xx: dynamic-code-execution / unsafe-deserialization / shell-execution ----
   {
@@ -309,12 +314,16 @@ export const RULES = [
     category: "credential-surface-expansion",
     severity: "low",
     scope: (p) => isJsTsScope(p) && /auth|secret|credential|token/i.test(basename(p)),
-    pattern: /\bprocess\.env\b/,
+    test: (line) => {
+      const m = line.match(/\bprocess\.env\.([A-Za-z_][A-Za-z0-9_]*)\b/) || line.match(/\bprocess\.env\[["']([A-Za-z_][A-Za-z0-9_]*)["']\]/);
+      if (!m) return false;
+      return !RS106_BENIGN_VARS.has(m[1]);
+    },
     reason:
       "New process.env access in a file whose name suggests it handles authentication, secrets, or credentials. Not inherently unsafe, but a new environment-variable read in this kind of file is worth a quick look at what it reads and where the value goes.",
     reviewer_guidance: "Confirm the value read is used narrowly (not logged, not echoed into a response or a wider object) and that the variable name matches what the file already handles.",
     limitation:
-      "Scoped only by filename convention, not by actual file purpose, and only to JS/TS files. This is the rule most likely to be noisy in a repo with a different naming convention; it stays intentionally low severity and narrow for that reason.",
+      "Scoped only by filename convention, not by actual file purpose, and only to JS/TS files. Exempts a small set of near-universally-benign variable names (NODE_ENV, PORT, HOST, DEBUG, LOG_LEVEL, CI, HOME, PATH, PWD, TZ, LANG) so a routine environment check doesn't fire just because the file is named for auth or credentials; a bare process.env access with no readable variable name (destructuring, a computed key) is not matched at all. This is still the rule most likely to be noisy in a repo with a different naming or variable convention; it stays intentionally low severity and narrow for that reason.",
   },
   {
     id: "RS109",
@@ -876,18 +885,22 @@ export const RULES = [
     fileTest: (lines) => {
       const verifyFalseRe = /\bverify\s*=\s*False\b/;
       const httpCallRe = /\b(requests|session)\./;
+      const WINDOW = 4;
       const matches = [];
       for (let i = 0; i < lines.length; i++) {
         const stripped = stripPythonSameLineNoise(lines[i].text);
         if (!verifyFalseRe.test(stripped)) continue;
-        const nearby = [lines[i - 1], lines[i], lines[i + 1]].filter(Boolean);
+        const nearby = [];
+        for (let offset = -WINDOW; offset <= WINDOW; offset++) {
+          if (lines[i + offset]) nearby.push(lines[i + offset]);
+        }
         if (nearby.some((l) => httpCallRe.test(stripPythonSameLineNoise(l.text)))) matches.push(lines[i]);
       }
       return matches;
     },
     reason: "Disables TLS certificate verification on a requests/session call, near an added verify=False. Machine-in-the-middle interception becomes possible for anything sent over this connection.",
     reviewer_guidance: "Fix the underlying certificate problem instead of disabling verification. If this is genuinely a local development-only code path, confirm it cannot run in production.",
-    limitation: "Co-occurrence heuristic scoped to the same and adjacent added lines; a requests/session call several lines away from its verify=False argument (a common multi-line call-signature style) is not detected, and an unrelated verify=False on an unrelated object would still be flagged if a requests/session call happens to sit on an adjacent added line.",
+    limitation: "Co-occurrence heuristic scoped to added lines within 4 lines of each other, wide enough to catch a typical black or autopep8-wrapped multi-line call (the requests/session call on one line, verify=False as its own keyword argument line several lines below) without tracking real call boundaries. A call whose arguments span more than 4 lines is still not detected, and an unrelated verify=False on an unrelated object would still be flagged if a requests/session call happens to sit within the window.",
   },
   {
     id: "RS704",
@@ -926,18 +939,23 @@ export const RULES = [
     scope: (p) => isTerraformScope(p) || isK8sScope(p),
     fileTest: (lines) => {
       const wildcardCidrRe = /0\.0\.0\.0\/0/;
-      const egressWordRe = /\b(egress|outbound)\b/i;
+      // Requires "egress" to look like a structural block or key (a Terraform
+      // block opener/attribute, or a Kubernetes YAML mapping key), not merely
+      // prose mentioning the word nearby. "outbound" has no equivalent
+      // structural spelling in either format, so it stays a bare-word fallback.
+      const egressStructuralRe = /\begress\s*[{:=]/i;
+      const outboundWordRe = /\boutbound\b/i;
       const matches = [];
       for (let i = 0; i < lines.length; i++) {
         if (!wildcardCidrRe.test(lines[i].text)) continue;
         const nearby = [lines[i - 1], lines[i], lines[i + 1]].filter(Boolean);
-        if (nearby.some((l) => egressWordRe.test(l.text))) matches.push(lines[i]);
+        if (nearby.some((l) => egressStructuralRe.test(l.text) || outboundWordRe.test(l.text))) matches.push(lines[i]);
       }
       return matches;
     },
     reason: "This infrastructure config allows outbound traffic to any address (0.0.0.0/0) near an egress or outbound rule. A broad egress allowance makes data exfiltration from a compromised workload easier and harder to contain.",
     reviewer_guidance: "Scope egress to the specific destinations the workload actually needs to reach.",
-    limitation: "Co-occurrence heuristic on nearby lines only, hedged deliberately per the task's own \"if detectable\" framing: a wildcard CIDR used for an unrelated, legitimately broad purpose (a public ingress rule, for instance) sitting near the word egress or outbound could still be flagged.",
+    limitation: "Co-occurrence heuristic on nearby lines only, hedged deliberately per the task's own \"if detectable\" framing. The egress side requires a structural block or key shape (egress {, egress =, egress:) rather than the bare word appearing anywhere in nearby prose, but outbound has no such structural form in Terraform or Kubernetes and stays a bare-word match, so a wildcard CIDR sitting near unrelated prose that happens to say \"outbound\" could still be flagged; a wildcard CIDR used for a legitimate, unrelated purpose (a public ingress rule, for instance) sitting near a real egress block would also still be flagged, since this rule does not parse which block the CIDR actually belongs to.",
   },
 
   // ---- RS8xx: protected-security-config (path-based, content-independent) ----

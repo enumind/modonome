@@ -1,0 +1,12 @@
+diff --git a/scripts/client.py b/scripts/client.py
+--- a/scripts/client.py
++++ b/scripts/client.py
+@@ -1,3 +1,9 @@
+ def fetch(url):
+-    return requests.get(url)
++    return requests.get(
++        url,
++        timeout=30,
++        headers=DEFAULT_HEADERS,
++        verify=False,
++    )

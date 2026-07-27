@@ -87,6 +87,67 @@ from or modify `guard-ratchet.mjs`.
    allowlist, never a PR-head-loaded one, for the same reason point 4 requires
    base-pinning the detector itself.
 
+9. **Suppression allowlist realizes decision 8's design note.** A base-branch-loaded
+   allowlist, never PR-head-loaded, exactly like the detector itself is base-pinned per
+   decision 4. `.modonome/risk-surface-allowlist.json` and its loader
+   `scripts/lib/risk-surface-allowlist.mjs` are both base-pinned in `ci.yml`'s `ratchet`
+   job and registered in `check-self-application.mjs`'s `BASE_PINNED`. A pull request
+   that adds a suppression entry is judged by the OLD (base-branch) allowlist on that
+   same pull request; the new entry only takes effect starting with the next pull
+   request opened after this one merges. No inline suppression comments were added; the
+   concern decision 8 raised (an agent adding one to silence a real finding, in the same
+   diff, with no review cycle) is exactly what base-pinning the allowlist avoids.
+10. **Entry shape and glob reuse.** Every allowlist entry requires all seven fields
+    (`id`, `rule`, `file`, `reason`, `added_by`, `added_at`, `expires_at`); none are
+    optional, since each is structurally necessary for auditability, who, why, what,
+    and until when. Matching is rule-id-only, with no category-level suppression, so
+    suppression breadth stays proportional to review cost: one entry silences one rule
+    against one file or glob, never a whole category. `file` reuses `globToRegExp`,
+    exported from `risk-surface-rules.mjs` for this purpose, the same glob syntax
+    `PROTECTED_PATH_GLOBS` already uses, so one matching implementation serves both a
+    literal path and a wildcard pattern. There is no `line` field: pinning to a line
+    number would make an entry brittle against unrelated edits that shift line numbers
+    elsewhere in the same file.
+11. **Output visibility rules.** A suppressed finding stays visible, marked, in human
+    and `--json` output (a `[SUPPRESSED]` marker, the entry id, and its reason), so a
+    reviewer or an audit can see what was suppressed and why without cross-referencing
+    the allowlist file separately. It is excluded entirely from `--sarif` output, since
+    SARIF feeds the GitHub Security tab, which should only ever list findings still
+    awaiting review, not ones already reviewed and time-boxed. A suppressed finding
+    never counts toward the exit code, the pass/warn/fail result, or the finding count
+    in the summary line, in any mode, including fail mode: that is the entire point of
+    suppression, and doing it selectively (hidden from SARIF but still counted toward
+    the exit code) would leave the noise problem half-solved.
+12. **`scripts/check-risk-surface-allowlist.mjs` is an author-feedback gate, not the
+    trust boundary.** It runs pre-base-checkout, against the pull request's own
+    proposed allowlist edits, so a malformed entry is caught on the pull request that
+    introduces it rather than a review cycle later. It is blocking, registered in
+    `REQUIRED_GATES` without the "(advisory)" qualifier decision 5 gives the scanner
+    itself, because it is pure structural validation with no false-positive rate to
+    prove out first, unlike the scanner's pattern-matching rules. Making it blocking
+    cannot let a bad diff through by itself, since the actual trust boundary is
+    decision 9's base-pinning; the gate only ever improves feedback latency for the
+    pull request's author.
+13. **Fail-closed is enforced at two independent layers, deliberately redundant.**
+    First, `parseAllowlist` guarantees `entries: []` whenever validation produces any
+    error, so a malformed allowlist file suppresses nothing rather than something
+    unpredictable. Second, `isSuppressed` independently re-validates each entry's
+    `expires_at` shape at match time rather than trusting `parseAllowlist` already ran:
+    `scripts/lib/jsonschema.mjs` is a generic, non-base-pinned utility shared by other
+    gates (`check-work-items.mjs` among them), so if it were ever weakened by a pull
+    request and a malformed no-`expires_at` entry slipped past
+    `check-risk-surface-allowlist.mjs` in the same pull request, a naive
+    `entry.expires_at < today` comparison would evaluate `undefined < "2026-..."` as
+    `false`, silently treating a missing expiry as permanent. Re-validating inside
+    `isSuppressed` closes this without needing to base-pin the generic schema validator
+    itself, a disproportionate change for what it buys.
+14. **SARIF upload wiring.** Risk Surface Guard's `--sarif` output is now uploaded to
+    the GitHub Security tab by `action.yml`, reusing the ratchet's own `upload-sarif`
+    toggle rather than adding a second boolean input, gated additionally on
+    `risk-surface` not being `off`. Results land under a distinct `modonome-risk-surface`
+    category, separate from the ratchet's `modonome-gate-integrity` category, so both
+    uploads coexist in the same run without overwriting each other.
+
 ## What this does not change
 
 - The zero-runtime-dependency guarantee (ADR-032) is untouched.
@@ -106,3 +167,10 @@ depends on well-formed `@@` hunk headers in the diff, and the broad-scope creden
 network and TLS rules trade some false-positive risk for coverage deliberately, since a
 missed expansion is worse than an extra reviewer glance. None of this is marketed as
 breach prevention or as a replacement for the security tooling named in point 8.
+
+RS106 (benign environment variable names), RS703 (Python `verify=False` co-occurrence
+window), and RS707 (network egress structural match) were tuned after initial shipping
+against more realistic code shapes (a `process.env.NODE_ENV` read in a file merely named
+after auth, a `black`-wrapped multi-line `requests` call, prose that mentions "egress"
+near an unrelated `0.0.0.0/0`). This reduces, but does not eliminate, the false-positive
+risk the paragraph above already discloses; it remains a heuristic, not a guarantee.

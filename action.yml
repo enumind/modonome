@@ -34,6 +34,10 @@ inputs:
     description: 'Run Risk Surface Guard. Values: off, warn, fail.'
     required: false
     default: 'warn'
+  risk-surface-sarif-file:
+    description: 'Path to write the Risk Surface Guard SARIF 2.1.0 report.'
+    required: false
+    default: 'modonome-risk-surface.sarif'
 
 runs:
   using: 'composite'
@@ -83,12 +87,16 @@ runs:
         MODONOME_BASE: ${{ steps.ratchet.outputs.base }}
         MODONOME_ACTION_PATH: ${{ github.action_path }}
         MODONOME_RISK_MODE: ${{ inputs.risk-surface }}
+        MODONOME_RISK_SARIF_FILE: ${{ inputs.risk-surface-sarif-file }}
       run: |
         set -uo pipefail
         MODE="$MODONOME_RISK_MODE"
         if [ "$MODE" != "fail" ]; then MODE="warn"; fi
-        node "$MODONOME_ACTION_PATH/scripts/risk-surface-guard.mjs" "$MODONOME_BASE" --mode "$MODE" \
-          | tee -a "$GITHUB_STEP_SUMMARY"
+        GUARD="$MODONOME_ACTION_PATH/scripts/risk-surface-guard.mjs"
+        # SARIF for the security tab, best-effort like the gate integrity step above.
+        node "$GUARD" "$MODONOME_BASE" --sarif > "$MODONOME_RISK_SARIF_FILE" || true
+        # Human output for the run log and the job summary. Its exit code is the verdict.
+        node "$GUARD" "$MODONOME_BASE" --mode "$MODE" | tee -a "$GITHUB_STEP_SUMMARY"
         exit "${PIPESTATUS[0]}"
 
     - name: Upload SARIF to code scanning
@@ -97,6 +105,13 @@ runs:
       with:
         sarif_file: ${{ inputs.sarif-file }}
         category: modonome-gate-integrity
+
+    - name: Upload Risk Surface Guard SARIF to code scanning
+      if: ${{ always() && inputs.upload-sarif == 'true' && inputs.risk-surface != 'off' }}
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: ${{ inputs.risk-surface-sarif-file }}
+        category: modonome-risk-surface
 
     # Optional: an in-toto receipt of the verdict, keyless-signed via Sigstore and logged
     # in Rekor, so a downstream verifier can confirm the tests were not weakened. Runs on

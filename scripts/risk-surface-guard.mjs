@@ -10,9 +10,13 @@
 // changes that expand risk surface and helps a reviewer notice them before merge.
 //
 // Usage:
-//   node scripts/risk-surface-guard.mjs <baseRef> [--mode warn|fail] [--sarif] [--json]
-//   node scripts/risk-surface-guard.mjs --diff <file> [--mode warn|fail] [--sarif] [--json]
-//   node scripts/risk-surface-guard.mjs --staged [--mode warn|fail] [--sarif] [--json]
+//   node scripts/risk-surface-guard.mjs <baseRef> [--mode warn|fail] [--sarif] [--json] [--allowlist <file>]
+//   node scripts/risk-surface-guard.mjs --diff <file> [--mode warn|fail] [--sarif] [--json] [--allowlist <file>]
+//   node scripts/risk-surface-guard.mjs --staged [--mode warn|fail] [--sarif] [--json] [--allowlist <file>]
+//
+// --allowlist defaults to .modonome/risk-surface-allowlist.json (see
+// scripts/lib/risk-surface-allowlist.mjs and docs/risk-surface-guard.md,
+// "Suppressing a finding"). A missing allowlist file is not an error.
 //
 // Exit codes: 0 no findings, or warn mode regardless of findings; 1 fail mode with a
 // high or critical finding; 2 usage or internal error.
@@ -23,6 +27,7 @@ import { dirname, join } from "node:path";
 import { formatMessage, loadMessageOverrides } from "./lib/messages.mjs";
 import { flagValue } from "./lib/cli-args.mjs";
 import { RULES, RULES_BY_ID, matchesProtectedPath, stripForScope, redactMatchedText } from "./lib/risk-surface-rules.mjs";
+import { loadAllowlist, applyAllowlist } from "./lib/risk-surface-allowlist.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
@@ -38,12 +43,13 @@ function normalizeLF(s) {
 }
 
 // ---------------------------------------------------------------------------
-// Flag parsing. --mode, --sarif, --json, --format=json/sarif, and the
-// positional base-ref (or --diff <path> / --staged) compose in any order.
+// Flag parsing. --mode, --allowlist, --sarif, --json, --format=json/sarif, and
+// the positional base-ref (or --diff <path> / --staged) compose in any order.
 // ---------------------------------------------------------------------------
 
 export function stripFlags(argv) {
   const mode = flagValue(argv, "--mode");
+  const allowlist = flagValue(argv, "--allowlist");
   const format = argv.includes("--sarif") || argv.includes("--format=sarif")
     ? "sarif"
     : argv.includes("--json") || argv.includes("--format=json")
@@ -52,14 +58,14 @@ export function stripFlags(argv) {
   const positional = [];
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
-    if (a === "--mode") {
+    if (a === "--mode" || a === "--allowlist") {
       i++; // also skip its value
       continue;
     }
     if (/^--(json|sarif|format=(json|sarif))$/.test(a)) continue;
     positional.push(a);
   }
-  return { mode, format, positional };
+  return { mode, format, positional, allowlist };
 }
 
 // ---------------------------------------------------------------------------
@@ -216,14 +222,23 @@ function hasHighOrCritical(findings) {
   return findings.some((f) => f.severity === "high" || f.severity === "critical");
 }
 
+// A suppressed finding (allowlist match) never counts toward the exit code,
+// the result verdict, or the finding count in the summary line, even though
+// it stays visible in the output. This is the whole point of suppression:
+// reduce noise, including in fail mode, without hiding that it happened.
+function activeFindings(findings) {
+  return findings.filter((f) => !f.suppressed);
+}
+
 export function decideExitCode(mode, findings) {
-  if (mode === "fail" && hasHighOrCritical(findings)) return 1;
+  if (mode === "fail" && hasHighOrCritical(activeFindings(findings))) return 1;
   return 0;
 }
 
 export function decideResult(mode, findings) {
-  if (findings.length === 0) return "pass";
-  if (mode === "fail" && hasHighOrCritical(findings)) return "fail";
+  const active = activeFindings(findings);
+  if (active.length === 0) return "pass";
+  if (mode === "fail" && hasHighOrCritical(active)) return "fail";
   return "warn";
 }
 
@@ -238,25 +253,28 @@ export function severityToSarifLevel(severity) {
 // ---------------------------------------------------------------------------
 
 function summaryMessage(mode, findings) {
-  if (findings.length === 0) return formatMessage("gate.risk-surface-guard.pass-summary", {}, overrides).message;
+  const active = activeFindings(findings);
+  if (active.length === 0) return formatMessage("gate.risk-surface-guard.pass-summary", {}, overrides).message;
   if (mode === "fail") {
-    if (hasHighOrCritical(findings)) {
-      return formatMessage("gate.risk-surface-guard.fail-block-summary", { count: findings.length }, overrides).message;
+    if (hasHighOrCritical(active)) {
+      return formatMessage("gate.risk-surface-guard.fail-block-summary", { count: active.length }, overrides).message;
     }
-    return formatMessage("gate.risk-surface-guard.fail-mode-below-threshold-summary", { count: findings.length }, overrides).message;
+    return formatMessage("gate.risk-surface-guard.fail-mode-below-threshold-summary", { count: active.length }, overrides).message;
   }
-  return formatMessage("gate.risk-surface-guard.warn-summary", { count: findings.length }, overrides).message;
+  return formatMessage("gate.risk-surface-guard.warn-summary", { count: active.length }, overrides).message;
 }
 
 export function formatHuman(findings, { mode }) {
   const lines = ["Risk Surface Guard", "===================", `Mode: ${mode}`, ""];
   for (const f of findings) {
-    lines.push(`[${f.severity.toUpperCase()}] ${f.id} ${f.category}`);
+    const marker = f.suppressed ? " [SUPPRESSED]" : "";
+    lines.push(`[${f.severity.toUpperCase()}] ${f.id} ${f.category}${marker}`);
     lines.push(`  ${f.file}${f.line ? ":" + f.line : ""}`);
     lines.push(`  ${f.matched_text}`);
     lines.push(`  ${f.reason}`);
     lines.push(`  Reviewer guidance: ${f.reviewer_guidance}`);
     lines.push(`  Limitation: ${f.limitation}`);
+    if (f.suppressed) lines.push(`  Suppressed by allowlist entry ${f.suppressed.entry_id}: ${f.suppressed.reason}`);
     lines.push("");
   }
   lines.push(summaryMessage(mode, findings));
@@ -272,7 +290,11 @@ export function emitJson(findings, { mode }) {
 }
 
 export function emitSarif(findings) {
-  const usedIds = [...new Set(findings.map((f) => f.id))];
+  // Suppressed findings are excluded entirely: SARIF feeds the GitHub Security
+  // tab, which should only ever show actionable findings, not ones a reviewer
+  // has already accepted and time-boxed via the allowlist.
+  const active = findings.filter((f) => !f.suppressed);
+  const usedIds = [...new Set(active.map((f) => f.id))];
   const rules = usedIds.map((id) => {
     const rule = RULES_BY_ID.get(id);
     return {
@@ -282,7 +304,7 @@ export function emitSarif(findings) {
       helpUri: `https://modonome.com/codes/${id}`,
     };
   });
-  const results = findings.map((f) => ({
+  const results = active.map((f) => ({
     ruleId: f.id,
     level: severityToSarifLevel(f.severity),
     message: { text: f.reason },
@@ -312,7 +334,7 @@ export function emitSarif(findings) {
 // ---------------------------------------------------------------------------
 
 function runCli() {
-  const { mode: rawMode, format, positional } = stripFlags(process.argv.slice(2));
+  const { mode: rawMode, format, positional, allowlist } = stripFlags(process.argv.slice(2));
   const mode = rawMode || "warn";
   if (mode !== "warn" && mode !== "fail") {
     process.stderr.write(formatMessage("gate.risk-surface-guard.invalid-mode", { value: rawMode }, overrides).message + "\n");
@@ -338,6 +360,16 @@ function runCli() {
     process.stderr.write(formatMessage("gate.risk-surface-guard.internal-error", { message: e.message }, overrides).message + "\n");
     process.exit(2);
   }
+
+  const allowlistPath = allowlist || join(root, ".modonome", "risk-surface-allowlist.json");
+  const { entries: allowlistEntries, errors: allowlistErrors } = loadAllowlist(allowlistPath);
+  if (allowlistErrors.length > 0) {
+    process.stderr.write(
+      formatMessage("gate.risk-surface-guard.allowlist-invalid", { count: allowlistErrors.length }, overrides).message + "\n",
+    );
+  }
+  const today = new Date().toISOString().slice(0, 10);
+  findings = applyAllowlist(findings, allowlistEntries, today);
 
   if (format === "sarif") {
     process.stdout.write(emitSarif(findings) + "\n");

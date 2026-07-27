@@ -27,6 +27,7 @@ import {
   RULES,
   RULES_BY_ID,
 } from "../scripts/lib/risk-surface-rules.mjs";
+import { parseAllowlist, loadAllowlist, isSuppressed, applyAllowlist } from "../scripts/lib/risk-surface-allowlist.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
@@ -235,6 +236,51 @@ test("scanFile applies a representative rule from each ID family", () => {
   }
 });
 
+test("RS106 exempts a small set of benign env var names but still flags others", () => {
+  const benign = scanFile("src/auth-middleware.js", [{ text: 'if (process.env.NODE_ENV === "production") {', line: 1 }]);
+  assert.ok(!benign.some((f) => f.id === "RS106"), "expected NODE_ENV to be exempt");
+
+  const notBenign = scanFile("src/auth-middleware.js", [{ text: "const key = process.env.AUTH_SECRET_KEY;", line: 1 }]);
+  assert.ok(
+    notBenign.some((f) => f.id === "RS106"),
+    "expected a non-exempt var name to still flag",
+  );
+});
+
+test("RS703 catches a black-wrapped multi-line requests call within the widened window", () => {
+  const lines = [
+    { text: "response = requests.get(", line: 1 },
+    { text: "    url,", line: 2 },
+    { text: "    timeout=30,", line: 3 },
+    { text: "    headers=headers,", line: 4 },
+    { text: "    verify=False,", line: 5 },
+    { text: ")", line: 6 },
+  ];
+  const findings = scanFile("scripts/client.py", lines);
+  assert.ok(
+    findings.some((f) => f.id === "RS703"),
+    "expected RS703 to catch a call 4 lines away",
+  );
+});
+
+test("RS707 requires a structural egress block or key, not bare prose mentioning the word", () => {
+  const structural = scanFile("k8s/policy.yaml", [
+    { text: "egress:", line: 1 },
+    { text: "  - to: [{ ipBlock: { cidr: 0.0.0.0/0 } }]", line: 2 },
+  ]);
+  assert.ok(
+    structural.some((f) => f.id === "RS707"),
+    "expected a real egress: key to still flag",
+  );
+
+  const proseOnly = scanFile("k8s/policy.yaml", [
+    { text: "# ingress rule below; keep separate from our egress policy elsewhere", line: 1 },
+    { text: "ingress:", line: 2 },
+    { text: "  - from: [{ ipBlock: { cidr: 0.0.0.0/0 } }]", line: 3 },
+  ]);
+  assert.ok(!proseOnly.some((f) => f.id === "RS707"), "expected prose-only mention of egress not to flag an unrelated ingress rule");
+});
+
 test("decideExitCode: pure implementation of the exit-code contract", () => {
   const high = [{ severity: "high" }];
   const medium = [{ severity: "medium" }];
@@ -265,18 +311,193 @@ test("stripFlags composes --mode with --sarif/--json/positional args in any orde
     mode: "fail",
     format: "sarif",
     positional: ["origin/main"],
+    allowlist: null,
   });
   assert.deepEqual(stripFlags(["--sarif", "--mode", "fail", "origin/main"]), {
     mode: "fail",
     format: "sarif",
     positional: ["origin/main"],
+    allowlist: null,
   });
   assert.deepEqual(stripFlags(["--mode", "warn", "--diff", "x.diff", "--json"]), {
     mode: "warn",
     format: "json",
     positional: ["--diff", "x.diff"],
+    allowlist: null,
   });
-  assert.deepEqual(stripFlags(["origin/main"]), { mode: null, format: "human", positional: ["origin/main"] });
+  assert.deepEqual(stripFlags(["origin/main"]), {
+    mode: null,
+    format: "human",
+    positional: ["origin/main"],
+    allowlist: null,
+  });
+});
+
+test("stripFlags extracts --allowlist and composes with other flags in any order", () => {
+  assert.deepEqual(stripFlags(["origin/main", "--allowlist", "my-list.json", "--mode", "fail"]), {
+    mode: "fail",
+    format: "human",
+    positional: ["origin/main"],
+    allowlist: "my-list.json",
+  });
+  assert.deepEqual(stripFlags(["--allowlist", "my-list.json", "--diff", "x.diff", "--json"]), {
+    mode: null,
+    format: "json",
+    positional: ["--diff", "x.diff"],
+    allowlist: "my-list.json",
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Suppression allowlist: pure functions (ADR-047 decision 9)
+// ---------------------------------------------------------------------------
+
+test("parseAllowlist accepts a well-formed document", () => {
+  const doc = JSON.stringify({
+    schema_version: 1,
+    entries: [
+      { id: "a1", rule: "RS101", file: "src/x.js", reason: "r", added_by: "u", added_at: "2026-01-01", expires_at: "2099-01-01" },
+    ],
+  });
+  const { entries, errors } = parseAllowlist(doc);
+  assert.deepEqual(errors, []);
+  assert.equal(entries.length, 1);
+  assert.equal(entries[0].id, "a1");
+});
+
+test("parseAllowlist fails closed on invalid JSON", () => {
+  const { entries, errors } = parseAllowlist("{ not json");
+  assert.deepEqual(entries, []);
+  assert.ok(errors.length > 0);
+  assert.match(errors[0], /invalid JSON/);
+});
+
+test("parseAllowlist fails closed on a document missing expires_at", () => {
+  const doc = JSON.stringify({
+    schema_version: 1,
+    entries: [{ id: "a1", rule: "RS101", file: "src/x.js", reason: "r", added_by: "u", added_at: "2026-01-01" }],
+  });
+  const { entries, errors } = parseAllowlist(doc);
+  assert.deepEqual(entries, []);
+  assert.ok(errors.some((e) => e.includes("expires_at")), errors.join(","));
+});
+
+test("parseAllowlist fails closed on an unknown top-level property (additionalProperties: false)", () => {
+  const doc = JSON.stringify({ schema_version: 1, entries: [], extra: true });
+  const { entries, errors } = parseAllowlist(doc);
+  assert.deepEqual(entries, []);
+  assert.ok(errors.length > 0);
+});
+
+test("parseAllowlist fails closed on a duplicate entry id", () => {
+  const doc = JSON.stringify({
+    schema_version: 1,
+    entries: [
+      { id: "dup", rule: "RS101", file: "a.js", reason: "r", added_by: "u", added_at: "2026-01-01", expires_at: "2099-01-01" },
+      { id: "dup", rule: "RS102", file: "b.js", reason: "r", added_by: "u", added_at: "2026-01-01", expires_at: "2099-01-01" },
+    ],
+  });
+  const { entries, errors } = parseAllowlist(doc);
+  assert.deepEqual(entries, []);
+  assert.ok(errors.some((e) => e.includes('duplicate entry id "dup"')), errors.join(","));
+});
+
+test("parseAllowlist fails closed on an unrecognized rule id", () => {
+  const doc = JSON.stringify({
+    schema_version: 1,
+    entries: [{ id: "a1", rule: "RS999", file: "a.js", reason: "r", added_by: "u", added_at: "2026-01-01", expires_at: "2099-01-01" }],
+  });
+  const { entries, errors } = parseAllowlist(doc);
+  assert.deepEqual(entries, []);
+  assert.ok(errors.some((e) => e.includes('unknown rule id "RS999"')), errors.join(","));
+});
+
+test("parseAllowlist fails closed when expires_at is before added_at", () => {
+  const doc = JSON.stringify({
+    schema_version: 1,
+    entries: [
+      { id: "a1", rule: "RS101", file: "a.js", reason: "r", added_by: "u", added_at: "2026-06-01", expires_at: "2026-01-01" },
+    ],
+  });
+  const { entries, errors } = parseAllowlist(doc);
+  assert.deepEqual(entries, []);
+  assert.ok(errors.some((e) => e.includes("expires_at is before added_at")), errors.join(","));
+});
+
+test("loadAllowlist on a missing path returns zero entries and zero errors (default, not an error)", () => {
+  const { entries, errors } = loadAllowlist(join(fxRoot, "allowlist", "does-not-exist.json"));
+  assert.deepEqual(entries, []);
+  assert.deepEqual(errors, []);
+});
+
+test("loadAllowlist reads and parses a real fixture file", () => {
+  const { entries, errors } = loadAllowlist(join(fxRoot, "allowlist", "single-valid-entry.json"));
+  assert.deepEqual(errors, []);
+  assert.equal(entries.length, 1);
+  assert.equal(entries[0].id, "fixture-single-valid");
+});
+
+const SAMPLE_ALLOWLIST_ENTRY = {
+  id: "e1",
+  rule: "RS101",
+  file: "src/handler.js",
+  reason: "sample",
+  added_by: "u",
+  added_at: "2026-01-01",
+  expires_at: "2026-06-01",
+};
+
+test("isSuppressed matches on rule and exact file, within expiry", () => {
+  const finding = { id: "RS101", file: "src/handler.js" };
+  assert.equal(isSuppressed(finding, [SAMPLE_ALLOWLIST_ENTRY], "2026-03-01"), SAMPLE_ALLOWLIST_ENTRY);
+});
+
+test("isSuppressed returns null on a rule mismatch", () => {
+  const finding = { id: "RS102", file: "src/handler.js" };
+  assert.equal(isSuppressed(finding, [SAMPLE_ALLOWLIST_ENTRY], "2026-03-01"), null);
+});
+
+test("isSuppressed returns null on a file mismatch", () => {
+  const finding = { id: "RS101", file: "src/other.js" };
+  assert.equal(isSuppressed(finding, [SAMPLE_ALLOWLIST_ENTRY], "2026-03-01"), null);
+});
+
+test("isSuppressed matches a ** glob file pattern", () => {
+  const globEntry = { ...SAMPLE_ALLOWLIST_ENTRY, file: "src/**/*.js" };
+  const finding = { id: "RS101", file: "src/nested/deep/handler.js" };
+  assert.equal(isSuppressed(finding, [globEntry], "2026-03-01"), globEntry);
+});
+
+test("isSuppressed treats expires_at as inclusive: still suppresses on the expiry date itself", () => {
+  const finding = { id: "RS101", file: "src/handler.js" };
+  assert.equal(isSuppressed(finding, [SAMPLE_ALLOWLIST_ENTRY], "2026-06-01"), SAMPLE_ALLOWLIST_ENTRY);
+});
+
+test("isSuppressed does not suppress the day after expiry", () => {
+  const finding = { id: "RS101", file: "src/handler.js" };
+  assert.equal(isSuppressed(finding, [SAMPLE_ALLOWLIST_ENTRY], "2026-06-02"), null);
+});
+
+test("isSuppressed defends against a malformed expires_at bypassing parseAllowlist: never throws, never suppresses", () => {
+  const finding = { id: "RS101", file: "src/handler.js" };
+  const nonsenseDate = { ...SAMPLE_ALLOWLIST_ENTRY, expires_at: "not-a-date" };
+  assert.doesNotThrow(() => isSuppressed(finding, [nonsenseDate], "2026-03-01"));
+  assert.equal(isSuppressed(finding, [nonsenseDate], "2026-03-01"), null);
+  const missingDate = { ...SAMPLE_ALLOWLIST_ENTRY, expires_at: undefined };
+  assert.doesNotThrow(() => isSuppressed(finding, [missingDate], "2026-03-01"));
+  assert.equal(isSuppressed(finding, [missingDate], "2026-03-01"), null);
+});
+
+test("applyAllowlist sets suppressed on a matching finding and leaves every other field untouched", () => {
+  const findings = [
+    { id: "RS101", file: "src/handler.js", severity: "high", extra: "keep-me" },
+    { id: "RS102", file: "src/handler.js", severity: "medium" },
+  ];
+  const out = applyAllowlist(findings, [SAMPLE_ALLOWLIST_ENTRY], "2026-03-01");
+  assert.deepEqual(out[0].suppressed, { entry_id: "e1", reason: "sample" });
+  assert.equal(out[0].extra, "keep-me");
+  assert.equal(out[0].severity, "high");
+  assert.equal(out[1].suppressed, null);
 });
 
 test("formatHuman, emitJson, and emitSarif are pure string builders over the same findings", () => {
@@ -410,6 +631,50 @@ test("runs cleanly against this repository's own live diff against origin/main",
   const r = spawnSync("node", [guard, "origin/main", "--mode", "warn"], { encoding: "utf8", cwd: root });
   assert.ok(r.status === 0 || r.status === 1, `unexpected exit ${r.status}: ${r.stderr}`);
   assert.doesNotMatch(r.stderr, /internal error/);
+  // No --allowlist given: this exercises the default-path resolution to
+  // .modonome/risk-surface-allowlist.json, which must load cleanly with zero
+  // warnings against the repo's own real (currently empty) allowlist file.
+  assert.doesNotMatch(r.stderr, /allowlist.*invalid/);
+});
+
+// ---------------------------------------------------------------------------
+// Suppression allowlist: CLI integration (ADR-047 decision 9)
+// ---------------------------------------------------------------------------
+
+const allowlistFixture = (name) => join(fxRoot, "allowlist", name);
+
+test("a matching allowlist entry suppresses a high-severity finding: fail mode exits 0, not 1", () => {
+  const r = run(fixture(flagDir, "js-eval.diff"), ["--mode", "fail", "--allowlist", allowlistFixture("single-valid-entry.json")]);
+  assert.equal(r.status, 0, r.stdout + r.stderr);
+  assert.match(r.stdout, /PASS: no risk-surface findings\./);
+});
+
+test("an expired allowlist entry does not suppress: fail mode still exits 1", () => {
+  const r = run(fixture(flagDir, "js-eval.diff"), ["--mode", "fail", "--allowlist", allowlistFixture("expired-entry.json")]);
+  assert.equal(r.status, 1, r.stdout + r.stderr);
+});
+
+test("a malformed allowlist file does not crash the scan: finding stays unsuppressed and stderr warns", () => {
+  const r = run(fixture(flagDir, "js-eval.diff"), ["--mode", "fail", "--allowlist", allowlistFixture("malformed.json")]);
+  assert.equal(r.status, 1, r.stdout + r.stderr);
+  assert.match(r.stderr, /allowlist.*is invalid/);
+  const json = run(fixture(flagDir, "js-eval.diff"), ["--json", "--allowlist", allowlistFixture("malformed.json")]);
+  assert.equal(JSON.parse(json.stdout).findings[0].suppressed, null);
+});
+
+test("--sarif excludes a suppressed finding while --json on the same input includes it marked", () => {
+  const allowlist = allowlistFixture("single-valid-entry.json");
+  const sarif = JSON.parse(run(fixture(flagDir, "js-eval.diff"), ["--sarif", "--allowlist", allowlist]).stdout);
+  assert.equal(sarif.runs[0].results.length, 0);
+  const json = JSON.parse(run(fixture(flagDir, "js-eval.diff"), ["--json", "--allowlist", allowlist]).stdout);
+  assert.equal(json.findings.length, 1);
+  assert.deepEqual(json.findings[0].suppressed, { entry_id: "fixture-single-valid", reason: "fixture: a single well-formed entry" });
+});
+
+test("formatHuman shows the [SUPPRESSED] marker and the allowlist entry's reason", () => {
+  const r = run(fixture(flagDir, "js-eval.diff"), ["--mode", "fail", "--allowlist", allowlistFixture("single-valid-entry.json")]);
+  assert.match(r.stdout, /\[SUPPRESSED\]/);
+  assert.match(r.stdout, /Suppressed by allowlist entry fixture-single-valid: fixture: a single well-formed entry/);
 });
 
 // ---------------------------------------------------------------------------

@@ -8,7 +8,7 @@ export const MESSAGES = {
     category: "gate",
     severity: "blocked",
     non_suppressible: true,
-    template: "usage: risk-surface-guard.mjs <base-ref> [--mode warn|fail] [--sarif] [--json], or --diff <file>, or --staged",
+    template: "usage: risk-surface-guard.mjs <base-ref> [--mode warn|fail] [--sarif] [--json] [--allowlist <file>], or --diff <file>, or --staged",
   },
   "gate.risk-surface-guard.unsafe-ref": {
     category: "gate",
@@ -63,5 +63,11 @@ export const MESSAGES = {
     severity: "blocked",
     non_suppressible: true,
     template: "WARN: {count} risk-surface finding(s), none high or critical. Mode is fail but the threshold was not reached.",
+  },
+  "gate.risk-surface-guard.allowlist-invalid": {
+    category: "gate",
+    severity: "blocked",
+    non_suppressible: true,
+    template: "WARN: .modonome/risk-surface-allowlist.json is invalid ({count} error(s)); continuing with zero suppressions applied.",
   },
 };
