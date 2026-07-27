@@ -1,0 +1,9 @@
+diff --git a/.github/workflows/build.yml b/.github/workflows/build.yml
+--- a/.github/workflows/build.yml
++++ b/.github/workflows/build.yml
+@@ -1,4 +1,4 @@
+ jobs:
+   build:
+-    runs-on: ubuntu-latest
++    runs-on: self-hosted
+     steps:

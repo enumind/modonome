@@ -35,6 +35,7 @@
     "agentproof": "node agentproof/runner.mjs",
     "checkerproof": "node checkerproof/runner.mjs",
     "report": "node scripts/report.mjs",
+    "risk": "node scripts/risk-surface-guard.mjs",
     "demo:agent": "node scripts/agent/run-cycle.mjs",
     "prepare": "node scripts/install-hooks.mjs",
     "release": "node scripts/release.mjs",

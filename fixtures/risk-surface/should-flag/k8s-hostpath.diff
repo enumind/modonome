@@ -1,0 +1,10 @@
+diff --git a/k8s/deployment.yaml b/k8s/deployment.yaml
+--- a/k8s/deployment.yaml
++++ b/k8s/deployment.yaml
+@@ -1,5 +1,8 @@
+ spec:
+   volumes:
+     - name: data
++      hostPath:
++        path: /var/lib/data
++        type: Directory

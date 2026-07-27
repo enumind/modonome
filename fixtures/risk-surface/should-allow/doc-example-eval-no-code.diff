@@ -1,0 +1,7 @@
+diff --git a/docs/security-notes.md b/docs/security-notes.md
+--- a/docs/security-notes.md
++++ b/docs/security-notes.md
+@@ -1,2 +1,4 @@
+ # Security notes
++Avoid patterns like eval() and curl | bash in application code; both are
++common remote-code-execution vectors reviewers should watch for.

@@ -31,6 +31,7 @@ const DETERMINISTIC_ENTRY_FILES = [
   "scripts/lib/branch-name.mjs",
   "scripts/lib/commit-identity.mjs",
   "scripts/lib/detect-attribution.mjs",
+  "scripts/risk-surface-guard.mjs",
 ];
 // Files a deterministic detector must never reach through its import graph. The reverse
 // edges are required and allowed: near-miss.mjs (the widener) imports the strict

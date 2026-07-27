@@ -18,18 +18,19 @@ be added here once the owner arms the loop on this repo.
 | Gate | Result |
 |---|---|
 | Drift guard | pass |
-| Style check | pass |
-| Repo hygiene | pass |
-| Self-application conformance | pass |
+| Style check | FAIL |
+| Repo hygiene | FAIL |
+| Self-application conformance | FAIL |
 | Learning traceability | pass |
 | Capability promotion readiness | pass |
 | Work item validation | pass |
 | Checker engagement | pass |
-| AgentProof | 25/25 HARDENED |
+| AgentProof | unavailable HARDENED |
 
 ## Work queue
 
 - checking: 1
+- claimed: 1
 - done: 45
 - queued: 4
 

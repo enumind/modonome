@@ -1,0 +1,7 @@
+diff --git a/k8s/pod.yaml b/k8s/pod.yaml
+--- a/k8s/pod.yaml
++++ b/k8s/pod.yaml
+@@ -1,4 +1,5 @@
+ securityContext:
++  allowPrivilegeEscalation: true
+   runAsNonRoot: true

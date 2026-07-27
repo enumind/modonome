@@ -124,6 +124,35 @@ jobs:
             echo "scripts/check-decisions-authority.mjs not yet on base branch; skipping trust-isolation checkout (first introduction)."
           fi
 
+      # Risk Surface Guard (ADR-047): base-pinned like guard-ratchet.mjs, so a PR
+      # cannot weaken the detector in the same diff that adds the risky pattern. This
+      # step, and the run step right after it, must both happen BEFORE "Load message
+      # catalog and its integrity gate from the base branch" below: that step's own
+      # bootstrap condition is already true today (check-message-catalog-integrity.mjs
+      # pre-exists on main), so on the PR that first introduces this gate it would
+      # unconditionally revert scripts/lib/message-catalog/index.mjs to the base copy,
+      # which does not yet import this gate's new catalog partial -- crashing this
+      # advisory step with "Unknown message id" on its own introducing PR if it ran
+      # any later. Running here avoids that; every PR after this one merges gets full,
+      # correct trust isolation either way.
+      - name: Load risk-surface-guard.mjs and its message catalog entry from the base branch
+        if: github.event_name == 'pull_request'
+        run: |
+          if git cat-file -e "origin/${{ github.base_ref }}:scripts/risk-surface-guard.mjs" 2>/dev/null; then
+            git checkout "origin/${{ github.base_ref }}" -- scripts/risk-surface-guard.mjs
+            git checkout "origin/${{ github.base_ref }}" -- scripts/lib/risk-surface-rules.mjs
+            git checkout "origin/${{ github.base_ref }}" -- scripts/lib/message-catalog/gate/risk-surface-guard.mjs
+            git checkout "origin/${{ github.base_ref }}" -- scripts/lib/message-catalog/index.mjs
+          else
+            echo "scripts/risk-surface-guard.mjs not yet on base branch; skipping trust-isolation checkout (first introduction)."
+          fi
+
+      # Advisory only: proves the gate is wired into CI (REQUIRED_GATES in
+      # check-self-application.mjs). Runs in --mode warn, which is contractually
+      # exit 0 regardless of findings, so it never fails this repository's own build.
+      - name: Run Risk Surface Guard scan (advisory)
+        run: node scripts/risk-surface-guard.mjs origin/main --mode warn
+
       # Like check-decisions-authority.mjs above, this gate and the message
       # catalog files that define its severity floors are new: the first PR
       # that introduces them has no prior version on the base branch to load,

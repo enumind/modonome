@@ -1,0 +1,8 @@
+diff --git a/docker-compose.yml b/docker-compose.yml
+--- a/docker-compose.yml
++++ b/docker-compose.yml
+@@ -1,4 +1,5 @@
+ services:
+   app:
+     image: myimage
++    privileged: true

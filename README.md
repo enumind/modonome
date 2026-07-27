@@ -142,6 +142,12 @@ If you can construct a diff that weakens a gate and slips past the ratchet, we w
 by the ratchet itself; a confirmed break is a named, credited hall-of-fame entry and, once fixed,
 a new AgentProof scenario.
 
+## Risk Surface Guard
+
+Modonome also includes an alpha Risk Surface Guard that flags pull request changes which expand execution, credential, workflow, model/dataset loading, container, or sandbox risk. It is warn-only by default in the Marketplace Action and can be set to fail on high-risk findings.
+
+The guard is **deterministic and diff-based**, scanning only added lines and never executing code. It does not prevent breaches, and it does not replace SAST, secret scanning, dependency review, or cloud security tooling. It flags patterns that expand the repository's risk surface (dynamic code execution, credential expansion, workflow permission elevation, privilege escalation, disabled TLS verification, and changes to security-sensitive paths) and helps reviewers notice those expansions before merge. See **[docs/risk-surface-guard.md](docs/risk-surface-guard.md)** for a detailed walk-through of what it detects, how to interpret findings, and how to move from warn mode to fail mode after confirming the false-positive rate on your own diffs.
+
 ## The loop (armed mode)
 
 1. **Adopt.** Read the host repo's instructions, CI, code owners, gates, and conventions, then defer to them.

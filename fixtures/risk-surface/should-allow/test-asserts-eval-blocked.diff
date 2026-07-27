@@ -1,0 +1,7 @@
+diff --git a/tests/security.test.mjs b/tests/security.test.mjs
+--- a/tests/security.test.mjs
++++ b/tests/security.test.mjs
+@@ -1,3 +1,4 @@
+ test("flags eval", () => {
++  assert.match(scan(src), /eval\(/);
+ });

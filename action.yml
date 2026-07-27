@@ -30,6 +30,10 @@ inputs:
     description: 'Emit and keyless-sign an in-toto AgentProof conformance attestation (needs id-token: write and attestations: write).'
     required: false
     default: 'false'
+  risk-surface:
+    description: 'Run Risk Surface Guard. Values: off, warn, fail.'
+    required: false
+    default: 'warn'
 
 runs:
   using: 'composite'
@@ -64,7 +68,28 @@ runs:
         node "$RATCHET" "$BASE" | tee -a "$GITHUB_STEP_SUMMARY"
         VERDICT=${PIPESTATUS[0]}
         echo "verdict=$VERDICT" >> "$GITHUB_OUTPUT"
+        echo "base=$BASE" >> "$GITHUB_OUTPUT"
         exit "$VERDICT"
+
+    # Risk Surface Guard (ADR-047): a second, separate scanner from the gate integrity
+    # check above. Flags diffs that expand execution, credential, workflow, dataset or
+    # model-loading, container, network, or sandbox risk. Reuses the base ref this
+    # action already resolved above rather than recomputing it.
+    - name: Risk Surface Guard
+      id: risk-surface
+      if: ${{ always() && inputs.risk-surface != 'off' }}
+      shell: bash
+      env:
+        MODONOME_BASE: ${{ steps.ratchet.outputs.base }}
+        MODONOME_ACTION_PATH: ${{ github.action_path }}
+        MODONOME_RISK_MODE: ${{ inputs.risk-surface }}
+      run: |
+        set -uo pipefail
+        MODE="$MODONOME_RISK_MODE"
+        if [ "$MODE" != "fail" ]; then MODE="warn"; fi
+        node "$MODONOME_ACTION_PATH/scripts/risk-surface-guard.mjs" "$MODONOME_BASE" --mode "$MODE" \
+          | tee -a "$GITHUB_STEP_SUMMARY"
+        exit "${PIPESTATUS[0]}"
 
     - name: Upload SARIF to code scanning
       if: ${{ always() && inputs.upload-sarif == 'true' }}
