@@ -20,7 +20,24 @@ maker/checker loop; deterministic gate-rejection evidence on the demo app; and a
 documentation truth pass (claims reconciled to committed evidence, self-graded benchmark
 framing, honest scope labels). Full detail below, newest first.
 
-### Wire the researcher role into the agent loop (WI-042)
+### Name the judgment-layer mistakes the gates cannot see (WI-054)
+
+- Added three entries to the mistake catalog in `AGENTS.md` (section 4), each in the
+  existing mistake-rule-gate shape: silent interpretation of an ambiguous goal (entry
+  19), speculative scope (entry 20), and within-file scope drift (entry 21). Entry 21
+  complements entry 9: the edit-set gate polices which files change, entry 21 polices
+  the lines inside them, where a deterministic check cannot reach.
+- Added one trigger to the escalation list in `AGENTS.md` (section 6, new item 10): a
+  goal that supports two or more materially different readings routes to the owner
+  with the readings and a recommendation, reusing the options format
+  `.modonome/DECISIONS.md` Open entries already carry. The prior item 10 is now 11.
+- Deliberately added no prose for verification discipline: work-item `gates`, the
+  brief's `fence`, and the section 5 quality bar already enforce it deterministically,
+  and prose restating a live gate invites drift. The shipped prompt modules
+  (`prompts/modules/state-machine.md`, `prompts/modules/adoption.md`) already bind
+  dispatched agents to the same discipline, so `prompts/` is untouched.
+- Documentation only. No script, schema, or config control change; `schema_version`
+  stays at 1. Existing sessions inherit the rules on their next read of `AGENTS.md`.
 
 - Added `prompts/roles/researcher.txt`: reads the repo's own durable state, drafts one
   proposal, runs it past the independent check at Checkpoint 1
