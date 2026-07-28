@@ -43,7 +43,7 @@ runs:
   using: 'composite'
   steps:
     - name: Setup Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v7
       with:
         node-version: '20'
 
@@ -101,7 +101,7 @@ runs:
 
     - name: Upload SARIF to code scanning
       if: ${{ always() && inputs.upload-sarif == 'true' }}
-      uses: github/codeql-action/upload-sarif@v3
+      uses: github/codeql-action/upload-sarif@v4
       with:
         sarif_file: ${{ inputs.sarif-file }}
         category: modonome-gate-integrity
@@ -129,7 +129,7 @@ runs:
 
     - name: Sign the receipt
       if: ${{ always() && inputs.receipt == 'true' }}
-      uses: actions/attest@v2
+      uses: actions/attest@v4
       with:
         subject-name: gate-integrity
         predicate-type: 'https://modonome.com/attestation/gate-integrity/v1'
@@ -153,7 +153,7 @@ runs:
 
     - name: Sign the AgentProof attestation
       if: ${{ always() && inputs.agentproof == 'true' }}
-      uses: actions/attest@v2
+      uses: actions/attest@v4
       with:
         subject-name: agentproof-conformance
         predicate-type: 'https://modonome.com/attestation/agentproof-conformance/v1'
