@@ -1,0 +1,8 @@
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -1,3 +1,4 @@
+ on:
++  # do not add pull_request_target here, see SECURITY.md
+   push:
+     branches: [main]

@@ -24,12 +24,14 @@ import { MESSAGES as M_GATE_CHECK_PORTABILITY } from "./gate/check-portability.m
 import { MESSAGES as M_GATE_CHECK_PROMOTION_READINESS } from "./gate/check-promotion-readiness.mjs";
 import { MESSAGES as M_GATE_CHECK_REGEX_SAFETY } from "./gate/check-regex-safety.mjs";
 import { MESSAGES as M_GATE_CHECK_REPO_HYGIENE } from "./gate/check-repo-hygiene.mjs";
+import { MESSAGES as M_GATE_CHECK_RISK_SURFACE_ALLOWLIST } from "./gate/check-risk-surface-allowlist.mjs";
 import { MESSAGES as M_GATE_CHECK_SELF_APPLICATION } from "./gate/check-self-application.mjs";
 import { MESSAGES as M_GATE_CHECK_STATE_MACHINE_ACYCLIC } from "./gate/check-state-machine-acyclic.mjs";
 import { MESSAGES as M_GATE_CHECK_STYLE } from "./gate/check-style.mjs";
 import { MESSAGES as M_GATE_CHECK_TRUST_BOUNDARY } from "./gate/check-trust-boundary.mjs";
 import { MESSAGES as M_GATE_CHECK_WORK_ITEMS } from "./gate/check-work-items.mjs";
 import { MESSAGES as M_GATE_GUARD_RATCHET } from "./gate/guard-ratchet.mjs";
+import { MESSAGES as M_GATE_RISK_SURFACE_GUARD } from "./gate/risk-surface-guard.mjs";
 import { MESSAGES as M_GATE_RUN_GATE_PIPELINE } from "./gate/run-gate-pipeline.mjs";
 import { MESSAGES as M_GATE_TEST_PROMPT_BEHAVIOR } from "./gate/test-prompt-behavior.mjs";
 import { MESSAGES as M_GATE_VALIDATE_CONFIG } from "./gate/validate-config.mjs";
@@ -83,12 +85,14 @@ export const CATALOG_PARTIALS = [
   M_GATE_CHECK_PROMOTION_READINESS,
   M_GATE_CHECK_REGEX_SAFETY,
   M_GATE_CHECK_REPO_HYGIENE,
+  M_GATE_CHECK_RISK_SURFACE_ALLOWLIST,
   M_GATE_CHECK_SELF_APPLICATION,
   M_GATE_CHECK_STATE_MACHINE_ACYCLIC,
   M_GATE_CHECK_STYLE,
   M_GATE_CHECK_TRUST_BOUNDARY,
   M_GATE_CHECK_WORK_ITEMS,
   M_GATE_GUARD_RATCHET,
+  M_GATE_RISK_SURFACE_GUARD,
   M_GATE_RUN_GATE_PIPELINE,
   M_GATE_TEST_PROMPT_BEHAVIOR,
   M_GATE_VALIDATE_CONFIG,

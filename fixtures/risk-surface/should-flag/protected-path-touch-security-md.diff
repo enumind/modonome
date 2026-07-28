@@ -1,0 +1,6 @@
+diff --git a/SECURITY.md b/SECURITY.md
+--- a/SECURITY.md
++++ b/SECURITY.md
+@@ -1,2 +1,3 @@
+ # Security policy
++A routine documentation update, no risky content.

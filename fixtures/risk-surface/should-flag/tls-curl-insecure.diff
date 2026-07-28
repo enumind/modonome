@@ -1,0 +1,6 @@
+diff --git a/scripts/fetch.sh b/scripts/fetch.sh
+--- a/scripts/fetch.sh
++++ b/scripts/fetch.sh
+@@ -1,2 +1,3 @@
+ #!/bin/bash
++curl -k https://example.com/data.json

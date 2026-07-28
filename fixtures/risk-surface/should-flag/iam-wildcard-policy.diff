@@ -1,0 +1,13 @@
+diff --git a/infra/policy.json b/infra/policy.json
+--- a/infra/policy.json
++++ b/infra/policy.json
+@@ -1,6 +1,8 @@
+ {
+   "Statement": [
+     {
+       "Effect": "Allow",
++      "Action": "*",
++      "Resource": "*"
+     }
+   ]
+ }

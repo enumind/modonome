@@ -46,12 +46,18 @@ jobs:
       - run: node scripts/check-gate-dag.mjs
       - run: node scripts/detect-near-miss.mjs
       - run: node scripts/build-policy-attestation.mjs --check
+      - run: node scripts/risk-surface-guard.mjs origin/main --mode warn
+      - run: node scripts/check-risk-surface-allowlist.mjs
       - run: git checkout "origin/\${{ github.base_ref }}" -- scripts/guard-ratchet.mjs
       - run: git checkout "origin/\${{ github.base_ref }}" -- scripts/check-style.mjs
       - run: git checkout "origin/\${{ github.base_ref }}" -- scripts/check-repo-hygiene.mjs
       - run: git checkout "origin/\${{ github.base_ref }}" -- scripts/lib/branch-name.mjs
       - run: git checkout "origin/\${{ github.base_ref }}" -- scripts/lib/commit-identity.mjs
       - run: git checkout "origin/\${{ github.base_ref }}" -- scripts/lib/detect-attribution.mjs
+      - run: git checkout "origin/\${{ github.base_ref }}" -- scripts/risk-surface-guard.mjs
+      - run: git checkout "origin/\${{ github.base_ref }}" -- scripts/lib/risk-surface-rules.mjs
+      - run: git checkout "origin/\${{ github.base_ref }}" -- scripts/lib/risk-surface-allowlist.mjs
+      - run: git checkout "origin/\${{ github.base_ref }}" -- .modonome/risk-surface-allowlist.json
 `;
 
 // A minimal safe template config.yaml.

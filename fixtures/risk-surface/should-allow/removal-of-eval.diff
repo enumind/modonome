@@ -1,0 +1,8 @@
+diff --git a/src/handler.js b/src/handler.js
+--- a/src/handler.js
++++ b/src/handler.js
+@@ -1,4 +1,3 @@
+ function handle(userInput) {
+-  eval(userInput);
+   return true;
+ }
