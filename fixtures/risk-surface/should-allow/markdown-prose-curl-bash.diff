@@ -1,0 +1,6 @@
+diff --git a/docs/threats.md b/docs/threats.md
+--- a/docs/threats.md
++++ b/docs/threats.md
+@@ -1,2 +1,3 @@
+ # Threats
++A curl | bash install step is a common supply-chain risk pattern to review for.

@@ -60,6 +60,15 @@ const REQUIRED_GATES = [
   // Advisory, not blocking: this only proves the near-miss widener step is wired into
   // CI at all. It never fails the build; promotion into the denylist stays human-only.
   { name: "near-miss widener (advisory)", needle: "detect-near-miss.mjs" },
+  // Advisory, not blocking: proves the Risk Surface Guard step (ADR-047) is wired into
+  // CI at all. Runs in --mode warn, contractually exit 0, so it never fails this
+  // repository's own build; a downstream adopter can opt into --mode fail via
+  // action.yml's risk-surface input.
+  { name: "risk surface guard (advisory)", needle: "risk-surface-guard.mjs" },
+  // Blocking, pre-base-checkout: validates the PR's own proposed allowlist edits
+  // (ADR-047 decision 11) so a malformed entry is caught on the PR that introduces
+  // it, not a review cycle later once the base-pinned copy is the one in effect.
+  { name: "risk-surface allowlist validation", needle: "check-risk-surface-allowlist.mjs" },
   // Scans the PR body and comments for AI-participation signatures (operational-note 6):
   // the one attribution surface no tracked-file gate can see.
   { name: "PR body and comment hygiene", needle: "hygiene check --pr" },
@@ -90,6 +99,10 @@ const BASE_PINNED = [
   "scripts/lib/branch-name.mjs",
   "scripts/lib/commit-identity.mjs",
   "scripts/lib/detect-attribution.mjs",
+  "scripts/risk-surface-guard.mjs",
+  "scripts/lib/risk-surface-rules.mjs",
+  "scripts/lib/risk-surface-allowlist.mjs",
+  ".modonome/risk-surface-allowlist.json",
 ];
 for (const rel of BASE_PINNED) {
   const escaped = rel.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

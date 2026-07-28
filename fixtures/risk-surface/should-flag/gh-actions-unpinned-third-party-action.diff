@@ -1,0 +1,8 @@
+diff --git a/.github/workflows/lint.yml b/.github/workflows/lint.yml
+--- a/.github/workflows/lint.yml
++++ b/.github/workflows/lint.yml
+@@ -1,3 +1,4 @@
+ jobs:
+   lint:
+     steps:
++      - uses: someorg/some-action@v2

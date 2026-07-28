@@ -31,7 +31,7 @@ Modonome runs alongside the security tooling you already have. Pull requests it 
 through your existing SAST, DAST, secret scanning, and dependency review unchanged, and the
 anti-gaming ratchet adds one more required check beside them. Arming reads from your existing
 secrets store through an environment variable, and protected-path review reuses your
-CODEOWNERS. Modonome extends these controls and works within them.
+CODEOWNERS. Modonome extends these controls and works within them. A complementary **Risk Surface Guard** scans pull request diffs with deterministic, repository-diff-based rules that flag expansions of execution, credential, workflow, and infrastructure risk. It cannot detect live infrastructure compromise or semantic intent, and it works in tandem with (not as a replacement for) SAST and cloud security tooling. By scanning only the diff, it surfaces risk-surface expansion candidates for human review before merge, helping reviewers notice patterns that structural gates alone cannot reach.
 
 ## Untrusted input (prompt-enforced)
 

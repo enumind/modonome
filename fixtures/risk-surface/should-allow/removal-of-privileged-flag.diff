@@ -1,0 +1,8 @@
+diff --git a/deploy/docker-compose.yml b/deploy/docker-compose.yml
+--- a/deploy/docker-compose.yml
++++ b/deploy/docker-compose.yml
+@@ -1,5 +1,4 @@
+ services:
+   app:
+     image: myimage
+-    privileged: true

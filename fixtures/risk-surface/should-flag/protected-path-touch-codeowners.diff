@@ -1,0 +1,6 @@
+diff --git a/.github/CODEOWNERS b/.github/CODEOWNERS
+--- a/.github/CODEOWNERS
++++ b/.github/CODEOWNERS
+@@ -1,2 +1,3 @@
+ * @owner1
++/scripts/ @owner1 @owner2

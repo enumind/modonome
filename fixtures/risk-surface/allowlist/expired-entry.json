@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "fixture-expired",
+      "rule": "RS101",
+      "file": "src/handler.js",
+      "reason": "fixture: an entry whose expiry has already passed",
+      "added_by": "fixture-author",
+      "added_at": "2020-01-01",
+      "expires_at": "2020-01-02"
+    }
+  ]
+}

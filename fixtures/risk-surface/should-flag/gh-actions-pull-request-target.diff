@@ -1,0 +1,9 @@
+diff --git a/.github/workflows/comment.yml b/.github/workflows/comment.yml
+--- a/.github/workflows/comment.yml
++++ b/.github/workflows/comment.yml
+@@ -1,4 +1,5 @@
+ name: comment
+ on:
++  pull_request_target:
+   push:
+     branches: [main]

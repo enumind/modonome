@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "fixture-single-valid",
+      "rule": "RS101",
+      "file": "src/handler.js",
+      "reason": "fixture: a single well-formed entry",
+      "added_by": "fixture-author",
+      "added_at": "2026-01-01",
+      "expires_at": "2099-01-01"
+    }
+  ]
+}

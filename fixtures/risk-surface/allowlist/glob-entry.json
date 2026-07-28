@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "fixture-glob",
+      "rule": "RS101",
+      "file": "src/**/*.js",
+      "reason": "fixture: a glob file pattern instead of a literal path",
+      "added_by": "fixture-author",
+      "added_at": "2026-01-01",
+      "expires_at": "2099-01-01"
+    }
+  ]
+}

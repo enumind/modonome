@@ -20,6 +20,12 @@ maker/checker loop; deterministic gate-rejection evidence on the demo app; and a
 documentation truth pass (claims reconciled to committed evidence, self-graded benchmark
 framing, honest scope labels). Full detail below, newest first.
 
+### Risk Surface Guard: alpha-stage execution and credential blast-radius scanner (WI-055)
+
+- Added alpha Risk Surface Guard for repository-level execution and credential blast-radius changes. The new script `scripts/risk-surface-guard.mjs` and rule catalog `scripts/lib/risk-surface-rules.mjs` provide a deterministic, diff-based scanner that flags pull request additions expanding execution, credential, workflow, model/dataset loading, container, or sandbox risk. It is warn-only by default in the GitHub Action, reports in SARIF and JSON, and runs via `node scripts/risk-surface-guard.mjs <base-ref> [--mode warn|fail] [--sarif] [--json]`. See ADR-047.
+- The guard scans only added lines and reports findings with severity, category, line number, and reviewer guidance. It does not prevent breaches and does not replace SAST, secret scanning, dependency review, or cloud security tooling.
+- This is additive with no change to existing Modonome Guard (anti-gaming ratchet) behavior. Both tools run independently.
+
 ### Name the judgment-layer mistakes the gates cannot see (WI-054)
 
 - Added three entries to the mistake catalog in `AGENTS.md` (section 4), each in the
