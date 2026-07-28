@@ -1,0 +1,10 @@
+diff --git a/k8s/network-policy.yaml b/k8s/network-policy.yaml
+--- a/k8s/network-policy.yaml
++++ b/k8s/network-policy.yaml
+@@ -1,4 +1,6 @@
+ spec:
++  # ingress rule below; keep separate from our egress policy elsewhere in this file
++  ingress:
++    - from:
++        - ipBlock:
++            cidr: 0.0.0.0/0

@@ -10,6 +10,7 @@ governs where docs live.
 
 - [specs/governed-autonomy-spec.md](specs/governed-autonomy-spec.md): the normative spec.
 - [specs/ratchet-spec.md](specs/ratchet-spec.md): the anti-gaming ratchet spec.
+- [risk-surface-guard.md](risk-surface-guard.md): alpha-stage deterministic diff scanner that flags pull request changes expanding execution, credential, workflow, or infrastructure risk.
 
 ## Governance and compliance
 

@@ -1,0 +1,6 @@
+diff --git a/scripts/setup.sh b/scripts/setup.sh
+--- a/scripts/setup.sh
++++ b/scripts/setup.sh
+@@ -1,2 +1,3 @@
+ #!/bin/bash
++npm install http://example.com/pkg.tgz
