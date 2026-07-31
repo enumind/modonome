@@ -101,14 +101,14 @@ runs:
 
     - name: Upload SARIF to code scanning
       if: ${{ always() && inputs.upload-sarif == 'true' }}
-      uses: github/codeql-action/upload-sarif@v3
+      uses: github/codeql-action/upload-sarif@v4.37.3
       with:
         sarif_file: ${{ inputs.sarif-file }}
         category: modonome-gate-integrity
 
     - name: Upload Risk Surface Guard SARIF to code scanning
       if: ${{ always() && inputs.upload-sarif == 'true' && inputs.risk-surface != 'off' }}
-      uses: github/codeql-action/upload-sarif@v4
+      uses: github/codeql-action/upload-sarif@v4.37.3
       with:
         sarif_file: ${{ inputs.risk-surface-sarif-file }}
         category: modonome-risk-surface
